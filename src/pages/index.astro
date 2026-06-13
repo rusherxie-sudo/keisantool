@@ -1,0 +1,40 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { tools, categories } from '../data/tools.js';
+
+const title = '日本語計算ツール一覧 - 税金・健康・占い・給与の無料計算ツール | 計算ツール';
+const description =
+  '消費税・BMI・厄年・出産予定日・給与・偏差値・国民健康保険料など、日常で使える計算ツールを無料でまとめました。すべてブラウザ上でその場で計算できます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: '計算ツール',
+  url: 'https://keisantool.com/',
+  description,
+};
+
+const byCategory = categories
+  .map((c) => ({ name: c, items: tools.filter((t) => t.category === c) }))
+  .filter((c) => c.items.length > 0);
+---
+<ToolLayout title={title} description={description} slug="" current="" jsonld={jsonld} wide={true}>
+  <div slot="hero" class="hero-section">
+    <h1>日本語計算ツール一覧</h1>
+    <p>税金・健康・占い・給与など、日常で使う計算を無料でできるツールをまとめました。すべてブラウザ上でその場で計算できます。</p>
+  </div>
+
+  {byCategory.map((cat) => (
+    <section class="category-section">
+      <h2 class="category-title">{cat.name}</h2>
+      <div class="tool-grid">
+        {cat.items.map((t) => (
+          <a href={`/${t.slug}/`} class="tool-card">
+            <span class="t-icon" aria-hidden="true">{t.icon}</span>
+            <span class="t-name">{t.name}</span>
+            <span class="t-kw">{t.short}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+</ToolLayout>

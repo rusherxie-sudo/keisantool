@@ -1,0 +1,39 @@
+// 固定資産税・都市計画税の計算ロジック（純関数・DOM非依存）。
+// 課税標準額・税額の端数は全て「切り捨て」（Math.floor）で整数円に丸める。
+
+// 標準税率
+const FIXED_RATE = 0.014; // 固定資産税（1.4%）
+const CITY_RATE = 0.003; // 都市計画税（0.3% 上限）
+
+// 住宅用地の課税標準の特例倍率（評価額 → 課税標準額）
+//   small   : 小規模住宅用地（200㎡以下）固定 1/6・都計 1/3
+//   general : 一般住宅用地（200㎡超）  固定 1/3・都計 2/3
+//   none    : 非住宅（更地・事業用）   特例なし（×1）
+const SPECIAL = {
+  small: { fixed: 1 / 6, city: 1 / 3 },
+  general: { fixed: 1 / 3, city: 2 / 3 },
+  none: { fixed: 1, city: 1 },
+};
+
+// 評価額 + 用地区分 → 固定資産税・都市計画税
+export function koteiShisan(value, landType) {
+  const v = Number(value);
+  if (!Number.isFinite(v) || v <= 0) {
+    return { fixedBase: 0, cityBase: 0, fixedTax: 0, cityTax: 0, total: 0 };
+  }
+  const sp = SPECIAL[landType] || SPECIAL.none;
+  const fixedBase = Math.floor(v * sp.fixed);
+  const cityBase = Math.floor(v * sp.city);
+  const fixedTax = Math.floor(fixedBase * FIXED_RATE);
+  const cityTax = Math.floor(cityBase * CITY_RATE);
+  return { fixedBase, cityBase, fixedTax, cityTax, total: fixedTax + cityTax };
+}
+
+// 年税額を年4回（第1〜4期）に分割。端数（余り）は第1期に寄せる。
+export function splitQuarterly(annual) {
+  const a = Number(annual);
+  if (!Number.isFinite(a) || a <= 0) return [0, 0, 0, 0];
+  const base = Math.floor(a / 4);
+  const remainder = a - base * 4;
+  return [base + remainder, base, base, base];
+}

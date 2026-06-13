@@ -1,0 +1,157 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'kokuho';
+const title = '国民健康保険料計算器 - 年収・世帯人数から保険料をシミュレーション | 計算ツール';
+const description =
+  '国民健康保険料計算シミュレーション。前年の所得（または年収）と世帯人数・年齢から、年間の国保料を医療分・支援金分・介護分の内訳つきで概算。軽減判定にも対応した無料ツールです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '国民健康保険料計算器',
+  description,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 国民健康保険料計算器</div>
+    <h1>国民健康保険料計算器</h1>
+    <p>所得（または年収）と世帯人数から、年間の国民健康保険料をその場でシミュレーション。自治体・年度により異なる概算です。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-panel active">
+      <div class="form-group">
+        <label for="k-mode">入力する金額</label>
+        <div class="radio-group">
+          <input type="radio" name="k-mode" id="k-mode-income" value="income" checked />
+          <label for="k-mode-income">所得で入力</label>
+          <input type="radio" name="k-mode" id="k-mode-salary" value="salary" />
+          <label for="k-mode-salary">年収で入力</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="k-amount" id="k-amount-label">前年の総所得（円）</label>
+        <input type="number" id="k-amount" inputmode="numeric" placeholder="例：3000000" />
+      </div>
+
+      <div class="form-group">
+        <label for="k-members">国保の加入人数（世帯）</label>
+        <input type="number" id="k-members" inputmode="numeric" placeholder="例：2" value="1" />
+      </div>
+
+      <div class="form-group">
+        <label>40〜64歳の加入者（介護分の対象）</label>
+        <div class="radio-group">
+          <input type="radio" name="k-care" id="k-care-no" value="no" checked />
+          <label for="k-care-no">いない</label>
+          <input type="radio" name="k-care" id="k-care-yes" value="yes" />
+          <label for="k-care-yes">いる</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>お住まいの自治体</label>
+        <div class="radio-group">
+          <input type="radio" name="k-city" id="k-city-tokyo" value="tokyo23" checked />
+          <label for="k-city-tokyo">東京23区</label>
+          <input type="radio" name="k-city" id="k-city-osaka" value="osaka" />
+          <label for="k-city-osaka">大阪市</label>
+        </div>
+      </div>
+
+      <div class="result-box" id="k-result">
+        <div class="result-label">年間保険料（概算）</div>
+        <div class="result-main" id="k-total">¥0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">医療分</span><span class="value" id="k-medical">¥0</span></div>
+          <div class="result-row"><span class="label">後期高齢者支援金分</span><span class="value" id="k-support">¥0</span></div>
+          <div class="result-row"><span class="label">介護分（40〜64歳）</span><span class="value" id="k-care">¥0</span></div>
+          <div class="result-row"><span class="label">月額の目安</span><span class="value" id="k-monthly">¥0</span></div>
+          <div class="result-row"><span class="label">均等割の軽減</span><span class="value green" id="k-reduction">なし</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方と国保料のしくみ</h2>
+    <p>
+      上のフォームに「前年の総所得」（または「年収＝給与収入」）、国民健康保険の加入人数、40〜64歳の方の有無、お住まいの自治体を入力すると、年間の保険料がボタン操作なしで自動表示されます。年収を選んだ場合は、給与所得控除を差し引いて所得を概算します。
+    </p>
+    <p>
+      国民健康保険料は、所得に応じた<strong>所得割</strong>と、加入人数に応じた<strong>均等割</strong>を、<strong>医療分・後期高齢者支援金分・介護分</strong>の3区分で合算して決まります。所得割は「（総所得 − 基礎控除43万円）× 所得割率」、均等割は「加入人数 × 1人あたりの額」で計算し、各区分には<strong>賦課限度額</strong>（上限）が設けられています。介護分は40〜64歳（介護保険第2号被保険者）が世帯にいる場合のみ加算されます。
+    </p>
+    <p>
+      また、世帯の所得が一定以下の場合は均等割が<strong>7割・5割・2割</strong>軽減されます。本ツールでも判定基準（7割＝43万円、5割＝43万円＋31万円×加入者数、2割＝43万円＋57万円×加入者数）に基づいて自動で軽減を反映します。金額の端数はすべて切り捨てで表示します。
+    </p>
+    <p>
+      <strong>料率の出典・年度：</strong>東京23区は特別区の統一保険料率（令和8年度＝2026年度）、大阪市は大阪府内統一保険料率（令和8年度）を採用しています。<strong>国保の料率は自治体ごとに大きく異なり、毎年度改定されます。</strong>また大阪市などにある「平等割（世帯ごとの定額）」は本概算には含めていないため、実際の保険料はこの結果より高くなる場合があります。
+    </p>
+    <div class="disclaimer">
+      ※ 本ツールは自治体・年度により異なる<strong>概算シミュレーション</strong>です。実際の保険料は所得の種類・各種控除・世帯構成・最新の料率により変動します。正確な金額は必ずお住まいの市区町村（国保窓口）にご確認ください。
+    </div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<script>
+  import { incomeFromSalary, calcKokuho } from '../../lib/kokuho.js';
+
+  const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
+  const $ = (id) => document.getElementById(id);
+  const picked = (name) =>
+    document.querySelector(`input[name="${name}"]:checked`).value;
+
+  function render() {
+    const mode = picked('k-mode');
+    const raw = Number($('k-amount').value);
+    const income = mode === 'salary' ? incomeFromSalary(raw) : (raw || 0);
+    const members = Number($('k-members').value) || 0;
+    const hasCare = picked('k-care') === 'yes';
+    const city = picked('k-city');
+
+    const box = $('k-result');
+    if (members < 1 || ($('k-amount').value === '' && $('k-members').value === '')) {
+      return box.classList.remove('visible');
+    }
+
+    const r = calcKokuho({ income, members, hasCare, city });
+    if (r.total <= 0) return box.classList.remove('visible');
+    box.classList.add('visible');
+
+    $('k-total').textContent = yen(r.total);
+    $('k-medical').textContent = yen(r.medical);
+    $('k-support').textContent = yen(r.support);
+    $('k-care').textContent = hasCare ? yen(r.care) : '対象外';
+    $('k-monthly').textContent = yen(Math.floor(r.total / 12));
+    $('k-reduction').textContent =
+      r.reduction > 0 ? Math.round(r.reduction * 10) + '割軽減（均等割）' : 'なし';
+  }
+
+  // 入力モード切替でラベルを更新
+  function syncLabel() {
+    const mode = picked('k-mode');
+    $('k-amount-label').textContent =
+      mode === 'salary' ? '前年の年収（給与収入・円）' : '前年の総所得（円）';
+    $('k-amount').placeholder = mode === 'salary' ? '例：4000000' : '例：3000000';
+    render();
+  }
+
+  $('k-amount').addEventListener('input', render);
+  $('k-members').addEventListener('input', render);
+  document.querySelectorAll('input[name="k-mode"]').forEach((el) => el.addEventListener('change', syncLabel));
+  ['k-care', 'k-city'].forEach((name) =>
+    document.querySelectorAll(`input[name="${name}"]`).forEach((el) => el.addEventListener('change', render))
+  );
+</script>

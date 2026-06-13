@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://keisantool.com/sitemap-index.xml

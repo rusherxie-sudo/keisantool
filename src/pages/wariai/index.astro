@@ -1,0 +1,182 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'wariai';
+const title = '割合・パーセント・比率計算器 - 4種類の計算を一画面で | 計算ツール';
+const description =
+  'パーセント計算・割合計算・比率計算・割引後の価格を一画面でまとめて計算。「AはBの何%？」「Aの○%はいくら？」の割合計算や、12:8→3:2の比率の約分、○%OFFの価格まで瞬時に求められる無料ツールです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '割合・パーセント・比率計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 割合計算</div>
+    <h1>割合・パーセント・比率計算器</h1>
+    <p>パーセント計算・割合計算・比率の約分・割引後の価格を、入力するだけで瞬時に計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist">
+      <button class="calc-tab active" data-tab="pct" type="button">パーセント</button>
+      <button class="calc-tab" data-tab="val" type="button">割合</button>
+      <button class="calc-tab" data-tab="rat" type="button">比率</button>
+      <button class="calc-tab" data-tab="disc" type="button">割引後</button>
+    </div>
+
+    <div class="calc-panel active" id="panel-pct">
+      <div class="form-group">
+        <label for="pct-a">数値 A</label>
+        <input type="number" id="pct-a" inputmode="decimal" placeholder="例：50" />
+      </div>
+      <div class="form-group">
+        <label for="pct-b">全体 B</label>
+        <input type="number" id="pct-b" inputmode="decimal" placeholder="例：200" />
+      </div>
+      <div class="result-box" id="pct-result">
+        <div class="result-label">A は B の</div>
+        <div class="result-main" id="pct-out">0%</div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-val">
+      <div class="form-group">
+        <label for="val-a">数値 A</label>
+        <input type="number" id="val-a" inputmode="decimal" placeholder="例：3000" />
+      </div>
+      <div class="form-group">
+        <label for="val-pct">割合（%）</label>
+        <input type="number" id="val-pct" inputmode="decimal" placeholder="例：8" />
+      </div>
+      <div class="result-box" id="val-result">
+        <div class="result-label">A の指定%は</div>
+        <div class="result-main" id="val-out">0</div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-rat">
+      <div class="form-group">
+        <label for="rat-a">数値 A</label>
+        <input type="number" id="rat-a" inputmode="decimal" placeholder="例：12" />
+      </div>
+      <div class="form-group">
+        <label for="rat-b">数値 B</label>
+        <input type="number" id="rat-b" inputmode="decimal" placeholder="例：8" />
+      </div>
+      <div class="result-box" id="rat-result">
+        <div class="result-label">最も簡単な比</div>
+        <div class="result-main" id="rat-out">0 : 0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">入力した比</span><span class="value" id="rat-orig">0 : 0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-disc">
+      <div class="form-group">
+        <label for="disc-price">定価（円）</label>
+        <input type="number" id="disc-price" inputmode="numeric" placeholder="例：5000" />
+      </div>
+      <div class="form-group">
+        <label for="disc-pct">割引率（%）</label>
+        <input type="number" id="disc-pct" inputmode="numeric" placeholder="例：30" />
+      </div>
+      <div class="result-box" id="disc-result">
+        <div class="result-label">割引後価格</div>
+        <div class="result-main" id="disc-final">¥0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">定価</span><span class="value" id="disc-orig">¥0</span></div>
+          <div class="result-row"><span class="label">割引額</span><span class="value green" id="disc-save">−¥0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>上のタブから計算したい種類を選び、数値を入力すると自動で結果が表示されます。ボタンを押す必要はありません。4種類の割合計算をこの一画面でまとめて行えます。</p>
+    <ul>
+      <li><strong>パーセント計算</strong>：「A は B の何%か」を求めます。たとえばテストで200点中50点なら、A に50、B に200と入力すると<strong>25%</strong>と表示されます。達成率や得点率の計算に便利です。</li>
+      <li><strong>割合計算</strong>：「A の ○% はいくらか」を求めます。3000円の8%を知りたいときは、A に3000、割合に8と入力すると<strong>240</strong>と表示されます。手数料やポイント還元額の計算に使えます。</li>
+      <li><strong>比率計算</strong>：A と B の比を、最大公約数で約分して最も簡単な整数比にします。たとえば12と8を入力すると<strong>3 : 2</strong>になります。配合比や縮尺の単純化に役立ちます。</li>
+      <li><strong>割引後計算</strong>：定価と割引率から、○%OFF後の支払額と割引額を計算します。金額の端数は<strong>切り捨て</strong>で処理しています。セールやクーポンの計算にお使いください。</li>
+    </ul>
+    <p>パーセント計算と割合計算では、小数点以下が出る場合は<strong>小数第2位まで</strong>表示します。比率計算では入力が0のときも0 : 1のように扱い、割引後計算ではお店のレジ設定（四捨五入・切り上げなど）により実際の金額と数円異なる場合があります。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<script>
+  import { percentOf, valueFromPercent, ratio, discountedPrice } from '../../lib/wariai.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
+  const num = (n) => n.toLocaleString('ja-JP');
+
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      $('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  function show(box) { box.classList.add('visible'); }
+  function hide(box) { box.classList.remove('visible'); }
+
+  function renderPct() {
+    const box = $('pct-result');
+    const r = percentOf($('pct-a').value, $('pct-b').value);
+    if (r === null) return hide(box);
+    show(box);
+    $('pct-out').textContent = num(r) + '%';
+  }
+
+  function renderVal() {
+    const box = $('val-result');
+    const r = valueFromPercent($('val-a').value, $('val-pct').value);
+    if (r === null) return hide(box);
+    show(box);
+    $('val-out').textContent = num(r);
+  }
+
+  function renderRat() {
+    const box = $('rat-result');
+    const a = $('rat-a').value;
+    const b = $('rat-b').value;
+    const r = ratio(a, b);
+    if (r === null) return hide(box);
+    show(box);
+    $('rat-out').textContent = num(r.a) + ' : ' + num(r.b);
+    $('rat-orig').textContent = num(Number(a)) + ' : ' + num(Number(b));
+  }
+
+  function renderDisc() {
+    const box = $('disc-result');
+    const r = discountedPrice($('disc-price').value, $('disc-pct').value);
+    if (r === null) return hide(box);
+    show(box);
+    $('disc-final').textContent = yen(r.discounted);
+    $('disc-orig').textContent = yen(r.discounted + r.discount);
+    $('disc-save').textContent = '−' + yen(r.discount);
+  }
+
+  ['pct-a', 'pct-b'].forEach((id) => $(id).addEventListener('input', renderPct));
+  ['val-a', 'val-pct'].forEach((id) => $(id).addEventListener('input', renderVal));
+  ['rat-a', 'rat-b'].forEach((id) => $(id).addEventListener('input', renderRat));
+  ['disc-price', 'disc-pct'].forEach((id) => $(id).addEventListener('input', renderDisc));
+</script>

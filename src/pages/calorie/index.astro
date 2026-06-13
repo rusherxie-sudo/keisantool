@@ -1,0 +1,155 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'calorie';
+const title = 'カロリー・基礎代謝計算器 - TDEE・メンテナンスカロリー・PFCバランスを計算 | 計算ツール';
+const description =
+  '性別・年齢・身長・体重と活動レベルから、基礎代謝（BMR）と1日の総消費カロリー（TDEE）を計算。維持・減量・増量の目標別メンテナンスカロリーと、たんぱく質・脂質・炭水化物のPFCバランス（g）まで瞬時に算出する無料ツールです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'カロリー・基礎代謝計算器',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ カロリー計算</div>
+    <h1>カロリー・基礎代謝計算器</h1>
+    <p>基礎代謝（BMR）と1日の総消費カロリー（TDEE）、目標別メンテナンスカロリーとPFCバランスをまとめて計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label>性別</label>
+      <div class="radio-group">
+        <input type="radio" name="sex" id="sex-male" value="male" checked />
+        <label for="sex-male">男性</label>
+        <input type="radio" name="sex" id="sex-female" value="female" />
+        <label for="sex-female">女性</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="age">年齢（歳）</label>
+      <input type="number" id="age" inputmode="numeric" placeholder="例：30" />
+    </div>
+
+    <div class="form-group">
+      <label for="height">身長（cm）</label>
+      <input type="number" id="height" inputmode="decimal" placeholder="例：170" />
+    </div>
+
+    <div class="form-group">
+      <label for="weight">体重（kg）</label>
+      <input type="number" id="weight" inputmode="decimal" placeholder="例：65" />
+    </div>
+
+    <div class="form-group">
+      <label>活動レベル</label>
+      <div class="radio-group radio-group-wrap">
+        <input type="radio" name="activity" id="act-1" value="1.2" />
+        <label for="act-1">ほぼ運動なし</label>
+        <input type="radio" name="activity" id="act-2" value="1.375" checked />
+        <label for="act-2">軽い運動</label>
+        <input type="radio" name="activity" id="act-3" value="1.55" />
+        <label for="act-3">中程度</label>
+        <input type="radio" name="activity" id="act-4" value="1.725" />
+        <label for="act-4">激しい</label>
+        <input type="radio" name="activity" id="act-5" value="1.9" />
+        <label for="act-5">非常に激しい</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>目標</label>
+      <div class="radio-group">
+        <input type="radio" name="goal" id="goal-lose" value="lose" />
+        <label for="goal-lose">減量</label>
+        <input type="radio" name="goal" id="goal-maintain" value="maintain" checked />
+        <label for="goal-maintain">維持</label>
+        <input type="radio" name="goal" id="goal-gain" value="gain" />
+        <label for="goal-gain">増量</label>
+      </div>
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">1日の総消費カロリー（メンテナンスカロリー）</div>
+      <div class="result-main" id="tdee">0 kcal</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">基礎代謝（BMR）</span><span class="value" id="bmr">0 kcal</span></div>
+        <div class="result-row"><span class="label">目標カロリー</span><span class="value red" id="target">0 kcal</span></div>
+        <div class="result-row"><span class="label">たんぱく質（P）</span><span class="value green" id="pfc-p">0 g</span></div>
+        <div class="result-row"><span class="label">脂質（F）</span><span class="value green" id="pfc-f">0 g</span></div>
+        <div class="result-row"><span class="label">炭水化物（C）</span><span class="value green" id="pfc-c">0 g</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>性別を選び、年齢・身長・体重を入力すると、基礎代謝（BMR）と1日の総消費カロリー（TDEE）が自動で表示されます。活動レベルと目標を切り替えるだけで結果がその場で更新されるので、ボタンを押す必要はありません。</p>
+    <ul>
+      <li><strong>基礎代謝（BMR）</strong>：何もせずじっとしていても消費される、生命維持に必要な最低限のカロリーです。本ツールでは精度の高い「ハリス＝ベネディクト改定式」を用いて算出します。</li>
+      <li><strong>総消費カロリー（TDEE）</strong>：BMRに日々の活動量を掛け合わせた、1日に消費する総カロリーです。これがいわゆる<strong>メンテナンスカロリー</strong>（体重を維持できる摂取量の目安）になります。</li>
+      <li><strong>活動レベル</strong>：デスクワーク中心なら「ほぼ運動なし（×1.2）」、週数回の運動なら「中程度（×1.55）」など、生活スタイルに近いものを選びます。</li>
+      <li><strong>目標カロリー</strong>：減量なら維持カロリーから−500kcal、増量なら+500kcalが目安です。1日500kcalの差は1か月で体重約2kgの増減に相当します。</li>
+      <li><strong>PFCバランス</strong>：目標カロリーをたんぱく質（P）・脂質（F）・炭水化物（C）に振り分けたグラム数です。たんぱく質は体重1kgあたり2g、脂質は総カロリーの25%、残りを炭水化物として計算しています。</li>
+    </ul>
+    <p>計算結果のカロリーは小数点以下を四捨五入して表示しています。基礎代謝や消費カロリーは体組成・筋肉量・生活習慣によって個人差があり、本ツールの数値はあくまで一般的な目安です。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。減量・増量や食事管理を行う際は、体調を考慮し、必要に応じて医師・管理栄養士などの専門家にご相談ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+  .radio-group-wrap { flex-wrap: wrap; }
+  .radio-group-wrap label { flex: 1 1 28%; }
+</style>
+
+<script>
+  import { calcAll } from '../../lib/calorie.js';
+
+  const kcal = (n) => Math.round(n).toLocaleString('ja-JP') + ' kcal';
+  const gram = (n) => Math.round(n).toLocaleString('ja-JP') + ' g';
+  const $ = (id) => document.getElementById(id);
+
+  const picked = (name) => {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : '';
+  };
+
+  function render() {
+    const sex = picked('sex');
+    const age = $('age').value;
+    const height = $('height').value;
+    const weight = $('weight').value;
+    const activity = parseFloat(picked('activity'));
+    const goal = picked('goal');
+
+    const r = calcAll({ sex, age, height, weight, activity, goal });
+    const box = $('result');
+    if (r.tdee <= 0) return box.classList.remove('visible');
+    box.classList.add('visible');
+    $('tdee').textContent = kcal(r.tdee);
+    $('bmr').textContent = kcal(r.bmr);
+    $('target').textContent = kcal(r.target);
+    $('pfc-p').textContent = gram(r.pfc.p);
+    $('pfc-f').textContent = gram(r.pfc.f);
+    $('pfc-c').textContent = gram(r.pfc.c);
+  }
+
+  ['age', 'height', 'weight'].forEach((id) => $(id).addEventListener('input', render));
+  ['sex', 'activity', 'goal'].forEach((name) =>
+    document.querySelectorAll(`input[name="${name}"]`).forEach((el) => el.addEventListener('change', render))
+  );
+</script>

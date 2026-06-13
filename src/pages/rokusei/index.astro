@@ -1,0 +1,141 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'rokusei';
+const title =
+  '六星占術・大殺界計算器 - 生年月日から自動で星・大殺界を計算 | 計算ツール';
+const description =
+  '六星占術の運命星（土星人・金星人・火星人・天王星人・木星人・水星人）と陽陰、今年の運勢ゾーン（大殺界・小殺界・好調期）を生年月日から自動計算。向こう3年の運勢の目安も無料で診断できる占いツールです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '六星占術・大殺界計算器',
+  description,
+  applicationCategory: 'LifestyleApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 六星占術</div>
+    <h1>六星占術・大殺界計算器</h1>
+    <p>生年月日を入力するだけで、運命星（6星）と陽陰、今年の運勢ゾーン（大殺界など）を自動で判定します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-panel active">
+      <div class="form-group">
+        <label for="rk-date">生年月日</label>
+        <input type="date" id="rk-date" min="1900-01-01" max="2099-12-31" />
+      </div>
+
+      <div class="result-box" id="rk-result">
+        <div class="result-label">あなたの運命星</div>
+        <div class="result-main" id="rk-type">―</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">運命星</span><span class="value" id="rk-star">―</span></div>
+          <div class="result-row"><span class="label">陽陰</span><span class="value" id="rk-pol">―</span></div>
+          <div class="result-row"><span class="label">生まれた日の干支</span><span class="value" id="rk-kanshi">―</span></div>
+          <div class="result-row"><span class="label" id="rk-year-label">今年（―年）の運勢</span><span class="value" id="rk-zone">―</span></div>
+        </div>
+        <div class="rk-note" id="rk-zone-desc"></div>
+
+        <div class="rk-forecast">
+          <div class="result-label">向こう3年間の運勢の目安</div>
+          <div class="rk-forecast-rows" id="rk-forecast"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>六星占術とは・使い方</h2>
+    <p>
+      六星占術は、占術研究家の細木数子氏が考案し、現在は細木かおり氏に受け継がれている運命学です。生年月日をもとに、土星人・金星人・火星人・天王星人・木星人・水星人という6つの「運命星」と、生まれ年の干支による陽（プラス）／陰（マイナス）を組み合わせた12タイプで運命の流れを読み解きます。
+    </p>
+    <p>
+      上の欄に生年月日を入力すると、ボタンを押さずに自動で運命星と陽陰を判定し、今年の運勢ゾーン（種子・緑生・立花・健弱・達成・乱気・再会・財成・安定・陰影・停止・減退）と、向こう3年間の目安を表示します。
+    </p>
+    <ul>
+      <li><strong>大殺界</strong>：陰影・停止・減退の3年間。大きな決断や新しい挑戦を控え、慎重に過ごすとよいとされる時期です。</li>
+      <li><strong>小殺界（健弱）・中殺界（乱気）</strong>：体調や気持ちが乱れやすいとされる年です。</li>
+      <li><strong>好調期</strong>：上記以外の年。特に種子〜立花、達成、安定などは運気が伸びやすいとされます。</li>
+    </ul>
+    <p>
+      本ツールの運命星は「生まれた日の干支から空亡を求める」方式で算出しています。運勢ゾーンは生まれ年の干支と運命星から12年周期で判定します。算法の出典は<a href="https://www.senjutsu.jp/labo_6sei" rel="nofollow noopener" target="_blank">大久保占い研究室</a>、<a href="https://daisakkai.net/nenun" rel="nofollow noopener" target="_blank">大殺界早見表</a>などを参照しています。書籍や提供元により計算法に細部の差異がある場合があります。
+    </p>
+    <div class="disclaimer">
+      ※ 六星占術は娯楽・参考を目的とした占いであり、科学的根拠はありません。表示される結果はあくまで目安です。健康・お金・人生の重要な判断は、結果に頼らずご自身の責任でお決めください。
+    </div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+  .rk-note { font-size: .8rem; color: var(--text-muted); margin-top: 12px; line-height: 1.7; }
+  .rk-forecast { margin-top: 16px; padding-top: 14px; border-top: 1px solid #dbeafe; }
+  .rk-forecast .result-label { margin-bottom: 8px; }
+  .rk-forecast-rows { display: flex; flex-direction: column; gap: 6px; }
+  .rk-fc-row { display: flex; justify-content: space-between; align-items: baseline; font-size: .88rem; }
+  .rk-fc-row .y { color: var(--text-muted); font-family: var(--font-mono); }
+  .rk-fc-row .z { font-weight: 600; color: var(--navy); }
+  .rk-badge { display: inline-block; font-size: .72rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; margin-left: 6px; }
+  .rk-badge.daisakkai { background: var(--red-light); color: var(--red); }
+  .rk-badge.chusakkai { background: #fef3c7; color: #b45309; }
+  .rk-badge.shosakkai { background: #fef3c7; color: #b45309; }
+  .rk-badge.kouchou { background: var(--navy-light); color: var(--navy); }
+  .result-main.daisakkai { color: var(--red); }
+</style>
+
+<script>
+  import { rokusei, fortuneZone, forecast } from '../../lib/rokusei.js';
+
+  const $ = (id) => document.getElementById(id);
+  const CAT_CLASS = { 大殺界: 'daisakkai', 中殺界: 'chusakkai', 小殺界: 'shosakkai', 好調: 'kouchou' };
+
+  function badge(category) {
+    return `<span class="rk-badge ${CAT_CLASS[category] || 'kouchou'}">${category}</span>`;
+  }
+
+  function render() {
+    const v = $('rk-date').value;
+    const box = $('rk-result');
+    if (!v) return box.classList.remove('visible');
+    const [y, m, d] = v.split('-').map(Number);
+    const r = rokusei(y, m, d);
+    if (!r) return box.classList.remove('visible');
+    box.classList.add('visible');
+
+    $('rk-type').textContent = r.type;
+    $('rk-star').textContent = r.star;
+    $('rk-pol').textContent = r.polarity + '（' + r.yearBranch + '年）';
+    $('rk-kanshi').textContent = r.kanshi + '（空亡：' + r.kuubou + '）';
+
+    const thisYear = new Date().getFullYear();
+    const z = fortuneZone(r.type, thisYear);
+    $('rk-year-label').textContent = `今年（${thisYear}年）の運勢`;
+    $('rk-zone').innerHTML = z.zone + badge(z.category);
+    $('rk-zone-desc').textContent = z.desc;
+
+    const isDai = z.category === '大殺界';
+    $('rk-type').classList.toggle('daisakkai', isDai);
+
+    const fc = forecast(r.type, thisYear, 3);
+    $('rk-forecast').innerHTML = fc
+      .map(
+        (f) =>
+          `<div class="rk-fc-row"><span class="y">${f.year}年</span><span class="z">${f.zone}${badge(f.category)}</span></div>`
+      )
+      .join('');
+  }
+
+  $('rk-date').addEventListener('input', render);
+  $('rk-date').addEventListener('change', render);
+</script>

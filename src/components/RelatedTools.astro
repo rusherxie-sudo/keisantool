@@ -1,0 +1,15 @@
+---
+import { getRelated } from '../data/tools.js';
+const { current } = Astro.props;
+const related = getRelated(current, 4);
+---
+<section class="related">
+  <h3>関連ツール</h3>
+  <div class="related-grid">
+    {related.map((t) => (
+      <a href={`/${t.slug}/`} class="related-link">
+        <span class="ic" aria-hidden="true">{t.icon}</span>{t.name}
+      </a>
+    ))}
+  </div>
+</section>

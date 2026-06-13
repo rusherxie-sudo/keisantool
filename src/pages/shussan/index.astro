@@ -1,0 +1,117 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'shussan';
+const title = '出産予定日計算器 - 最終月経日から出産予定日・妊娠週数を自動計算 | 計算ツール';
+const description =
+  '最終月経開始日（LMP）を入力するだけで、出産予定日計算と妊娠週数計算を自動で行う無料ツール。ネーゲレ概算（LMP＋280日）で予定日を求め、現在の妊娠週数・日数や妊娠時期（初期・中期・後期）、産休の目安も表示します。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '出産予定日計算器',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 出産予定日計算</div>
+    <h1>出産予定日計算器</h1>
+    <p>最終月経開始日（LMP）を入力するだけで、出産予定日・現在の妊娠週数・産休の目安を自動で計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="lmp">最終月経開始日（LMP）</label>
+      <input type="date" id="lmp" />
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">出産予定日（ネーゲレ概算）</div>
+      <div class="result-main" id="due-date">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">現在の妊娠週数</span><span class="value" id="weeks">―</span></div>
+        <div class="result-row"><span class="label">妊娠時期</span><span class="value" id="stage">―</span></div>
+        <div class="result-row"><span class="label">産休開始の目安（産前6週）</span><span class="value" id="leave-start">―</span></div>
+        <div class="result-row"><span class="label">産休終了の目安（産後8週）</span><span class="value" id="leave-end">―</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>
+      最終月経開始日（LMP：last menstrual period）を選ぶだけで、出産予定日・妊娠週数・産休の目安をその場で自動計算します。ボタンを押す必要はありません。
+    </p>
+    <p>
+      出産予定日は「<strong>ネーゲレ概算法</strong>」で求めています。これは月経周期を28日と仮定し、最終月経開始日に280日（40週）を加えて予定日とする一般的な方法です。妊娠週数は、最終月経開始日を「妊娠0週0日」として基準日（本日）までの経過日数から算出し、経過日数を7で割った商を週数、余りを日数として「妊娠12週3日」のように表示します。
+    </p>
+    <ul>
+      <li><strong>妊娠初期</strong>：妊娠15週まで</li>
+      <li><strong>妊娠中期</strong>：妊娠16週〜27週</li>
+      <li><strong>妊娠後期</strong>：妊娠28週以降</li>
+    </ul>
+    <p>
+      産休（産前産後休業）の目安は、出産予定日の42日前（産前6週）を産休開始日、出産日の56日後（産後8週）を産休終了日として表示しています。出産日が予定日と前後すれば、産後休業の終了日も実際の出産日に応じて変わります。
+    </p>
+    <p>
+      なお、月経周期には個人差があり、排卵日や受精日のずれによって実際の出産日は予定日と前後します。本ツールの結果は<strong>あくまで目安</strong>であり、正確な妊娠週数や予定日は妊婦健診での超音波検査（エコー）による計測をもとに、必ず医師の判断にしたがってください。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで目安です。正確な出産予定日・妊娠週数は、必ず産婦人科の医師にご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<script>
+  import { dueDate, pregnancyWeeks, pregnancyStage, maternityLeave } from '../../lib/shussan.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  // ISO（YYYY-MM-DD）→ 「〇年〇月〇日」
+  const fmtJP = (iso) => {
+    const [y, m, d] = iso.split('-');
+    return `${Number(y)}年${Number(m)}月${Number(d)}日`;
+  };
+
+  function render() {
+    const lmp = $('lmp').value;
+    const box = $('result');
+
+    const due = dueDate(lmp);
+    if (!due) {
+      box.classList.remove('visible');
+      return;
+    }
+    box.classList.add('visible');
+    $('due-date').textContent = fmtJP(due);
+
+    const today = new Date();
+    const pw = pregnancyWeeks(lmp, today);
+    if (pw) {
+      $('weeks').textContent = `妊娠${pw.weeks}週${pw.days}日`;
+      const stage = pregnancyStage(pw.weeks);
+      $('stage').textContent = stage ? `${stage}` : '―';
+    } else {
+      // 未来の LMP（基準日より後）など
+      $('weeks').textContent = '―';
+      $('stage').textContent = '―';
+    }
+
+    const ml = maternityLeave(due);
+    if (ml) {
+      $('leave-start').textContent = fmtJP(ml.leaveStart);
+      $('leave-end').textContent = fmtJP(ml.leaveEnd);
+    }
+  }
+
+  $('lmp').addEventListener('input', render);
+  $('lmp').addEventListener('change', render);
+</script>

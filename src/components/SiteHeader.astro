@@ -1,0 +1,14 @@
+---
+import { tools } from '../data/tools.js';
+const { current } = Astro.props;
+---
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="site-logo">計算<span>ツール</span></a>
+    <nav class="site-nav" aria-label="ツール一覧">
+      {tools.map((t) => (
+        <a href={`/${t.slug}/`} aria-current={current === t.slug ? 'page' : undefined}>{t.nav}</a>
+      ))}
+    </nav>
+  </div>
+</header>

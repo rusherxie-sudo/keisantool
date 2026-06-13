@@ -1,0 +1,175 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'kyuyo';
+const title = '時給・残業代計算器 - 給与・手取り額を簡単に計算 | 計算ツール';
+const description =
+  '時給計算・残業代計算・手取り額の概算をその場で行える無料ツール。時給と労働時間から給与を、残業時間と割増率（通常1.25・深夜1.5・休日1.35）から残業代を計算し、月収から手取りの目安まで簡単に確認できます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '時給・残業代計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 給与計算</div>
+    <h1>時給・残業代計算器</h1>
+    <p>時給・残業代・手取り額を、入力するだけで瞬時に計算します。割増率（通常・深夜・休日）にも対応。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist">
+      <button class="calc-tab active" data-tab="wage" type="button">時給計算</button>
+      <button class="calc-tab" data-tab="ot" type="button">残業代計算</button>
+      <button class="calc-tab" data-tab="net" type="button">手取り概算</button>
+    </div>
+
+    <div class="calc-panel active" id="panel-wage">
+      <div class="form-group">
+        <label for="wage-rate">時給（円）</label>
+        <input type="number" id="wage-rate" inputmode="numeric" placeholder="例：1100" />
+      </div>
+      <div class="form-group">
+        <label for="wage-hours">労働時間（時間）</label>
+        <input type="number" id="wage-hours" inputmode="decimal" placeholder="例：8" />
+      </div>
+      <div class="result-box" id="wage-result">
+        <div class="result-label">給与（額面）</div>
+        <div class="result-main" id="wage-pay">¥0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">時給</span><span class="value" id="wage-disp-rate">¥0</span></div>
+          <div class="result-row"><span class="label">労働時間</span><span class="value" id="wage-disp-hours">0 時間</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-ot">
+      <div class="form-group">
+        <label for="ot-rate">時給（円）</label>
+        <input type="number" id="ot-rate" inputmode="numeric" placeholder="例：1100" />
+      </div>
+      <div class="form-group">
+        <label for="ot-hours">残業時間（時間）</label>
+        <input type="number" id="ot-hours" inputmode="decimal" placeholder="例：10" />
+      </div>
+      <div class="radio-group">
+        <input type="radio" name="ot-mult" id="ot-125" value="1.25" checked />
+        <label for="ot-125">通常 1.25</label>
+        <input type="radio" name="ot-mult" id="ot-15" value="1.5" />
+        <label for="ot-15">深夜 1.5</label>
+        <input type="radio" name="ot-mult" id="ot-135" value="1.35" />
+        <label for="ot-135">休日 1.35</label>
+      </div>
+      <div class="result-box" id="ot-result">
+        <div class="result-label">残業代</div>
+        <div class="result-main" id="ot-pay">¥0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">割増前（時給×残業時間）</span><span class="value" id="ot-base">¥0</span></div>
+          <div class="result-row"><span class="label">割増分</span><span class="value red" id="ot-extra">¥0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-net">
+      <div class="form-group">
+        <label for="net-income">月収（額面・円）</label>
+        <input type="number" id="net-income" inputmode="numeric" placeholder="例：300000" />
+      </div>
+      <div class="result-box" id="net-result">
+        <div class="result-label">手取り額（概算）</div>
+        <div class="result-main" id="net-take">¥0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">月収（額面）</span><span class="value" id="net-gross">¥0</span></div>
+          <div class="result-row"><span class="label">控除合計（概算 約22%）</span><span class="value red" id="net-ded">¥0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>上のタブから計算したい種類を選び、金額を入力すると自動で結果が表示されます。ボタンを押す必要はありません。</p>
+    <ul>
+      <li><strong>時給計算</strong>：時給と労働時間を入力すると、給与（額面）を算出します。</li>
+      <li><strong>残業代計算</strong>：時給・残業時間と割増率を選ぶと、残業代を計算します。基本給しか分からない場合は「基本給 ÷ 月平均所定労働時間」で求めた1時間あたりの単価を時給欄に入力してください。割増率は通常残業1.25倍、深夜（22時〜5時）1.5倍、休日1.35倍を選択できます。</li>
+      <li><strong>手取り概算</strong>：月収（額面）から、おおよその手取り額の目安を表示します。</li>
+    </ul>
+    <p>
+      <strong>手取り概算について：</strong>本ツールの手取り計算は、社会保険料（健康保険・厚生年金・雇用保険）の約15%に、所得税・住民税の概算を加え、控除合計を月収のおよそ22%とみなした<strong>非常に粗い概算</strong>です（手取り＝月収×0.78で計算）。実際の控除額は、年齢・扶養家族の有無・お住まいの自治体・各種保険料率・賞与の有無などによって大きく変わります。正確な手取り額は給与明細や勤務先の経理担当にご確認ください。なお、金額の端数（小数点以下）は<strong>切り捨て</strong>で計算しています。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。特に手取り額は概算であり、実際の支給額とは異なります。正確な金額は勤務先・給与明細にてご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<script>
+  import { hourlyWage, overtimePay, takeHomePay } from '../../lib/kyuyo.js';
+
+  const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
+  const $ = (id) => document.getElementById(id);
+
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      $('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  const mult = () =>
+    parseFloat(document.querySelector('input[name="ot-mult"]:checked').value);
+
+  function renderWage() {
+    const rate = $('wage-rate').value;
+    const hours = $('wage-hours').value;
+    const { pay } = hourlyWage(rate, hours);
+    const box = $('wage-result');
+    if (pay <= 0) return box.classList.remove('visible');
+    box.classList.add('visible');
+    $('wage-pay').textContent = yen(pay);
+    $('wage-disp-rate').textContent = yen(Number(rate));
+    $('wage-disp-hours').textContent = Number(hours).toLocaleString('ja-JP') + ' 時間';
+  }
+
+  function renderOt() {
+    const rate = $('ot-rate').value;
+    const hours = $('ot-hours').value;
+    const m = mult();
+    const { pay } = overtimePay(rate, hours, m);
+    const box = $('ot-result');
+    if (pay <= 0) return box.classList.remove('visible');
+    box.classList.add('visible');
+    const base = Math.floor(Number(rate) * Number(hours));
+    $('ot-pay').textContent = yen(pay);
+    $('ot-base').textContent = yen(base);
+    $('ot-extra').textContent = yen(pay - base);
+  }
+
+  function renderNet() {
+    const income = $('net-income').value;
+    const { takeHome, deduction } = takeHomePay(income);
+    const box = $('net-result');
+    if (takeHome <= 0) return box.classList.remove('visible');
+    box.classList.add('visible');
+    $('net-take').textContent = yen(takeHome);
+    $('net-gross').textContent = yen(Number(income));
+    $('net-ded').textContent = yen(deduction);
+  }
+
+  ['wage-rate', 'wage-hours'].forEach((id) => $(id).addEventListener('input', renderWage));
+  ['ot-rate', 'ot-hours'].forEach((id) => $(id).addEventListener('input', renderOt));
+  document.querySelectorAll('input[name="ot-mult"]').forEach((r) => r.addEventListener('change', renderOt));
+  ['net-income'].forEach((id) => $(id).addEventListener('input', renderNet));
+</script>

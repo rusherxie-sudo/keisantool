@@ -1,0 +1,128 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'hensachi';
+const title = '偏差値計算器 - 得点・平均・標準偏差から偏差値を計算 | 計算ツール';
+const description =
+  '得点・平均点・標準偏差を入力するだけで偏差値計算ができる無料ツール。テストや模試の偏差値をその場で算出し、偏差値から全国順位（上位パーセント・概算順位）も正規分布で目安を求められます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '偏差値計算器',
+  description,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 偏差値計算</div>
+    <h1>偏差値計算器</h1>
+    <p>得点・平均点・標準偏差を入力するだけで偏差値を瞬時に計算。偏差値から全国順位の目安も求められます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist">
+      <button class="calc-tab active" data-tab="dev" type="button">偏差値計算</button>
+      <button class="calc-tab" data-tab="rank" type="button">偏差値→順位</button>
+    </div>
+
+    <div class="calc-panel active" id="panel-dev">
+      <div class="form-group">
+        <label for="dev-score">あなたの得点</label>
+        <input type="number" id="dev-score" inputmode="decimal" placeholder="例：75" />
+      </div>
+      <div class="form-group">
+        <label for="dev-mean">平均点</label>
+        <input type="number" id="dev-mean" inputmode="decimal" placeholder="例：60" />
+      </div>
+      <div class="form-group">
+        <label for="dev-sd">標準偏差</label>
+        <input type="number" id="dev-sd" inputmode="decimal" placeholder="例：10" />
+      </div>
+      <div class="result-box" id="dev-result">
+        <div class="result-label">あなたの偏差値</div>
+        <div class="result-main" id="dev-value">0.0</div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-rank">
+      <div class="form-group">
+        <label for="rank-dev">偏差値</label>
+        <input type="number" id="rank-dev" inputmode="decimal" placeholder="例：60" />
+      </div>
+      <div class="form-group">
+        <label for="rank-total">受験者数（任意）</label>
+        <input type="number" id="rank-total" inputmode="numeric" placeholder="例：10000" />
+      </div>
+      <div class="result-box" id="rank-result">
+        <div class="result-label">上位パーセント</div>
+        <div class="result-main" id="rank-percent">0%</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">概算順位</span><span class="value" id="rank-position">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>上のタブから計算したい種類を選び、数値を入力すると自動で結果が表示されます。ボタンを押す必要はありません。</p>
+    <ul>
+      <li><strong>偏差値計算</strong>：自分の得点・テスト全体の平均点・標準偏差を入力すると、偏差値を計算します。</li>
+      <li><strong>偏差値→順位</strong>：偏差値から全国での上位パーセントを求め、受験者数を入力すれば概算順位の目安も表示します。</li>
+    </ul>
+    <p>
+      <strong>偏差値とは</strong>、テストの得点が集団の中でどの位置にあるかを表す数値です。平均点をちょうど取ると偏差値は50になり、平均より高ければ50超、低ければ50未満となります。計算式は「偏差値 ＝ （得点 − 平均点）÷ 標準偏差 × 10 ＋ 50」です。標準偏差は得点のばらつきの大きさを示す値で、ばらつきが大きいほど同じ得点差でも偏差値の動きは小さくなります。標準偏差が分からない場合は、模試の成績表などに記載されている値を使ってください。
+    </p>
+    <p>
+      <strong>順位の概算について</strong>：得点が正規分布（左右対称の釣鐘型の分布）に従うと仮定すると、偏差値から「上位何パーセントか」を見積もることができます。目安として偏差値50は上位50%、偏差値60は上位およそ15.9%、偏差値70は上位およそ2.3%にあたります。受験者数を入力すると「上位パーセント × 受験者数」から概算の順位を切り上げで算出します。実際の試験の得点分布は完全な正規分布にはならないため、表示される順位はあくまで目安としてご利用ください。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。順位は正規分布を仮定した概算であり、実際の試験結果とは異なる場合があります。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<script>
+  import { hensachi, topPercent, estimateRank } from '../../lib/hensachi.js';
+
+  const $ = (id) => document.getElementById(id);
+  const jp = (n) => n.toLocaleString('ja-JP');
+
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      $('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  function renderDev() {
+    const value = hensachi($('dev-score').value, $('dev-mean').value, $('dev-sd').value);
+    const box = $('dev-result');
+    if (value === null) return box.classList.remove('visible');
+    box.classList.add('visible');
+    $('dev-value').textContent = value.toFixed(1);
+  }
+
+  function renderRank() {
+    const pct = topPercent($('rank-dev').value);
+    const box = $('rank-result');
+    if (pct === null) return box.classList.remove('visible');
+    box.classList.add('visible');
+    $('rank-percent').textContent = '上位 ' + pct.toFixed(2) + '%';
+    const rank = estimateRank($('rank-dev').value, $('rank-total').value);
+    $('rank-position').textContent = rank === null ? '受験者数を入力' : jp(rank) + ' 位';
+  }
+
+  ['dev-score', 'dev-mean', 'dev-sd'].forEach((id) => $(id).addEventListener('input', renderDev));
+  ['rank-dev', 'rank-total'].forEach((id) => $(id).addEventListener('input', renderRank));
+</script>

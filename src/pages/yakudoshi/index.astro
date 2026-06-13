@@ -1,0 +1,182 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'yakudoshi';
+const title =
+  '厄年チェッカー - 生年月日から厄年（前厄・本厄・後厄）を自動計算 | 計算ツール';
+const description =
+  '生まれた年（西暦）と性別を入力するだけで、今年が厄年（前厄・本厄・後厄）かどうかを自動判定。男性・女性それぞれの厄年（数え年）と大厄、次の厄年まであと何年かもひと目でわかる無料の厄年チェッカーです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '厄年チェッカー',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 厄年チェッカー</div>
+    <h1>厄年チェッカー</h1>
+    <p>生まれた年（西暦）と性別を選ぶだけで、今年が前厄・本厄・後厄のどれに当たるかを自動で判定します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-panel active">
+      <div class="form-group">
+        <label for="birth-year">生まれた年（西暦）</label>
+        <input type="number" id="birth-year" inputmode="numeric" placeholder="例：1985" />
+      </div>
+      <div class="radio-group">
+        <input type="radio" name="gender" id="g-male" value="male" checked />
+        <label for="g-male">男性</label>
+        <input type="radio" name="gender" id="g-female" value="female" />
+        <label for="g-female">女性</label>
+      </div>
+
+      <div class="result-box" id="result">
+        <div class="result-label" id="kazoe-label">数え年</div>
+        <div class="result-main" id="judge-main">該当なし</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">数え年</span><span class="value" id="kazoe-val">―</span></div>
+          <div class="result-row"><span class="label">本厄（数え年）</span><span class="value" id="honyaku-val">―</span></div>
+          <div class="result-row"><span class="label">次の前厄まで</span><span class="value" id="next-val">―</span></div>
+        </div>
+      </div>
+
+      <div class="yaku-list" id="yaku-list" hidden>
+        <div class="yaku-list-title" id="yaku-list-title">厄年一覧（数え年）</div>
+        <div class="yaku-rows" id="yaku-rows"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>厄年チェッカーの使い方と厄年の基礎知識</h2>
+    <p>
+      生まれた年（西暦）を入力し、性別を選ぶと、今年が<strong>前厄・本厄・後厄</strong>のどれに当たるかを自動で判定します。ボタンを押す必要はなく、入力するとすぐに結果が表示されます。和暦しかわからない場合は、昭和は「年＋1925」、平成は「年＋1988」、令和は「年＋2018」で西暦に換算してから入力してください（例：昭和60年＝1985年）。
+    </p>
+    <p>
+      <strong>厄年とは</strong>、人生のなかで災いが起こりやすいとされる年齢のことで、平安時代から伝わる風習です。厄年は満年齢ではなく<strong>数え年</strong>で数えます。数え年は「生まれた時を1歳とし、元旦（正月）を迎えるごとに1歳加える」数え方で、本ツールでは簡易的に「今年 − 生まれた年 ＋ 1」で計算しています（誕生日前の方は実際の数え年と1歳ずれる場合があります）。
+    </p>
+    <p>
+      <strong>男女で厄年は異なります。</strong>男性の厄年（本厄・数え年）は<strong>25歳・42歳・61歳</strong>で、特に42歳は「死に」に通じるとされる<strong>大厄</strong>です。女性の厄年（本厄・数え年）は<strong>19歳・33歳・37歳・61歳</strong>で、33歳は「散々」に通じる<strong>大厄</strong>とされます。それぞれ本厄の前年が<strong>前厄</strong>、翌年が<strong>後厄</strong>で、合わせて3年間が厄年の期間です。
+    </p>
+    <p>
+      <strong>厄年の過ごし方</strong>として、多くの人は年の初めに神社やお寺で厄払い・厄除けの祈祷を受けます。新しいことを始めるのを控える、健康に気をつける、無理をしないといった心構えで過ごすとよいとされます。とはいえ厄年はあくまで風習であり、過度に恐れる必要はありません。体調や生活を見直すきっかけとして前向きにとらえましょう。
+    </p>
+    <div class="disclaimer">※ 厄年の数え方や該当年齢は地域・神社・宗派によって異なる場合があります。本ツールの判定は一般的な数え年に基づく参考値です。正式な厄年や厄払いについては、お近くの神社・お寺にご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+  .yaku-list{max-width:480px;margin:16px auto 0}
+  .yaku-list-title{font-size:.78rem;color:var(--text-muted);font-weight:600;margin-bottom:8px}
+  .yaku-rows{display:flex;flex-direction:column;gap:6px}
+  .yaku-item{display:flex;justify-content:space-between;align-items:baseline;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:.84rem;background:var(--bg)}
+  .yaku-item .ages{font-family:var(--font-mono);font-weight:600;color:var(--navy)}
+  .yaku-item .tag{font-size:.7rem;color:var(--red);font-weight:700}
+  .judge-honyaku{color:var(--red)!important}
+  .judge-maeyaku,.judge-atoyaku{color:var(--navy)!important}
+  .judge-none{color:var(--text-muted)!important}
+  .taiyaku-badge{display:inline-block;margin-left:8px;font-size:.55em;vertical-align:middle;background:var(--red);color:#fff;padding:2px 8px;border-radius:999px;font-family:var(--font-jp);font-weight:700}
+</style>
+
+<script>
+  import { checkYakudoshi, yakudoshiList, nextYaku } from '../../lib/yakudoshi.js';
+
+  const $ = (id) => document.getElementById(id);
+  const CURRENT_YEAR = new Date().getFullYear();
+
+  const STATUS_LABEL = {
+    maeyaku: '前厄',
+    honyaku: '本厄',
+    atoyaku: '後厄',
+    none: '該当なし',
+  };
+
+  function gender() {
+    return document.querySelector('input[name="gender"]:checked').value;
+  }
+
+  function render() {
+    const raw = $('birth-year').value;
+    const box = $('result');
+    const listWrap = $('yaku-list');
+    const year = Number(raw);
+
+    if (!raw || !Number.isFinite(year) || year < 1900 || year > CURRENT_YEAR) {
+      box.classList.remove('visible');
+      listWrap.hidden = true;
+      return;
+    }
+
+    const g = gender();
+    const r = checkYakudoshi(year, g, CURRENT_YEAR);
+
+    box.classList.add('visible');
+
+    // メイン判定
+    const main = $('judge-main');
+    const label = STATUS_LABEL[r.status] || '該当なし';
+    main.className = 'result-main judge-' + r.status;
+    if (r.status === 'none') {
+      main.innerHTML = '今年は厄年ではありません';
+    } else {
+      const badge =
+        r.status === 'honyaku' && r.taiyaku
+          ? '<span class="taiyaku-badge">大厄</span>'
+          : '';
+      main.innerHTML = '今年は<strong>' + label + '</strong>です' + badge;
+    }
+
+    $('kazoe-val').textContent = r.kazoe + '歳';
+    $('honyaku-val').textContent = r.honyaku ? r.honyaku + '歳' : '―';
+
+    const nx = nextYaku(year, g, CURRENT_YEAR);
+    if (nx) {
+      $('next-val').textContent =
+        nx.yearsToMaeyaku === 0
+          ? '今年（前厄）'
+          : 'あと' + nx.yearsToMaeyaku + '年（' + nx.nextMaeyakuAge + '歳の前厄）';
+    } else {
+      $('next-val').textContent = 'すべての厄年を経過';
+    }
+
+    // 厄年一覧
+    const list = yakudoshiList(g);
+    $('yaku-rows').innerHTML = list
+      .map((y) => {
+        const tag = y.taiyaku ? '<span class="tag">大厄</span>' : '';
+        return (
+          '<div class="yaku-item"><span>前厄 ' +
+          y.maeyaku +
+          '・本厄 ' +
+          y.honyaku +
+          '・後厄 ' +
+          y.atoyaku +
+          '</span><span class="ages">' +
+          tag +
+          '</span></div>'
+        );
+      })
+      .join('');
+    $('yaku-list-title').textContent =
+      (g === 'female' ? '女性' : '男性') + 'の厄年一覧（数え年）';
+    listWrap.hidden = false;
+  }
+
+  $('birth-year').addEventListener('input', render);
+  document
+    .querySelectorAll('input[name="gender"]')
+    .forEach((r) => r.addEventListener('change', render));
+</script>

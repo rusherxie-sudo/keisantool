@@ -1,0 +1,170 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'zeizei';
+const title = '消費税・割引計算器 - 税込・税抜・割引後の価格を瞬時に計算 | 計算ツール';
+const description =
+  '税抜・税込・割引後の価格をその場で計算。消費税10%・軽減税率8%に対応し、税込計算・税抜の逆算・割引計算（節約額）をまとめて行える無料ツールです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '消費税・割引計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 消費税・割引計算器</div>
+    <h1>消費税・割引計算器</h1>
+    <p>税抜・税込・割引後の価格を、入力するだけで瞬時に計算します。軽減税率（8%）にも対応。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist">
+      <button class="calc-tab active" data-tab="incl" type="button">税込計算</button>
+      <button class="calc-tab" data-tab="excl" type="button">税抜計算</button>
+      <button class="calc-tab" data-tab="disc" type="button">割引計算</button>
+    </div>
+
+    <div class="calc-panel active" id="panel-incl">
+      <div class="form-group">
+        <label for="incl-amount">税抜価格（円）</label>
+        <input type="number" id="incl-amount" inputmode="numeric" placeholder="例：1000" />
+      </div>
+      <div class="radio-group">
+        <input type="radio" name="incl-rate" id="incl-10" value="0.1" checked />
+        <label for="incl-10">10%（標準）</label>
+        <input type="radio" name="incl-rate" id="incl-8" value="0.08" />
+        <label for="incl-8">8%（軽減）</label>
+      </div>
+      <div class="result-box" id="incl-result">
+        <div class="result-label">税込価格</div>
+        <div class="result-main" id="incl-total">¥0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">税抜価格</span><span class="value" id="incl-net">¥0</span></div>
+          <div class="result-row"><span class="label">消費税額</span><span class="value red" id="incl-tax">¥0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-excl">
+      <div class="form-group">
+        <label for="excl-amount">税込価格（円）</label>
+        <input type="number" id="excl-amount" inputmode="numeric" placeholder="例：1100" />
+      </div>
+      <div class="radio-group">
+        <input type="radio" name="excl-rate" id="excl-10" value="0.1" checked />
+        <label for="excl-10">10%（標準）</label>
+        <input type="radio" name="excl-rate" id="excl-8" value="0.08" />
+        <label for="excl-8">8%（軽減）</label>
+      </div>
+      <div class="result-box" id="excl-result">
+        <div class="result-label">税抜価格</div>
+        <div class="result-main" id="excl-net">¥0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">税込価格</span><span class="value" id="excl-total">¥0</span></div>
+          <div class="result-row"><span class="label">うち消費税</span><span class="value red" id="excl-tax">¥0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-disc">
+      <div class="form-group">
+        <label for="disc-price">定価（円）</label>
+        <input type="number" id="disc-price" inputmode="numeric" placeholder="例：5000" />
+      </div>
+      <div class="form-group">
+        <label for="disc-pct">割引率（%）</label>
+        <input type="number" id="disc-pct" inputmode="numeric" placeholder="例：30" />
+      </div>
+      <div class="result-box" id="disc-result">
+        <div class="result-label">割引後価格</div>
+        <div class="result-main" id="disc-final">¥0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">定価</span><span class="value" id="disc-orig">¥0</span></div>
+          <div class="result-row"><span class="label">節約額</span><span class="value green" id="disc-save">−¥0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>上のタブから計算したい種類を選び、金額を入力すると自動で結果が表示されます。ボタンを押す必要はありません。</p>
+    <ul>
+      <li><strong>税込計算</strong>：税抜価格から消費税込みの支払額を算出します。</li>
+      <li><strong>税抜計算</strong>：レシートの税込価格から、本体価格と消費税額を逆算します。</li>
+      <li><strong>割引計算</strong>：定価と割引率から、割引後の価格と節約できる金額を計算します。</li>
+    </ul>
+    <p>
+      消費税の標準税率は10%、食料品など一部の品目には軽減税率8%が適用されます。本ツールでは端数（小数点以下）を<strong>切り捨て</strong>で計算しています。お店のレジ設定（四捨五入・切り上げなど）により、実際の支払額と数円異なる場合があります。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。正確な金額は購入先・店舗にてご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<script>
+  import { taxIncluded, taxExcluded, discount } from '../../lib/zeizei.js';
+
+  const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
+  const $ = (id) => document.getElementById(id);
+
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      $('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  const rate = (name) =>
+    parseFloat(document.querySelector(`input[name="${name}"]:checked`).value);
+
+  function renderIncl() {
+    const { tax, total } = taxIncluded($('incl-amount').value, rate('incl-rate'));
+    const box = $('incl-result');
+    if (total <= 0) return box.classList.remove('visible');
+    box.classList.add('visible');
+    $('incl-total').textContent = yen(total);
+    $('incl-net').textContent = yen(total - tax);
+    $('incl-tax').textContent = yen(tax);
+  }
+
+  function renderExcl() {
+    const gross = $('excl-amount').value;
+    const { net, tax } = taxExcluded(gross, rate('excl-rate'));
+    const box = $('excl-result');
+    if (net <= 0) return box.classList.remove('visible');
+    box.classList.add('visible');
+    $('excl-net').textContent = yen(net);
+    $('excl-total').textContent = yen(net + tax);
+    $('excl-tax').textContent = yen(tax);
+  }
+
+  function renderDisc() {
+    const { discounted, saved } = discount($('disc-price').value, $('disc-pct').value);
+    const box = $('disc-result');
+    if (discounted <= 0 && saved <= 0) return box.classList.remove('visible');
+    box.classList.add('visible');
+    $('disc-final').textContent = yen(discounted);
+    $('disc-orig').textContent = yen(discounted + saved);
+    $('disc-save').textContent = '−' + yen(saved);
+  }
+
+  ['incl-amount'].forEach((id) => $(id).addEventListener('input', renderIncl));
+  document.querySelectorAll('input[name="incl-rate"]').forEach((r) => r.addEventListener('change', renderIncl));
+  ['excl-amount'].forEach((id) => $(id).addEventListener('input', renderExcl));
+  document.querySelectorAll('input[name="excl-rate"]').forEach((r) => r.addEventListener('change', renderExcl));
+  ['disc-price', 'disc-pct'].forEach((id) => $(id).addEventListener('input', renderDisc));
+</script>

@@ -1,0 +1,119 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'bmi';
+const title = 'BMI計算器（女性・男性）- 体脂肪率・標準体重も同時に計算 | 計算ツール';
+const description =
+  '身長・体重を入力するだけでBMIを自動計算。日本肥満学会の基準で肥満度を判定し、標準体重とBMI推定法による体脂肪率も同時に算出します。女性・男性の性別に対応した体脂肪率計算と、基礎代謝の目安づくりに役立つ無料ツールです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'BMI・体脂肪率計算器',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ BMI計算</div>
+    <h1>BMI・体脂肪率計算器</h1>
+    <p>身長・体重・年齢を入力するだけで、BMIと肥満度判定・標準体重・体脂肪率を瞬時に計算します。女性・男性の性別に対応。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-panel active" id="panel-bmi">
+      <div class="form-group">
+        <label for="bmi-height">身長（cm）</label>
+        <input type="number" id="bmi-height" inputmode="decimal" placeholder="例：160" />
+      </div>
+      <div class="form-group">
+        <label for="bmi-weight">体重（kg）</label>
+        <input type="number" id="bmi-weight" inputmode="decimal" placeholder="例：55" />
+      </div>
+      <div class="form-group">
+        <label for="bmi-age">年齢（歳）</label>
+        <input type="number" id="bmi-age" inputmode="numeric" placeholder="例：30" />
+      </div>
+      <div class="radio-group">
+        <input type="radio" name="bmi-gender" id="bmi-female" value="female" checked />
+        <label for="bmi-female">女性</label>
+        <input type="radio" name="bmi-gender" id="bmi-male" value="male" />
+        <label for="bmi-male">男性</label>
+      </div>
+
+      <div class="result-box" id="bmi-result">
+        <div class="result-label">あなたのBMI</div>
+        <div class="result-main" id="bmi-value">0.0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">判定</span><span class="value" id="bmi-category">−</span></div>
+          <div class="result-row"><span class="label">標準体重（BMI22）</span><span class="value green" id="bmi-standard">−</span></div>
+          <div class="result-row"><span class="label">体脂肪率（推定）</span><span class="value red" id="bmi-bodyfat">−</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>BMIの見方・判定基準</h2>
+    <p>
+      BMI（ボディマス指数）は、体重と身長から算出する肥満度の国際的な指標です。計算式は
+      <strong>BMI＝体重(kg)÷(身長(m)×身長(m))</strong>。身長はcmではなくm（メートル）に直して計算するため、本ツールでは入力されたcmを自動で100で割って算出します。
+    </p>
+    <p>
+      日本肥満学会の基準では、BMIの数値によって次のように判定します。BMI22 がもっとも病気になりにくい「標準体重」とされ、本ツールの標準体重もこのBMI22を基準に算出しています。
+    </p>
+    <ul>
+      <li><strong>18.5未満</strong>：低体重（やせ）</li>
+      <li><strong>18.5〜25未満</strong>：普通体重</li>
+      <li><strong>25〜30未満</strong>：肥満（1度）</li>
+      <li><strong>30〜35未満</strong>：肥満（2度）</li>
+      <li><strong>35〜40未満</strong>：肥満（3度）</li>
+      <li><strong>40以上</strong>：肥満（4度）</li>
+    </ul>
+    <p>
+      体脂肪率は「BMI推定法」による概算値です。<strong>体脂肪率＝1.2×BMI＋0.23×年齢−5.4−10.8×性別係数（男性=1・女性=0）</strong>で求めるため、同じBMI・年齢でも男性より女性のほうが高めに出ます。あくまで簡易推定で、体組成計の実測値とは差が出ることがあります。標準体重やBMIを把握しておくと、基礎代謝やカロリー管理など健康づくりの目安としても役立ちます。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。健康状態の判断・診断は医療機関にご相談ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<script>
+  import { calcBmi, bmiCategory, standardWeight, bodyFatPercent } from '../../lib/bmi.js';
+
+  const $ = (id) => document.getElementById(id);
+  const gender = () =>
+    document.querySelector('input[name="bmi-gender"]:checked').value;
+
+  function render() {
+    const bmi = calcBmi($('bmi-height').value, $('bmi-weight').value);
+    const box = $('bmi-result');
+
+    if (bmi === null) return box.classList.remove('visible');
+    box.classList.add('visible');
+
+    $('bmi-value').textContent = bmi.toFixed(1);
+    $('bmi-category').textContent = bmiCategory(bmi) ?? '−';
+
+    const std = standardWeight($('bmi-height').value);
+    $('bmi-standard').textContent = std === null ? '−' : std.toFixed(1) + ' kg';
+
+    const fat = bodyFatPercent(bmi, $('bmi-age').value, gender());
+    $('bmi-bodyfat').textContent = fat === null ? '年齢を入力' : fat.toFixed(1) + ' %';
+  }
+
+  ['bmi-height', 'bmi-weight', 'bmi-age'].forEach((id) =>
+    $(id).addEventListener('input', render)
+  );
+  document
+    .querySelectorAll('input[name="bmi-gender"]')
+    .forEach((r) => r.addEventListener('change', render));
+</script>
