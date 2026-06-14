@@ -1,0 +1,240 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'saniku';
+const title = '産休・育休計算器 — 休業期間・出産手当金・育児休業給付金を自動計算 | 計算ツール';
+const description =
+  '出産予定日を入力するだけで、産前・産後休業の開始日と終了日、育休終了日を自動計算。さらに月給から出産手当金・育児休業給付金の概算額も計算できる無料ツール。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '産休・育休計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 産休・育休計算</div>
+    <h1>産休・育休計算器</h1>
+    <p>出産予定日から産休・育休の期間を計算し、出産手当金・育児休業給付金の概算額もわかります。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist">
+      <button class="calc-tab active" data-tab="schedule" type="button">休業期間</button>
+      <button class="calc-tab" data-tab="kyuufu" type="button">給付金計算</button>
+    </div>
+
+    <!-- 休業期間タブ -->
+    <div class="calc-panel active" id="panel-schedule">
+      <div class="form-group">
+        <label for="due-date">出産予定日</label>
+        <input type="date" id="due-date" />
+      </div>
+      <div class="radio-group">
+        <input type="radio" name="multiple" id="single" value="single" checked />
+        <label for="single">単胎（1人）</label>
+        <input type="radio" name="multiple" id="multiple" value="multiple" />
+        <label for="multiple">多胎（双子以上）</label>
+      </div>
+
+      <div class="result-box" id="schedule-result">
+        <div class="result-label">産休・育休スケジュール</div>
+        <div class="result-rows">
+          <div class="result-row">
+            <span class="label">産前休業開始日</span>
+            <span class="value date-val" id="sanzen-start">—</span>
+          </div>
+          <div class="result-row">
+            <span class="label">出産予定日</span>
+            <span class="value date-val" id="due-disp">—</span>
+          </div>
+          <div class="result-row">
+            <span class="label">産後休業終了日</span>
+            <span class="value date-val" id="sango-end">—</span>
+          </div>
+        </div>
+        <div class="ikukyu-section">
+          <div class="ikukyu-label">育休終了日（育休期間を選択）</div>
+          <div class="radio-group" style="margin-bottom:8px">
+            <input type="radio" name="ikukyu-ext" id="iku0" value="0" checked />
+            <label for="iku0">1歳まで</label>
+            <input type="radio" name="ikukyu-ext" id="iku6" value="6" />
+            <label for="iku6">1歳6ヶ月まで</label>
+            <input type="radio" name="ikukyu-ext" id="iku12" value="12" />
+            <label for="iku12">2歳まで</label>
+          </div>
+          <div class="result-row">
+            <span class="label">育休終了日（予定）</span>
+            <span class="value date-val" id="ikukyu-end">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 給付金タブ -->
+    <div class="calc-panel" id="panel-kyuufu">
+      <div class="form-group">
+        <label for="monthly-wage">月給（標準報酬月額・円）</label>
+        <input type="number" id="monthly-wage" inputmode="numeric" placeholder="例：300000" min="0" />
+      </div>
+      <div class="form-group">
+        <label for="ikukyu-days">育休取得日数（日）<span class="optional-label">※空欄なら1歳まで約309日で試算</span></label>
+        <input type="number" id="ikukyu-days" inputmode="numeric" placeholder="例：309" min="0" max="730" />
+      </div>
+
+      <div class="result-box" id="kyuufu-result">
+        <div class="result-label">給付金の概算</div>
+        <div class="result-rows">
+          <div class="result-row">
+            <span class="label">標準報酬日額（月給÷30）</span>
+            <span class="value" id="daily-amount">¥0</span>
+          </div>
+          <div class="result-row">
+            <span class="label">出産手当金（産前産後98日分）</span>
+            <span class="value" id="shussan-teate">¥0</span>
+          </div>
+        </div>
+        <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1px solid #dbeafe">
+          <div class="result-row">
+            <span class="label">育休給付金（最初180日 67%）</span>
+            <span class="value" id="ikukyu-first">¥0</span>
+          </div>
+          <div class="result-row">
+            <span class="label">育休給付金（181日目以降 50%）</span>
+            <span class="value" id="ikukyu-rest">¥0</span>
+          </div>
+          <div class="result-row" style="padding-top:8px;border-top:1px dashed #bfdbfe;margin-top:4px">
+            <span class="label" style="font-weight:600;color:var(--navy)">育児休業給付金 合計</span>
+            <span class="value" id="ikukyu-total">¥0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <ul>
+      <li><strong>休業期間タブ</strong>：出産予定日を入力すると、産前・産後休業の開始/終了日と育休終了日を自動表示します。産休は「予定日の6週間前（多胎は14週間前）」から取得可能です。育休終了日は1歳/1歳6ヶ月/2歳から選べます。</li>
+      <li><strong>給付金計算タブ</strong>：月給（標準報酬月額）を入力すると出産手当金と育児休業給付金の概算を計算します。</li>
+    </ul>
+    <p>
+      <strong>出産手当金：</strong>健康保険から支給。標準報酬日額（月額÷30）の3分の2が、産前42日＋産後56日＝計98日分支給されます。<br />
+      <strong>育児休業給付金：</strong>雇用保険から支給。育休開始時賃金日額（月給×12÷365）の67%が最初の180日、以降50%が支給されます。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の給付額は加入している健康保険組合・ハローワークの審査により異なります。詳細は職場の担当部署または各機関にお問い合わせください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+.ikukyu-section {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #dbeafe;
+}
+.ikukyu-label {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.date-val {
+  font-family: var(--font-mono);
+  font-size: .95rem;
+}
+.optional-label { font-size: .75rem; font-weight: 400; color: #94a3b8; margin-left: 4px; }
+</style>
+
+<script>
+  import {
+    calcSanzenStart,
+    calcSangoEnd,
+    calcIkukyuEnd,
+    calcShussanTeate,
+    calcIkukyuKyuufu,
+  } from '../../lib/saniku.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (n) => '¥' + n.toLocaleString('ja-JP');
+  const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    const [y, m, d] = iso.split('-').map(Number);
+    const wd = WEEKDAYS[new Date(Date.UTC(y, m - 1, d, 12)).getDay()];
+    return `${y}年${m}月${d}日（${wd}）`;
+  }
+
+  // --- 休業期間タブ ---
+  function renderSchedule() {
+    const dueDate = $('due-date').value;
+    const isMultiple = document.querySelector('input[name="multiple"]:checked').value === 'multiple';
+    const extMonths = parseInt(document.querySelector('input[name="ikukyu-ext"]:checked').value, 10);
+
+    const sanzenStart = calcSanzenStart(dueDate, isMultiple);
+    const sangoEnd    = calcSangoEnd(dueDate);
+    const ikukyuEnd   = calcIkukyuEnd(dueDate, extMonths);
+
+    const box = $('schedule-result');
+    if (!sanzenStart) { box.classList.remove('visible'); return; }
+    box.classList.add('visible');
+
+    $('sanzen-start').textContent = fmtDate(sanzenStart);
+    $('due-disp').textContent     = fmtDate(dueDate);
+    $('sango-end').textContent    = fmtDate(sangoEnd);
+    $('ikukyu-end').textContent   = fmtDate(ikukyuEnd);
+  }
+
+  $('due-date').addEventListener('change', renderSchedule);
+  document.querySelectorAll('input[name="multiple"]').forEach((r) => r.addEventListener('change', renderSchedule));
+  document.querySelectorAll('input[name="ikukyu-ext"]').forEach((r) => r.addEventListener('change', renderSchedule));
+
+  // --- 給付金タブ ---
+  function renderKyuufu() {
+    const monthlyWage = parseFloat($('monthly-wage').value);
+    const inputDays   = parseFloat($('ikukyu-days').value);
+
+    const box = $('kyuufu-result');
+    if (!Number.isFinite(monthlyWage) || monthlyWage <= 0) {
+      box.classList.remove('visible');
+      return;
+    }
+
+    const dailyAmount = Math.floor(monthlyWage / 30);
+    const teate = calcShussanTeate(dailyAmount, 98);
+    const totalDays = (Number.isFinite(inputDays) && inputDays > 0) ? inputDays : 309;
+    const dailyWage = Math.floor(monthlyWage * 12 / 365);
+    const kyuufu = calcIkukyuKyuufu(dailyWage, totalDays);
+
+    box.classList.add('visible');
+    $('daily-amount').textContent = yen(dailyAmount);
+    $('shussan-teate').textContent = yen(teate ?? 0);
+    $('ikukyu-first').textContent  = yen(kyuufu?.first ?? 0);
+    $('ikukyu-rest').textContent   = yen(kyuufu?.rest ?? 0);
+    $('ikukyu-total').textContent  = yen(kyuufu?.total ?? 0);
+  }
+
+  ['monthly-wage', 'ikukyu-days'].forEach((id) => $(id).addEventListener('input', renderKyuufu));
+
+  // タブ切り替え
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      $('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+</script>

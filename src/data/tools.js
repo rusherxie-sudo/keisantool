@@ -120,6 +120,33 @@ export const tools = [
     short: '全角半角・文字数カウント',
     live: true,
   },
+  {
+    slug: 'jisa',
+    nav: '時差計算',
+    name: '時差計算器',
+    icon: '🌏',
+    category: '生活・日常',
+    short: '世界の都市との時差をリアルタイム表示',
+    live: false,
+  },
+  {
+    slug: 'gasoline',
+    nav: 'ガソリン代',
+    name: 'ガソリン代計算器',
+    icon: '⛽',
+    category: '生活・日常',
+    short: '走行距離・燃費から交通費を計算',
+    live: false,
+  },
+  {
+    slug: 'saniku',
+    nav: '産休・育休',
+    name: '産休・育休計算器',
+    icon: '👶',
+    category: '生活・日常',
+    short: '休業期間・出産手当金・育休給付金',
+    live: false,
+  },
 ];
 
 // slug でツールを取得

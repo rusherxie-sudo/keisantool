@@ -17,7 +17,7 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 
 /* Header */
 .site-header{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.header-inner{max-width:960px;margin:0 auto;padding:0 16px;height:56px;display:flex;align-items:center;gap:16px}
+.header-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;gap:16px}
 .site-logo{color:#fff;text-decoration:none;font-size:1.1rem;font-weight:700;letter-spacing:-.02em;white-space:nowrap;flex-shrink:0}
 .site-logo span{color:#f87171;font-family:var(--font-mono);font-size:.85em}
 .site-nav{display:flex;align-items:center;gap:2px;overflow-x:auto;flex:1;scrollbar-width:none}
@@ -25,7 +25,7 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 .site-nav a{color:rgba(255,255,255,.8);text-decoration:none;font-size:.78rem;padding:6px 10px;border-radius:4px;white-space:nowrap;transition:.15s}
 .site-nav a:hover,.site-nav a[aria-current="page"]{background:rgba(255,255,255,.12);color:#fff}
 
-.page-wrapper{max-width:720px;margin:0 auto;padding:32px 16px 48px;flex:1;width:100%}
+.page-wrapper{max-width:1100px;margin:0 auto;padding:32px 24px 48px;flex:1;width:100%}
 
 /* Hero */
 .page-hero{text-align:center;margin-bottom:28px}
@@ -33,10 +33,10 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 .page-hero .crumb a{color:var(--text-muted);text-decoration:none}
 .page-hero .crumb a:hover{text-decoration:underline}
 .page-hero h1{font-size:clamp(1.4rem,5vw,2rem);font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:10px}
-.page-hero p{color:var(--text-muted);font-size:.9rem;max-width:480px;margin:0 auto}
+.page-hero p{color:var(--text-muted);font-size:.9rem;max-width:560px;margin:0 auto}
 
 /* Calc card */
-.calc-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-md);overflow:hidden;max-width:480px;margin:0 auto 24px}
+.calc-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-md);overflow:hidden;max-width:560px;margin:0 auto 24px}
 .calc-tabs{display:flex;background:var(--bg-gray);border-bottom:1px solid var(--border)}
 .calc-tab{flex:1;padding:14px 8px;font-size:.84rem;font-weight:600;color:var(--text-muted);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:.15s;font-family:var(--font-jp)}
 .calc-tab.active{color:var(--navy);border-bottom-color:var(--navy);background:var(--bg)}
@@ -68,9 +68,9 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 .result-row .value.red{color:var(--red)}
 .result-row .value.green{color:var(--success)}
 
-.ad-slot{background:var(--bg-gray);border:1px dashed var(--border);border-radius:6px;min-height:90px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:.72rem;max-width:480px;margin:24px auto;letter-spacing:.05em;text-align:center}
+.ad-slot{background:var(--bg-gray);border:1px dashed var(--border);border-radius:6px;min-height:90px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:.72rem;max-width:560px;margin:24px auto;letter-spacing:.05em;text-align:center}
 
-.howto{max-width:480px;margin:32px auto 0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm)}
+.howto{max-width:560px;margin:32px auto 0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm)}
 .howto h2{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .howto h2::before{content:'';width:4px;height:1em;background:var(--red);border-radius:2px}
 .howto p,.howto li{font-size:.86rem;color:var(--text-muted);line-height:1.85}
@@ -79,7 +79,7 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 .howto strong{color:var(--text)}
 .disclaimer{font-size:.75rem;text-align:center;margin-top:16px;padding:12px;background:var(--red-light);border-radius:6px;color:var(--red)}
 
-.related{max-width:480px;margin:32px auto 0}
+.related{max-width:560px;margin:32px auto 0}
 .related h3{font-size:.74rem;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
 .related-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .related-link{display:flex;align-items:center;gap:10px;padding:14px;border:1px solid var(--border);border-radius:6px;text-decoration:none;color:var(--text);font-size:.84rem;font-weight:500;transition:.15s;background:var(--bg)}
@@ -92,7 +92,7 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 .footer-links{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:10px}
 
 /* Home page */
-.page-wrapper.wide{max-width:960px}
+.page-wrapper.wide{max-width:1200px}
 .hero-section{text-align:center;padding:48px 16px 40px;background:linear-gradient(180deg,var(--navy-light) 0%,var(--bg-gray) 100%);border-bottom:1px solid var(--border)}
 .hero-section h1{font-size:clamp(1.6rem,6vw,2.4rem);font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:12px}
 .hero-section p{color:var(--text-muted);font-size:.95rem;max-width:560px;margin:0 auto}
@@ -117,8 +117,44 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 .legal strong{color:var(--text)}
 .legal .updated{font-size:.78rem;color:#94a3b8;margin-top:32px;padding-top:16px;border-top:1px solid var(--border)}
 
+/* Share bar */
+.share-bar{max-width:560px;margin:32px auto 0;text-align:center}
+.share-label{display:block;font-size:.74rem;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.share-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.share-btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 14px;border-radius:6px;font-size:.8rem;font-weight:600;color:#fff;text-decoration:none;border:none;cursor:pointer;font-family:var(--font-jp);line-height:1;transition:opacity .15s,transform .15s}
+.share-btn:hover{opacity:.88;transform:translateY(-1px)}
+.share-btn.x{background:#000}
+.share-btn.line{background:#06c755}
+.share-btn.fb{background:#1877f2}
+.share-btn.hatena{background:#00a4de}
+.share-btn.copy{background:var(--navy)}
+
 @media (max-width:680px){
   .page-hero h1{font-size:1.5rem}
   .related-grid{grid-template-columns:1fr}
   .tool-grid{grid-template-columns:1fr 1fr}
+}
+
+/* ── PC 2カラムレイアウト (≥1024px) ─────────────────────────── */
+@media (min-width:1024px){
+  /* ツールページのみ2カラム（ホームの.wideは除外） */
+  .page-wrapper:not(.wide){
+    display:grid;
+    grid-template-columns:560px 1fr;
+    gap:0 40px;
+    align-items:start;
+  }
+
+  /* フル幅要素 */
+  .page-hero  {grid-column:1/-1}
+  .share-bar  {grid-column:1/-1;max-width:none;margin-top:32px}
+
+  /* 左カラム: 計算カード + 直後の広告 */
+  .calc-card            {grid-column:1;max-width:none;margin-bottom:24px}
+  .calc-card + .ad-slot {grid-column:1;max-width:none;margin:0}
+
+  /* 右カラム: 説明 → 関連ツール → 広告 */
+  .howto          {grid-column:2;max-width:none;margin:0}
+  .related        {grid-column:2;max-width:none;margin:24px 0 0}
+  .howto ~ .ad-slot{grid-column:2;max-width:none;margin:24px 0 0}
 }

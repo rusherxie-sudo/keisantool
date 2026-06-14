@@ -1,0 +1,28 @@
+---
+const { title, url } = Astro.props;
+const u = encodeURIComponent(url);
+const t = encodeURIComponent(title);
+const hatena = 'https://b.hatena.ne.jp/entry/s/' + url.replace(/^https?:\/\//, '');
+---
+<section class="share-bar">
+  <span class="share-label">このツールをシェア</span>
+  <div class="share-btns">
+    <a class="share-btn x" href={`https://twitter.com/intent/tweet?url=${u}&text=${t}`} target="_blank" rel="noopener" aria-label="Xでシェア">X</a>
+    <a class="share-btn line" href={`https://social-plugins.line.me/lineit/share?url=${u}`} target="_blank" rel="noopener" aria-label="LINEでシェア">LINE</a>
+    <a class="share-btn fb" href={`https://www.facebook.com/sharer/sharer.php?u=${u}`} target="_blank" rel="noopener" aria-label="Facebookでシェア">Facebook</a>
+    <a class="share-btn hatena" href={hatena} target="_blank" rel="noopener" aria-label="はてなブックマークに追加">はてB</a>
+    <button class="share-btn copy" type="button" data-share-url={url} aria-label="リンクをコピー">リンクをコピー</button>
+  </div>
+</section>
+<script>
+  document.querySelectorAll('.share-btn.copy').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.getAttribute('data-share-url'));
+        const orig = btn.textContent;
+        btn.textContent = 'コピーしました';
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+      } catch (e) {}
+    });
+  });
+</script>

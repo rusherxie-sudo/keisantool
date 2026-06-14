@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import ShareButtons from '../components/ShareButtons.astro';
 
 const { title, description, slug, current, jsonld, wide } = Astro.props;
 const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
@@ -14,6 +15,7 @@ const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
@@ -31,6 +33,7 @@ const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
   <slot name="hero" />
   <main class={wide ? 'page-wrapper wide' : 'page-wrapper'}>
     <slot />
+    <ShareButtons title={title} url={canonical} />
   </main>
   <SiteFooter />
 </body>

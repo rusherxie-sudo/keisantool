@@ -1,0 +1,136 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'gasoline';
+const title = 'ガソリン代計算器 — 走行距離・燃費から交通費を計算 | 計算ツール';
+const description =
+  '走行距離・燃費・ガソリン単価を入力するだけで、片道・往復のガソリン代と月額交通費を自動計算する無料ツール。通勤・旅行・ドライブの交通費計算に。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'ガソリン代計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ ガソリン代計算</div>
+    <h1>ガソリン代計算器</h1>
+    <p>走行距離・燃費・ガソリン価格を入力すると、片道・往復・月額の交通費を自動計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-panel active" style="padding:24px">
+      <div class="form-group">
+        <label for="distance">走行距離（km）</label>
+        <input type="number" id="distance" inputmode="decimal" placeholder="例：30" min="0" step="0.1" />
+      </div>
+      <div class="form-group">
+        <label for="fuel-eff">燃費（km/L）</label>
+        <input type="number" id="fuel-eff" inputmode="decimal" placeholder="例：15" min="0" step="0.1" />
+      </div>
+      <div class="form-group">
+        <label for="gas-price">ガソリン価格（円/L）</label>
+        <input type="number" id="gas-price" inputmode="numeric" placeholder="例：170" min="0" />
+      </div>
+      <div class="form-group">
+        <label for="workdays">月の出勤日数（日）<span class="optional-label">— 月額を計算する場合</span></label>
+        <input type="number" id="workdays" inputmode="numeric" placeholder="例：20" min="0" max="31" />
+      </div>
+
+      <div class="result-box" id="result">
+        <div class="result-label">計算結果</div>
+        <div class="result-rows">
+          <div class="result-row">
+            <span class="label">片道ガソリン代</span>
+            <span class="value" id="one-way">¥0</span>
+          </div>
+          <div class="result-row">
+            <span class="label">往復ガソリン代</span>
+            <span class="value" id="round-trip">¥0</span>
+          </div>
+          <div class="result-row">
+            <span class="label">消費量（片道）</span>
+            <span class="value" id="liters">0 L</span>
+          </div>
+        </div>
+        <div id="monthly-section" style="display:none">
+          <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1px solid #dbeafe">
+            <div class="result-row">
+              <span class="label">月額交通費（往復×出勤日数）</span>
+              <span class="value" id="monthly">¥0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>上の入力欄に値を入力すると自動で計算されます。ボタンは不要です。</p>
+    <ul>
+      <li><strong>走行距離</strong>：片道の距離（km）を入力してください。往復の場合は往復ガソリン代の行をご覧ください。</li>
+      <li><strong>燃費</strong>：車のカタログ値または実燃費（km/L）を入力します。わからない場合は「15」程度が一般的なガソリン車の目安です。</li>
+      <li><strong>ガソリン価格</strong>：近くのガソリンスタンドの単価（円/L）を入力します。レギュラーは現在 160〜175 円前後が目安です。</li>
+      <li><strong>月額</strong>：出勤日数を入力すると、1ヶ月あたりの交通費（往復×日数）を計算します。</li>
+    </ul>
+    <p>計算式：ガソリン代 ＝ 走行距離（km）÷ 燃費（km/L）× ガソリン価格（円/L）。金額の端数は切り捨てで計算しています。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際のガソリン代は道路状況・エアコン使用・走行パターンなどにより異なります。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+.optional-label { font-size: .75rem; font-weight: 400; color: #94a3b8; margin-left: 4px; }
+</style>
+
+<script>
+  import { calcGasCost, calcMonthlyCost } from '../../lib/gasoline.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (n) => '¥' + n.toLocaleString('ja-JP');
+
+  function render() {
+    const distance = parseFloat($('distance').value);
+    const fuelEff  = parseFloat($('fuel-eff').value);
+    const gasPrice = parseFloat($('gas-price').value);
+    const workdays = parseFloat($('workdays').value);
+
+    const oneWay = calcGasCost({ distance, fuelEfficiency: fuelEff, gasPrice });
+    const result = $('result');
+
+    if (!oneWay) {
+      result.classList.remove('visible');
+      return;
+    }
+    result.classList.add('visible');
+
+    $('one-way').textContent   = yen(oneWay.cost);
+    $('round-trip').textContent = yen(oneWay.cost * 2);
+    $('liters').textContent    = oneWay.liters.toFixed(2) + ' L';
+
+    const monthly = calcMonthlyCost({ oneWayCost: oneWay.cost, workdays });
+    const sec = $('monthly-section');
+    if (monthly) {
+      $('monthly').textContent = yen(monthly);
+      sec.style.display = 'block';
+    } else {
+      sec.style.display = 'none';
+    }
+  }
+
+  ['distance', 'fuel-eff', 'gas-price', 'workdays'].forEach((id) =>
+    $(id).addEventListener('input', render)
+  );
+</script>
