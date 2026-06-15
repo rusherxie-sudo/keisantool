@@ -102,7 +102,7 @@ npx wrangler pages deploy dist --project-name=keisantool
   - **暂缓**：`シルエットクイズ`（剪影游戏）——CPC≈0、ポケモン有IP风险、需大量剪影素材、偏离定位。
   - **単位変換 CPC≈0**（已做，变现低，属铺量）。
   - 开发者工具（Base64/JSON/正規表現等）**变现低**（程序员开广告拦截），已做、属铺流量，别期待高 RPM。
-- Semrush 走法：账户 API 额度已耗尽，**用 `semrush-chrome` 技能**经 `sem.3ue.co`（GURU代理）Chrome 自动化采集；数据库选 JP。
+- Semrush 走法：**Semrush MCP 已移除（账户 API 额度耗尽），统一用 `semrush-chrome` 技能**经 `sem.3ue.co`（GURU代理）Chrome 自动化采集；数据库选 JP。
 - 各工具仍有竞品功能可深挖（见各工具竞品差距，之前审查报告里有），但优先把第 6 节布局修了。
 
 ## 8. 重要历史决策 & 已踩的坑
