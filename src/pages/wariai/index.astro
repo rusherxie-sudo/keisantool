@@ -29,6 +29,8 @@ const jsonld = {
       <button class="calc-tab" data-tab="val" type="button">割合</button>
       <button class="calc-tab" data-tab="rat" type="button">比率</button>
       <button class="calc-tab" data-tab="disc" type="button">割引後</button>
+      <button class="calc-tab" data-tab="chg" type="button">増減率</button>
+      <button class="calc-tab" data-tab="buai" type="button">歩合・割</button>
     </div>
 
     <div class="calc-panel active" id="panel-pct">
@@ -97,6 +99,56 @@ const jsonld = {
         </div>
       </div>
     </div>
+    <div class="calc-panel" id="panel-chg">
+      <div class="form-group">
+        <label for="chg-from">変化前（基準）</label>
+        <input type="number" id="chg-from" inputmode="decimal" placeholder="例：100" />
+      </div>
+      <div class="form-group">
+        <label for="chg-to">変化後</label>
+        <input type="number" id="chg-to" inputmode="decimal" placeholder="例：120" />
+      </div>
+      <div class="result-box" id="chg-result">
+        <div class="result-label" id="chg-label">変化率</div>
+        <div class="result-main" id="chg-out">0%</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">変化量</span><span class="value" id="chg-diff">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-buai">
+      <div class="buai-block">
+        <div class="buai-head">歩合 → パーセント</div>
+        <div class="buai-inputs">
+          <div class="buai-field">
+            <input type="number" id="buai-wari" inputmode="numeric" placeholder="0" /><span>割</span>
+          </div>
+          <div class="buai-field">
+            <input type="number" id="buai-bu" inputmode="numeric" placeholder="0" /><span>分</span>
+          </div>
+          <div class="buai-field">
+            <input type="number" id="buai-rin" inputmode="numeric" placeholder="0" /><span>厘</span>
+          </div>
+        </div>
+        <div class="result-box" id="buai-result">
+          <div class="result-label">パーセントに直すと</div>
+          <div class="result-main" id="buai-out">0%</div>
+        </div>
+      </div>
+
+      <div class="buai-block">
+        <div class="buai-head">パーセント → 歩合</div>
+        <div class="form-group">
+          <label for="buai-pct">パーセント（%）</label>
+          <input type="number" id="buai-pct" inputmode="decimal" placeholder="例：35" />
+        </div>
+        <div class="result-box" id="buai-pct-result">
+          <div class="result-label">歩合に直すと</div>
+          <div class="result-main" id="buai-pct-out">0割0分0厘</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="ad-slot">広告枠（結果直下）</div>
@@ -109,6 +161,8 @@ const jsonld = {
       <li><strong>割合計算</strong>：「A の ○% はいくらか」を求めます。3000円の8%を知りたいときは、A に3000、割合に8と入力すると<strong>240</strong>と表示されます。手数料やポイント還元額の計算に使えます。</li>
       <li><strong>比率計算</strong>：A と B の比を、最大公約数で約分して最も簡単な整数比にします。たとえば12と8を入力すると<strong>3 : 2</strong>になります。配合比や縮尺の単純化に役立ちます。</li>
       <li><strong>割引後計算</strong>：定価と割引率から、○%OFF後の支払額と割引額を計算します。金額の端数は<strong>切り捨て</strong>で処理しています。セールやクーポンの計算にお使いください。</li>
+      <li><strong>増減率（前年比・変化率）</strong>：「変化前」と「変化後」の2つの数値から、何%増えた・減ったかを求めます。たとえば売上が前年100から今年120になったら<strong>+20%</strong>、200から150に下がったら<strong>-25%</strong>と表示されます。前年比・伸び率・増減率の計算に便利です。</li>
+      <li><strong>歩合・割の換算</strong>：野球の打率や歩合給などで使う「割・分・厘」とパーセントを相互に変換します。<strong>1割=10%、1分=1%、1厘=0.1%</strong>です。3割5分なら35%、35%なら3割5分0厘のように、どちらの向きでも換算できます。</li>
     </ul>
     <p>パーセント計算と割合計算では、小数点以下が出る場合は<strong>小数第2位まで</strong>表示します。比率計算では入力が0のときも0 : 1のように扱い、割引後計算ではお店のレジ設定（四捨五入・切り上げなど）により実際の金額と数円異なる場合があります。</p>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
@@ -120,7 +174,7 @@ const jsonld = {
 </ToolLayout>
 
 <script>
-  import { percentOf, valueFromPercent, ratio, discountedPrice } from '../../lib/wariai.js';
+  import { percentOf, valueFromPercent, ratio, discountedPrice, changeRate, buaiToPercent, percentToBuai } from '../../lib/wariai.js';
 
   const $ = (id) => document.getElementById(id);
   const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
@@ -175,8 +229,71 @@ const jsonld = {
     $('disc-save').textContent = '−' + yen(r.discount);
   }
 
+  function renderChg() {
+    const box = $('chg-result');
+    const from = $('chg-from').value;
+    const to = $('chg-to').value;
+    const r = changeRate(from, to);
+    if (r === null) return hide(box);
+    show(box);
+    const sign = r > 0 ? '+' : '';
+    $('chg-label').textContent = r > 0 ? '増加率' : r < 0 ? '減少率' : '変化率';
+    $('chg-out').textContent = sign + num(r) + '%';
+    const diff = Number(to) - Number(from);
+    $('chg-diff').textContent = (diff > 0 ? '+' : '') + num(diff);
+  }
+
+  function renderBuai() {
+    const box = $('buai-result');
+    const r = buaiToPercent($('buai-wari').value, $('buai-bu').value, $('buai-rin').value);
+    if (r === null) return hide(box);
+    show(box);
+    $('buai-out').textContent = num(r) + '%';
+  }
+
+  function renderBuaiPct() {
+    const box = $('buai-pct-result');
+    const r = percentToBuai($('buai-pct').value);
+    if (r === null) return hide(box);
+    show(box);
+    $('buai-pct-out').textContent = r.wari + '割' + r.bu + '分' + r.rin + '厘';
+  }
+
   ['pct-a', 'pct-b'].forEach((id) => $(id).addEventListener('input', renderPct));
   ['val-a', 'val-pct'].forEach((id) => $(id).addEventListener('input', renderVal));
   ['rat-a', 'rat-b'].forEach((id) => $(id).addEventListener('input', renderRat));
   ['disc-price', 'disc-pct'].forEach((id) => $(id).addEventListener('input', renderDisc));
+  ['chg-from', 'chg-to'].forEach((id) => $(id).addEventListener('input', renderChg));
+  ['buai-wari', 'buai-bu', 'buai-rin'].forEach((id) => $(id).addEventListener('input', renderBuai));
+  $('buai-pct').addEventListener('input', renderBuaiPct);
 </script>
+
+<style>
+  .buai-block { margin-bottom: 1.5rem; }
+  .buai-block:last-child { margin-bottom: 0; }
+  .buai-head {
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+    color: var(--color-text, #1f2937);
+  }
+  .buai-inputs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .buai-field {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex: 1;
+  }
+  .buai-field input {
+    width: 100%;
+    min-width: 0;
+  }
+  .buai-field span {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+</style>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { hensachi, erf, normalCdf, topPercent, estimateRank } from '../src/lib/hensachi.js';
+import { hensachi, erf, normalCdf, topPercent, estimateRank, statsFromScores, deviationsFromScores } from '../src/lib/hensachi.js';
 
 describe('hensachi(偏差値計算)', () => {
   it('得点が平均と同じ → 偏差値50.0', () => {
@@ -142,5 +142,73 @@ describe('estimateRank(上位% + 受験者数 → 概算順位)', () => {
 
   it('偏差値が不正 → null', () => {
     expect(estimateRank(NaN, 1000)).toBeNull();
+  });
+});
+
+describe('statsFromScores(得点リスト → 平均・母集団標準偏差・人数)', () => {
+  it('[40,50,60,70,80] → mean=60, sd=√200≈14.142, count=5（母集団σ÷n）', () => {
+    const r = statsFromScores([40, 50, 60, 70, 80]);
+    expect(r.count).toBe(5);
+    expect(r.mean).toBeCloseTo(60, 10);
+    expect(r.sd).toBeCloseTo(Math.sqrt(200), 10); // 14.142135623730951
+  });
+
+  it('全員同じ得点 [50,50,50] → mean=50, sd=0, count=3', () => {
+    const r = statsFromScores([50, 50, 50]);
+    expect(r.mean).toBe(50);
+    expect(r.sd).toBe(0);
+    expect(r.count).toBe(3);
+  });
+
+  it('1件 [70] → mean=70, sd=0, count=1', () => {
+    const r = statsFromScores([70]);
+    expect(r.mean).toBe(70);
+    expect(r.sd).toBe(0);
+    expect(r.count).toBe(1);
+  });
+
+  it('小数を含む [1,2,3,4] → mean=2.5, sd=√1.25', () => {
+    // 分散 = ((1.5)^2+(0.5)^2+(0.5)^2+(1.5)^2)/4 = (2.25+0.25+0.25+2.25)/4 = 5/4 = 1.25
+    const r = statsFromScores([1, 2, 3, 4]);
+    expect(r.mean).toBeCloseTo(2.5, 10);
+    expect(r.sd).toBeCloseTo(Math.sqrt(1.25), 10);
+    expect(r.count).toBe(4);
+  });
+
+  it('空配列 → null', () => {
+    expect(statsFromScores([])).toBeNull();
+  });
+
+  it('配列でない → null', () => {
+    expect(statsFromScores(null)).toBeNull();
+    expect(statsFromScores('abc')).toBeNull();
+  });
+
+  it('数値に変換できない要素を含む → null', () => {
+    expect(statsFromScores([40, 'x', 60])).toBeNull();
+  });
+});
+
+describe('deviationsFromScores(得点リスト → 各得点の偏差値配列)', () => {
+  it('[40,50,60,70,80] → [35.9, 42.9, 50.0, 57.1, 64.1]', () => {
+    // mean=60, sd=√200≈14.1421356
+    // 40: (40-60)/14.1421356*10+50 = -14.1421356+50 = 35.857... → 35.9
+    // 50: -7.0710678+50 = 42.928... → 42.9
+    // 60: 50.0
+    // 70: 57.071... → 57.1
+    // 80: 64.142... → 64.1
+    expect(deviationsFromScores([40, 50, 60, 70, 80])).toEqual([35.9, 42.9, 50.0, 57.1, 64.1]);
+  });
+
+  it('全員同点 [50,50,50] → 標準偏差0なので全員50.0', () => {
+    expect(deviationsFromScores([50, 50, 50])).toEqual([50.0, 50.0, 50.0]);
+  });
+
+  it('空配列 → null', () => {
+    expect(deviationsFromScores([])).toBeNull();
+  });
+
+  it('不正な要素を含む → null', () => {
+    expect(deviationsFromScores([40, '', 60])).toBeNull();
   });
 });

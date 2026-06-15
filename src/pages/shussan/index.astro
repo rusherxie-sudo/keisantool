@@ -24,19 +24,46 @@ const jsonld = {
   </div>
 
   <div class="calc-card">
-    <div class="form-group">
-      <label for="lmp">最終月経開始日（LMP）</label>
-      <input type="date" id="lmp" />
+    <div class="mode-tabs" role="tablist">
+      <button type="button" class="mode-tab is-active" id="tab-forward" role="tab" aria-selected="true">最終月経日から計算</button>
+      <button type="button" class="mode-tab" id="tab-reverse" role="tab" aria-selected="false">出産予定日から逆算</button>
     </div>
 
-    <div class="result-box" id="result">
-      <div class="result-label">出産予定日（ネーゲレ概算）</div>
-      <div class="result-main" id="due-date">―</div>
-      <div class="result-rows">
-        <div class="result-row"><span class="label">現在の妊娠週数</span><span class="value" id="weeks">―</span></div>
-        <div class="result-row"><span class="label">妊娠時期</span><span class="value" id="stage">―</span></div>
-        <div class="result-row"><span class="label">産休開始の目安（産前6週）</span><span class="value" id="leave-start">―</span></div>
-        <div class="result-row"><span class="label">産休終了の目安（産後8週）</span><span class="value" id="leave-end">―</span></div>
+    <!-- 順算モード：LMP → 出産予定日・妊娠週数 -->
+    <div class="mode-panel" id="panel-forward">
+      <div class="form-group">
+        <label for="lmp">最終月経開始日（LMP）</label>
+        <input type="date" id="lmp" />
+      </div>
+
+      <div class="result-box" id="result">
+        <div class="result-label">出産予定日（ネーゲレ概算）</div>
+        <div class="result-main" id="due-date">―</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">現在の妊娠週数</span><span class="value" id="weeks">―</span></div>
+          <div class="result-row"><span class="label">妊娠月数</span><span class="value" id="months">―</span></div>
+          <div class="result-row"><span class="label">妊娠時期</span><span class="value" id="stage">―</span></div>
+          <div class="result-row"><span class="label">産休開始の目安（産前6週）</span><span class="value" id="leave-start">―</span></div>
+          <div class="result-row"><span class="label">産休終了の目安（産後8週）</span><span class="value" id="leave-end">―</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 逆算モード：出産予定日 → 最終月経開始日・排卵日の目安 -->
+    <div class="mode-panel" id="panel-reverse" hidden>
+      <div class="form-group">
+        <label for="due-input">出産予定日</label>
+        <input type="date" id="due-input" />
+      </div>
+
+      <div class="result-box" id="result-rev">
+        <div class="result-label">最終月経開始日（LMP）の目安</div>
+        <div class="result-main" id="lmp-rev">―</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">排卵日・受精日の目安</span><span class="value" id="ovulation-rev">―</span></div>
+          <div class="result-row"><span class="label">産休開始の目安（産前6週）</span><span class="value" id="leave-start-rev">―</span></div>
+          <div class="result-row"><span class="label">産休終了の目安（産後8週）</span><span class="value" id="leave-end-rev">―</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -49,7 +76,10 @@ const jsonld = {
       最終月経開始日（LMP：last menstrual period）を選ぶだけで、出産予定日・妊娠週数・産休の目安をその場で自動計算します。ボタンを押す必要はありません。
     </p>
     <p>
-      出産予定日は「<strong>ネーゲレ概算法</strong>」で求めています。これは月経周期を28日と仮定し、最終月経開始日に280日（40週）を加えて予定日とする一般的な方法です。妊娠週数は、最終月経開始日を「妊娠0週0日」として基準日（本日）までの経過日数から算出し、経過日数を7で割った商を週数、余りを日数として「妊娠12週3日」のように表示します。
+      出産予定日は「<strong>ネーゲレ概算法</strong>」で求めています。これは月経周期を28日と仮定し、最終月経開始日に280日（40週）を加えて予定日とする一般的な方法です。妊娠週数は、最終月経開始日を「妊娠0週0日」として基準日（本日）までの経過日数から算出し、経過日数を7で割った商を週数、余りを日数として「妊娠12週3日」のように表示します。あわせて<strong>妊娠月数</strong>も表示します。日本では妊娠は4週を1ヶ月と数え、妊娠0週から「妊娠1ヶ月」とするため、妊娠週数を4で割った商に1を加えた値（例：妊娠8週＝妊娠3ヶ月、妊娠36週＝妊娠10ヶ月＝臨月）になります。
+    </p>
+    <p>
+      「<strong>出産予定日から逆算</strong>」タブでは、すでに分かっている出産予定日をもとに、最終月経開始日の目安（予定日−280日）と、排卵日・受精日の目安（予定日−266日。排卵は最終月経開始日の約14日後にあたります）を計算できます。妊娠の起点をさかのぼって確認したいときにご利用ください。
     </p>
     <ul>
       <li><strong>妊娠初期</strong>：妊娠15週まで</li>
@@ -71,7 +101,15 @@ const jsonld = {
 </ToolLayout>
 
 <script>
-  import { dueDate, pregnancyWeeks, pregnancyStage, maternityLeave } from '../../lib/shussan.js';
+  import {
+    dueDate,
+    pregnancyWeeks,
+    pregnancyStage,
+    pregnancyMonths,
+    maternityLeave,
+    lmpFromDue,
+    ovulationFromDue,
+  } from '../../lib/shussan.js';
 
   const $ = (id) => document.getElementById(id);
 
@@ -81,7 +119,8 @@ const jsonld = {
     return `${Number(y)}年${Number(m)}月${Number(d)}日`;
   };
 
-  function render() {
+  // --- 順算：最終月経日 → 出産予定日・妊娠週数 ---
+  function renderForward() {
     const lmp = $('lmp').value;
     const box = $('result');
 
@@ -97,11 +136,14 @@ const jsonld = {
     const pw = pregnancyWeeks(lmp, today);
     if (pw) {
       $('weeks').textContent = `妊娠${pw.weeks}週${pw.days}日`;
+      const months = pregnancyMonths(pw.weeks);
+      $('months').textContent = months ? `妊娠${months}ヶ月` : '―';
       const stage = pregnancyStage(pw.weeks);
       $('stage').textContent = stage ? `${stage}` : '―';
     } else {
       // 未来の LMP（基準日より後）など
       $('weeks').textContent = '―';
+      $('months').textContent = '―';
       $('stage').textContent = '―';
     }
 
@@ -112,6 +154,78 @@ const jsonld = {
     }
   }
 
-  $('lmp').addEventListener('input', render);
-  $('lmp').addEventListener('change', render);
+  // --- 逆算：出産予定日 → 最終月経開始日・排卵日の目安 ---
+  function renderReverse() {
+    const due = $('due-input').value;
+    const box = $('result-rev');
+
+    const lmp = lmpFromDue(due);
+    if (!lmp) {
+      box.classList.remove('visible');
+      return;
+    }
+    box.classList.add('visible');
+    $('lmp-rev').textContent = fmtJP(lmp);
+
+    const ovulation = ovulationFromDue(due);
+    $('ovulation-rev').textContent = ovulation ? fmtJP(ovulation) : '―';
+
+    const ml = maternityLeave(due);
+    if (ml) {
+      $('leave-start-rev').textContent = fmtJP(ml.leaveStart);
+      $('leave-end-rev').textContent = fmtJP(ml.leaveEnd);
+    }
+  }
+
+  $('lmp').addEventListener('input', renderForward);
+  $('lmp').addEventListener('change', renderForward);
+  $('due-input').addEventListener('input', renderReverse);
+  $('due-input').addEventListener('change', renderReverse);
+
+  // --- タブ切替 ---
+  const tabForward = $('tab-forward');
+  const tabReverse = $('tab-reverse');
+  const panelForward = $('panel-forward');
+  const panelReverse = $('panel-reverse');
+
+  function activate(mode) {
+    const isForward = mode === 'forward';
+    tabForward.classList.toggle('is-active', isForward);
+    tabReverse.classList.toggle('is-active', !isForward);
+    tabForward.setAttribute('aria-selected', String(isForward));
+    tabReverse.setAttribute('aria-selected', String(!isForward));
+    panelForward.hidden = !isForward;
+    panelReverse.hidden = isForward;
+  }
+
+  tabForward.addEventListener('click', () => activate('forward'));
+  tabReverse.addEventListener('click', () => activate('reverse'));
 </script>
+
+<style>
+  .mode-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .mode-tab {
+    flex: 1;
+    padding: 0.7rem 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #555;
+    background: #f1f3f5;
+    border: 1px solid #dfe3e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .mode-tab:hover {
+    background: #e9ecef;
+  }
+  .mode-tab.is-active {
+    color: #fff;
+    background: #2f6fed;
+    border-color: #2f6fed;
+  }
+</style>

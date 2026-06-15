@@ -26,6 +26,7 @@ const jsonld = {
   <div class="calc-card">
     <div class="calc-tabs" role="tablist">
       <button class="calc-tab active" data-tab="dev" type="button">偏差値計算</button>
+      <button class="calc-tab" data-tab="list" type="button">得点リストから計算</button>
       <button class="calc-tab" data-tab="rank" type="button">偏差値→順位</button>
     </div>
 
@@ -45,6 +46,26 @@ const jsonld = {
       <div class="result-box" id="dev-result">
         <div class="result-label">あなたの偏差値</div>
         <div class="result-main" id="dev-value">0.0</div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-list">
+      <div class="form-group">
+        <label for="list-scores">得点リスト（クラス全員などの点数）</label>
+        <textarea id="list-scores" rows="5" placeholder="改行・カンマ・スペース区切りで入力&#10;例：40 50 60 70 80"></textarea>
+        <p class="list-hint">標準偏差が分からなくても大丈夫。集団全員の得点を貼り付けると、平均・標準偏差・各人の偏差値を自動計算します。</p>
+      </div>
+      <div class="result-box" id="list-result">
+        <div class="result-label">この集団の統計</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">人数</span><span class="value" id="list-count">—</span></div>
+          <div class="result-row"><span class="label">平均点</span><span class="value" id="list-mean">—</span></div>
+          <div class="result-row"><span class="label">標準偏差（母集団）</span><span class="value" id="list-sd">—</span></div>
+        </div>
+        <table class="list-table" id="list-table">
+          <thead><tr><th>No.</th><th>得点</th><th>偏差値</th></tr></thead>
+          <tbody id="list-tbody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -74,6 +95,7 @@ const jsonld = {
     <p>上のタブから計算したい種類を選び、数値を入力すると自動で結果が表示されます。ボタンを押す必要はありません。</p>
     <ul>
       <li><strong>偏差値計算</strong>：自分の得点・テスト全体の平均点・標準偏差を入力すると、偏差値を計算します。</li>
+      <li><strong>得点リストから計算</strong>：標準偏差が分からない場合に便利です。クラスや集団全員の得点を貼り付けるだけで、平均点・標準偏差を自動で求め、一人ひとりの偏差値を一覧表示します。区切りは改行・カンマ・スペースのいずれでもかまいません。</li>
       <li><strong>偏差値→順位</strong>：偏差値から全国での上位パーセントを求め、受験者数を入力すれば概算順位の目安も表示します。</li>
     </ul>
     <p>
@@ -90,8 +112,50 @@ const jsonld = {
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>
 
+<style>
+  #list-scores {
+    width: 100%;
+    box-sizing: border-box;
+    font: inherit;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    resize: vertical;
+  }
+  .list-hint {
+    margin: 0.4rem 0 0;
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+  .list-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.8rem;
+    font-size: 0.95rem;
+  }
+  .list-table th,
+  .list-table td {
+    padding: 0.4rem 0.6rem;
+    text-align: right;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .list-table th:first-child,
+  .list-table td:first-child {
+    text-align: left;
+    color: #64748b;
+  }
+  .list-table thead th {
+    color: #475569;
+    font-weight: 600;
+    border-bottom: 2px solid #cbd5e1;
+  }
+  .list-table tbody:empty {
+    display: none;
+  }
+</style>
+
 <script>
-  import { hensachi, topPercent, estimateRank } from '../../lib/hensachi.js';
+  import { hensachi, topPercent, estimateRank, statsFromScores, deviationsFromScores } from '../../lib/hensachi.js';
 
   const $ = (id) => document.getElementById(id);
   const jp = (n) => n.toLocaleString('ja-JP');
@@ -123,6 +187,35 @@ const jsonld = {
     $('rank-position').textContent = rank === null ? '受験者数を入力' : jp(rank) + ' 位';
   }
 
+  // 改行・カンマ・スペース（全角含む）区切りのテキストを数値配列に解析する。
+  function parseScores(text) {
+    return text
+      .split(/[\s,、，\n\r]+/)
+      .map((t) => t.trim())
+      .filter((t) => t !== '');
+  }
+
+  function renderList() {
+    const box = $('list-result');
+    const tbody = $('list-tbody');
+    const tokens = parseScores($('list-scores').value);
+    const stats = statsFromScores(tokens);
+    const devs = deviationsFromScores(tokens);
+    if (stats === null || devs === null) {
+      box.classList.remove('visible');
+      tbody.innerHTML = '';
+      return;
+    }
+    box.classList.add('visible');
+    $('list-count').textContent = jp(stats.count) + ' 人';
+    $('list-mean').textContent = (Math.round(stats.mean * 100) / 100).toString() + ' 点';
+    $('list-sd').textContent = (Math.round(stats.sd * 100) / 100).toString();
+    tbody.innerHTML = tokens
+      .map((s, i) => `<tr><td>${i + 1}</td><td>${Number(s)}</td><td>${devs[i].toFixed(1)}</td></tr>`)
+      .join('');
+  }
+
   ['dev-score', 'dev-mean', 'dev-sd'].forEach((id) => $(id).addEventListener('input', renderDev));
   ['rank-dev', 'rank-total'].forEach((id) => $(id).addEventListener('input', renderRank));
+  $('list-scores').addEventListener('input', renderList);
 </script>

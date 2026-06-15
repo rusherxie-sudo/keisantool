@@ -55,3 +55,31 @@ export function formatDiff(diffHours) {
   }
   return diffHours > 0 ? `${timeStr}進んでいる` : `${timeStr}遅れている`;
 }
+
+// 源タイムゾーンの「壁時計時刻」を目標タイムゾーンの壁時計時刻に変換する（DST 対応）。
+// wall: { year, month(1-12), day, hour, minute } → 同形式を返す。
+export function convertWallClock(srcTz, dstTz, wall) {
+  const { year, month, day, hour, minute } = wall;
+  // 近似 UTC 瞬間（源の壁時計を UTC とみなす）でオフセットを取得 → 実 UTC 瞬間を確定。
+  const approxUtcMs = Date.UTC(year, month - 1, day, hour, minute);
+  const srcOffset = getOffsetMinutes(srcTz, new Date(approxUtcMs));
+  const utcMs = approxUtcMs - srcOffset * 60000;
+  const instant = new Date(utcMs);
+
+  // 目標タイムゾーンの壁時計成分を Intl で取り出す。
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: dstTz,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  }).formatToParts(instant);
+  const p = Object.fromEntries(parts.map((x) => [x.type, x.value]));
+  let h = parseInt(p.hour, 10);
+  if (h === 24) h = 0; // 一部環境で 24:00 と返るのを正規化
+  return {
+    year: parseInt(p.year, 10),
+    month: parseInt(p.month, 10),
+    day: parseInt(p.day, 10),
+    hour: h,
+    minute: parseInt(p.minute, 10),
+  };
+}

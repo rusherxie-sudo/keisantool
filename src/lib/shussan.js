@@ -63,6 +63,27 @@ export function pregnancyStage(weeks) {
   return '後期';
 }
 
+// 逆算：最終月経開始日（LMP）= 出産予定日 − 280日。ISO文字列を返す。無効なら null。
+export function lmpFromDue(due) {
+  const d = toDate(due);
+  if (!d) return null;
+  return toISO(addDays(d, -280));
+}
+
+// 排卵日・受精日の目安 = 出産予定日 − 266日（排卵≈LMP+14日）。ISO文字列を返す。無効なら null。
+export function ovulationFromDue(due) {
+  const d = toDate(due);
+  if (!d) return null;
+  return toISO(addDays(d, -266));
+}
+
+// 妊娠月数（日本の「妊娠○ヶ月」慣例：4週=1ヶ月、妊娠0週から1ヶ月目）。
+// 月数 = floor(週数 / 4) + 1。負数や無効は null。
+export function pregnancyMonths(weeks) {
+  if (!Number.isFinite(weeks) || weeks < 0) return null;
+  return Math.floor(weeks / 4) + 1;
+}
+
 // 産休目安：開始 = 出産予定日 − 42日（6週前）、終了 = 出産日（予定日）+ 56日（8週後）。
 export function maternityLeave(due) {
   const d = toDate(due);

@@ -1,12 +1,27 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import { yakudoshiTable } from '../../lib/yakudoshi.js';
 
 const slug = 'yakudoshi';
 const title =
-  '厄年チェッカー - 生年月日から厄年（前厄・本厄・後厄）を自動計算 | 計算ツール';
+  '厄年早見表【2026年・令和8年】男女別 厄年チェッカー（前厄・本厄・後厄）| 計算ツール';
 const description =
-  '生まれた年（西暦）と性別を入力するだけで、今年が厄年（前厄・本厄・後厄）かどうかを自動判定。男性・女性それぞれの厄年（数え年）と大厄、次の厄年まであと何年かもひと目でわかる無料の厄年チェッカーです。';
+  '2026年（令和8年）の厄年早見表。生年月日から厄年（前厄・本厄・後厄）を自動判定するチェッカー付き。男性・女性それぞれの厄年を和暦×西暦×数え年の早見表で一覧。大厄や次の厄年まであと何年かもひと目でわかる無料ツールです。';
+
+// 早見表は「今年」を固定値で SSR（純HTML）生成する。
+const TABLE_YEAR = 2026; // 令和8年
+const maleTable = yakudoshiTable(TABLE_YEAR, 'male');
+const femaleTable = yakudoshiTable(TABLE_YEAR, 'female');
+
+// 西暦 → 和暦（元号＋年）に変換する。
+function toWareki(year) {
+  if (year >= 2019) return `令和${year - 2018 === 1 ? '元' : year - 2018}年`;
+  if (year >= 1989) return `平成${year - 1988 === 1 ? '元' : year - 1988}年`;
+  if (year >= 1926) return `昭和${year - 1925 === 1 ? '元' : year - 1925}年`;
+  if (year >= 1912) return `大正${year - 1911 === 1 ? '元' : year - 1911}年`;
+  return `明治${year - 1867 === 1 ? '元' : year - 1867}年`;
+}
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -20,8 +35,8 @@ const jsonld = {
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ 厄年チェッカー</div>
-    <h1>厄年チェッカー</h1>
-    <p>生まれた年（西暦）と性別を選ぶだけで、今年が前厄・本厄・後厄のどれに当たるかを自動で判定します。</p>
+    <h1>厄年早見表＆厄年チェッカー（2026年・令和8年）</h1>
+    <p>生まれた年（西暦）と性別を選ぶだけで、今年が前厄・本厄・後厄のどれに当たるかを自動で判定します。下の<strong>厄年早見表</strong>では、和暦×西暦×数え年で男女別の厄年をまとめて確認できます。</p>
   </div>
 
   <div class="calc-card">
@@ -56,6 +71,54 @@ const jsonld = {
 
   <div class="ad-slot">広告枠（結果直下）</div>
 
+  <section class="haymitable">
+    <h2>厄年早見表（2026年・令和8年）｜和暦×西暦×数え年</h2>
+    <p class="hayimi-note">
+      2026年（令和8年）に前厄・本厄・後厄に当たる方の生まれた年を、和暦・西暦・数え年でまとめた早見表です。<strong class="taiyaku-mark">赤色の行は大厄</strong>（男性42歳・女性33歳）です。
+    </p>
+
+    <h3 class="hayimi-h3">男性の厄年早見表（2026年）</h3>
+    <div class="hayimi-wrap">
+      <table class="hayimi">
+        <thead>
+          <tr><th>区分</th><th>数え年</th><th>生まれた年（和暦）</th><th>生まれた年（西暦）</th></tr>
+        </thead>
+        <tbody>
+          {maleTable.map((r) => (
+            <tr class={r.isTaiyaku ? 'is-taiyaku' : ''}>
+              <td>{r.kind}{r.isTaiyaku && <span class="taiyaku-pill">大厄</span>}</td>
+              <td class="num">{r.kazoedoshi}歳</td>
+              <td>{toWareki(r.birthYear)}</td>
+              <td class="num">{r.birthYear}年</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="hayimi-h3">女性の厄年早見表（2026年）</h3>
+    <div class="hayimi-wrap">
+      <table class="hayimi">
+        <thead>
+          <tr><th>区分</th><th>数え年</th><th>生まれた年（和暦）</th><th>生まれた年（西暦）</th></tr>
+        </thead>
+        <tbody>
+          {femaleTable.map((r) => (
+            <tr class={r.isTaiyaku ? 'is-taiyaku' : ''}>
+              <td>{r.kind}{r.isTaiyaku && <span class="taiyaku-pill">大厄</span>}</td>
+              <td class="num">{r.kazoedoshi}歳</td>
+              <td>{toWareki(r.birthYear)}</td>
+              <td class="num">{r.birthYear}年</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="hayimi-note">※ 早見表の数え年は「2026 − 生まれた年 + 1」で算出した参考値です。誕生日前の方は実際の数え年と1歳ずれる場合があります。</p>
+  </section>
+
+  <div class="ad-slot">広告枠（早見表下）</div>
+
   <section class="howto">
     <h2>厄年チェッカーの使い方と厄年の基礎知識</h2>
     <p>
@@ -89,6 +152,22 @@ const jsonld = {
   .judge-maeyaku,.judge-atoyaku{color:var(--navy)!important}
   .judge-none{color:var(--text-muted)!important}
   .taiyaku-badge{display:inline-block;margin-left:8px;font-size:.55em;vertical-align:middle;background:var(--red);color:#fff;padding:2px 8px;border-radius:999px;font-family:var(--font-jp);font-weight:700}
+
+  /* 厄年早見表 */
+  .haymitable{margin-top:32px}
+  .hayimi-h3{font-size:1rem;margin:22px 0 8px;color:var(--navy)}
+  .hayimi-note{font-size:.82rem;color:var(--text-muted);margin:6px 0}
+  .taiyaku-mark{color:var(--red)}
+  .hayimi-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table.hayimi{width:100%;border-collapse:collapse;font-size:.86rem;min-width:420px}
+  table.hayimi th,table.hayimi td{border:1px solid var(--border);padding:8px 10px;text-align:left}
+  table.hayimi thead th{background:var(--navy);color:#fff;font-weight:600;font-size:.8rem;white-space:nowrap}
+  table.hayimi td.num{font-family:var(--font-mono);font-weight:600;color:var(--navy);white-space:nowrap}
+  table.hayimi tbody tr:nth-child(even){background:var(--bg)}
+  table.hayimi tr.is-taiyaku{background:#fdecec}
+  table.hayimi tr.is-taiyaku td{color:var(--red);font-weight:700}
+  table.hayimi tr.is-taiyaku td.num{color:var(--red)}
+  .taiyaku-pill{display:inline-block;margin-left:6px;font-size:.62rem;background:var(--red);color:#fff;padding:1px 6px;border-radius:999px;font-weight:700;vertical-align:middle}
 </style>
 
 <script>

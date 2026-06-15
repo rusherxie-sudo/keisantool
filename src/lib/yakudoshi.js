@@ -66,6 +66,25 @@ export function checkYakudoshi(birthYear, gender, currentYear) {
   return empty;
 }
 
+// 早見表用：指定の基準年(currentYear)・性別における、その年に該当する
+// すべての厄年（前厄・本厄・後厄）の一覧を返す。数え年の昇順でソート。
+//   各要素: { kind: '前厄'|'本厄'|'後厄', kazoedoshi, birthYear, isTaiyaku }
+//   birthYear（西暦） = currentYear - kazoedoshi + 1
+//   isTaiyaku は本厄かつ大厄の場合のみ true（前厄・後厄は false）。
+export function yakudoshiTable(currentYear, gender) {
+  const base = YAKU[gender];
+  if (!base) return [];
+  const c = Number(currentYear);
+  const rows = [];
+  for (const { honyaku, taiyaku } of base) {
+    rows.push({ kind: '前厄', kazoedoshi: honyaku - 1, isTaiyaku: false });
+    rows.push({ kind: '本厄', kazoedoshi: honyaku, isTaiyaku: taiyaku });
+    rows.push({ kind: '後厄', kazoedoshi: honyaku + 1, isTaiyaku: false });
+  }
+  rows.sort((a, b) => a.kazoedoshi - b.kazoedoshi);
+  return rows.map((r) => ({ ...r, birthYear: c - r.kazoedoshi + 1 }));
+}
+
 // 次に来る厄年（前厄）の情報と、前厄まであと何年かを返す。
 // 既に全ての厄年（後厄まで）を過ぎている場合は null。
 //   { yearsToMaeyaku, nextMaeyakuAge, nextHonyaku, taiyaku }

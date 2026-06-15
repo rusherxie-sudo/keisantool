@@ -80,13 +80,17 @@ const jsonld = {
     <!-- 給付金タブ -->
     <div class="calc-panel" id="panel-kyuufu">
       <div class="form-group">
-        <label for="monthly-wage">月給（標準報酬月額・円）</label>
+        <label for="monthly-wage">標準報酬月額（円）<span class="optional-label">※額面の月給に近い額。残業代等で変動します</span></label>
         <input type="number" id="monthly-wage" inputmode="numeric" placeholder="例：300000" min="0" />
       </div>
       <div class="form-group">
         <label for="ikukyu-days">育休取得日数（日）<span class="optional-label">※空欄なら1歳まで約309日で試算</span></label>
         <input type="number" id="ikukyu-days" inputmode="numeric" placeholder="例：309" min="0" max="730" />
       </div>
+      <label class="shien-check">
+        <input type="checkbox" id="shien-toggle" />
+        <span>夫婦ともに14日以上の育休を取得（出生後休業支援給付金 +13% を加算）</span>
+      </label>
 
       <div class="result-box" id="kyuufu-result">
         <div class="result-label">給付金の概算</div>
@@ -113,6 +117,14 @@ const jsonld = {
             <span class="label" style="font-weight:600;color:var(--navy)">育児休業給付金 合計</span>
             <span class="value" id="ikukyu-total">¥0</span>
           </div>
+          <div class="result-row" id="shien-row" style="display:none">
+            <span class="label">出生後休業支援給付金（13%・最大28日）</span>
+            <span class="value green" id="shien-amount">¥0</span>
+          </div>
+          <div class="result-row" style="padding-top:8px;border-top:1px dashed #bfdbfe;margin-top:4px">
+            <span class="label" style="font-weight:600;color:var(--navy)">給付金 総合計</span>
+            <span class="value" id="grand-total">¥0</span>
+          </div>
         </div>
       </div>
     </div>
@@ -127,10 +139,11 @@ const jsonld = {
       <li><strong>給付金計算タブ</strong>：月給（標準報酬月額）を入力すると出産手当金と育児休業給付金の概算を計算します。</li>
     </ul>
     <p>
-      <strong>出産手当金：</strong>健康保険から支給。標準報酬日額（月額÷30）の3分の2が、産前42日＋産後56日＝計98日分支給されます。<br />
-      <strong>育児休業給付金：</strong>雇用保険から支給。育休開始時賃金日額（月給×12÷365）の67%が最初の180日、以降50%が支給されます。
+      <strong>出産手当金：</strong>健康保険から支給。標準報酬日額（標準報酬月額÷30）の3分の2が、産前42日＋産後56日＝計98日分支給されます。<br />
+      <strong>育児休業給付金：</strong>雇用保険から支給。休業開始時賃金日額（休業前6ヶ月の賃金÷180＝月額一定なら月給÷30）の67%が最初の180日、以降50%が支給されます。賃金日額には上限（令和7年8月改定で16,110円）があり、高収入の方は頭打ちになります。<br />
+      <strong>出生後休業支援給付金（2025年4月新設）：</strong>子の出生後一定期間に夫婦ともに14日以上の育休を取得すると、最大28日分の賃金日額13%が上乗せされ、育休給付67%と合わせて実質80%になります。さらに育休中は社会保険料（健康保険・厚生年金）が免除されるため、手取りベースでは休業前の約10割相当になる場合があります。
     </p>
-    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の給付額は加入している健康保険組合・ハローワークの審査により異なります。詳細は職場の担当部署または各機関にお問い合わせください。</div>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の給付額は加入している健康保険組合・ハローワークの審査、標準報酬月額の等級、賃金日額の上下限により異なります。詳細は職場の担当部署または各機関にお問い合わせください。</div>
   </section>
 
   <RelatedTools current={slug} />
@@ -155,6 +168,20 @@ const jsonld = {
   font-size: .95rem;
 }
 .optional-label { font-size: .75rem; font-weight: 400; color: #94a3b8; margin-left: 4px; }
+.shien-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  margin-bottom: 4px;
+  background: var(--navy-light);
+  border-radius: 6px;
+  font-size: .82rem;
+  color: var(--text);
+  cursor: pointer;
+  line-height: 1.5;
+}
+.shien-check input { margin-top: 2px; flex-shrink: 0; }
 </style>
 
 <script>
@@ -164,6 +191,8 @@ const jsonld = {
     calcIkukyuEnd,
     calcShussanTeate,
     calcIkukyuKyuufu,
+    calcShusseigoShien,
+    dailyWageFromMonthly,
   } from '../../lib/saniku.js';
 
   const $ = (id) => document.getElementById(id);
@@ -212,11 +241,16 @@ const jsonld = {
       return;
     }
 
-    const dailyAmount = Math.floor(monthlyWage / 30);
+    // 標準報酬日額・賃金日額はいずれも 月給÷30（賃金日額は6ヶ月賃金÷180と一致）
+    const dailyAmount = dailyWageFromMonthly(monthlyWage);
     const teate = calcShussanTeate(dailyAmount, 98);
     const totalDays = (Number.isFinite(inputDays) && inputDays > 0) ? inputDays : 309;
-    const dailyWage = Math.floor(monthlyWage * 12 / 365);
-    const kyuufu = calcIkukyuKyuufu(dailyWage, totalDays);
+    const kyuufu = calcIkukyuKyuufu(dailyAmount, totalDays);
+
+    // 出生後休業支援給付金（夫婦ともに14日以上育休を取得した場合・最大28日13%上乗せ）
+    const shienOn = $('shien-toggle').checked;
+    const shien = shienOn ? calcShusseigoShien(dailyAmount, 28) : null;
+    const grandTotal = (kyuufu?.total ?? 0) + (shien?.amount ?? 0);
 
     box.classList.add('visible');
     $('daily-amount').textContent = yen(dailyAmount);
@@ -224,9 +258,13 @@ const jsonld = {
     $('ikukyu-first').textContent  = yen(kyuufu?.first ?? 0);
     $('ikukyu-rest').textContent   = yen(kyuufu?.rest ?? 0);
     $('ikukyu-total').textContent  = yen(kyuufu?.total ?? 0);
+    $('shien-row').style.display = shienOn ? 'flex' : 'none';
+    $('shien-amount').textContent = yen(shien?.amount ?? 0);
+    $('grand-total').textContent = yen(grandTotal);
   }
 
   ['monthly-wage', 'ikukyu-days'].forEach((id) => $(id).addEventListener('input', renderKyuufu));
+  $('shien-toggle').addEventListener('change', renderKyuufu);
 
   // タブ切り替え
   document.querySelectorAll('.calc-tab').forEach((tab) => {

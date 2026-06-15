@@ -50,28 +50,58 @@ const jsonld = {
     </div>
 
     <div class="calc-panel" id="panel-ot">
+      <details class="mini-tool" id="from-monthly">
+        <summary>基本給から時給を計算する</summary>
+        <p class="mini-note">時給が分からない場合は、基本給（月額）と1か月の平均所定労働時間から時給を求められます。</p>
+        <div class="mini-grid">
+          <div class="form-group">
+            <label for="fm-basic">基本給（月額・円）</label>
+            <input type="number" id="fm-basic" inputmode="numeric" placeholder="例：250000" />
+          </div>
+          <div class="form-group">
+            <label for="fm-hours">月平均所定労働時間（時間）</label>
+            <input type="number" id="fm-hours" inputmode="decimal" placeholder="例：160" />
+          </div>
+        </div>
+        <div class="mini-result" id="fm-result">
+          <span>計算した時給：<strong id="fm-wage">¥0</strong></span>
+          <button type="button" id="fm-apply">この時給を使う</button>
+        </div>
+      </details>
+
       <div class="form-group">
         <label for="ot-rate">時給（円）</label>
         <input type="number" id="ot-rate" inputmode="numeric" placeholder="例：1100" />
       </div>
-      <div class="form-group">
-        <label for="ot-hours">残業時間（時間）</label>
-        <input type="number" id="ot-hours" inputmode="decimal" placeholder="例：10" />
+
+      <p class="field-heading">残業時間を区分ごとに入力（割増率は自動適用）</p>
+      <div class="ot-grid">
+        <div class="form-group">
+          <label for="ot-h-normal">通常残業（×1.25）</label>
+          <input type="number" id="ot-h-normal" inputmode="decimal" placeholder="時間" />
+        </div>
+        <div class="form-group">
+          <label for="ot-h-night">深夜 22-5時（×1.5）</label>
+          <input type="number" id="ot-h-night" inputmode="decimal" placeholder="時間" />
+        </div>
+        <div class="form-group">
+          <label for="ot-h-holiday">休日（×1.35）</label>
+          <input type="number" id="ot-h-holiday" inputmode="decimal" placeholder="時間" />
+        </div>
+        <div class="form-group">
+          <label for="ot-h-over60">月60時間超（×1.5）</label>
+          <input type="number" id="ot-h-over60" inputmode="decimal" placeholder="時間" />
+        </div>
       </div>
-      <div class="radio-group">
-        <input type="radio" name="ot-mult" id="ot-125" value="1.25" checked />
-        <label for="ot-125">通常 1.25</label>
-        <input type="radio" name="ot-mult" id="ot-15" value="1.5" />
-        <label for="ot-15">深夜 1.5</label>
-        <input type="radio" name="ot-mult" id="ot-135" value="1.35" />
-        <label for="ot-135">休日 1.35</label>
-      </div>
+
       <div class="result-box" id="ot-result">
-        <div class="result-label">残業代</div>
+        <div class="result-label">残業代の合計</div>
         <div class="result-main" id="ot-pay">¥0</div>
         <div class="result-rows">
-          <div class="result-row"><span class="label">割増前（時給×残業時間）</span><span class="value" id="ot-base">¥0</span></div>
-          <div class="result-row"><span class="label">割増分</span><span class="value red" id="ot-extra">¥0</span></div>
+          <div class="result-row"><span class="label">通常残業（×1.25）</span><span class="value" id="ot-r-normal">¥0</span></div>
+          <div class="result-row"><span class="label">深夜（×1.5）</span><span class="value" id="ot-r-night">¥0</span></div>
+          <div class="result-row"><span class="label">休日（×1.35）</span><span class="value" id="ot-r-holiday">¥0</span></div>
+          <div class="result-row"><span class="label">月60時間超（×1.5）</span><span class="value" id="ot-r-over60">¥0</span></div>
         </div>
       </div>
     </div>
@@ -99,7 +129,7 @@ const jsonld = {
     <p>上のタブから計算したい種類を選び、金額を入力すると自動で結果が表示されます。ボタンを押す必要はありません。</p>
     <ul>
       <li><strong>時給計算</strong>：時給と労働時間を入力すると、給与（額面）を算出します。</li>
-      <li><strong>残業代計算</strong>：時給・残業時間と割増率を選ぶと、残業代を計算します。基本給しか分からない場合は「基本給 ÷ 月平均所定労働時間」で求めた1時間あたりの単価を時給欄に入力してください。割増率は通常残業1.25倍、深夜（22時〜5時）1.5倍、休日1.35倍を選択できます。</li>
+      <li><strong>残業代計算</strong>：時給を入力し、残業時間を「通常・深夜・休日・月60時間超」の区分ごとに入力すると、それぞれの割増率（通常1.25倍／深夜1.5倍／休日1.35倍／月60時間超1.5倍）を自動で適用し、区分別の金額と合計を一度に計算します。基本給しか分からない場合は、入力欄の上にある「<strong>基本給から時給を計算する</strong>」を開き、基本給（月額）と月平均所定労働時間を入力すれば「基本給 ÷ 月平均所定労働時間」で時給を求め、ワンクリックで時給欄に反映できます。<strong>月60時間を超える残業</strong>については、2010年4月から大企業で、<strong>2023年4月からは中小企業でも</strong>、50%以上の割増賃金（1.5倍）が義務付けられています。なお、深夜1.5倍と月60時間超1.5倍は割増率の数値は同じですが、適用される条件（深夜帯か、月の残業時間の累計が60時間を超えた分か）が異なります。</li>
       <li><strong>手取り概算</strong>：月収（額面）から、おおよその手取り額の目安を表示します。</li>
     </ul>
     <p>
@@ -114,7 +144,7 @@ const jsonld = {
 </ToolLayout>
 
 <script>
-  import { hourlyWage, overtimePay, takeHomePay } from '../../lib/kyuyo.js';
+  import { hourlyWage, takeHomePay, hourlyFromMonthly, overtimeBreakdown } from '../../lib/kyuyo.js';
 
   const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
   const $ = (id) => document.getElementById(id);
@@ -127,9 +157,6 @@ const jsonld = {
       $('panel-' + tab.dataset.tab).classList.add('active');
     });
   });
-
-  const mult = () =>
-    parseFloat(document.querySelector('input[name="ot-mult"]:checked').value);
 
   function renderWage() {
     const rate = $('wage-rate').value;
@@ -145,16 +172,36 @@ const jsonld = {
 
   function renderOt() {
     const rate = $('ot-rate').value;
-    const hours = $('ot-hours').value;
-    const m = mult();
-    const { pay } = overtimePay(rate, hours, m);
+    const hours = {
+      normal: $('ot-h-normal').value,
+      night: $('ot-h-night').value,
+      holiday: $('ot-h-holiday').value,
+      over60: $('ot-h-over60').value,
+    };
+    const { normal, night, holiday, over60, total } = overtimeBreakdown(rate, hours);
     const box = $('ot-result');
-    if (pay <= 0) return box.classList.remove('visible');
+    if (total <= 0) return box.classList.remove('visible');
     box.classList.add('visible');
-    const base = Math.floor(Number(rate) * Number(hours));
-    $('ot-pay').textContent = yen(pay);
-    $('ot-base').textContent = yen(base);
-    $('ot-extra').textContent = yen(pay - base);
+    $('ot-pay').textContent = yen(total);
+    $('ot-r-normal').textContent = yen(normal);
+    $('ot-r-night').textContent = yen(night);
+    $('ot-r-holiday').textContent = yen(holiday);
+    $('ot-r-over60').textContent = yen(over60);
+  }
+
+  // 基本給から時給を計算する小ツール
+  let fmComputed = null;
+  function renderFromMonthly() {
+    const basic = $('fm-basic').value;
+    const hours = $('fm-hours').value;
+    fmComputed = hourlyFromMonthly(basic, hours);
+    const box = $('fm-result');
+    if (fmComputed === null || fmComputed <= 0) {
+      box.classList.remove('visible');
+      return;
+    }
+    box.classList.add('visible');
+    $('fm-wage').textContent = yen(fmComputed);
   }
 
   function renderNet() {
@@ -169,7 +216,80 @@ const jsonld = {
   }
 
   ['wage-rate', 'wage-hours'].forEach((id) => $(id).addEventListener('input', renderWage));
-  ['ot-rate', 'ot-hours'].forEach((id) => $(id).addEventListener('input', renderOt));
-  document.querySelectorAll('input[name="ot-mult"]').forEach((r) => r.addEventListener('change', renderOt));
+  ['ot-rate', 'ot-h-normal', 'ot-h-night', 'ot-h-holiday', 'ot-h-over60'].forEach((id) =>
+    $(id).addEventListener('input', renderOt)
+  );
+  ['fm-basic', 'fm-hours'].forEach((id) => $(id).addEventListener('input', renderFromMonthly));
+  $('fm-apply').addEventListener('click', () => {
+    if (fmComputed === null || fmComputed <= 0) return;
+    $('ot-rate').value = fmComputed;
+    renderOt();
+  });
   ['net-income'].forEach((id) => $(id).addEventListener('input', renderNet));
 </script>
+
+<style>
+  .mini-tool {
+    border: 1px solid var(--border, #e2e2e2);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    background: var(--bg-subtle, #fafafa);
+  }
+  .mini-tool > summary {
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+    user-select: none;
+  }
+  .mini-tool > summary::-webkit-details-marker { display: none; }
+  .mini-tool > summary::before {
+    content: '＋ ';
+    font-weight: 700;
+  }
+  .mini-tool[open] > summary::before { content: '－ '; }
+  .mini-note {
+    font-size: 0.85rem;
+    color: var(--text-muted, #666);
+    margin: 0.6rem 0;
+  }
+  .mini-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .mini-result {
+    display: none;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed var(--border, #e2e2e2);
+  }
+  .mini-result.visible { display: flex; }
+  .mini-result strong { font-size: 1.15rem; }
+  .mini-result button {
+    border: none;
+    border-radius: 8px;
+    padding: 0.4rem 0.9rem;
+    background: var(--accent, #2563eb);
+    color: #fff;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .mini-result button:hover { opacity: 0.9; }
+  .field-heading {
+    font-weight: 600;
+    margin: 1.1rem 0 0.5rem;
+  }
+  .ot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  @media (max-width: 480px) {
+    .mini-grid,
+    .ot-grid { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { taxIncluded, taxExcluded, discount } from '../src/lib/zeizei.js';
+import { taxIncluded, taxExcluded, discount, sumItems } from '../src/lib/zeizei.js';
 
 describe('taxIncluded(税抜 → 税込)', () => {
   it('1000円 @10% → 税100, 税込1100', () => {
@@ -44,6 +44,55 @@ describe('discount(割引計算)', () => {
 
   it('0%OFF → 割引後は定価のまま, 節約0', () => {
     expect(discount(5000, 0)).toEqual({ discounted: 5000, saved: 0 });
+  });
+});
+
+describe('sumItems(複数商品の合算)', () => {
+  it('税抜2商品（10%と8%）→ tax=180, incl=2180, excl=2000', () => {
+    const items = [
+      { amount: 1000, rate: 0.1, taxIncluded: false },
+      { amount: 1000, rate: 0.08, taxIncluded: false },
+    ];
+    expect(sumItems(items)).toEqual({ subtotalExcl: 2000, totalTax: 180, totalIncl: 2180 });
+  });
+
+  it('税込商品（10%）→ 税抜逆算と税額が現有 taxExcluded と一致', () => {
+    const items = [{ amount: 1100, rate: 0.1, taxIncluded: true }];
+    expect(sumItems(items)).toEqual({ subtotalExcl: 1000, totalTax: 100, totalIncl: 1100 });
+  });
+
+  it('税抜と税込の混在を合算', () => {
+    const items = [
+      { amount: 1000, rate: 0.1, taxIncluded: false }, // excl1000 tax100 incl1100
+      { amount: 1080, rate: 0.08, taxIncluded: true },  // excl1000 tax80  incl1080
+    ];
+    expect(sumItems(items)).toEqual({ subtotalExcl: 2000, totalTax: 180, totalIncl: 2180 });
+  });
+
+  it('端数は商品ごとに切り捨ててから合計: 198円@10%税抜 ×2 → tax=38, incl=434', () => {
+    const items = [
+      { amount: 198, rate: 0.1, taxIncluded: false },
+      { amount: 198, rate: 0.1, taxIncluded: false },
+    ];
+    expect(sumItems(items)).toEqual({ subtotalExcl: 396, totalTax: 38, totalIncl: 434 });
+  });
+
+  it('空配列 → 全て0', () => {
+    expect(sumItems([])).toEqual({ subtotalExcl: 0, totalTax: 0, totalIncl: 0 });
+  });
+
+  it('非配列 → 全て0', () => {
+    expect(sumItems(null)).toEqual({ subtotalExcl: 0, totalTax: 0, totalIncl: 0 });
+  });
+
+  it('不正な項目（非数値・負数・金額未入力）はスキップ（0扱い）', () => {
+    const items = [
+      { amount: 1000, rate: 0.1, taxIncluded: false },
+      { amount: NaN, rate: 0.1, taxIncluded: false },
+      { amount: -500, rate: 0.1, taxIncluded: false },
+      { amount: '', rate: 0.1, taxIncluded: false },
+    ];
+    expect(sumItems(items)).toEqual({ subtotalExcl: 1000, totalTax: 100, totalIncl: 1100 });
   });
 });
 

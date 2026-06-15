@@ -4,6 +4,7 @@ import {
   checkYakudoshi,
   yakudoshiList,
   nextYaku,
+  yakudoshiTable,
 } from '../src/lib/yakudoshi.js';
 
 // 全ての「今年」依存の関数は基準年(currentYear)を引数で受け取る。
@@ -136,5 +137,76 @@ describe('nextYaku(次の厄年・前厄まであと何年)', () => {
     // 男性 数え年41(前厄) = 生年1986
     const r = nextYaku(1986, 'male', 2026);
     expect(r.yearsToMaeyaku).toBe(0);
+  });
+});
+
+describe('yakudoshiTable(早見表: 指定年の全厄年・前厄/本厄/後厄)', () => {
+  const get = (rows, kind, kazoe) =>
+    rows.find((r) => r.kind === kind && r.kazoedoshi === kazoe);
+
+  it('数え年で昇順ソートされている', () => {
+    const rows = yakudoshiTable(2026, 'male');
+    const ages = rows.map((r) => r.kazoedoshi);
+    const sorted = [...ages].sort((a, b) => a - b);
+    expect(ages).toEqual(sorted);
+  });
+
+  it('男性: 本厄25/42/61 と各前厄・後厄の計9件', () => {
+    const rows = yakudoshiTable(2026, 'male');
+    expect(rows.filter((r) => r.kind === '本厄').map((r) => r.kazoedoshi)).toEqual([25, 42, 61]);
+    expect(rows.filter((r) => r.kind === '前厄').map((r) => r.kazoedoshi)).toEqual([24, 41, 60]);
+    expect(rows.filter((r) => r.kind === '後厄').map((r) => r.kazoedoshi)).toEqual([26, 43, 62]);
+    expect(rows.length).toBe(9);
+  });
+
+  it('女性: 本厄19/33/37/61 の計12件', () => {
+    const rows = yakudoshiTable(2026, 'female');
+    expect(rows.filter((r) => r.kind === '本厄').map((r) => r.kazoedoshi)).toEqual([19, 33, 37, 61]);
+    expect(rows.length).toBe(12);
+  });
+
+  it('男性 本厄42・2026年 → 生年1985・大厄', () => {
+    const o = get(yakudoshiTable(2026, 'male'), '本厄', 42);
+    expect(o.birthYear).toBe(1985); // 2026 - 42 + 1
+    expect(o.isTaiyaku).toBe(true);
+  });
+
+  it('男性 本厄25・2026年 → 生年2002・大厄でない', () => {
+    const o = get(yakudoshiTable(2026, 'male'), '本厄', 25);
+    expect(o.birthYear).toBe(2002); // 2026 - 25 + 1
+    expect(o.isTaiyaku).toBe(false);
+  });
+
+  it('男性 本厄61・2026年 → 生年1966', () => {
+    const o = get(yakudoshiTable(2026, 'male'), '本厄', 61);
+    expect(o.birthYear).toBe(1966); // 2026 - 61 + 1
+    expect(o.isTaiyaku).toBe(false);
+  });
+
+  it('男性 大厄42の前厄(41)・後厄(43): 前厄は大厄でない/後厄も大厄でない', () => {
+    const rows = yakudoshiTable(2026, 'male');
+    const mae = get(rows, '前厄', 41);
+    const ato = get(rows, '後厄', 43);
+    expect(mae.birthYear).toBe(1986); // 2026 - 41 + 1
+    expect(ato.birthYear).toBe(1984); // 2026 - 43 + 1
+    expect(mae.isTaiyaku).toBe(false);
+    expect(ato.isTaiyaku).toBe(false);
+  });
+
+  it('女性 大厄33・2026年 → 生年1994・大厄', () => {
+    const o = get(yakudoshiTable(2026, 'female'), '本厄', 33);
+    expect(o.birthYear).toBe(1994); // 2026 - 33 + 1
+    expect(o.isTaiyaku).toBe(true);
+  });
+
+  it('birthYear は currentYear - kazoedoshi + 1 を満たす', () => {
+    const rows = yakudoshiTable(2026, 'male');
+    rows.forEach((r) => {
+      expect(r.birthYear).toBe(2026 - r.kazoedoshi + 1);
+    });
+  });
+
+  it('非対応の性別は空配列', () => {
+    expect(yakudoshiTable(2026, 'x')).toEqual([]);
   });
 });

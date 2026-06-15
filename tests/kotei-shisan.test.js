@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { koteiShisan, splitQuarterly } from '../src/lib/koteiShisan.js';
+import {
+  koteiShisan,
+  koteiShisanBuilding,
+  koteiShisanCombined,
+  splitQuarterly,
+} from '../src/lib/koteiShisan.js';
 
 describe('koteiShisan(固定資産税・都市計画税)', () => {
   it('非住宅（特例なし）: 評価額1000万 → 固定140000, 都計30000', () => {
@@ -79,6 +84,78 @@ describe('koteiShisan(固定資産税・都市計画税)', () => {
     const r = koteiShisan(10000000, 'unknown');
     expect(r.fixedTax).toBe(140000);
     expect(r.cityTax).toBe(30000);
+  });
+});
+
+describe('koteiShisanBuilding(家屋の固定資産税・新築減額)', () => {
+  it('減額なし: 家屋評価額1000万 → 固定140000, 都計30000', () => {
+    const r = koteiShisanBuilding(10000000, false);
+    expect(r.fixedTax).toBe(140000);
+    expect(r.cityTax).toBe(30000);
+    expect(r.total).toBe(170000);
+  });
+
+  it('新築減額あり: 固定資産税が1/2、都市計画税は減額なし', () => {
+    // 固定 = floor(140000 × 1/2) = 70000 / 都計 = 30000（変わらず）
+    const r = koteiShisanBuilding(10000000, true);
+    expect(r.fixedTax).toBe(70000);
+    expect(r.cityTax).toBe(30000);
+    expect(r.total).toBe(100000);
+  });
+
+  it('家屋には用地特例は適用されない（課税標準=評価額）', () => {
+    const r = koteiShisanBuilding(10000000, false);
+    expect(r.fixedBase).toBe(10000000);
+    expect(r.cityBase).toBe(10000000);
+  });
+
+  it('0・不正 → 全て0', () => {
+    expect(koteiShisanBuilding(0, true).total).toBe(0);
+    expect(koteiShisanBuilding(NaN, false).total).toBe(0);
+    expect(koteiShisanBuilding(-100, true).total).toBe(0);
+  });
+});
+
+describe('koteiShisanCombined(土地+家屋の合算)', () => {
+  it('小規模土地1200万 + 家屋1000万(新築減額) の合算', () => {
+    const r = koteiShisanCombined({
+      landValue: 12000000,
+      landType: 'small',
+      buildingValue: 10000000,
+      shinchikuGengaku: true,
+    });
+    // 土地: 固定28000, 都計12000
+    expect(r.land.fixedTax).toBe(28000);
+    expect(r.land.cityTax).toBe(12000);
+    // 家屋(減額): 固定70000, 都計30000
+    expect(r.building.fixedTax).toBe(70000);
+    expect(r.building.cityTax).toBe(30000);
+    // 合計
+    expect(r.fixedTax).toBe(98000);
+    expect(r.cityTax).toBe(42000);
+    expect(r.total).toBe(140000);
+  });
+
+  it('土地のみ（家屋0）でも計算できる', () => {
+    const r = koteiShisanCombined({
+      landValue: 12000000,
+      landType: 'small',
+      buildingValue: 0,
+      shinchikuGengaku: false,
+    });
+    expect(r.building.total).toBe(0);
+    expect(r.total).toBe(40000);
+  });
+
+  it('家屋のみ（土地0）でも計算できる', () => {
+    const r = koteiShisanCombined({
+      landValue: 0,
+      landType: 'none',
+      buildingValue: 10000000,
+      shinchikuGengaku: false,
+    });
+    expect(r.land.total).toBe(0);
+    expect(r.total).toBe(170000);
   });
 });
 

@@ -55,6 +55,60 @@ export function ratio(a, b) {
   return { a: na / g, b: nb / g };
 }
 
+// 数値として有効か判定（負数も許容）。空文字・非数値は null。
+function toNumber(v) {
+  if (v === '' || v === null || v === undefined) return null;
+  const n = Number(v);
+  if (!Number.isFinite(n)) return null;
+  return n;
+}
+
+// 空欄は0扱いで非負数として読む（歩合の各桁用）。非数値・負数は null。
+function toNonNegativeOrZero(v) {
+  if (v === '' || v === null || v === undefined) return 0;
+  const n = Number(v);
+  if (!Number.isFinite(n) || n < 0) return null;
+  return n;
+}
+
+// 増減率（前年比・変化率）：(to - from) / from * 100。
+// 変化前 from が 0（または不正）なら null。変化後 to は 0・負も許容。
+export function changeRate(from, to) {
+  const nf = toNumber(from);
+  const nt = toNumber(to);
+  if (nf === null || nt === null) return null;
+  if (nf === 0) return null; // ゼロ除算
+  return round2(((nt - nf) / nf) * 100);
+}
+
+// 歩合 → パーセント：1割=10%, 1分=1%, 1厘=0.1%。
+// 例：3割5分 → 35%。各桁の空欄は0扱い。全て空・負数・非数値は null。
+export function buaiToPercent(wari, bu, rin) {
+  // 全て空なら null
+  const allEmpty = [wari, bu, rin].every(
+    (v) => v === '' || v === null || v === undefined
+  );
+  if (allEmpty) return null;
+  const w = toNonNegativeOrZero(wari);
+  const b = toNonNegativeOrZero(bu);
+  const r = toNonNegativeOrZero(rin);
+  if (w === null || b === null || r === null) return null;
+  return round2(w * 10 + b * 1 + r * 0.1);
+}
+
+// パーセント → 歩合：35% → {wari:3, bu:5, rin:0}。厘単位まで（小数1位%）に丸め。
+// 空・負数・非数値は null。
+export function percentToBuai(percent) {
+  const p = toNonNegative(percent);
+  if (p === null) return null;
+  // 厘 = 0.1% 単位。総厘数に丸める。
+  const totalRin = Math.round(p * 10);
+  const wari = Math.floor(totalRin / 100);
+  const bu = Math.floor((totalRin % 100) / 10);
+  const rin = totalRin % 10;
+  return { wari, bu, rin };
+}
+
 // 割引後計算：定価の ○%OFF の価格。金額は切り捨て（Math.floor）。
 export function discountedPrice(price, percent) {
   const p = toNonNegative(price);

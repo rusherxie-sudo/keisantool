@@ -28,6 +28,7 @@ const jsonld = {
       <button class="calc-tab active" data-tab="incl" type="button">税込計算</button>
       <button class="calc-tab" data-tab="excl" type="button">税抜計算</button>
       <button class="calc-tab" data-tab="disc" type="button">割引計算</button>
+      <button class="calc-tab" data-tab="multi" type="button">複数商品</button>
     </div>
 
     <div class="calc-panel active" id="panel-incl">
@@ -90,6 +91,19 @@ const jsonld = {
         </div>
       </div>
     </div>
+    <div class="calc-panel" id="panel-multi">
+      <p class="multi-intro">商品を追加して、それぞれ税率（10%／8%）と税抜・税込を選ぶと、合計を自動計算します。買い物の合計や軽減税率の混在に便利です。</p>
+      <div class="multi-rows" id="multi-rows"></div>
+      <button type="button" class="multi-add" id="multi-add">＋ 商品を追加</button>
+      <div class="result-box" id="multi-result">
+        <div class="result-label">合計（税込）</div>
+        <div class="result-main" id="multi-incl">¥0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">税抜合計</span><span class="value" id="multi-excl">¥0</span></div>
+          <div class="result-row"><span class="label">消費税額合計</span><span class="value red" id="multi-tax">¥0</span></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="ad-slot">広告枠（結果直下）</div>
@@ -101,6 +115,7 @@ const jsonld = {
       <li><strong>税込計算</strong>：税抜価格から消費税込みの支払額を算出します。</li>
       <li><strong>税抜計算</strong>：レシートの税込価格から、本体価格と消費税額を逆算します。</li>
       <li><strong>割引計算</strong>：定価と割引率から、割引後の価格と節約できる金額を計算します。</li>
+      <li><strong>複数商品</strong>：商品を何点でも追加し、品目ごとに税率（10%／8%）と税抜・税込を選んで、税抜・消費税・税込の合計をまとめて計算します。</li>
     </ul>
     <p>
       消費税の標準税率は10%、食料品など一部の品目には軽減税率8%が適用されます。本ツールでは端数（小数点以下）を<strong>切り捨て</strong>で計算しています。お店のレジ設定（四捨五入・切り上げなど）により、実際の支払額と数円異なる場合があります。
@@ -113,8 +128,71 @@ const jsonld = {
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>
 
+<style>
+  .multi-intro {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0 0 1rem;
+    line-height: 1.6;
+  }
+  .multi-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.6rem;
+  }
+  .multi-row .m-amount {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.55rem 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  .multi-row .m-rate,
+  .multi-row .m-incl {
+    flex: 0 0 auto;
+    padding: 0.55rem 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: #fff;
+  }
+  .multi-row .m-del {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+    color: #999;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .multi-row .m-del:hover {
+    background: #f0f0f0;
+    color: #d33;
+  }
+  .multi-add {
+    display: inline-block;
+    margin: 0.3rem 0 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px dashed #aaa;
+    border-radius: 8px;
+    background: #fff;
+    color: #2563eb;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .multi-add:hover {
+    border-color: #2563eb;
+    background: #f5f8ff;
+  }
+</style>
+
 <script>
-  import { taxIncluded, taxExcluded, discount } from '../../lib/zeizei.js';
+  import { taxIncluded, taxExcluded, discount, sumItems } from '../../lib/zeizei.js';
 
   const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
   const $ = (id) => document.getElementById(id);
@@ -167,4 +245,58 @@ const jsonld = {
   ['excl-amount'].forEach((id) => $(id).addEventListener('input', renderExcl));
   document.querySelectorAll('input[name="excl-rate"]').forEach((r) => r.addEventListener('change', renderExcl));
   ['disc-price', 'disc-pct'].forEach((id) => $(id).addEventListener('input', renderDisc));
+
+  // ── 複数商品の合算 ──
+  const rowsEl = $('multi-rows');
+
+  function makeRow() {
+    const row = document.createElement('div');
+    row.className = 'multi-row';
+    row.innerHTML = `
+      <input type="number" class="m-amount" inputmode="numeric" placeholder="金額（円）" />
+      <select class="m-rate">
+        <option value="0.1">10%</option>
+        <option value="0.08">8%</option>
+      </select>
+      <select class="m-incl">
+        <option value="false">税抜</option>
+        <option value="true">税込</option>
+      </select>
+      <button type="button" class="m-del" aria-label="削除">×</button>
+    `;
+    row.querySelector('.m-amount').addEventListener('input', renderMulti);
+    row.querySelector('.m-rate').addEventListener('change', renderMulti);
+    row.querySelector('.m-incl').addEventListener('change', renderMulti);
+    row.querySelector('.m-del').addEventListener('click', () => {
+      row.remove();
+      if (!rowsEl.querySelector('.multi-row')) makeRow();
+      renderMulti();
+    });
+    rowsEl.appendChild(row);
+    return row;
+  }
+
+  function renderMulti() {
+    const items = [...rowsEl.querySelectorAll('.multi-row')].map((row) => ({
+      amount: row.querySelector('.m-amount').value,
+      rate: parseFloat(row.querySelector('.m-rate').value),
+      taxIncluded: row.querySelector('.m-incl').value === 'true',
+    }));
+    const { subtotalExcl, totalTax, totalIncl } = sumItems(items);
+    const box = $('multi-result');
+    if (totalIncl <= 0) return box.classList.remove('visible');
+    box.classList.add('visible');
+    $('multi-incl').textContent = yen(totalIncl);
+    $('multi-excl').textContent = yen(subtotalExcl);
+    $('multi-tax').textContent = yen(totalTax);
+  }
+
+  $('multi-add').addEventListener('click', () => {
+    makeRow();
+    renderMulti();
+  });
+
+  // 初期行を2つ表示
+  makeRow();
+  makeRow();
 </script>

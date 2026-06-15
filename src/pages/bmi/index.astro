@@ -52,6 +52,16 @@ const jsonld = {
           <div class="result-row"><span class="label">標準体重（BMI22）</span><span class="value green" id="bmi-standard">−</span></div>
           <div class="result-row"><span class="label">体脂肪率（推定）</span><span class="value red" id="bmi-bodyfat">−</span></div>
         </div>
+
+        <div class="target-block" id="bmi-target-block">
+          <div class="target-title">目標体重の目安</div>
+          <div class="target-rows">
+            <div class="result-row"><span class="label">美容体重（BMI19）</span><span class="value" id="bmi-target-beauty">−</span></div>
+            <div class="result-row"><span class="label">標準体重（BMI22）</span><span class="value green" id="bmi-target-standard">−</span></div>
+            <div class="result-row"><span class="label">適正範囲（BMI18.5〜25）</span><span class="value" id="bmi-target-range">−</span></div>
+          </div>
+          <div class="target-diff" id="bmi-target-diff">標準体重まであと − kg</div>
+        </div>
       </div>
     </div>
   </div>
@@ -86,8 +96,34 @@ const jsonld = {
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>
 
+<style>
+  .target-block {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #d0d7de;
+  }
+  .target-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: #374151;
+  }
+  .target-diff {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    background: #f1f5f9;
+    font-weight: 700;
+    text-align: center;
+    color: #1f2937;
+  }
+  .target-diff.lose { background: #fef2f2; color: #b91c1c; }
+  .target-diff.gain { background: #eff6ff; color: #1d4ed8; }
+  .target-diff.ok   { background: #ecfdf5; color: #047857; }
+</style>
+
 <script>
-  import { calcBmi, bmiCategory, standardWeight, bodyFatPercent } from '../../lib/bmi.js';
+  import { calcBmi, bmiCategory, standardWeight, bodyFatPercent, targetWeights, weightDiff } from '../../lib/bmi.js';
 
   const $ = (id) => document.getElementById(id);
   const gender = () =>
@@ -108,6 +144,37 @@ const jsonld = {
 
     const fat = bodyFatPercent(bmi, $('bmi-age').value, gender());
     $('bmi-bodyfat').textContent = fat === null ? '年齢を入力' : fat.toFixed(1) + ' %';
+
+    // 目標体重の目安
+    const tw = targetWeights($('bmi-height').value);
+    const diffEl = $('bmi-target-diff');
+    if (tw === null) {
+      $('bmi-target-beauty').textContent = '−';
+      $('bmi-target-standard').textContent = '−';
+      $('bmi-target-range').textContent = '−';
+      diffEl.textContent = '標準体重まであと − kg';
+      diffEl.className = 'target-diff';
+      return;
+    }
+    $('bmi-target-beauty').textContent = tw.beauty.toFixed(1) + ' kg';
+    $('bmi-target-standard').textContent = tw.standard.toFixed(1) + ' kg';
+    $('bmi-target-range').textContent =
+      tw.healthyMin.toFixed(1) + ' 〜 ' + tw.healthyMax.toFixed(1) + ' kg';
+
+    const diff = weightDiff($('bmi-weight').value, tw.standard);
+    if (diff === null) {
+      diffEl.textContent = '標準体重まであと − kg';
+      diffEl.className = 'target-diff';
+    } else if (diff > 0) {
+      diffEl.textContent = '標準体重まであと −' + diff.toFixed(1) + ' kg（減量）';
+      diffEl.className = 'target-diff lose';
+    } else if (diff < 0) {
+      diffEl.textContent = '標準体重まであと +' + Math.abs(diff).toFixed(1) + ' kg（増量）';
+      diffEl.className = 'target-diff gain';
+    } else {
+      diffEl.textContent = 'ちょうど標準体重です';
+      diffEl.className = 'target-diff ok';
+    }
   }
 
   ['bmi-height', 'bmi-weight', 'bmi-age'].forEach((id) =>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { bmr, tdee, targetCalories, pfcBalance, calcAll } from '../src/lib/calorie.js';
+import { bmr, bmrGanpule, targetCalories, tdee, pfcBalance, calcAll } from '../src/lib/calorie.js';
 
 describe('bmr(基礎代謝・ハリス＝ベネディクト改定式)', () => {
   it('男性: 88.362 + 13.397×体重 + 4.799×身長 − 5.677×年齢', () => {
@@ -26,6 +26,35 @@ describe('bmr(基礎代謝・ハリス＝ベネディクト改定式)', () => {
 
   it('性別が不正な場合は0を返す', () => {
     expect(bmr('unknown', 30, 170, 65)).toBe(0);
+  });
+});
+
+describe('bmrGanpule(基礎代謝・国立健康栄養研究所の式 / Ganpule 2007)', () => {
+  // 出典: https://www.nibn.go.jp/eiken/hn/modules/kisotaisya/
+  // 公式: (0.1238 + 0.0481×体重kg + 0.0234×身長cm − 0.0138×年齢 − 0.5473×性別) × 1000 / 4.186
+  //   性別: 男性=1、女性=2
+  it('男性30歳70kg170cm の手算値と一致する', () => {
+    const expected = (0.1238 + 0.0481 * 70 + 0.0234 * 170 - 0.0138 * 30 - 0.5473 * 1) * 1000 / 4.186;
+    expect(bmrGanpule('male', 30, 170, 70)).toBeCloseTo(expected, 5);
+    expect(bmrGanpule('male', 30, 170, 70)).toBeCloseTo(1554.5867, 3);
+  });
+
+  it('女性30歳160cm55kg の手算値と一致する（性別定数は男性の2倍）', () => {
+    const expected = (0.1238 + 0.0481 * 55 + 0.0234 * 160 - 0.0138 * 30 - 0.5473 * 2) * 1000 / 4.186;
+    expect(bmrGanpule('female', 30, 160, 55)).toBeCloseTo(expected, 5);
+  });
+
+  it('不正な入力（0/空/NaN/負数）は0を返す', () => {
+    expect(bmrGanpule('male', 0, 170, 70)).toBe(0);
+    expect(bmrGanpule('male', 30, 0, 70)).toBe(0);
+    expect(bmrGanpule('male', 30, 170, 0)).toBe(0);
+    expect(bmrGanpule('male', '', 170, 70)).toBe(0);
+    expect(bmrGanpule('male', NaN, 170, 70)).toBe(0);
+    expect(bmrGanpule('male', -30, 170, 70)).toBe(0);
+  });
+
+  it('性別が不正な場合は0を返す', () => {
+    expect(bmrGanpule('unknown', 30, 170, 70)).toBe(0);
   });
 });
 
@@ -99,13 +128,31 @@ describe('pfcBalance(PFCバランス)', () => {
 });
 
 describe('calcAll(統合・カロリーは整数に丸める)', () => {
-  it('男性30歳170cm65kg・中程度・維持の一括計算', () => {
-    const r = calcAll({ sex: 'male', age: 30, height: 170, weight: 65, activity: 1.55, goal: 'maintain' });
+  it('男性30歳170cm65kg・中程度・維持の一括計算（ハリス式）', () => {
+    const r = calcAll({ sex: 'male', age: 30, height: 170, weight: 65, activity: 1.55, goal: 'maintain', formula: 'harris' });
     const rawBmr = 88.362 + 13.397 * 65 + 4.799 * 170 - 5.677 * 30;
     expect(r.bmr).toBe(Math.round(rawBmr));
     expect(r.tdee).toBe(Math.round(rawBmr * 1.55));
     expect(r.target).toBe(r.tdee);
     expect(r.pfc.p).toBe(130);
+  });
+
+  it('formula 未指定なら国立健康栄養研究所の式（Ganpule）を既定で使う', () => {
+    const r = calcAll({ sex: 'male', age: 30, height: 170, weight: 70, activity: 1.55, goal: 'maintain' });
+    const expectedBmr = (0.1238 + 0.0481 * 70 + 0.0234 * 170 - 0.0138 * 30 - 0.5473 * 1) * 1000 / 4.186;
+    expect(r.bmr).toBe(Math.round(expectedBmr));
+  });
+
+  it('formula="harris" を指定するとハリス＝ベネディクト式を使う', () => {
+    const r = calcAll({ sex: 'male', age: 30, height: 170, weight: 70, activity: 1.55, goal: 'maintain', formula: 'harris' });
+    const expectedBmr = 88.362 + 13.397 * 70 + 4.799 * 170 - 5.677 * 30;
+    expect(r.bmr).toBe(Math.round(expectedBmr));
+  });
+
+  it('formula="ganpule" を明示してもGanpuleになる', () => {
+    const r = calcAll({ sex: 'male', age: 30, height: 170, weight: 70, activity: 1.55, goal: 'maintain', formula: 'ganpule' });
+    const expectedBmr = (0.1238 + 0.0481 * 70 + 0.0234 * 170 - 0.0138 * 30 - 0.5473 * 1) * 1000 / 4.186;
+    expect(r.bmr).toBe(Math.round(expectedBmr));
   });
 
   it('減量目標は目標カロリー = TDEE − 500', () => {

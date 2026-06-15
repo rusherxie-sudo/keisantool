@@ -50,17 +50,23 @@ function getCity(key) {
   return CITIES.find((c) => c.key === key) || CITIES[0];
 }
 
-// 年収（給与収入）→ 給与所得の概算（令和の給与所得控除に基づく）
+// 年収（給与収入）→ 給与所得の概算。
+// 令和7年度税制改正後の給与所得控除に基づく（最低保障額 55万→65万、適用範囲を年収190万まで拡大）。
+// 令和8年度の国保料は令和7年中の所得が基礎となるため、改正後の速算表を用いる。
+// 速算表（令和7年分以降）:
+//   〜190万      : 控除65万（最低保障）
+//   190万超〜360万: 控除 = 収入×30%+8万
+//   360万超〜660万: 控除 = 収入×20%+44万
+//   660万超〜850万: 控除 = 収入×10%+110万
+//   850万超      : 控除上限195万
 export function incomeFromSalary(salary) {
   const s = Number(salary);
   if (!Number.isFinite(s) || s <= 0) return 0;
   let income;
-  if (s <= 550000) income = 0;
-  else if (s <= 1618999) income = s - 550000;
-  else if (s <= 1800000) income = Math.floor(s * 0.6 + 100000) - 0; // 収入×60%（控除40%-10万）の近似
-  else if (s <= 3600000) income = Math.floor(s * 0.7 - 80000); // 控除 = 収入×30%+8万
-  else if (s <= 6600000) income = Math.floor(s * 0.8 - 440000); // 控除 = 収入×20%+44万
-  else if (s <= 8500000) income = Math.floor(s * 0.9 - 1100000); // 控除 = 収入×10%+110万
+  if (s <= 1900000) income = s - 650000; // 最低控除65万
+  else if (s <= 3600000) income = s * 0.7 - 80000; // 控除 = 収入×30%+8万
+  else if (s <= 6600000) income = s * 0.8 - 440000; // 控除 = 収入×20%+44万
+  else if (s <= 8500000) income = s * 0.9 - 1100000; // 控除 = 収入×10%+110万
   else income = s - 1950000; // 控除上限195万
   return Math.max(0, Math.floor(income));
 }

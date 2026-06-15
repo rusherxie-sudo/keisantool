@@ -114,10 +114,10 @@ export const tools = [
   {
     slug: 'moji',
     nav: '文字変換',
-    name: '文字化け・全角半角変換ツール',
+    name: '全角半角変換・文字数カウントツール',
     icon: '🔤',
     category: '文字ツール',
-    short: '全角半角・文字数カウント',
+    short: '全角半角・かな・文字数カウント',
     live: true,
   },
   {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { percentOf, valueFromPercent, ratio, discountedPrice } from '../src/lib/wariai.js';
+import { percentOf, valueFromPercent, ratio, discountedPrice, changeRate, buaiToPercent, percentToBuai } from '../src/lib/wariai.js';
 
 describe('percentOf(A は B の何%？)', () => {
   it('50 は 200 の 25%', () => {
@@ -153,5 +153,121 @@ describe('discountedPrice(○%OFF の価格・金額は切り捨て)', () => {
 
   it('割引率100超 → null', () => {
     expect(discountedPrice(5000, 150)).toBeNull();
+  });
+});
+
+describe('changeRate(増減率・変化率)', () => {
+  it('100 → 120 は +20%', () => {
+    expect(changeRate(100, 120)).toBe(20);
+  });
+
+  it('200 → 150 は -25%', () => {
+    expect(changeRate(200, 150)).toBe(-25);
+  });
+
+  it('変化なし 50 → 50 は 0%', () => {
+    expect(changeRate(50, 50)).toBe(0);
+  });
+
+  it('倍増 100 → 300 は +200%', () => {
+    expect(changeRate(100, 300)).toBe(200);
+  });
+
+  it('小数2位で丸め: 3 → 4 は +33.33%', () => {
+    expect(changeRate(3, 4)).toBe(33.33);
+  });
+
+  it('変化前が0（ゼロ除算）→ null', () => {
+    expect(changeRate(0, 100)).toBeNull();
+  });
+
+  it('変化後が負数でも変化前が正なら計算可: 100 → 0 は -100%', () => {
+    expect(changeRate(100, 0)).toBe(-100);
+  });
+
+  it('空文字 → null', () => {
+    expect(changeRate('', 120)).toBeNull();
+    expect(changeRate(100, '')).toBeNull();
+  });
+
+  it('NaN → null', () => {
+    expect(changeRate(NaN, 120)).toBeNull();
+    expect(changeRate(100, NaN)).toBeNull();
+  });
+});
+
+describe('buaiToPercent(歩合 → パーセント)', () => {
+  it('3割5分 → 35%', () => {
+    expect(buaiToPercent(3, 5, 0)).toBe(35);
+  });
+
+  it('1割 → 10%', () => {
+    expect(buaiToPercent(1, 0, 0)).toBe(10);
+  });
+
+  it('2割5分3厘 → 25.3%', () => {
+    expect(buaiToPercent(2, 5, 3)).toBe(25.3);
+  });
+
+  it('0割0分0厘 → 0%', () => {
+    expect(buaiToPercent(0, 0, 0)).toBe(0);
+  });
+
+  it('10割 → 100%', () => {
+    expect(buaiToPercent(10, 0, 0)).toBe(100);
+  });
+
+  it('空欄は0扱い: 3割（分・厘空）→ 30%', () => {
+    expect(buaiToPercent(3, '', '')).toBe(30);
+  });
+
+  it('全て空 → null', () => {
+    expect(buaiToPercent('', '', '')).toBeNull();
+  });
+
+  it('負数 → null', () => {
+    expect(buaiToPercent(-1, 0, 0)).toBeNull();
+  });
+
+  it('NaN → null', () => {
+    expect(buaiToPercent(NaN, 0, 0)).toBeNull();
+  });
+});
+
+describe('percentToBuai(パーセント → 歩合)', () => {
+  it('35% → 3割5分0厘', () => {
+    expect(percentToBuai(35)).toEqual({ wari: 3, bu: 5, rin: 0 });
+  });
+
+  it('25.3% → 2割5分3厘', () => {
+    expect(percentToBuai(25.3)).toEqual({ wari: 2, bu: 5, rin: 3 });
+  });
+
+  it('10% → 1割0分0厘', () => {
+    expect(percentToBuai(10)).toEqual({ wari: 1, bu: 0, rin: 0 });
+  });
+
+  it('0% → 0割0分0厘', () => {
+    expect(percentToBuai(0)).toEqual({ wari: 0, bu: 0, rin: 0 });
+  });
+
+  it('100% → 10割0分0厘', () => {
+    expect(percentToBuai(100)).toEqual({ wari: 10, bu: 0, rin: 0 });
+  });
+
+  it('端数は厘までで丸め: 25.34% → 2割5分3厘', () => {
+    expect(percentToBuai(25.34)).toEqual({ wari: 2, bu: 5, rin: 3 });
+  });
+
+  it('空文字 → null', () => {
+    expect(percentToBuai('')).toBeNull();
+  });
+
+  it('負数 → null', () => {
+    expect(percentToBuai(-5)).toBeNull();
+  });
+
+  it('NaN → null', () => {
+    expect(percentToBuai(NaN)).toBeNull();
   });
 });

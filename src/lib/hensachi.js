@@ -23,6 +23,33 @@ export function hensachi(score, mean, sd) {
   return Math.round(value * 10) / 10;
 }
 
+// 得点リストから平均・母集団標準偏差・人数を求める。
+// 偏差値は集団全体を対象とする統計量なので、母集団標準偏差（分散の分母 = n）を用いる。
+// 配列でない／空／数値化できない要素を含む場合は null を返す。
+export function statsFromScores(scores) {
+  if (!Array.isArray(scores) || scores.length === 0) return null;
+  const nums = [];
+  for (const v of scores) {
+    const n = toNum(v);
+    if (n === null) return null;
+    nums.push(n);
+  }
+  const count = nums.length;
+  const mean = nums.reduce((a, b) => a + b, 0) / count;
+  const variance = nums.reduce((a, b) => a + (b - mean) ** 2, 0) / count; // 母集団分散（÷n）
+  const sd = Math.sqrt(variance);
+  return { mean, sd, count };
+}
+
+// 得点リストから各得点の偏差値（小数第1位）を配列で返す。
+// 平均・標準偏差はリスト自身から statsFromScores で算出し、既存の hensachi 公式を再利用する。
+// 入力が不正な場合は null を返す。
+export function deviationsFromScores(scores) {
+  const stats = statsFromScores(scores);
+  if (stats === null) return null;
+  return scores.map((v) => hensachi(v, stats.mean, stats.sd));
+}
+
 // 誤差関数 erf(x) の近似（Abramowitz & Stegun 7.1.26）。
 // 最大絶対誤差 1.5e-7。奇関数なので符号は別途処理する。
 export function erf(x) {

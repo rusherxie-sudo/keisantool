@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { TIMEZONES, getOffsetMinutes, getDiffHours, formatDiff } from '../src/lib/jisa.js';
+import { TIMEZONES, getOffsetMinutes, getDiffHours, formatDiff, convertWallClock } from '../src/lib/jisa.js';
 
 const JAN = new Date('2026-01-15T00:00:00Z'); // 冬・DST無し基準日
 
@@ -75,5 +75,40 @@ describe('formatDiff(diffHours)', () => {
   });
   it('0.5 → 30分進んでいる', () => {
     expect(formatDiff(0.5)).toBe('30分進んでいる');
+  });
+});
+
+describe('convertWallClock(srcTz, dstTz, wall) — 任意の日時を別タイムゾーンへ変換', () => {
+  it('東京 2026-07-01 09:00 → ニューヨーク(EDT夏) = 2026-06-30 20:00', () => {
+    const r = convertWallClock('Asia/Tokyo', 'America/New_York', {
+      year: 2026, month: 7, day: 1, hour: 9, minute: 0,
+    });
+    expect(r).toEqual({ year: 2026, month: 6, day: 30, hour: 20, minute: 0 });
+  });
+
+  it('東京 2026-01-01 12:00 → ロンドン(GMT冬) = 2026-01-01 03:00', () => {
+    const r = convertWallClock('Asia/Tokyo', 'Europe/London', {
+      year: 2026, month: 1, day: 1, hour: 12, minute: 0,
+    });
+    expect(r).toEqual({ year: 2026, month: 1, day: 1, hour: 3, minute: 0 });
+  });
+
+  it('東京 2026-07-01 12:00 → ムンバイ(IST+5.5) = 2026-07-01 08:30', () => {
+    const r = convertWallClock('Asia/Tokyo', 'Asia/Kolkata', {
+      year: 2026, month: 7, day: 1, hour: 12, minute: 0,
+    });
+    expect(r).toEqual({ year: 2026, month: 7, day: 1, hour: 8, minute: 30 });
+  });
+
+  it('同一タイムゾーンなら入力と同じ', () => {
+    const wall = { year: 2026, month: 3, day: 15, hour: 14, minute: 45 };
+    expect(convertWallClock('Asia/Tokyo', 'Asia/Tokyo', wall)).toEqual(wall);
+  });
+
+  it('ロンドン → 東京：逆方向（冬）', () => {
+    const r = convertWallClock('Europe/London', 'Asia/Tokyo', {
+      year: 2026, month: 1, day: 1, hour: 3, minute: 0,
+    });
+    expect(r).toEqual({ year: 2026, month: 1, day: 1, hour: 12, minute: 0 });
   });
 });

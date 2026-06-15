@@ -26,12 +26,12 @@ const jsonld = {
   <div class="calc-card">
     <div class="calc-panel active">
       <div class="form-group">
-        <label for="value">評価額（円）</label>
-        <input type="number" id="value" inputmode="numeric" placeholder="例：12000000" />
+        <label for="land-value">土地の評価額（円）<span class="optional-label">※家屋のみの場合は空欄可</span></label>
+        <input type="number" id="land-value" inputmode="numeric" placeholder="例：12000000" />
       </div>
 
       <div class="form-group">
-        <label>用地区分</label>
+        <label>土地の用地区分</label>
         <div class="radio-group">
           <input type="radio" name="land" id="land-small" value="small" checked />
           <label for="land-small">小規模住宅用地</label>
@@ -42,14 +42,28 @@ const jsonld = {
         </div>
       </div>
 
+      <div class="form-group">
+        <label for="building-value">家屋（建物）の評価額（円）<span class="optional-label">※土地のみの場合は空欄可</span></label>
+        <input type="number" id="building-value" inputmode="numeric" placeholder="例：8000000" />
+      </div>
+
+      <label class="gengaku-check">
+        <input type="checkbox" id="gengaku-toggle" />
+        <span>新築住宅の減額措置を適用（固定資産税が一定期間1/2。一般3年度・耐火5年度など）</span>
+      </label>
+
       <div class="result-box" id="result">
         <div class="result-label">年税額（固定資産税＋都市計画税）</div>
         <div class="result-main" id="total">¥0</div>
         <div class="result-rows">
-          <div class="result-row"><span class="label">固定資産税（1.4%）</span><span class="value red" id="fixed-tax">¥0</span></div>
-          <div class="result-row"><span class="label">└ 課税標準額</span><span class="value" id="fixed-base">¥0</span></div>
-          <div class="result-row"><span class="label">都市計画税（0.3%）</span><span class="value red" id="city-tax">¥0</span></div>
-          <div class="result-row"><span class="label">└ 課税標準額</span><span class="value" id="city-base">¥0</span></div>
+          <div class="result-row"><span class="label" style="font-weight:600;color:var(--navy)">土地</span><span class="value" id="land-total">¥0</span></div>
+          <div class="result-row"><span class="label">└ 固定資産税（1.4%）</span><span class="value red" id="land-fixed">¥0</span></div>
+          <div class="result-row"><span class="label">└ 都市計画税（0.3%）</span><span class="value red" id="land-city">¥0</span></div>
+        </div>
+        <div class="result-rows" id="building-rows">
+          <div class="result-row"><span class="label" style="font-weight:600;color:var(--navy)">家屋</span><span class="value" id="building-total">¥0</span></div>
+          <div class="result-row"><span class="label">└ 固定資産税（1.4%<span id="gengaku-note"></span>）</span><span class="value red" id="building-fixed">¥0</span></div>
+          <div class="result-row"><span class="label">└ 都市計画税（0.3%）</span><span class="value red" id="building-city">¥0</span></div>
         </div>
         <div class="result-rows">
           <div class="result-row"><span class="label">第1期</span><span class="value" id="q1">¥0</span></div>
@@ -81,7 +95,10 @@ const jsonld = {
       <li><strong>非住宅</strong>（更地・駐車場・事業用地など）：特例の適用はありません。</li>
     </ul>
     <p>
-      金額は円未満を<strong>切り捨て</strong>で計算しています。なお、課税標準額が一定額（土地30万円・家屋20万円など）に満たない場合の免税点、新築住宅の減額、負担調整措置などは反映していません。都市計画税の税率は市町村により異なり、課税されない自治体もあります。実際の税額は各自治体（市区町村役場）から届く課税明細書・納税通知書をご確認ください。
+      <strong>家屋（建物）</strong>には住宅用地のような課税標準の特例はなく、評価額にそのまま税率を掛けます。ただし<strong>新築住宅の減額措置</strong>により、新築後の一定期間は固定資産税が<strong>1/2</strong>に軽減されます（一般住宅は3年度、3階建以上の耐火・準耐火建築物は5年度、認定長期優良住宅はさらに長い期間）。「新築住宅の減額措置を適用」にチェックすると反映されます。なお減額の対象は床面積120㎡相当分までのため、120㎡を超える住宅では実際の減額はこれより小さくなる場合があります。都市計画税には新築減額は適用されません。
+    </p>
+    <p>
+      金額は円未満を<strong>切り捨て</strong>で計算しています。なお、課税標準額が一定額（土地30万円・家屋20万円など）に満たない場合の免税点、負担調整措置、家屋の経年減価補正などは反映していません。都市計画税の税率は市町村により異なり、課税されない自治体もあります。実際の税額は各自治体（市区町村役場）から届く課税明細書・納税通知書をご確認ください。
     </p>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。正確な税額は各自治体の課税明細書・納税通知書にてご確認ください。</div>
   </section>
@@ -92,7 +109,7 @@ const jsonld = {
 </ToolLayout>
 
 <script>
-  import { koteiShisan, splitQuarterly } from '../../lib/koteiShisan.js';
+  import { koteiShisanCombined, splitQuarterly } from '../../lib/koteiShisan.js';
 
   const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
   const $ = (id) => document.getElementById(id);
@@ -101,15 +118,28 @@ const jsonld = {
     document.querySelector('input[name="land"]:checked').value;
 
   function render() {
-    const r = koteiShisan($('value').value, landType());
+    const gengaku = $('gengaku-toggle').checked;
+    const r = koteiShisanCombined({
+      landValue: $('land-value').value,
+      landType: landType(),
+      buildingValue: $('building-value').value,
+      shinchikuGengaku: gengaku,
+    });
     const box = $('result');
     if (r.total <= 0) return box.classList.remove('visible');
     box.classList.add('visible');
+
     $('total').textContent = yen(r.total);
-    $('fixed-tax').textContent = yen(r.fixedTax);
-    $('fixed-base').textContent = yen(r.fixedBase);
-    $('city-tax').textContent = yen(r.cityTax);
-    $('city-base').textContent = yen(r.cityBase);
+    $('land-total').textContent = yen(r.land.total);
+    $('land-fixed').textContent = yen(r.land.fixedTax);
+    $('land-city').textContent = yen(r.land.cityTax);
+    $('building-total').textContent = yen(r.building.total);
+    $('building-fixed').textContent = yen(r.building.fixedTax);
+    $('building-city').textContent = yen(r.building.cityTax);
+    $('gengaku-note').textContent = gengaku ? '・新築1/2減額' : '';
+    // 家屋の入力が無ければ家屋行を隠す
+    $('building-rows').style.display = r.building.total > 0 ? '' : 'none';
+
     const [q1, q2, q3, q4] = splitQuarterly(r.total);
     $('q1').textContent = yen(q1);
     $('q2').textContent = yen(q2);
@@ -117,8 +147,27 @@ const jsonld = {
     $('q4').textContent = yen(q4);
   }
 
-  $('value').addEventListener('input', render);
+  ['land-value', 'building-value'].forEach((id) => $(id).addEventListener('input', render));
+  $('gengaku-toggle').addEventListener('change', render);
   document
     .querySelectorAll('input[name="land"]')
     .forEach((r) => r.addEventListener('change', render));
 </script>
+
+<style>
+.optional-label { font-size: .75rem; font-weight: 400; color: #94a3b8; margin-left: 4px; }
+.gengaku-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  margin-bottom: 18px;
+  background: var(--navy-light);
+  border-radius: 6px;
+  font-size: .82rem;
+  color: var(--text);
+  cursor: pointer;
+  line-height: 1.5;
+}
+.gengaku-check input { margin-top: 2px; flex-shrink: 0; }
+</style>

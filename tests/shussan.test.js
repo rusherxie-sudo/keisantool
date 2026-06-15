@@ -4,6 +4,9 @@ import {
   pregnancyWeeks,
   pregnancyStage,
   maternityLeave,
+  lmpFromDue,
+  ovulationFromDue,
+  pregnancyMonths,
 } from '../src/lib/shussan.js';
 
 describe('dueDate(出産予定日 = LMP + 280日)', () => {
@@ -118,5 +121,90 @@ describe('maternityLeave(産休目安: 開始=予定日−42日, 終了=出産�
   it('空・無効 → null', () => {
     expect(maternityLeave('')).toBeNull();
     expect(maternityLeave('bad')).toBeNull();
+  });
+});
+
+describe('lmpFromDue(逆算: 最終月経開始日 = 出産予定日 − 280日)', () => {
+  it('予定日 2027-03-21 → LMP 2026-06-14', () => {
+    expect(lmpFromDue('2027-03-21')).toBe('2026-06-14');
+  });
+
+  it('dueDate と逆の関係になる（往復一致）', () => {
+    expect(lmpFromDue(dueDate('2026-06-14'))).toBe('2026-06-14');
+  });
+
+  it('うるう年をまたぐ: 予定日 2024-10-07 → LMP 2024-01-01', () => {
+    expect(lmpFromDue('2024-10-07')).toBe('2024-01-01');
+  });
+
+  it('Date オブジェクトでも同じ', () => {
+    expect(lmpFromDue(new Date('2027-03-21T00:00:00'))).toBe('2026-06-14');
+  });
+
+  it('空・無効・null → null', () => {
+    expect(lmpFromDue('')).toBeNull();
+    expect(lmpFromDue('not-a-date')).toBeNull();
+    expect(lmpFromDue(null)).toBeNull();
+  });
+});
+
+describe('ovulationFromDue(排卵日・受精日の目安 = 出産予定日 − 266日)', () => {
+  it('予定日 2027-03-21 → 排卵日の目安 2026-06-28', () => {
+    expect(ovulationFromDue('2027-03-21')).toBe('2026-06-28');
+  });
+
+  it('LMP + 14日 と一致する（排卵≈LMP+14日）', () => {
+    // LMP 2026-06-14, 排卵 2026-06-28
+    const due = dueDate('2026-06-14');
+    expect(ovulationFromDue(due)).toBe('2026-06-28');
+  });
+
+  it('Date オブジェクトでも同じ', () => {
+    expect(ovulationFromDue(new Date('2027-03-21T00:00:00'))).toBe('2026-06-28');
+  });
+
+  it('空・無効・null → null', () => {
+    expect(ovulationFromDue('')).toBeNull();
+    expect(ovulationFromDue('bad')).toBeNull();
+    expect(ovulationFromDue(null)).toBeNull();
+  });
+});
+
+describe('pregnancyMonths(妊娠月数: 4週=1ヶ月、妊娠0週から1ヶ月目)', () => {
+  it('0週 → 妊娠1ヶ月', () => {
+    expect(pregnancyMonths(0)).toBe(1);
+  });
+
+  it('3週 → 妊娠1ヶ月（0〜3週=1ヶ月）', () => {
+    expect(pregnancyMonths(3)).toBe(1);
+  });
+
+  it('4週 → 妊娠2ヶ月（4〜7週=2ヶ月）', () => {
+    expect(pregnancyMonths(4)).toBe(2);
+  });
+
+  it('7週 → 妊娠2ヶ月', () => {
+    expect(pregnancyMonths(7)).toBe(2);
+  });
+
+  it('8週 → 妊娠3ヶ月', () => {
+    expect(pregnancyMonths(8)).toBe(3);
+  });
+
+  it('12週 → 妊娠4ヶ月', () => {
+    expect(pregnancyMonths(12)).toBe(4);
+  });
+
+  it('36週 → 妊娠10ヶ月（臨月）', () => {
+    expect(pregnancyMonths(36)).toBe(10);
+  });
+
+  it('39週 → 妊娠10ヶ月', () => {
+    expect(pregnancyMonths(39)).toBe(10);
+  });
+
+  it('負数や無効 → null', () => {
+    expect(pregnancyMonths(-1)).toBeNull();
+    expect(pregnancyMonths(NaN)).toBeNull();
   });
 });

@@ -35,6 +35,16 @@ const jsonld = {
     </div>
 
     <div class="form-group">
+      <label>計算式</label>
+      <div class="radio-group radio-group-wrap">
+        <input type="radio" name="formula" id="formula-ganpule" value="ganpule" checked />
+        <label for="formula-ganpule">国立健康・栄養研究所の式（推奨）</label>
+        <input type="radio" name="formula" id="formula-harris" value="harris" />
+        <label for="formula-harris">ハリス・ベネディクト式</label>
+      </div>
+    </div>
+
+    <div class="form-group">
       <label for="age">年齢（歳）</label>
       <input type="number" id="age" inputmode="numeric" placeholder="例：30" />
     </div>
@@ -96,7 +106,7 @@ const jsonld = {
     <h2>使い方</h2>
     <p>性別を選び、年齢・身長・体重を入力すると、基礎代謝（BMR）と1日の総消費カロリー（TDEE）が自動で表示されます。活動レベルと目標を切り替えるだけで結果がその場で更新されるので、ボタンを押す必要はありません。</p>
     <ul>
-      <li><strong>基礎代謝（BMR）</strong>：何もせずじっとしていても消費される、生命維持に必要な最低限のカロリーです。本ツールでは精度の高い「ハリス＝ベネディクト改定式」を用いて算出します。</li>
+      <li><strong>基礎代謝（BMR）</strong>：何もせずじっとしていても消費される、生命維持に必要な最低限のカロリーです。本ツールでは日本人のデータをもとに作られた「国立健康・栄養研究所の式（Ganpuleの式）」を既定で用いて算出します。日本人にはこちらがより適しているとされますが、「ハリス・ベネディクト式」に切り替えて比較することもできます。</li>
       <li><strong>総消費カロリー（TDEE）</strong>：BMRに日々の活動量を掛け合わせた、1日に消費する総カロリーです。これがいわゆる<strong>メンテナンスカロリー</strong>（体重を維持できる摂取量の目安）になります。</li>
       <li><strong>活動レベル</strong>：デスクワーク中心なら「ほぼ運動なし（×1.2）」、週数回の運動なら「中程度（×1.55）」など、生活スタイルに近いものを選びます。</li>
       <li><strong>目標カロリー</strong>：減量なら維持カロリーから−500kcal、増量なら+500kcalが目安です。1日500kcalの差は1か月で体重約2kgの増減に相当します。</li>
@@ -135,8 +145,9 @@ const jsonld = {
     const weight = $('weight').value;
     const activity = parseFloat(picked('activity'));
     const goal = picked('goal');
+    const formula = picked('formula');
 
-    const r = calcAll({ sex, age, height, weight, activity, goal });
+    const r = calcAll({ sex, age, height, weight, activity, goal, formula });
     const box = $('result');
     if (r.tdee <= 0) return box.classList.remove('visible');
     box.classList.add('visible');
@@ -149,7 +160,7 @@ const jsonld = {
   }
 
   ['age', 'height', 'weight'].forEach((id) => $(id).addEventListener('input', render));
-  ['sex', 'activity', 'goal'].forEach((name) =>
+  ['sex', 'activity', 'goal', 'formula'].forEach((name) =>
     document.querySelectorAll(`input[name="${name}"]`).forEach((el) => el.addEventListener('change', render))
   );
 </script>

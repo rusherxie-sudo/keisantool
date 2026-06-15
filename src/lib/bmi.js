@@ -41,6 +41,38 @@ export function standardWeight(heightCm) {
   return round1(m * m * 22);
 }
 
+// 指定BMIに対応する目標体重 = BMI × (身長m)^2
+export function targetWeight(heightCm, bmi) {
+  const h = toNum(heightCm);
+  const b = toNum(bmi);
+  if (!Number.isFinite(h) || h <= 0) return null;
+  if (!Number.isFinite(b) || b <= 0) return null;
+  const m = h / 100;
+  return round1(b * m * m);
+}
+
+// 常用の複数段階の目標体重
+// beauty=BMI19 / standard=BMI22 / healthyMin=BMI18.5 / healthyMax=BMI25
+export function targetWeights(heightCm) {
+  const beauty = targetWeight(heightCm, 19);
+  if (beauty === null) return null;
+  return {
+    beauty,
+    standard: targetWeight(heightCm, 22),
+    healthyMin: targetWeight(heightCm, 18.5),
+    healthyMax: targetWeight(heightCm, 25),
+  };
+}
+
+// 現体重と目標体重の差（正=減量が必要 / 負=増量が必要）
+export function weightDiff(currentKg, targetKg) {
+  const c = toNum(currentKg);
+  const t = toNum(targetKg);
+  if (!Number.isFinite(c) || c <= 0) return null;
+  if (!Number.isFinite(t)) return null;
+  return round1(c - t);
+}
+
 // 体脂肪率（BMI推定法・成人）
 // = 1.2×BMI + 0.23×年齢 − 5.4 − 10.8×(性別: 男=1, 女=0)
 export function bodyFatPercent(bmi, age, gender) {

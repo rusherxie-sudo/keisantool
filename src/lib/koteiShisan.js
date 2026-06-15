@@ -29,6 +29,34 @@ export function koteiShisan(value, landType) {
   return { fixedBase, cityBase, fixedTax, cityTax, total: fixedTax + cityTax };
 }
 
+// 家屋（建物）の固定資産税・都市計画税。
+// 家屋には住宅用地特例（1/6等）は適用されない（課税標準＝評価額）。
+// 新築住宅の減額措置: 一定期間、固定資産税が1/2に減額される（床面積120㎡相当分まで）。
+//   一般住宅は新築後3年度（3階建以上の耐火・準耐火は5年度）、認定長期優良住宅はさらに長い。
+//   都市計画税には適用されない。
+// ※ 本ツールは概算のため、減額を家屋全体に適用する。120㎡を超える住宅では
+//   実際の減額はこれより小さくなる場合がある。
+export function koteiShisanBuilding(value, shinchikuGengaku = false) {
+  const v = Number(value);
+  if (!Number.isFinite(v) || v <= 0) {
+    return { fixedBase: 0, cityBase: 0, fixedTax: 0, cityTax: 0, total: 0 };
+  }
+  const base = Math.floor(v);
+  const fixedTaxFull = Math.floor(base * FIXED_RATE);
+  const fixedTax = shinchikuGengaku ? Math.floor(fixedTaxFull / 2) : fixedTaxFull;
+  const cityTax = Math.floor(base * CITY_RATE);
+  return { fixedBase: base, cityBase: base, fixedTax, cityTax, total: fixedTax + cityTax };
+}
+
+// 土地 + 家屋の合算。それぞれの内訳と合計税額を返す。
+export function koteiShisanCombined({ landValue, landType, buildingValue, shinchikuGengaku } = {}) {
+  const land = koteiShisan(landValue, landType);
+  const building = koteiShisanBuilding(buildingValue, shinchikuGengaku);
+  const fixedTax = land.fixedTax + building.fixedTax;
+  const cityTax = land.cityTax + building.cityTax;
+  return { land, building, fixedTax, cityTax, total: fixedTax + cityTax };
+}
+
 // 年税額を年4回（第1〜4期）に分割。端数（余り）は第1期に寄せる。
 export function splitQuarterly(annual) {
   const a = Number(annual);

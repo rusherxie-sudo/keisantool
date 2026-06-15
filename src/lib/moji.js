@@ -119,14 +119,57 @@ export function kataToHira(str) {
   );
 }
 
-// 文字数カウント（含空白・空白除く・行数）。サロゲートペアは1文字として数える。
+// UTF-8 バイト数を返す（TextEncoder 利用）。
+export function byteLength(str) {
+  return new TextEncoder().encode(String(str)).length;
+}
+
+// 文字数カウント（含空白・空白除く・行数・UTF-8バイト数）。サロゲートペアは1文字として数える。
 export function countChars(str) {
   const s = String(str);
-  if (s.length === 0) return { chars: 0, charsNoSpace: 0, lines: 0 };
+  if (s.length === 0) return { chars: 0, charsNoSpace: 0, lines: 0, bytes: 0 };
   const codePoints = [...s];
   const chars = codePoints.length;
   // 半角/全角スペース・タブ・改行など全ての空白文字を除外
   const charsNoSpace = codePoints.filter((c) => !/\s/.test(c) && c !== '　').length;
   const lines = s.split('\n').length;
-  return { chars, charsNoSpace, lines };
+  return { chars, charsNoSpace, lines, bytes: byteLength(s) };
+}
+
+// 原稿用紙（400字詰め）の枚数。
+// 改行は文字数に含めず、空白は含める。サロゲートペアは1文字。0文字は0枚。
+export function countManuscriptSheets(str) {
+  const withoutNewlines = String(str).replace(/[\r\n]/g, '');
+  const count = [...withoutNewlines].length;
+  if (count === 0) return 0;
+  return Math.ceil(count / 400);
+}
+
+// X（旧Twitter）の加重文字数。
+// 半角ラテン系（U+0000～U+10FF と一般句読点 U+2000～U+200D 等）は1、
+// CJK・全角を含むその他は2 として重み付けする。上限280（日本語のみなら140文字）。
+export function xCount(str) {
+  let total = 0;
+  for (const ch of String(str)) {
+    const cp = ch.codePointAt(0);
+    // X の weighted ranges: 以下の範囲は重み1、それ以外は重み2。
+    const isLight =
+      (cp >= 0x0000 && cp <= 0x10ff) ||
+      (cp >= 0x2000 && cp <= 0x200d) ||
+      (cp >= 0x2010 && cp <= 0x201f) ||
+      (cp >= 0x2032 && cp <= 0x2037);
+    total += isLight ? 1 : 2;
+  }
+  return total;
+}
+
+// 改行（LF / CR / CRLF）を除去する。
+export function removeNewlines(str) {
+  return String(str).replace(/[\r\n]/g, '');
+}
+
+// 空白（半角スペース・全角スペース・タブ等の空白文字、改行を除く）を除去する。
+export function removeSpaces(str) {
+  // \s には改行も含まれるため、改行以外の空白文字 + 全角スペースを対象にする。
+  return String(str).replace(/[^\S\r\n]|　/g, '');
 }

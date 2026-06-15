@@ -16,6 +16,62 @@ const jsonld = {
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
+
+// ── 6運命星のタイプ別 性格・特徴 解説 ──────────────────────
+// 公開されている六星占術の解説（spicomi.net / senjutsu.jp / 6sei.net / feely.jp 等）を
+// 参照して、各星の共通特徴とプラス・マイナスの傾向差をまとめた参考情報。
+// ※占い（娯楽）であり科学的根拠はありません。表現は「〜とされる」等の参考的記述にしています。
+type StarProfile = {
+  star: string;
+  catch: string;
+  base: string;
+  plus: string;
+  minus: string;
+};
+const STAR_PROFILES: StarProfile[] = [
+  {
+    star: '土星人',
+    catch: '理想を追い求める、頑固な努力家',
+    base: '土星人は、まじめで責任感が強く、自分の理想に向かってコツコツ努力を積み重ねるタイプとされています。プライドが高く妥協を嫌う一方、寡黙で本心を見せにくく、芯の強い頑固さを持つといわれます。情に厚く面倒見がよい反面、束縛を嫌い、自分のペースを大切にする傾向があるとされます。',
+    plus: 'プラスは行動的で、思い立つとすぐ動く積極派とされます。サバサバとして人当たりがよく社交的ですが、やや飽きっぽい一面もあるといわれます。',
+    minus: 'マイナスは慎重で控えめ。石橋を叩いて渡るように熟考してから動くタイプとされ、一度決めるとじっくり取り組む粘り強さがあるといわれます。ミステリアスな魅力を感じさせる人が多いとも。',
+  },
+  {
+    star: '金星人',
+    catch: '感性ゆたかで、愛されるロマンチスト',
+    base: '金星人は、感覚や直感を大切にし、フィーリングで動く感性豊かなタイプとされています。明るく社交的で人を惹きつける魅力があり、好きなものには情熱的に向かっていくといわれます。おおらかで自由を愛する一方、気分屋で熱しやすく冷めやすい面もあるとされます。',
+    plus: 'プラスは陽気で開放的、行動力があり目立つ存在になりやすいとされます。好奇心旺盛でフットワークが軽く、人付き合いの輪を広げるのが得意といわれます。',
+    minus: 'マイナスは穏やかで思いやり深く、内面の感受性が豊かなタイプとされます。落ち着いた雰囲気で、身近な人を大切にする家庭的な一面があるといわれます。',
+  },
+  {
+    star: '火星人',
+    catch: '直感で動く、情熱と行動の星',
+    base: '火星人は、頭の回転が速く、どんな仕事もそつなくこなす器用な実力派とされています。クールで冷静に物事を観察する一方、内に熱い情熱を秘め、ここぞという場面では大胆に動くといわれます。感情を表に出すのが苦手で、ミステリアスに見られやすい傾向があるとされます。',
+    plus: 'プラスは積極的で負けず嫌い。目標を定めると一気に突き進むパワフルな行動派とされ、リーダー役を任されやすいといわれます。',
+    minus: 'マイナスは思慮深く慎重で、じっくり相手を見極めてから動くタイプとされます。ツンデレ気質といわれることもあり、内面はとても感受性が豊かとされます。',
+  },
+  {
+    star: '天王星人',
+    catch: '人情に厚く、自由を愛する現実主義者',
+    base: '天王星人は、人付き合いが上手で情に厚く、集団の中心にいることが多い愛されキャラとされています。現実的でモノやお金を大切にする堅実さと、人情味あふれる温かさを併せ持つ、やや二面性のある星といわれます。独立心が強く、自分の価値観を大事にする自由人ともされます。',
+    plus: 'プラスは社交的で行動力にあふれ、人脈を広げるのが得意とされます。明るく面倒見がよく、周囲を引っ張る存在になりやすいといわれます。',
+    minus: 'マイナスは堅実で計画的、現実をよく見て手堅く動くタイプとされます。落ち着いた判断力があり、信頼を集めやすいといわれます。',
+  },
+  {
+    star: '木星人',
+    catch: '面倒見がよく、平和を好む包容力の人',
+    base: '木星人は、面倒見がよく親分肌・姉御肌で、頼られると放っておけない情の深いタイプとされています。争いを好まず調和を大切にする平和主義で、周囲に安心感を与えるといわれます。一方で奥手で慎重なところがあり、自分のことになると考え込みやすい面もあるとされます。',
+    plus: 'プラスは面倒見のよさが前に出る、頼れるリーダータイプとされます。社交的で人をまとめる力があり、周囲から慕われやすいといわれます。',
+    minus: 'マイナスは穏やかで聞き上手、縁の下で人を支えるタイプとされます。控えめながら芯が強く、誠実さで信頼を得るといわれます。',
+  },
+  {
+    star: '水星人',
+    catch: '柔らかな物腰に、冷静な現実感覚',
+    base: '水星人は、見た目はソフトで人当たりがよい一方、内面はクールで現実的なタイプとされています。状況を冷静に見極めて要領よく立ち回る器用さがあり、損得勘定にも長けているといわれます。順応性が高く、どんな環境にもうまく馴染む柔軟さを持つとされます。',
+    plus: 'プラスは社交的で行動的、人当たりのよさを活かして幅広く活躍するとされます。明るくフットワークが軽いといわれます。',
+    minus: 'マイナスは慎重で現実的、計算をしっかりしてから動く堅実派とされます。物静かに見えて内に強い意志を秘めているといわれます。',
+  },
+];
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
@@ -73,6 +129,40 @@ const jsonld = {
     </div>
   </section>
 
+  <section class="rk-types">
+    <h2>運命星（6星）タイプ別の性格・特徴</h2>
+    <p>
+      あなたの運命星を計算すると、下のタイプが自動でハイライトされます。各星の基本的な性格と、プラス（陽）・マイナス（陰）の傾向の違いを参考にご覧ください。
+    </p>
+    <div class="rk-type-list">
+      {STAR_PROFILES.map((p) => (
+        <details class="rk-type-card" data-star={p.star}>
+          <summary>
+            <span class="rk-type-star">{p.star}</span>
+            <span class="rk-type-catch">{p.catch}</span>
+            <span class="rk-type-you">あなたの星</span>
+          </summary>
+          <div class="rk-type-body">
+            <p class="rk-type-base">{p.base}</p>
+            <div class="rk-type-pm">
+              <div class="rk-pm rk-pm-plus">
+                <span class="rk-pm-label">プラス（陽）</span>
+                <p>{p.plus}</p>
+              </div>
+              <div class="rk-pm rk-pm-minus">
+                <span class="rk-pm-label">マイナス（陰）</span>
+                <p>{p.minus}</p>
+              </div>
+            </div>
+          </div>
+        </details>
+      ))}
+    </div>
+    <p class="rk-types-note">
+      ※ 性格・特徴は公開されている六星占術の解説（spicomi.net・大久保占い研究室・公式サイト 6sei.net 等）をもとにまとめた参考情報です。占い（娯楽）であり科学的根拠はありません。あくまで目安としてお楽しみください。
+    </p>
+  </section>
+
   <RelatedTools current={slug} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
@@ -92,6 +182,36 @@ const jsonld = {
   .rk-badge.shosakkai { background: #fef3c7; color: #b45309; }
   .rk-badge.kouchou { background: var(--navy-light); color: var(--navy); }
   .result-main.daisakkai { color: var(--red); }
+
+  /* タイプ別 性格・特徴 */
+  .rk-types { margin-top: 28px; }
+  .rk-type-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .rk-type-card { border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #fff; transition: border-color .15s, box-shadow .15s; }
+  .rk-type-card > summary {
+    list-style: none; cursor: pointer; padding: 14px 16px;
+    display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px;
+  }
+  .rk-type-card > summary::-webkit-details-marker { display: none; }
+  .rk-type-star { font-size: 1.05rem; font-weight: 700; color: var(--navy); }
+  .rk-type-catch { font-size: .86rem; color: var(--text-muted); }
+  .rk-type-you {
+    display: none; margin-left: auto; font-size: .72rem; font-weight: 700;
+    padding: 2px 9px; border-radius: 999px; background: var(--navy); color: #fff;
+  }
+  .rk-type-card.is-you { border-color: var(--navy); box-shadow: 0 0 0 2px var(--navy-light); }
+  .rk-type-card.is-you .rk-type-you { display: inline-block; }
+  .rk-type-body { padding: 0 16px 16px; }
+  .rk-type-base { font-size: .9rem; line-height: 1.8; color: var(--text); margin: 0 0 12px; }
+  .rk-type-pm { display: grid; gap: 10px; }
+  @media (min-width: 560px) { .rk-type-pm { grid-template-columns: 1fr 1fr; } }
+  .rk-pm { border-radius: 10px; padding: 10px 12px; }
+  .rk-pm-plus { background: var(--navy-light); }
+  .rk-pm-minus { background: #f1f5f9; }
+  .rk-pm-label { display: inline-block; font-size: .74rem; font-weight: 700; margin-bottom: 4px; }
+  .rk-pm-plus .rk-pm-label { color: var(--navy); }
+  .rk-pm-minus .rk-pm-label { color: #475569; }
+  .rk-pm p { font-size: .84rem; line-height: 1.75; margin: 0; color: var(--text); }
+  .rk-types-note { font-size: .78rem; color: var(--text-muted); margin-top: 14px; line-height: 1.7; }
 </style>
 
 <script>
@@ -126,6 +246,13 @@ const jsonld = {
 
     const isDai = z.category === '大殺界';
     $('rk-type').classList.toggle('daisakkai', isDai);
+
+    // 該当する運命星のタイプ解説カードをハイライト＆展開
+    document.querySelectorAll('.rk-type-card').forEach((card) => {
+      const match = card.getAttribute('data-star') === r.star;
+      card.classList.toggle('is-you', match);
+      if (match) card.setAttribute('open', '');
+    });
 
     const fc = forecast(r.type, thisYear, 3);
     $('rk-forecast').innerHTML = fc

@@ -5,6 +5,9 @@ import {
   calcIkukyuEnd,
   calcShussanTeate,
   calcIkukyuKyuufu,
+  calcShusseigoShien,
+  dailyWageFromMonthly,
+  IKUKYU_DAILY_CAP,
 } from '../src/lib/saniku.js';
 
 describe('calcSanzenStart(dueDate, isMultiple) — 産前休業開始日', () => {
@@ -104,5 +107,59 @@ describe('calcIkukyuKyuufu(dailyWage, totalDays) — 育児休業給付金', () 
   });
   it('totalDays=0 → null', () => {
     expect(calcIkukyuKyuufu(10000, 0)).toBeNull();
+  });
+
+  // 令和7年8月改定: 休業開始時賃金日額の上限 16,110円。高額所得者は頭打ち。
+  it('賃金日額が上限16,110円を超える場合は上限で計算（67%月上限323,811円相当）', () => {
+    const r = calcIkukyuKyuufu(20000, 180);
+    expect(r.first).toBe(Math.floor(16110 * 0.67 * 180)); // 1,942,866
+    expect(r.total).toBe(1942866);
+  });
+  it('上限ちょうど16,110円は頭打ちされない', () => {
+    const r = calcIkukyuKyuufu(16110, 180);
+    expect(r.first).toBe(Math.floor(16110 * 0.67 * 180));
+  });
+});
+
+describe('IKUKYU_DAILY_CAP（賃金日額の上限）', () => {
+  it('令和7年8月改定の16,110円', () => {
+    expect(IKUKYU_DAILY_CAP).toBe(16110);
+  });
+});
+
+describe('dailyWageFromMonthly(月給→賃金日額 = 月給÷30・整数円)', () => {
+  it('月給30万 → 10,000円', () => {
+    expect(dailyWageFromMonthly(300000)).toBe(10000);
+  });
+  it('月給31万 → floor(10333.3)=10,333円', () => {
+    expect(dailyWageFromMonthly(310000)).toBe(10333);
+  });
+  it('0・不正 → 0', () => {
+    expect(dailyWageFromMonthly(0)).toBe(0);
+    expect(dailyWageFromMonthly(NaN)).toBe(0);
+    expect(dailyWageFromMonthly(-100)).toBe(0);
+  });
+});
+
+describe('calcShusseigoShien(出生後休業支援給付金・賃金日額×13%×最大28日)', () => {
+  // 2025年4月新設。子の出生後、夫婦ともに14日以上の育休取得で最大28日分、13%上乗せ。
+  // 既存の育休給付67%と合わせて実質80%（社会保険料免除込みで手取り約10割）。
+  it('日額10,000円 × 28日 → floor(10000×0.13×28)=36,400円', () => {
+    const r = calcShusseigoShien(10000, 28);
+    expect(r.amount).toBe(36400);
+    expect(r.days).toBe(28);
+  });
+  it('28日を超える日数は28日で頭打ち', () => {
+    const r = calcShusseigoShien(10000, 40);
+    expect(r.amount).toBe(36400);
+    expect(r.days).toBe(28);
+  });
+  it('賃金日額は上限16,110円で頭打ち', () => {
+    const r = calcShusseigoShien(20000, 28);
+    expect(r.amount).toBe(Math.floor(16110 * 0.13 * 28)); // 58,640
+  });
+  it('0・不正 → null', () => {
+    expect(calcShusseigoShien(0, 28)).toBeNull();
+    expect(calcShusseigoShien(10000, 0)).toBeNull();
   });
 });

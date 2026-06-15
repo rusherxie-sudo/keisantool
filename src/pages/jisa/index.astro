@@ -62,6 +62,25 @@ const defaultTz2 = 'America/New_York';
     <div class="jisa-summary" id="summary"></div>
   </div>
 
+  <div class="calc-card convert-card">
+    <h2 class="convert-title">日時を指定して変換</h2>
+    <p class="convert-desc">日時を入力すると、その瞬間が上で選んだ2つの地域では何時になるかを表示します。「日本の明日9時はニューヨークでは何時？」もこれで分かります。</p>
+    <div class="convert-input-row">
+      <label class="jisa-label" for="convDt">基準の日時（<span id="convBaseLabel">地域 1</span>）</label>
+      <input type="datetime-local" id="convDt" class="conv-input" />
+    </div>
+    <div class="convert-results">
+      <div class="convert-result">
+        <div class="convert-region" id="convLabel1">地域 1</div>
+        <div class="convert-when" id="conv1">--</div>
+      </div>
+      <div class="convert-result">
+        <div class="convert-region" id="convLabel2">地域 2</div>
+        <div class="convert-when" id="conv2">--</div>
+      </div>
+    </div>
+  </div>
+
   <div class="ad-slot">広告枠（結果直下）</div>
 
   <section class="howto">
@@ -127,13 +146,35 @@ const defaultTz2 = 'America/New_York';
   .jisa-center { flex-direction: row; padding-top: 0; justify-content: center; }
   .jisa-time { font-size: 1.5rem; }
 }
+
+.convert-card { max-width: 540px; padding: 24px; margin-top: 20px; }
+.convert-title { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin: 0 0 6px; }
+.convert-desc { font-size: .82rem; color: var(--text-muted); margin: 0 0 16px; line-height: 1.6; }
+.convert-input-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+.conv-input {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: 6px; font-size: .9rem; font-family: var(--font-mono);
+  color: var(--text); background: var(--bg);
+}
+.conv-input:focus { outline: none; border-color: var(--border-focus); }
+.convert-results { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.convert-result {
+  background: var(--navy-light); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px; text-align: center;
+}
+.convert-region { font-size: .76rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+.convert-when { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--navy); line-height: 1.4; }
+@media (max-width: 420px) {
+  .convert-results { grid-template-columns: 1fr; }
+}
 </style>
 
 <script>
-  import { TIMEZONES, getDiffHours, formatDiff } from '../../lib/jisa.js';
+  import { TIMEZONES, getDiffHours, formatDiff, convertWallClock } from '../../lib/jisa.js';
 
   const $ = (id) => document.getElementById(id);
   const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+  const labelOf = (id) => TIMEZONES.find((t) => t.id === id)?.label ?? id;
 
   function formatTime(tzId) {
     const now = new Date();
@@ -176,15 +217,64 @@ const defaultTz2 = 'America/New_York';
     }
   }
 
-  $('tz1').addEventListener('change', update);
-  $('tz2').addEventListener('change', update);
+  // ===== 任意の日時を変換 =====
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function fmtWhen(tzId, wall) {
+    const w = WeekdayHelper(tzId, wall);
+    return `${wall.year}/${pad(wall.month)}/${pad(wall.day)}（${w}） ${pad(wall.hour)}:${pad(wall.minute)}`;
+  }
+
+  // 変換後の壁時計成分から曜日を求める。
+  function WeekdayHelper(tzId, wall) {
+    // UTC として日付オブジェクトを作り getUTCDay で曜日を得る（壁時計成分そのものの曜日）。
+    const d = new Date(Date.UTC(wall.year, wall.month - 1, wall.day, wall.hour, wall.minute));
+    return WEEKDAYS[d.getUTCDay()];
+  }
+
+  function setDefaultDt() {
+    // 基準地域（tz1）の現在の壁時計時刻を datetime-local に入れる。
+    const tz1 = $('tz1').value;
+    const opts = { timeZone: tz1, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+    const parts = new Intl.DateTimeFormat('en-US', opts).formatToParts(new Date());
+    const p = Object.fromEntries(parts.map((x) => [x.type, x.value]));
+    let hh = p.hour === '24' ? '00' : p.hour;
+    $('convDt').value = `${p.year}-${p.month}-${p.day}T${hh}:${p.minute}`;
+  }
+
+  function updateConvert() {
+    const tz1 = $('tz1').value;
+    const tz2 = $('tz2').value;
+    $('convBaseLabel').textContent = labelOf(tz1);
+    $('convLabel1').textContent = labelOf(tz1);
+    $('convLabel2').textContent = labelOf(tz2);
+
+    const v = $('convDt').value;
+    if (!v) { $('conv1').textContent = '--'; $('conv2').textContent = '--'; return; }
+    const [datePart, timePart] = v.split('T');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hour, minute] = timePart.split(':').map(Number);
+    const wall = { year, month, day, hour, minute };
+
+    // 地域1 は入力そのもの（基準）。地域2 は変換。
+    $('conv1').textContent = fmtWhen(tz1, wall);
+    const w2 = convertWallClock(tz1, tz2, wall);
+    $('conv2').textContent = fmtWhen(tz2, w2);
+  }
+
+  $('tz1').addEventListener('change', () => { update(); updateConvert(); });
+  $('tz2').addEventListener('change', () => { update(); updateConvert(); });
+  $('convDt').addEventListener('input', updateConvert);
   $('swap').addEventListener('click', () => {
     const tmp = $('tz1').value;
     $('tz1').value = $('tz2').value;
     $('tz2').value = tmp;
     update();
+    updateConvert();
   });
 
   update();
   setInterval(update, 1000);
+  setDefaultDt();
+  updateConvert();
 </script>

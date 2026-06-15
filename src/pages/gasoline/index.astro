@@ -43,6 +43,18 @@ const jsonld = {
         <input type="number" id="workdays" inputmode="numeric" placeholder="例：20" min="0" max="31" />
       </div>
 
+      <div class="warikan-fields">
+        <div class="warikan-title">割り勘（人数で分ける）<span class="optional-label">— 任意</span></div>
+        <div class="form-group">
+          <label for="people">乗車人数（人）</label>
+          <input type="number" id="people" inputmode="numeric" placeholder="例：3" min="1" max="99" step="1" value="1" />
+        </div>
+        <div class="form-group">
+          <label for="toll">高速料金（円・往復合計）<span class="optional-label">— 任意</span></label>
+          <input type="number" id="toll" inputmode="numeric" placeholder="例：2000" min="0" step="1" />
+        </div>
+      </div>
+
       <div class="result-box" id="result">
         <div class="result-label">計算結果</div>
         <div class="result-rows">
@@ -67,6 +79,18 @@ const jsonld = {
             </div>
           </div>
         </div>
+        <div id="warikan-section" style="display:none">
+          <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1px solid #dbeafe">
+            <div class="result-row">
+              <span class="label">合計（往復ガソリン代＋高速料金）</span>
+              <span class="value" id="total-cost">¥0</span>
+            </div>
+            <div class="result-row warikan-highlight">
+              <span class="label">1人あたり（<span id="people-label">2</span>人で割り勘）</span>
+              <span class="value" id="per-person">¥0</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -81,6 +105,7 @@ const jsonld = {
       <li><strong>燃費</strong>：車のカタログ値または実燃費（km/L）を入力します。わからない場合は「15」程度が一般的なガソリン車の目安です。</li>
       <li><strong>ガソリン価格</strong>：近くのガソリンスタンドの単価（円/L）を入力します。レギュラーは現在 160〜175 円前後が目安です。</li>
       <li><strong>月額</strong>：出勤日数を入力すると、1ヶ月あたりの交通費（往復×日数）を計算します。</li>
+      <li><strong>割り勘</strong>：乗車人数を2人以上にすると、往復ガソリン代と高速料金（往復合計）を合算し、1人あたりの金額を計算します。ドライブや旅行の費用分担にお使いください。</li>
     </ul>
     <p>計算式：ガソリン代 ＝ 走行距離（km）÷ 燃費（km/L）× ガソリン価格（円/L）。金額の端数は切り捨てで計算しています。</p>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。実際のガソリン代は道路状況・エアコン使用・走行パターンなどにより異なります。</div>
@@ -93,10 +118,13 @@ const jsonld = {
 
 <style>
 .optional-label { font-size: .75rem; font-weight: 400; color: #94a3b8; margin-left: 4px; }
+.warikan-fields { margin-top: 8px; padding-top: 16px; border-top: 1px dashed #dbeafe; }
+.warikan-title { font-size: .9rem; font-weight: 600; color: #1e40af; margin-bottom: 12px; }
+.warikan-highlight .value { color: #1e40af; font-weight: 700; }
 </style>
 
 <script>
-  import { calcGasCost, calcMonthlyCost } from '../../lib/gasoline.js';
+  import { calcGasCost, calcRoundTripCost, calcMonthlyCost, splitPerPerson } from '../../lib/gasoline.js';
 
   const $ = (id) => document.getElementById(id);
   const yen = (n) => '¥' + n.toLocaleString('ja-JP');
@@ -106,6 +134,9 @@ const jsonld = {
     const fuelEff  = parseFloat($('fuel-eff').value);
     const gasPrice = parseFloat($('gas-price').value);
     const workdays = parseFloat($('workdays').value);
+    const people   = parseInt($('people').value, 10);
+    const tollRaw  = parseFloat($('toll').value);
+    const toll     = Number.isFinite(tollRaw) && tollRaw > 0 ? tollRaw : 0;
 
     const oneWay = calcGasCost({ distance, fuelEfficiency: fuelEff, gasPrice });
     const result = $('result');
@@ -116,11 +147,13 @@ const jsonld = {
     }
     result.classList.add('visible');
 
+    // 往復・月額は floor 済みの片道を累乗せず、原始量から精確に再計算する。
+    const roundTrip = calcRoundTripCost({ distance, fuelEfficiency: fuelEff, gasPrice });
     $('one-way').textContent   = yen(oneWay.cost);
-    $('round-trip').textContent = yen(oneWay.cost * 2);
+    $('round-trip').textContent = yen(roundTrip);
     $('liters').textContent    = oneWay.liters.toFixed(2) + ' L';
 
-    const monthly = calcMonthlyCost({ oneWayCost: oneWay.cost, workdays });
+    const monthly = calcMonthlyCost({ distance, fuelEfficiency: fuelEff, gasPrice, workdays });
     const sec = $('monthly-section');
     if (monthly) {
       $('monthly').textContent = yen(monthly);
@@ -128,9 +161,22 @@ const jsonld = {
     } else {
       sec.style.display = 'none';
     }
+
+    // 割り勘：合計 = 往復ガソリン代 + 高速料金（往復合計）。人数2人以上のときだけ表示。
+    const warikanSec = $('warikan-section');
+    const total = roundTrip + toll;
+    const split = splitPerPerson(total, people);
+    if (split && split.people >= 2) {
+      $('total-cost').textContent  = yen(total);
+      $('per-person').textContent  = yen(split.perPerson);
+      $('people-label').textContent = String(split.people);
+      warikanSec.style.display = 'block';
+    } else {
+      warikanSec.style.display = 'none';
+    }
   }
 
-  ['distance', 'fuel-eff', 'gas-price', 'workdays'].forEach((id) =>
+  ['distance', 'fuel-eff', 'gas-price', 'workdays', 'people', 'toll'].forEach((id) =>
     $(id).addEventListener('input', render)
   );
 </script>
