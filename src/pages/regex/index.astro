@@ -16,7 +16,7 @@ const jsonld = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
 ---
-<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ 正規表現テスト</div>
     <h1>正規表現テストツール</h1>
@@ -247,25 +247,32 @@ const jsonld = {
     font-size: 0.9rem;
     line-height: 1.6;
   }
-  .highlight mark {
+</style>
+
+<!-- マッチ結果・ハイライトは innerHTML で注入されるため scoped CSS が当たらない
+     （Astro は静的要素にしか [data-astro-cid] を付与しない）。
+     #re-matches / #re-highlight 配下に限定した is:global で当てる（他ページに漏れない）。 -->
+<style is:global>
+  #re-highlight mark {
     background: #fde047;
     color: #1f2937;
     border-radius: 3px;
     padding: 0 1px;
   }
-  .highlight .muted, .group-val .muted {
-    color: var(--color-muted, #9ca3af);
+  #re-highlight .muted,
+  #re-matches .muted {
+    color: #9ca3af;
     font-style: italic;
   }
-  .matches { margin-top: 1rem; }
-  .match-item {
-    border: 1px solid var(--color-border, #e5e7eb);
+  #re-matches { margin-top: 1rem; }
+  #re-matches .match-item {
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 0.7rem 0.9rem;
     margin-bottom: 0.6rem;
     background: #fff;
   }
-  .match-head {
+  #re-matches .match-head {
     font-weight: 700;
     font-size: 0.9rem;
     display: flex;
@@ -273,39 +280,39 @@ const jsonld = {
     align-items: center;
     margin-bottom: 0.4rem;
   }
-  .match-pos {
+  #re-matches .match-pos {
     font-weight: 500;
     font-size: 0.8rem;
-    color: var(--color-muted, #6b7280);
+    color: #6b7280;
   }
-  .match-val {
+  #re-matches .match-val {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    background: var(--color-bg-soft, #f9fafb);
+    background: #f9fafb;
     border-radius: 6px;
     padding: 0.4rem 0.6rem;
     word-break: break-word;
     white-space: pre-wrap;
   }
-  .groups { margin-top: 0.5rem; }
-  .group-row {
+  #re-matches .groups { margin-top: 0.5rem; }
+  #re-matches .group-row {
     display: flex;
     gap: 0.6rem;
     font-size: 0.85rem;
     padding: 0.2rem 0;
   }
-  .group-no {
+  #re-matches .group-no {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    color: var(--color-primary, #2563eb);
+    color: #2563eb;
     font-weight: 700;
     flex-shrink: 0;
   }
-  .group-val {
+  #re-matches .group-val {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     word-break: break-word;
     white-space: pre-wrap;
   }
-  .no-match {
-    color: var(--color-muted, #6b7280);
+  #re-matches .no-match {
+    color: #6b7280;
     font-size: 0.9rem;
     padding: 0.5rem 0;
   }

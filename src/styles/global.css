@@ -66,6 +66,9 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 
 /* Calc card */
 .calc-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-md);overflow:hidden;max-width:560px;margin:0 auto 24px}
+/* calc-panel（タブ/単一パネル）で余白を確保しないカードは、カード自身に余白を持たせる
+   （markdown/regex/json/calorie/nenrei/shussan/wareki 等、内容を直接置くツール向け） */
+.calc-card:not(:has(.calc-panel)){padding:24px}
 .calc-tabs{display:flex;background:var(--bg-gray);border-bottom:1px solid var(--border)}
 .calc-tab{flex:1;padding:14px 8px;font-size:.84rem;font-weight:600;color:var(--text-muted);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:.15s;font-family:var(--font-jp)}
 .calc-tab.active{color:var(--navy);border-bottom-color:var(--navy);background:var(--bg)}
@@ -80,7 +83,10 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 .form-group input::placeholder{color:#cbd5e1;font-family:var(--font-jp);font-size:1rem}
 
 .radio-group{display:flex;gap:8px;margin-bottom:18px}
-.radio-group input[type=radio]{position:absolute;opacity:0;pointer-events:none}
+/* 非表示ラジオは width:1px に固定。これを省くと .form-group input{width:100%} を
+   継承し、position:absolute かつ定位祖先なしのため viewport 幅(例:1440px)に広がって
+   横スクロールが発生する（calorie/kokuho/kotei-shisan で実際に起きていた）。 */
+.radio-group input[type=radio]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .radio-group label{flex:1;text-align:center;padding:10px 8px;border:1px solid var(--border);border-radius:6px;font-size:.84rem;font-weight:600;cursor:pointer;transition:.15s;color:var(--text-muted);background:var(--bg)}
 .radio-group input[type=radio]:checked+label{border-color:var(--navy);background:var(--navy-light);color:var(--navy)}
 .radio-group input[type=radio]:focus-visible+label{box-shadow:0 0 0 3px rgba(59,130,246,.12)}
@@ -172,18 +178,35 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
     grid-template-columns:560px 1fr;
     gap:0 40px;
     align-items:start;
+    /* dense にしないと、左カラムの「計算カード＋直後の広告」が row2・row3 を占め、
+       右カラムの howto が row3（カード下）に落ちて右上に巨大な余白ができる。
+       dense で穴を埋め、howto をカード横（row2）に戻す。 */
+    grid-auto-flow:row dense;
   }
 
+  /* 以下の子ルールは2カラム専用。:not(.wide) に限定し、wide ページには漏らさない。 */
   /* フル幅要素 */
-  .page-hero  {grid-column:1/-1}
-  .share-bar  {grid-column:1/-1;max-width:none;margin-top:32px}
+  .page-wrapper:not(.wide) .page-hero {grid-column:1/-1}
+  .page-wrapper:not(.wide) .share-bar {grid-column:1/-1;max-width:none;margin-top:32px}
 
   /* 左カラム: 計算カード + 直後の広告 */
-  .calc-card            {grid-column:1;max-width:none;margin-bottom:24px}
-  .calc-card + .ad-slot {grid-column:1;max-width:none;margin:0}
+  .page-wrapper:not(.wide) .calc-card            {grid-column:1;max-width:none;margin-bottom:24px}
+  .page-wrapper:not(.wide) .calc-card + .ad-slot {grid-column:1;max-width:none;margin:0}
 
   /* 右カラム: 説明 → 関連ツール → 広告 */
-  .howto          {grid-column:2;max-width:none;margin:0}
-  .related        {grid-column:2;max-width:none;margin:24px 0 0}
-  .howto ~ .ad-slot{grid-column:2;max-width:none;margin:24px 0 0}
+  .page-wrapper:not(.wide) .howto           {grid-column:2;max-width:none;margin:0}
+  .page-wrapper:not(.wide) .related         {grid-column:2;max-width:none;margin:24px 0 0}
+  .page-wrapper:not(.wide) .howto ~ .ad-slot{grid-column:2;max-width:none;margin:24px 0 0}
+
+  /* 複雑ツール（wide）: 単一カラム。入力量の多いツール
+     （markdown/regex/json/color-code/tani/moji 等）向け。
+     560px は窮屈、フル幅は逆に間延びするので、計算カードと直後の広告は
+     「広めだが読みやすい」900px で中央寄せ。説明・関連・下部広告は
+     base のまま 560px 中央寄せ。ホームの .wide は影響なし。 */
+  .page-wrapper.wide .calc-card,
+  .page-wrapper.wide .calc-card + .ad-slot{
+    max-width:900px;
+    margin-left:auto;
+    margin-right:auto;
+  }
 }
