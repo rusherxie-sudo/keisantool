@@ -3,6 +3,7 @@ import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import ShareButtons from '../components/ShareButtons.astro';
+import FloatingShare from '../components/FloatingShare.astro';
 
 const { title, description, slug, current, jsonld, wide } = Astro.props;
 const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
@@ -36,5 +37,6 @@ const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
     <ShareButtons title={title} url={canonical} />
   </main>
   <SiteFooter />
+  <FloatingShare title={title} url={canonical} />
 </body>
 </html>

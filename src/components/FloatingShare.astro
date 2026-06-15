@@ -1,0 +1,153 @@
+---
+// 全ページ共通の浮動シェアボタン（FAB）。
+// スマホでは navigator.share（OS標準の共有シート）を優先。
+// 非対応環境ではポップオーバーで各SNSへのシェア＋リンクコピーを提供する。
+const { title, url } = Astro.props;
+const u = encodeURIComponent(url);
+const t = encodeURIComponent(title);
+const hatena = 'https://b.hatena.ne.jp/entry/s/' + url.replace(/^https?:\/\//, '');
+---
+<div class="fshare" id="fshare">
+  <div class="fshare-menu" id="fshare-menu" hidden>
+    <a class="fshare-item x" href={`https://twitter.com/intent/tweet?url=${u}&text=${t}`} target="_blank" rel="noopener">𝕏 でシェア</a>
+    <a class="fshare-item line" href={`https://social-plugins.line.me/lineit/share?url=${u}`} target="_blank" rel="noopener">LINE でシェア</a>
+    <a class="fshare-item fb" href={`https://www.facebook.com/sharer/sharer.php?u=${u}`} target="_blank" rel="noopener">Facebook</a>
+    <a class="fshare-item hatena" href={hatena} target="_blank" rel="noopener">はてなブックマーク</a>
+    <button class="fshare-item copy" type="button" id="fshare-copy">リンクをコピー</button>
+  </div>
+  <button class="fshare-fab" id="fshare-fab" type="button" aria-label="このページをシェア" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+    </svg>
+    <span class="fshare-text">シェア</span>
+  </button>
+</div>
+
+<script define:vars={{ title, url }}>
+  const wrap = document.getElementById('fshare');
+  const fab = document.getElementById('fshare-fab');
+  const menu = document.getElementById('fshare-menu');
+  const copyBtn = document.getElementById('fshare-copy');
+
+  const closeMenu = () => { menu.hidden = true; fab.setAttribute('aria-expanded', 'false'); };
+  const openMenu = () => { menu.hidden = false; fab.setAttribute('aria-expanded', 'true'); };
+
+  fab.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch (err) {
+        if (err && err.name === 'AbortError') return; // ユーザーがキャンセル
+      }
+    }
+    menu.hidden ? openMenu() : closeMenu();
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      const orig = copyBtn.textContent;
+      copyBtn.textContent = 'コピーしました';
+      setTimeout(() => { copyBtn.textContent = orig; }, 1500);
+    } catch (e) {}
+  });
+
+  // メニュー外クリック・Escで閉じる
+  document.addEventListener('click', (e) => {
+    if (!wrap.contains(e.target)) closeMenu();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+</script>
+
+<style>
+  .fshare {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+  .fshare-fab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 48px;
+    padding: 0 18px 0 16px;
+    border: none;
+    border-radius: 999px;
+    background: var(--navy);
+    color: #fff;
+    font-family: var(--font-jp);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(30, 58, 95, 0.35);
+    transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+  .fshare-fab:hover {
+    background: var(--navy-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(30, 58, 95, 0.45);
+  }
+  .fshare-fab:active { transform: translateY(0); }
+  .fshare-fab svg { flex-shrink: 0; }
+
+  .fshare-menu[hidden] { display: none; }
+  .fshare-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(30, 58, 95, 0.18);
+    min-width: 184px;
+    animation: fshare-in 0.15s ease;
+  }
+  @keyframes fshare-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fshare-item {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-jp);
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .fshare-item:hover { opacity: 0.88; }
+  .fshare-item.x { background: #000; }
+  .fshare-item.line { background: #06c755; }
+  .fshare-item.fb { background: #1877f2; }
+  .fshare-item.hatena { background: #00a4de; }
+  .fshare-item.copy { background: var(--navy); }
+
+  @media (max-width: 480px) {
+    .fshare { right: 14px; bottom: 14px; }
+    .fshare-fab { height: 46px; padding: 0 16px; }
+  }
+
+  @media print {
+    .fshare { display: none; }
+  }
+</style>
