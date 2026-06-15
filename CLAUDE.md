@@ -1,16 +1,17 @@
 # CLAUDE.md
 
-> 这是给 Claude 看的"干活规则"，只放**稳定的约定与陷阱**。
-> 会变的东西（当前进度、全工具清单、待办）一律去看 `HANDOFF.md`，不在这里重复。
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## 1. 这是什么
+> 只放**稳定的约定、架构与陷阱**。会变的状态（进度、全工具清单、待办）看 `HANDOFF.md`，不在这里重复。
+> 和 Owner 沟通、写文档**一律用中文**；页面里的日文内容由 Claude 生成（Owner 不懂日文、无法校对）。
 
-- **keisantool.com**：日本語の計算・変換ツールサイト。靠 Google 日本自然搜索流入，用 AdSense 变现。
-- 纯静态站：**Astro** 构建 → **Cloudflare Pages** 部署。计算逻辑是 Vanilla JS 纯函数（`src/lib/`），用 **vitest** 测试。
-- **和 Owner 沟通、写文档一律用中文**；页面里的日文内容由 Claude 生成（Owner 不懂日文、无法校对）。
-- 👉 当前状态 / 全 24 工具清单 / 待办 / 历史坑，都看 **`HANDOFF.md`**。
+## 这是什么
 
-## 2. 命令
+- **keisantool.com** — 日本語の計算・変換ツール集。靠 Google 日本自然搜索流入，用 AdSense 变现。
+- 纯静态站：**Astro** 构建 → **Cloudflare Pages** 部署。计算逻辑是 Vanilla JS 纯函数（`src/lib/`），用 **vitest** 测试。无 TypeScript、无 ESLint/Prettier。
+- 👉 当前状态 / 全工具清单 / 历史坑，都看 **`HANDOFF.md`**。
+
+## 命令
 
 ```bash
 npm test                              # 全量测试（vitest run）
@@ -22,55 +23,60 @@ npm run build                         # 生产构建 → dist/
 部署（Owner 要求"改完直接部署，不必每次问"）：
 
 ```bash
-npm run build
-npx wrangler pages deploy dist --project-name=keisantool
+npm run build && npx wrangler pages deploy dist --project-name=keisantool
 ```
 
 - ⚠️ 本地 git **没有 remote**（`origin` 不存在），`git push` 会失败。部署走 wrangler，`git commit` 只是本地留痕。
 
-## 3. 必守约定（重点，别打折扣）
+## 架构大图（需读多个文件才懂的部分）
 
-- **计算逻辑用 TDD**：先写 `tests/<tool>.test.js` → 跑出 RED → 再写 `src/lib/<tool>.js` → GREEN。Owner 无法校对计算，**测试是唯一的正确性保证**。计算函数必须是纯函数（不依赖 DOM）。
+**单一数据源**：`src/data/tools.js` 导出 `categories` + `tools`（字段 `slug/nav/name/icon/category/short/live`）。分类下拉导航、首页卡片、`RelatedTools` 关联链接**全部从它派生**——所以加工具必须先在这里注册。
+
+**页面 = 壳 + 内容**：每个 `src/pages/<slug>/index.astro` 用 `src/layouts/ToolLayout.astro` 包裹。ToolLayout 负责 `<head>`/SEO/JSON-LD/页头页脚/分享按钮；页面 body 一般是 `.page-hero`(h1+说明) → `.calc-card`(计算 UI) → `.ad-slot` → `.howto`(使い方) → `<RelatedTools>` → `.ad-slot`。计算逻辑从 `src/lib/<slug>.js`（纯函数）import，DOM 交互写在页面自己的 `<script>`。
+
+**两套桌面布局（≥1024px，定义在 `src/styles/global.css`）**：
+- **默认两栏**：左 `.calc-card`(560px) + 右 `.howto`/`.related` 侧栏。简单计算器用这套。
+- **`wide` 单栏**：内容多的工具（编辑器型 / 多内栏 / 宽表格）给 `<ToolLayout … wide>` → 单栏居中 900px，计算卡铺宽、说明在下方。当前用 wide 的：markdown / regex / json / color-code / tani / moji / yakudoshi。
+- ⚠️ 两栏网格**必须保留 `grid-auto-flow:dense`**：否则左栏"卡片+紧邻广告"占两行，右栏 `howto` 会掉到卡片下方，宽屏右上角留一大片空白。
+- **卡片内边距**：内容放进 `.calc-panel`（带 24px 内边距，带 tab 的工具用），或不放 panel 时由 `.calc-card:not(:has(.calc-panel)){padding:24px}` 兜底。别让内容直接贴卡片边框。
+
+## 必守约定（别打折扣）
+
+- **计算逻辑走 TDD**：先写 `tests/<tool>.test.js` → 跑出 RED → 再写 `src/lib/<tool>.js`（纯函数、不依赖 DOM）→ GREEN。Owner 无法校对计算，**测试是唯一的正确性保证**。
 - **金额端数一律 `Math.floor` 切り捨て**，丢成整数円。
-- **`src/data/tools.js` 是工具元数据的单一数据源**：新增工具**先在这里注册**（字段 `slug / nav / name / icon / category / short / live`）。导航、首页卡片、关联链接全部引用它。
+- **`src/data/tools.js` 是工具元数据单一数据源**（见上「架构大图」）。
 - **日期用 UTC 正午基准**：参考 `src/lib/shussan.js` 的 `toDate / toISO / addDays`，避免时区 / 夏令时跨日 bug。
-- **法规和数值每年要复核**：日本税制·社保每年 4月 / 8月 改定。改 `kokuho`、`saniku` 这类工具前，**先看 `HANDOFF.md` §8 的历史坑**（令和7改正表、产休育休 2025 新制等）。
+- **法规和数值每年复核**：日本税制·社保每年 4月 / 8月 改定。改 `kokuho`、`saniku` 这类前，**先看 `HANDOFF.md` §8 的历史坑**。
 
-## 4. SEO（每页必须）
+## SEO（每页必须，多由 ToolLayout + 各页 frontmatter 提供）
 
 - 唯一 `<h1>`、`<title>`、`<meta name="description">`、`<link rel="canonical">`、JSON-LD（WebApplication）、`<html lang="ja">`。
-- 每页内部链接 ≥3（由 `RelatedTools` 组件自动生成）。
-- 免责事项必挂：`計算結果はあくまで参考値です`（日文原文，不要翻译）。
-- 以上大多由 `ToolLayout.astro` + 各页 frontmatter 统一提供。
+- 每页内部链接 ≥3（`RelatedTools` 自动生成）。
+- 免责事项必挂日文原文：`計算結果はあくまで参考値です`。
 
-## 5. 广告（AdSense）
+## 广告（AdSense）
 
-- `.ad-slot` 放在**结果区直下** + **页面下部**。
-- 禁止弹窗 / 插屏广告。
+- `.ad-slot` 放在结果区直下 + 页面下部；禁止弹窗 / 插屏。
 
-## 6. 新工具标准流程（6 步）
+## 新工具标准流程（6 步）
 
 1. 在 `src/data/tools.js` 注册元数据。
-2. 写 `tests/<tool>.test.js` → `npm test` 确认 **RED**。
-3. 写 `src/lib/<tool>.js` → `npm test` 确认 **GREEN**。
-4. 建 `src/pages/<slug>/index.astro`：仿 `zeizei` / `wariai` / `moji` 的结构，SEO frontmatter 齐全；**样式写在页面内 `<style>` 里，不要动 `global.css`**。
-5. `npm run build` + 浏览器**多尺寸**验证（1440 / 1280 / 768 / 375）。
+2. 写 `tests/<tool>.test.js` → 确认 **RED**。
+3. 写 `src/lib/<tool>.js` → 确认 **GREEN**。
+4. 建 `src/pages/<slug>/index.astro`：仿 `zeizei`/`wariai`/`moji`，SEO frontmatter 齐全。**工具专属样式写页面内 `<style>`**；只有全站级布局/卡片/导航才动 `global.css`。内容多就传 `wide`（见「架构大图」）。
+5. `npm run build` + 浏览器多尺寸验证 **1920 / 1440 / 768 / 375**（务必测超宽屏，两栏对齐问题只在宽屏暴露）。
 6. wrangler 部署。
 
-## 7. 关键文件 & 命名约定
+## 陷阱（已踩过，别重犯）
 
-- `src/layouts/ToolLayout.astro` — 全页共通模板（head / SEO / JSON-LD / header / footer / ShareButtons / FloatingShare）。支持 `wide` prop 切换宽布局。
-- `src/components/` — `SiteHeader`(分类下拉导航) / `SiteFooter` / `RelatedTools`(关联链接) / `ShareButtons` / `FloatingShare`(右下角 FAB 浮动分享)。
-- `src/data/tools.js` — 单一数据源，含 `categories` 与 `tools`。
-- `src/lib/<tool>.js` — 计算纯函数（TDD 对象）。
-- `src/styles/global.css` — 全站样式，含 PC ≥1024px 的两栏布局（**当前待优化项，详见 `HANDOFF.md` §6**）。
-- ⚠️ **命名例外**：lib 文件统一 kebab-case，唯独 `src/lib/koteiShisan.js` 是 **camelCase**（页面却是 `/kotei-shisan/`）——别被它绊到。
-- ⚠️ 导航和首页**不按 `live` 过滤**（全量渲染）。当前 24 个工具全是 `live:true`；若想用 `live` 真正隐藏某工具，得自己补过滤逻辑。
+- **lib 命名例外**：文件统一 kebab-case，唯独 `src/lib/koteiShisan.js` 是 **camelCase**（页面是 `/kotei-shisan/`、测试是 `tests/kotei-shisan.test.js`）。
+- **Astro scoped `<style>` 不作用于 `innerHTML` 注入的节点**：动态生成的内容（如 markdown 预览 `#md-preview`、regex 匹配 `#re-matches`）样式必须写进 `<style is:global>` 并用页面唯一 id 前缀，否则不生效（Astro 只给静态元素加 `data-astro-cid`）。
+- **隐藏的 radio 必须限宽 `width:1px`**：`.radio-group input[type=radio]` 否则继承 `.form-group input{width:100%}` 又是 `position:absolute`，会撑成视口宽 → 桌面横向滚动条。
+- **导航/首页不按 `live` 过滤**（全量渲染）；当前全 `live:true`，要真隐藏某工具得自己加过滤逻辑。
 
-## 8. 详情指路（不在这里重复，统一去看）
+## 详情指路（不在这里重复）
 
-- 当前状态 / 全 24 工具清单 → `HANDOFF.md` §3、§5
-- 最优先待办（PC 桌面布局拥挤）→ `HANDOFF.md` §6
-- 历史决策 & 已踩的坑（国保令和7改正表 / 产休育休2025新制 / 时差DST / `live` flag / calorie 公式）→ `HANDOFF.md` §8
+- 当前状态 / 全工具清单 → `HANDOFF.md` §3、§5
+- 历史决策 & 已踩的坑（国保令和7改正表 / 产休育休2025新制 / 时差DST / calorie 公式）→ `HANDOFF.md` §8
 - 设计样板（首个工具的完整设计流程）→ `docs/superpowers/specs/2026-06-14-zeizei-calculator-design.md`
 - 上游建站调研（SEO 策略 / 选型）→ `/Users/jww/5kong/find/建站文档_日本計算ツールサイト.md`
