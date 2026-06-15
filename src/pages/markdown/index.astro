@@ -1,0 +1,271 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'markdown';
+const title = 'Markdown → HTML 変換ツール - コピペで即座にHTML出力 | 計算ツール';
+const description =
+  'Markdown を貼り付けるだけで HTML に変換できる無料ツール。見出し・太字・リスト・リンク・コードなどに対応し、HTMLソースのコピーとリアルタイムプレビューが同時にできます。ブログやメール、ドキュメント作成に便利です。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Markdown → HTML 変換ツール',
+  description,
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ Markdown → HTML 変換</div>
+    <h1>Markdown → HTML 変換ツール</h1>
+    <p>Markdown を入力欄に貼り付けるだけで、HTML ソースとプレビューが自動で表示されます。見出し・太字・斜体・リスト・リンク・コードなどに対応。ボタン操作は不要です。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="md-grid">
+      <!-- 入力 -->
+      <div class="md-col">
+        <div class="form-group">
+          <label for="md-input">Markdown を入力</label>
+          <textarea id="md-input" rows="16" spellcheck="false" placeholder="# 見出し
+
+**太字** や *斜体*、[リンク](https://example.com) など。
+
+- 箇条書き 1
+- 箇条書き 2
+
+`インラインコード` も使えます。"></textarea>
+        </div>
+      </div>
+
+      <!-- HTML ソース出力 -->
+      <div class="md-col">
+        <div class="form-group">
+          <label for="md-output">HTML ソース</label>
+          <textarea id="md-output" class="output" rows="16" readonly spellcheck="false" placeholder="ここに変換後の HTML が表示されます"></textarea>
+        </div>
+        <button class="copy-btn" type="button" data-target="md-output">HTML をコピー</button>
+      </div>
+    </div>
+
+    <!-- プレビュー -->
+    <div class="md-preview-wrap">
+      <div class="md-preview-head">
+        <span class="md-preview-title">プレビュー</span>
+        <span class="md-preview-note">※ プレビューは自己責任でご利用ください</span>
+      </div>
+      <div id="md-preview" class="md-preview"></div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方とMarkdownについて</h2>
+    <p>左（スマートフォンでは上）の入力欄に Markdown を貼り付けると、右側に HTML ソースが、下部にプレビューが自動で表示されます。「HTML をコピー」ボタンを押すと、変換後の HTML をそのままクリップボードにコピーできます。</p>
+    <p><strong>Markdown（マークダウン）</strong>とは、記号を使って文章の構造（見出し・箇条書き・強調など）を手軽に書ける記法です。書いたテキストはそのまま HTML に変換でき、ブログ・README・メール・ドキュメントなどで広く使われています。本ツールでよく使う記法は次のとおりです。</p>
+    <ul>
+      <li><strong>見出し</strong>：行頭に <code>#</code> を付けます（<code>#</code> の数で大きさが変わり、<code># 見出し</code> は <code>&lt;h1&gt;</code>、<code>## 見出し</code> は <code>&lt;h2&gt;</code> になります）。</li>
+      <li><strong>太字・斜体</strong>：<code>**太字**</code> は <code>&lt;strong&gt;</code>、<code>*斜体*</code> は <code>&lt;em&gt;</code> に変換されます。</li>
+      <li><strong>リンク</strong>：<code>[表示テキスト](URL)</code> の形式でリンクになります。</li>
+      <li><strong>箇条書きリスト</strong>：行頭に <code>-</code> や <code>*</code> を付けます。番号付きリストは <code>1.</code> のように書きます。</li>
+      <li><strong>コード</strong>：<code>`コード`</code> のようにバッククォートで囲むとインラインコードに、3 つのバッククォートで囲むとコードブロックになります。</li>
+    </ul>
+    <p>変換には実績のある Markdown パーサー（marked）を使用しているため、一般的な記法は標準的な HTML として正しく変換されます。</p>
+    <div class="disclaimer">※ 変換はお使いのブラウザ内だけで行われ、入力した内容がサーバーへ送信されることはありません。プレビューは入力された HTML をそのまま描画するため、信頼できない内容を貼り付ける場合はご自身の責任でご利用ください。計算結果（変換結果）はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+  .md-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 720px) {
+    .md-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .md-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.7;
+    resize: vertical;
+    transition: 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  }
+  textarea::placeholder {
+    color: #cbd5e1;
+  }
+  textarea.output {
+    background: var(--bg-result);
+    border-color: #bfdbfe;
+    color: var(--navy);
+  }
+  .copy-btn {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 6px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: var(--font-jp);
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  .copy-btn:hover {
+    background: var(--navy-dark);
+  }
+  .copy-btn.copied {
+    background: var(--success);
+  }
+  .md-preview-wrap {
+    margin-top: 18px;
+  }
+  .md-preview-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .md-preview-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .md-preview-note {
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+  .md-preview {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    padding: 16px 18px;
+    min-height: 120px;
+    line-height: 1.8;
+    color: var(--text);
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .md-preview:empty::before {
+    content: 'ここにプレビューが表示されます';
+    color: #cbd5e1;
+  }
+  .md-preview :first-child {
+    margin-top: 0;
+  }
+  .md-preview :last-child {
+    margin-bottom: 0;
+  }
+  .md-preview h1,
+  .md-preview h2,
+  .md-preview h3 {
+    color: var(--navy);
+    line-height: 1.4;
+  }
+  .md-preview pre {
+    background: #f1f5f9;
+    border-radius: 6px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    font-size: 0.9rem;
+  }
+  .md-preview code {
+    background: #f1f5f9;
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.9em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .md-preview pre code {
+    background: none;
+    padding: 0;
+  }
+  .md-preview a {
+    color: var(--navy);
+    text-decoration: underline;
+  }
+  .md-preview blockquote {
+    margin: 0.6em 0;
+    padding: 4px 14px;
+    border-left: 4px solid var(--border);
+    color: #64748b;
+  }
+  .md-preview table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .md-preview th,
+  .md-preview td {
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+  }
+</style>
+
+<script>
+  import { mdToHtml } from '../../lib/markdown.js';
+
+  const $ = (id) => document.getElementById(id);
+  const input = $('md-input');
+  const output = $('md-output');
+  const preview = $('md-preview');
+
+  function render() {
+    const html = mdToHtml(input.value);
+    output.value = html;
+    // プレビューは入力者自身のブラウザ内のみで描画される（自己責任）。
+    preview.innerHTML = html;
+  }
+
+  input.addEventListener('input', render);
+  render();
+
+  // コピー
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = $(btn.dataset.target).value;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = 'コピーしました';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      } catch (e) {
+        // クリップボードが使えない環境では何もしない
+      }
+    });
+  });
+</script>

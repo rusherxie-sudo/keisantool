@@ -1,0 +1,312 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'regex';
+const title = '正規表現テストツール - パターンのマッチを即チェック | 計算ツール';
+const description =
+  '正規表現（regex）のパターンとテスト文字列を入力するだけで、マッチ箇所をハイライト表示。マッチ数・各マッチの位置・キャプチャグループも確認できる無料ツール。g/i/m/s フラグ対応、処理はすべてブラウザ内で完結します。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '正規表現テストツール',
+  description,
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 正規表現テスト</div>
+    <h1>正規表現テストツール</h1>
+    <p>正規表現のパターンとテスト文字列を入力すると、マッチした箇所をリアルタイムでハイライト表示します。マッチ数・位置・キャプチャグループも確認できます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="re-pattern">正規表現パターン</label>
+      <div class="pattern-wrap">
+        <span class="slash">/</span>
+        <input type="text" id="re-pattern" placeholder="例：\d+" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" />
+        <span class="slash">/</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>フラグ</label>
+      <div class="flags">
+        <label class="flag"><input type="checkbox" id="flag-g" checked /><span><strong>g</strong> グローバル（全て）</span></label>
+        <label class="flag"><input type="checkbox" id="flag-i" /><span><strong>i</strong> 大文字小文字を無視</span></label>
+        <label class="flag"><input type="checkbox" id="flag-m" /><span><strong>m</strong> 複数行</span></label>
+        <label class="flag"><input type="checkbox" id="flag-s" /><span><strong>s</strong> ドットが改行に一致</span></label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="re-text">テスト文字列</label>
+      <textarea id="re-text" rows="6" placeholder="ここにテストしたい文字列を入力してください。" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+    </div>
+
+    <div class="re-error" id="re-error" hidden></div>
+
+    <div class="result-box visible" id="re-result">
+      <div class="result-label">マッチ数</div>
+      <div class="result-main" id="re-count">0 件</div>
+    </div>
+
+    <div class="form-group">
+      <div class="hl-label">ハイライト表示</div>
+      <div class="highlight" id="re-highlight" aria-live="polite"></div>
+    </div>
+
+    <div class="matches" id="re-matches"></div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>「正規表現パターン」に検索したいパターンを入力し、必要なフラグにチェックを入れ、「テスト文字列」にチェック対象の文字列を貼り付けてください。入力するたびに自動でマッチ判定が行われ、ボタンを押す必要はありません。</p>
+    <ul>
+      <li><strong>パターン入力</strong>：JavaScript の正規表現の書式で入力します。先頭・末尾のスラッシュ（/）は不要で、パターン本体だけを入力してください。たとえば <code>\d+</code>（連続する数字）、<code>[a-z]+</code>（英小文字）、<code>(\w+)@(\w+)</code>（メール風の2グループ）などです。</li>
+      <li><strong>フラグ</strong>：<code>g</code> は全てのマッチを探します（外すと最初の1件のみ）。<code>i</code> は大文字小文字を区別しません。<code>m</code> は <code>^</code>/<code>$</code> を行頭・行末に一致させます。<code>s</code> は <code>.</code> を改行にも一致させます。</li>
+      <li><strong>結果の見方</strong>：マッチ数と、テスト文字列の中でマッチした部分のハイライトが表示されます。各マッチについて、内容・開始位置・キャプチャグループ（丸括弧で囲んだ部分）の一覧も確認できます。</li>
+      <li><strong>エラー表示</strong>：パターンの書式が正しくない場合は、エラー内容を表示します（例：閉じ括弧の不足）。書き直すと自動で再判定されます。</li>
+    </ul>
+    <p>このツールの処理はすべてあなたのブラウザ内で完結します。入力したパターンやテスト文字列がサーバーに送信されることはありません。</p>
+    <div class="disclaimer">※ 正規表現の挙動はブラウザの JavaScript エンジンに準拠します。判定結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<script>
+  import { testRegex } from '../../lib/regex.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function escapeHtml(s) {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function getFlags() {
+    let f = '';
+    if ($('flag-g').checked) f += 'g';
+    if ($('flag-i').checked) f += 'i';
+    if ($('flag-m').checked) f += 'm';
+    if ($('flag-s').checked) f += 's';
+    return f;
+  }
+
+  function render() {
+    const pattern = $('re-pattern').value;
+    const flags = getFlags();
+    const text = $('re-text').value;
+    const errBox = $('re-error');
+    const highlight = $('re-highlight');
+    const matchesBox = $('re-matches');
+
+    if (pattern === '') {
+      errBox.hidden = true;
+      $('re-count').textContent = '0 件';
+      highlight.innerHTML = text ? escapeHtml(text) : '<span class="muted">テスト文字列を入力してください。</span>';
+      matchesBox.innerHTML = '';
+      return;
+    }
+
+    const r = testRegex(pattern, flags, text);
+
+    if (!r.ok) {
+      errBox.hidden = false;
+      errBox.textContent = '正規表現エラー: ' + r.error;
+      $('re-count').textContent = '— 件';
+      highlight.innerHTML = text ? escapeHtml(text) : '';
+      matchesBox.innerHTML = '';
+      return;
+    }
+
+    errBox.hidden = true;
+    $('re-count').textContent = r.matches.length + ' 件';
+
+    // ハイライト（重なりは matchAll の順序どおり、空マッチは無視）
+    let html = '';
+    let cursor = 0;
+    for (const m of r.matches) {
+      if (m.index < cursor) continue; // 安全策（重複防止）
+      html += escapeHtml(text.slice(cursor, m.index));
+      const matchedText = m.match;
+      if (matchedText.length > 0) {
+        html += '<mark>' + escapeHtml(matchedText) + '</mark>';
+        cursor = m.index + matchedText.length;
+      } else {
+        cursor = m.index;
+      }
+    }
+    html += escapeHtml(text.slice(cursor));
+    highlight.innerHTML = html || '<span class="muted">（マッチなし）</span>';
+
+    // 各マッチの詳細
+    if (r.matches.length === 0) {
+      matchesBox.innerHTML = '<div class="no-match">マッチする箇所はありませんでした。</div>';
+      return;
+    }
+    let mhtml = '';
+    r.matches.forEach((m, i) => {
+      mhtml += '<div class="match-item">';
+      mhtml += '<div class="match-head">マッチ ' + (i + 1) + ' <span class="match-pos">位置 ' + m.index + '</span></div>';
+      mhtml += '<div class="match-val">' + escapeHtml(m.match) + '</div>';
+      if (m.groups.length > 0) {
+        mhtml += '<div class="groups">';
+        m.groups.forEach((g, gi) => {
+          const val = g === undefined ? '<span class="muted">（未参加）</span>' : escapeHtml(g);
+          mhtml += '<div class="group-row"><span class="group-no">$' + (gi + 1) + '</span><span class="group-val">' + val + '</span></div>';
+        });
+        mhtml += '</div>';
+      }
+      mhtml += '</div>';
+    });
+    matchesBox.innerHTML = mhtml;
+  }
+
+  ['re-pattern', 're-text'].forEach((id) => $(id).addEventListener('input', render));
+  ['flag-g', 'flag-i', 'flag-m', 'flag-s'].forEach((id) => $(id).addEventListener('change', render));
+
+  render();
+</script>
+
+<style>
+  .pattern-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .pattern-wrap .slash {
+    font-size: 1.3rem;
+    color: var(--color-muted, #6b7280);
+    font-weight: 700;
+  }
+  .pattern-wrap input {
+    flex: 1;
+    min-width: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  #re-text {
+    width: 100%;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    resize: vertical;
+  }
+  .flags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+  }
+  .flag {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .flag input { width: auto; margin: 0; }
+  .flag strong {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--color-primary, #2563eb);
+  }
+  .re-error {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #b91c1c;
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    word-break: break-word;
+  }
+  .hl-label {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+    color: var(--color-text, #1f2937);
+  }
+  .highlight {
+    background: var(--color-bg-soft, #f9fafb);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 8px;
+    padding: 0.8rem;
+    min-height: 3rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .highlight mark {
+    background: #fde047;
+    color: #1f2937;
+    border-radius: 3px;
+    padding: 0 1px;
+  }
+  .highlight .muted, .group-val .muted {
+    color: var(--color-muted, #9ca3af);
+    font-style: italic;
+  }
+  .matches { margin-top: 1rem; }
+  .match-item {
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    margin-bottom: 0.6rem;
+    background: #fff;
+  }
+  .match-head {
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+  .match-pos {
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: var(--color-muted, #6b7280);
+  }
+  .match-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--color-bg-soft, #f9fafb);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  .groups { margin-top: 0.5rem; }
+  .group-row {
+    display: flex;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    padding: 0.2rem 0;
+  }
+  .group-no {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--color-primary, #2563eb);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .group-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  .no-match {
+    color: var(--color-muted, #6b7280);
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+  }
+</style>

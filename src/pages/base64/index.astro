@@ -1,0 +1,202 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'base64';
+const title = 'Base64 エンコード / デコードツール - 日本語対応・コピペで即変換 | 計算ツール';
+const description =
+  '文字列とBase64を相互変換できる無料ツール。UTF-8に対応し、日本語や絵文字を含む文字列も文字化けせず正しくエンコード・デコードできます。処理はブラウザ内で完結し、入力内容がサーバーへ送信されることはありません。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Base64 エンコード / デコードツール',
+  description,
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ Base64 変換</div>
+    <h1>Base64 エンコード / デコードツール</h1>
+    <p>文字列とBase64を相互に変換できるツールです。UTF-8に対応しているので、日本語や絵文字を含む文字列も文字化けせずに変換できます。テキストを入力すると自動で結果が表示されます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist">
+      <button class="calc-tab active" data-tab="encode" type="button">エンコード</button>
+      <button class="calc-tab" data-tab="decode" type="button">デコード</button>
+    </div>
+
+    <!-- エンコード -->
+    <div class="calc-panel active" id="panel-encode">
+      <div class="form-group">
+        <label for="encode-input">エンコードしたい文字列を入力</label>
+        <textarea id="encode-input" rows="4" placeholder="例：こんにちは"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="encode-output">Base64（変換結果）</label>
+        <textarea id="encode-output" class="output" rows="4" readonly placeholder="ここにBase64が表示されます"></textarea>
+      </div>
+      <button class="copy-btn" type="button" data-target="encode-output">結果をコピー</button>
+    </div>
+
+    <!-- デコード -->
+    <div class="calc-panel" id="panel-decode">
+      <div class="form-group">
+        <label for="decode-input">Base64 を入力</label>
+        <textarea id="decode-input" rows="4" placeholder="例：5pel5pys6Kqe"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="decode-output">原文（変換結果）</label>
+        <textarea id="decode-output" class="output" rows="4" readonly placeholder="ここに原文が表示されます"></textarea>
+      </div>
+      <div class="error-msg" id="decode-error" hidden>入力されたBase64が正しくありません。文字列を確認してください。</div>
+      <button class="copy-btn" type="button" data-target="decode-output">結果をコピー</button>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>Base64 とは・使い方</h2>
+    <p>上のタブから「エンコード」または「デコード」を選び、テキストエリアに入力するだけで、自動的に結果が表示されます。「結果をコピー」ボタンを押すと、変換後の文字をそのままクリップボードにコピーできます。</p>
+    <ul>
+      <li><strong>Base64 エンコード</strong>：任意の文字列を、英数字と「+」「/」「=」だけで構成されるBase64形式の文字列に変換します。本ツールはUTF-8で処理するため、日本語・絵文字を含む文字列も正しく変換できます。</li>
+      <li><strong>Base64 デコード</strong>：Base64形式の文字列を元のテキストに復元します。Base64として正しくない文字列を入力した場合は、エラーメッセージを表示します。</li>
+    </ul>
+    <p>
+      <strong>Base64</strong>とは、データを64種類の英数字記号だけで表現するエンコード方式です。画像やファイル、日本語テキストなどのバイナリデータを、メールやJSON、データURIなど「テキストしか扱えない場所」で安全に受け渡すために使われます。暗号化ではないため、Base64文字列は誰でも元のデータに戻せます。秘密情報の保護目的には使えない点に注意してください。
+    </p>
+    <div class="disclaimer">※ 変換はお使いのブラウザ内だけで行われ、入力した文字がサーバーへ送信されることはありません。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+  textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: var(--font-jp);
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.7;
+    resize: vertical;
+    transition: 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  }
+  textarea::placeholder {
+    color: #cbd5e1;
+  }
+  textarea.output {
+    background: var(--bg-result);
+    border-color: #bfdbfe;
+    color: var(--navy);
+    word-break: break-all;
+  }
+  .copy-btn {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 6px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: var(--font-jp);
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  .copy-btn:hover {
+    background: var(--navy-dark);
+  }
+  .copy-btn.copied {
+    background: var(--success);
+  }
+  .error-msg {
+    margin: -4px 0 14px;
+    padding: 10px 12px;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 0.9rem;
+  }
+</style>
+
+<script>
+  import { base64Encode, base64Decode } from '../../lib/base64.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  // タブ切り替え
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      $('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // エンコード
+  function renderEncode() {
+    const out = base64Encode($('encode-input').value);
+    $('encode-output').value = out == null ? '' : out;
+  }
+
+  // デコード
+  function renderDecode() {
+    const text = $('decode-input').value;
+    const errorEl = $('decode-error');
+    if (text === '') {
+      $('decode-output').value = '';
+      errorEl.hidden = true;
+      return;
+    }
+    const out = base64Decode(text);
+    if (out == null) {
+      $('decode-output').value = '';
+      errorEl.hidden = false;
+    } else {
+      $('decode-output').value = out;
+      errorEl.hidden = true;
+    }
+  }
+
+  $('encode-input').addEventListener('input', renderEncode);
+  $('decode-input').addEventListener('input', renderDecode);
+
+  // コピー
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = $(btn.dataset.target).value;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = 'コピーしました';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      } catch (e) {
+        // クリップボードが使えない環境では何もしない
+      }
+    });
+  });
+</script>

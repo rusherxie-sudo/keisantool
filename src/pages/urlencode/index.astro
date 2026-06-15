@@ -1,0 +1,229 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'urlencode';
+const title = 'URL エンコード / デコード - パーセントエンコードを瞬時に変換 | 計算ツール';
+const description =
+  '日本語や記号を含む文字列を URL エンコード（パーセントエンコード）／デコードできる無料ツール。encodeURIComponent と encodeURI の両方に対応し、クエリの値も URL 全体も変換できます。処理はブラウザ内で完結し、入力はサーバーへ送信されません。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'URL エンコード / デコード',
+  description,
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ URLエンコード</div>
+    <h1>URL エンコード / デコード</h1>
+    <p>日本語や記号を含む文字列を URL エンコード（パーセントエンコード）・デコードできるツールです。コピペするだけで自動的に結果が表示されます。処理はすべてブラウザ内で行われます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist">
+      <button class="calc-tab active" data-tab="encode" type="button">エンコード</button>
+      <button class="calc-tab" data-tab="decode" type="button">デコード</button>
+    </div>
+
+    <!-- エンコード -->
+    <div class="calc-panel active" id="panel-encode">
+      <div class="form-group">
+        <label for="encode-input">エンコードしたい文字を入力</label>
+        <textarea id="encode-input" rows="4" placeholder="例：あ a&b　または　https://example.com/パス?q=値"></textarea>
+      </div>
+      <div class="radio-group">
+        <input type="radio" name="encode-mode" id="e-component" value="component" checked />
+        <label for="e-component">値だけ（encodeURIComponent）</label>
+        <input type="radio" name="encode-mode" id="e-full" value="full" />
+        <label for="e-full">URL全体（encodeURI）</label>
+      </div>
+      <div class="form-group">
+        <label for="encode-output">変換結果</label>
+        <textarea id="encode-output" class="output" rows="4" readonly placeholder="ここに結果が表示されます"></textarea>
+      </div>
+      <button class="copy-btn" type="button" data-target="encode-output">結果をコピー</button>
+    </div>
+
+    <!-- デコード -->
+    <div class="calc-panel" id="panel-decode">
+      <div class="form-group">
+        <label for="decode-input">デコードしたい文字を入力</label>
+        <textarea id="decode-input" rows="4" placeholder="例：%E3%81%82%20a%26b"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="decode-output">変換結果</label>
+        <textarea id="decode-output" class="output" rows="4" readonly placeholder="ここに結果が表示されます"></textarea>
+      </div>
+      <button class="copy-btn" type="button" data-target="decode-output">結果をコピー</button>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方とエンコード方式の違い</h2>
+    <p>上のタブから「エンコード」または「デコード」を選び、テキストエリアに文字を貼り付けるだけで、自動的に結果が表示されます。「結果をコピー」ボタンを押すと、変換後の文字をそのままクリップボードにコピーできます。</p>
+
+    <h3>URL エンコード（パーセントエンコード）とは</h3>
+    <p>URL では半角英数字と一部の記号しか使えないため、日本語やスペース、特殊記号などはそのまま使えません。これらを <code>%E3%81%82</code> のように「%＋16進数」の形へ変換することを URL エンコード（パーセントエンコード）と呼びます。逆に、エンコードされた文字列を元の文字へ戻すのがデコードです。</p>
+
+    <h3>encodeURIComponent と encodeURI の違い</h3>
+    <p>エンコードには2つの方式があり、用途に応じて使い分けます。本ツールでは「値だけ」「URL全体」のラジオボタンで切り替えられます。</p>
+    <ul>
+      <li><strong>値だけ（encodeURIComponent）</strong>：<code>: / ? # &amp; = +</code> といった URL の構造を表す記号もすべてエスケープします。クエリのパラメータの<strong>値（value）</strong>や1つの部品をエンコードするときに使います。例：<code>a/b?c#d&amp;e=f</code> → <code>a%2Fb%3Fc%23d%26e%3Df</code></li>
+      <li><strong>URL全体（encodeURI）</strong>：<code>: / ? # &amp;</code> などの構造文字は<strong>そのまま残し</strong>、日本語やスペースだけをエスケープします。URL 全体をまとめて安全な形にしたいときに使います。例：<code>https://example.com/パス?q=値</code> → <code>https://example.com/%E3%83%91%E3%82%B9?q=%E3%81%82</code></li>
+    </ul>
+    <p>クエリに「<code>&amp;</code>」や「<code>=</code>」を文字として含めたい値（検索ワードなど）をエンコードするときは、必ず「値だけ（encodeURIComponent）」を選んでください。URL 全体方式ではこれらが区切り文字とみなされ、正しく扱われません。</p>
+
+    <div class="disclaimer">※ 変換はお使いのブラウザ内だけで行われ、入力した文字がサーバーへ送信されることはありません。デコードできない不正な文字列（孤立した「%」や不正な並びなど）を入力した場合は、エラーである旨が表示されます。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+  textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: var(--font-jp);
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.7;
+    resize: vertical;
+    transition: 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+    word-break: break-all;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  }
+  textarea::placeholder {
+    color: #cbd5e1;
+  }
+  textarea.output {
+    background: var(--bg-result);
+    border-color: #bfdbfe;
+    color: var(--navy);
+  }
+  textarea.output.error {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #b91c1c;
+  }
+  .copy-btn {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 6px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: var(--font-jp);
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  .copy-btn:hover {
+    background: var(--navy-dark);
+  }
+  .copy-btn.copied {
+    background: var(--success);
+  }
+  .howto h3 {
+    font-size: 1.05rem;
+    margin: 18px 0 8px;
+    color: var(--navy);
+  }
+  .howto code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: var(--bg-result);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    word-break: break-all;
+  }
+</style>
+
+<script>
+  import { urlEncode, urlDecode, urlEncodeFull } from '../../lib/urlencode.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  // タブ切り替え
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      $('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  const mode = (name) =>
+    document.querySelector(`input[name="${name}"]:checked`).value;
+
+  // エンコード
+  function renderEncode() {
+    const text = $('encode-input').value;
+    const out = mode('encode-mode') === 'full' ? urlEncodeFull(text) : urlEncode(text);
+    const el = $('encode-output');
+    el.classList.remove('error');
+    el.value = out == null ? '' : out;
+  }
+
+  // デコード
+  function renderDecode() {
+    const text = $('decode-input').value;
+    const el = $('decode-output');
+    if (text === '') {
+      el.classList.remove('error');
+      el.value = '';
+      return;
+    }
+    const out = urlDecode(text);
+    if (out == null) {
+      el.classList.add('error');
+      el.value = 'デコードできませんでした。不正なパーセントエンコード（孤立した「%」や不正な並びなど）が含まれていないか確認してください。';
+    } else {
+      el.classList.remove('error');
+      el.value = out;
+    }
+  }
+
+  $('encode-input').addEventListener('input', renderEncode);
+  document.querySelectorAll('input[name="encode-mode"]').forEach((r) => r.addEventListener('change', renderEncode));
+  $('decode-input').addEventListener('input', renderDecode);
+
+  // コピー
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const target = $(btn.dataset.target);
+      const text = target.value;
+      if (!text || target.classList.contains('error')) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = 'コピーしました';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      } catch (e) {
+        // クリップボードが使えない環境では何もしない
+      }
+    });
+  });
+</script>

@@ -1,0 +1,258 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'json';
+const title = 'JSON 整形・圧縮ツール - コピペで見やすく整形・ミニファイ | 計算ツール';
+const description =
+  'JSON をコピペするだけで、見やすく整形（インデント付き）・一行に圧縮（ミニファイ）・構文チェックができる無料ツール。インデントは2スペース・4スペース・タブから選択可能。処理はすべてブラウザ内で完結し、入力データは送信されません。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'JSON 整形・圧縮ツール',
+  description,
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ JSON整形</div>
+    <h1>JSON 整形・圧縮ツール</h1>
+    <p>JSON を貼り付けて「整形」または「圧縮」を押すだけ。読みやすいインデント付きに整えたり、一行に圧縮（ミニファイ）したりできます。構文エラーがあれば内容を表示します。処理はすべてお使いのブラウザ内で完結します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="json-input">JSON を入力</label>
+      <textarea id="json-input" rows="8" placeholder={'例：{"name":"太郎","age":30,"tags":["a","b"]}'}></textarea>
+    </div>
+
+    <div class="opt-row">
+      <span class="opt-label">インデント</span>
+      <input type="radio" name="indent" id="ind-2" value="2" checked />
+      <label for="ind-2">2スペース</label>
+      <input type="radio" name="indent" id="ind-4" value="4" />
+      <label for="ind-4">4スペース</label>
+      <input type="radio" name="indent" id="ind-tab" value="tab" />
+      <label for="ind-tab">タブ</label>
+    </div>
+
+    <div class="btn-row">
+      <button class="action-btn primary" type="button" id="btn-format">整形する</button>
+      <button class="action-btn" type="button" id="btn-minify">圧縮する</button>
+    </div>
+
+    <div class="error-box" id="json-error" hidden></div>
+
+    <div class="form-group">
+      <label for="json-output">結果</label>
+      <textarea id="json-output" class="output" rows="8" readonly placeholder="ここに結果が表示されます"></textarea>
+    </div>
+    <button class="copy-btn" type="button" data-target="json-output">結果をコピー</button>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>テキストエリアに JSON を貼り付け、目的のボタンを押してください。</p>
+    <ul>
+      <li><strong>整形する</strong>：改行とインデントを付けて、人が読みやすい形に整えます。インデントは「2スペース」「4スペース」「タブ」から選べます。</li>
+      <li><strong>圧縮する</strong>：余分な空白や改行をすべて取り除き、一行のコンパクトな JSON（ミニファイ）にします。通信量の削減やコピーに便利です。</li>
+      <li><strong>構文チェック</strong>：JSON の書式が正しくない場合は、結果のかわりにエラー内容を赤字で表示します。カンマの付け忘れやクォートの不一致などの確認に使えます。</li>
+    </ul>
+    <p>「結果をコピー」ボタンを押すと、整形・圧縮した JSON をそのままクリップボードにコピーできます。</p>
+    <div class="disclaimer">※ 処理はすべてお使いのブラウザ内で完結し、入力した JSON がサーバーへ送信されることはありません。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+  textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+    resize: vertical;
+    transition: 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  }
+  textarea::placeholder {
+    color: #cbd5e1;
+  }
+  textarea.output {
+    background: var(--bg-result);
+    border-color: #bfdbfe;
+    color: var(--navy);
+  }
+  .opt-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-bottom: 14px;
+  }
+  .opt-row .opt-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-right: 4px;
+  }
+  .opt-row input[type='radio'] {
+    margin: 0 2px 0 6px;
+  }
+  .opt-row label {
+    font-size: 0.9rem;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .action-btn {
+    flex: 1 1 auto;
+    min-width: 120px;
+    height: 46px;
+    padding: 0 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--navy);
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: var(--font-jp);
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  .action-btn:hover {
+    border-color: var(--border-focus);
+    background: var(--bg-result);
+  }
+  .action-btn.primary {
+    background: var(--navy);
+    color: #fff;
+    border-color: var(--navy);
+  }
+  .action-btn.primary:hover {
+    background: var(--navy-dark);
+  }
+  .error-box {
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #b91c1c;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    word-break: break-word;
+  }
+  .copy-btn {
+    width: 100%;
+    height: 46px;
+    border: none;
+    border-radius: 6px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: var(--font-jp);
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  .copy-btn:hover {
+    background: var(--navy-dark);
+  }
+  .copy-btn.copied {
+    background: var(--success);
+  }
+</style>
+
+<script>
+  import { formatJson, minifyJson } from '../../lib/json.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function currentIndent() {
+    const v = document.querySelector('input[name="indent"]:checked').value;
+    if (v === 'tab') return '\t';
+    return Number(v);
+  }
+
+  function showError(msg) {
+    const box = $('json-error');
+    box.textContent = '構文エラー: ' + msg;
+    box.hidden = false;
+    $('json-output').value = '';
+  }
+
+  function clearError() {
+    const box = $('json-error');
+    box.hidden = true;
+    box.textContent = '';
+  }
+
+  function run(fn) {
+    const r = fn($('json-input').value);
+    if (r.ok) {
+      clearError();
+      $('json-output').value = r.result;
+    } else {
+      showError(r.error);
+    }
+  }
+
+  $('btn-format').addEventListener('click', () => run((s) => formatJson(s, currentIndent())));
+  $('btn-minify').addEventListener('click', () => run(minifyJson));
+
+  // インデント変更時、すでに整形結果があれば追従して再整形
+  document.querySelectorAll('input[name="indent"]').forEach((r) =>
+    r.addEventListener('change', () => {
+      if ($('json-output').value && $('json-error').hidden) {
+        run((s) => formatJson(s, currentIndent()));
+      }
+    })
+  );
+
+  // コピー
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = $(btn.dataset.target).value;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = 'コピーしました';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      } catch (e) {
+        // クリップボードが使えない環境では何もしない
+      }
+    });
+  });
+</script>

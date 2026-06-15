@@ -10,6 +10,7 @@ export const categories = [
   '占い・文化',
   '文字ツール',
   '変換・ツール',
+  '開発者ツール',
 ];
 
 export const tools = [
@@ -128,7 +129,7 @@ export const tools = [
     icon: '🌏',
     category: '生活・日常',
     short: '世界の都市との時差をリアルタイム表示',
-    live: false,
+    live: true,
   },
   {
     slug: 'gasoline',
@@ -137,7 +138,7 @@ export const tools = [
     icon: '⛽',
     category: '生活・日常',
     short: '走行距離・燃費から交通費を計算',
-    live: false,
+    live: true,
   },
   {
     slug: 'saniku',
@@ -146,7 +147,7 @@ export const tools = [
     icon: '👶',
     category: '生活・日常',
     short: '休業期間・出産手当金・育休給付金',
-    live: false,
+    live: true,
   },
   {
     slug: 'nenrei',
@@ -155,7 +156,7 @@ export const tools = [
     icon: '🎂',
     category: '生活・日常',
     short: '満年齢・数え年・学年',
-    live: false,
+    live: true,
   },
   {
     slug: 'color-code',
@@ -164,7 +165,7 @@ export const tools = [
     icon: '🎨',
     category: '変換・ツール',
     short: 'HEX・RGB・HSL・抵抗カラーコード',
-    live: false,
+    live: true,
   },
   {
     slug: 'tani',
@@ -173,7 +174,7 @@ export const tools = [
     icon: '📐',
     category: '変換・ツール',
     short: '長さ・重さ・面積・温度ほか',
-    live: false,
+    live: true,
   },
   {
     slug: 'wareki',
@@ -182,7 +183,52 @@ export const tools = [
     icon: '📅',
     category: '変換・ツール',
     short: '元号⇔西暦・年齢早見',
-    live: false,
+    live: true,
+  },
+  {
+    slug: 'base64',
+    nav: 'Base64',
+    name: 'Base64 エンコード / デコード',
+    icon: '🔣',
+    category: '開発者ツール',
+    short: '文字列のBase64変換',
+    live: true,
+  },
+  {
+    slug: 'json',
+    nav: 'JSON整形',
+    name: 'JSON 整形・圧縮ツール',
+    icon: '🧩',
+    category: '開発者ツール',
+    short: 'JSONの整形・圧縮・検証',
+    live: true,
+  },
+  {
+    slug: 'urlencode',
+    nav: 'URLエンコード',
+    name: 'URL エンコード / デコード',
+    icon: '🔗',
+    category: '開発者ツール',
+    short: 'URL文字列の変換',
+    live: true,
+  },
+  {
+    slug: 'regex',
+    nav: '正規表現',
+    name: '正規表現テストツール',
+    icon: '⚙️',
+    category: '開発者ツール',
+    short: 'パターンのマッチ確認',
+    live: true,
+  },
+  {
+    slug: 'markdown',
+    nav: 'Markdown',
+    name: 'Markdown → HTML 変換',
+    icon: '📝',
+    category: '開発者ツール',
+    short: 'MarkdownをHTMLに変換',
+    live: true,
   },
 ];
 

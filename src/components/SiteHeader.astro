@@ -1,14 +1,86 @@
 ---
-import { tools } from '../data/tools.js';
+import { tools, categories } from '../data/tools.js';
 const { current } = Astro.props;
+
+// カテゴリごとにツールをまとめる（live のみ）。ナビはカテゴリ→ドロップダウン構成。
+const byCategory = categories
+  .map((c) => ({ name: c, items: tools.filter((t) => t.category === c && t.live !== false) }))
+  .filter((c) => c.items.length > 0);
 ---
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="site-logo">計算<span>ツール</span></a>
-    <nav class="site-nav" aria-label="ツール一覧">
-      {tools.map((t) => (
-        <a href={`/${t.slug}/`} aria-current={current === t.slug ? 'page' : undefined}>{t.nav}</a>
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-label="メニューを開く" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="site-nav" id="site-nav" aria-label="カテゴリ別ツール">
+      <a href="/" class="nav-item nav-home" aria-current={current === '' ? 'page' : undefined}>ホーム</a>
+      {byCategory.map((cat) => (
+        <div class="nav-group">
+          <button class="nav-item nav-cat" type="button" aria-haspopup="true" aria-expanded="false">
+            {cat.name}<span class="nav-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="nav-menu" role="menu">
+            {cat.items.map((t) => (
+              <a href={`/${t.slug}/`} role="menuitem" aria-current={current === t.slug ? 'page' : undefined}>
+                <span class="nav-ic" aria-hidden="true">{t.icon}</span>{t.nav}
+              </a>
+            ))}
+          </div>
+        </div>
       ))}
     </nav>
   </div>
 </header>
+
+<script>
+  const header = document.querySelector('.site-header');
+  const navToggle = document.getElementById('nav-toggle');
+  const siteNav = document.getElementById('site-nav');
+  const groups = Array.from(document.querySelectorAll('.nav-group'));
+
+  function closeAll() {
+    groups.forEach((g) => {
+      g.classList.remove('open');
+      g.querySelector('.nav-cat')?.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  // ハンバーガー（モバイル）
+  navToggle?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = siteNav.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(open));
+    if (!open) closeAll();
+  });
+
+  // カテゴリのクリック開閉（モバイルのタップ・デスクトップのクリック両対応）
+  groups.forEach((g) => {
+    const btn = g.querySelector('.nav-cat');
+    btn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const willOpen = !g.classList.contains('open');
+      closeAll();
+      if (willOpen) {
+        g.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  // 外側クリック・Escで閉じる
+  document.addEventListener('click', (e) => {
+    if (!header.contains(e.target)) {
+      closeAll();
+      siteNav.classList.remove('open');
+      navToggle?.setAttribute('aria-expanded', 'false');
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAll();
+      siteNav.classList.remove('open');
+      navToggle?.setAttribute('aria-expanded', 'false');
+    }
+  });
+</script>
