@@ -1,0 +1,522 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'color-code';
+const title = 'カラーコード変換ツール - HEX・RGB・HSL相互変換／抵抗カラーコード | 計算ツール';
+const description =
+  'HEX・RGB・HSLを相互に変換できる無料カラーコードツール。カラーピッカーで色を選んでコードを取得、よく使う色見本のコピー、4色環の抵抗カラーコードから抵抗値も計算できます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'カラーコード変換ツール',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+
+// よく使う色（和名 + HEX）
+const palette = [
+  { name: '白', hex: '#ffffff' },
+  { name: '黒', hex: '#000000' },
+  { name: '赤', hex: '#ff0000' },
+  { name: '緑', hex: '#008000' },
+  { name: '青', hex: '#0000ff' },
+  { name: '黄', hex: '#ffff00' },
+  { name: '橙', hex: '#ffa500' },
+  { name: '紫', hex: '#800080' },
+  { name: '桃', hex: '#ffc0cb' },
+  { name: '水色', hex: '#00bfff' },
+  { name: '灰', hex: '#808080' },
+  { name: '茶', hex: '#8b4513' },
+  { name: '紺', hex: '#1e3a5f' },
+  { name: '若草', hex: '#7cfc00' },
+  { name: '山吹', hex: '#ffb300' },
+  { name: '臙脂', hex: '#b22222' },
+];
+
+const resistorColors = [
+  { v: 'black', label: '黒', css: '#000000', text: '#fff' },
+  { v: 'brown', label: '茶', css: '#8b4513', text: '#fff' },
+  { v: 'red', label: '赤', css: '#e53935', text: '#fff' },
+  { v: 'orange', label: '橙', css: '#fb8c00', text: '#000' },
+  { v: 'yellow', label: '黄', css: '#fdd835', text: '#000' },
+  { v: 'green', label: '緑', css: '#43a047', text: '#fff' },
+  { v: 'blue', label: '青', css: '#1e88e5', text: '#fff' },
+  { v: 'violet', label: '紫', css: '#8e24aa', text: '#fff' },
+  { v: 'gray', label: '灰', css: '#9e9e9e', text: '#000' },
+  { v: 'white', label: '白', css: '#ffffff', text: '#000' },
+  { v: 'gold', label: '金', css: '#c9a227', text: '#000' },
+  { v: 'silver', label: '銀', css: '#bdbdbd', text: '#000' },
+];
+const toleranceColors = resistorColors.filter((c) =>
+  ['brown', 'red', 'green', 'blue', 'violet', 'gray', 'gold', 'silver'].includes(c.v)
+);
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ カラーコード変換ツール</div>
+    <h1>カラーコード変換ツール</h1>
+    <p>HEX・RGB・HSL を相互に変換。カラーピッカーで色を選んだり、よく使う色のコピー、抵抗カラーコードからの抵抗値計算もできます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist">
+      <button class="calc-tab active" data-tab="convert" type="button">カラー変換</button>
+      <button class="calc-tab" data-tab="list" type="button">カラーコード一覧</button>
+      <button class="calc-tab" data-tab="resistor" type="button">抵抗カラーコード</button>
+    </div>
+
+    <!-- カラー変換 -->
+    <div class="calc-panel active" id="panel-convert">
+      <div class="cc-top">
+        <div class="cc-preview" id="cc-preview"></div>
+        <div class="cc-picker-wrap">
+          <label for="cc-picker">カラーピッカー</label>
+          <input type="color" id="cc-picker" value="#1e3a5f" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="cc-hex">HEX</label>
+        <input type="text" id="cc-hex" value="#1e3a5f" placeholder="#1e3a5f" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="cc-grid3">
+        <div class="form-group">
+          <label for="cc-r">R</label>
+          <input type="number" id="cc-r" min="0" max="255" value="30" />
+        </div>
+        <div class="form-group">
+          <label for="cc-g">G</label>
+          <input type="number" id="cc-g" min="0" max="255" value="58" />
+        </div>
+        <div class="form-group">
+          <label for="cc-b">B</label>
+          <input type="number" id="cc-b" min="0" max="255" value="95" />
+        </div>
+      </div>
+      <div class="cc-grid3">
+        <div class="form-group">
+          <label for="cc-h">H（色相）</label>
+          <input type="number" id="cc-h" min="0" max="360" value="212" />
+        </div>
+        <div class="form-group">
+          <label for="cc-s">S（彩度%）</label>
+          <input type="number" id="cc-s" min="0" max="100" value="52" />
+        </div>
+        <div class="form-group">
+          <label for="cc-l">L（明度%）</label>
+          <input type="number" id="cc-l" min="0" max="100" value="25" />
+        </div>
+      </div>
+      <div class="cc-codes">
+        <button type="button" class="cc-copy" data-target="cc-out-hex"><span class="cc-code-label">HEX</span><span id="cc-out-hex">#1e3a5f</span></button>
+        <button type="button" class="cc-copy" data-target="cc-out-rgb"><span class="cc-code-label">RGB</span><span id="cc-out-rgb">rgb(30, 58, 95)</span></button>
+        <button type="button" class="cc-copy" data-target="cc-out-hsl"><span class="cc-code-label">HSL</span><span id="cc-out-hsl">hsl(212, 52%, 25%)</span></button>
+      </div>
+    </div>
+
+    <!-- カラーコード一覧 -->
+    <div class="calc-panel" id="panel-list">
+      <p class="cc-intro">色見本をクリックすると HEX コードをコピーします。</p>
+      <div class="cc-swatches">
+        {palette.map((c) => (
+          <button type="button" class="cc-swatch" data-hex={c.hex}>
+            <span class="cc-chip" style={`background:${c.hex}`}></span>
+            <span class="cc-sw-name">{c.name}</span>
+            <span class="cc-sw-hex">{c.hex}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- 抵抗カラーコード -->
+    <div class="calc-panel" id="panel-resistor">
+      <p class="cc-intro">4本の色環を選ぶと抵抗値を計算します（4バンド抵抗）。</p>
+      <div class="cc-grid4">
+        <div class="form-group">
+          <label for="rs-b1">第1色（数字）</label>
+          <select id="rs-b1">
+            {resistorColors.filter((c) => !['gold', 'silver'].includes(c.v)).map((c) => (
+              <option value={c.v} selected={c.v === 'brown'}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="rs-b2">第2色（数字）</label>
+          <select id="rs-b2">
+            {resistorColors.filter((c) => !['gold', 'silver'].includes(c.v)).map((c) => (
+              <option value={c.v} selected={c.v === 'black'}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="rs-mul">第3色（乗数）</label>
+          <select id="rs-mul">
+            {resistorColors.map((c) => (
+              <option value={c.v} selected={c.v === 'red'}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="rs-tol">第4色（許容差）</label>
+          <select id="rs-tol">
+            {toleranceColors.map((c) => (
+              <option value={c.v} selected={c.v === 'gold'}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div class="rs-bands">
+        <div class="rs-band" id="rs-band-1"></div>
+        <div class="rs-band" id="rs-band-2"></div>
+        <div class="rs-band" id="rs-band-3"></div>
+        <div class="rs-band" id="rs-band-4"></div>
+      </div>
+      <div class="result-box visible" id="rs-result">
+        <div class="result-label">抵抗値</div>
+        <div class="result-main" id="rs-display">1kΩ</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">抵抗値（Ω）</span><span class="value" id="rs-ohms">1,000 Ω</span></div>
+          <div class="result-row"><span class="label">許容差</span><span class="value" id="rs-tolerance">±5%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <ul>
+      <li><strong>カラー変換</strong>：HEX・RGB・HSL のいずれかを入力すると、他の表記が連動して更新されます。カラーピッカーで色を選ぶこともでき、コード部分をクリックするとコピーできます。</li>
+      <li><strong>カラーコード一覧</strong>：よく使う色の和名と HEX を一覧表示します。クリックでコードをコピーできます。</li>
+      <li><strong>抵抗カラーコード</strong>：4バンド抵抗の色環を選ぶと、抵抗値（Ω）と許容差を計算します。例として「茶・黒・赤・金」は 1kΩ ±5% になります。</li>
+    </ul>
+    <p>
+      HEX は「#」に続く6桁（または3桁）の16進数で色を表します。RGB は赤・緑・青を0〜255で、HSL は色相（0〜360°）・彩度・明度（0〜100%）で表します。抵抗カラーコードは、数字色（黒0・茶1・赤2・橙3・黄4・緑5・青6・紫7・灰8・白9）と乗数（同じ色で ×10ⁿ、金 ×0.1）、許容差（金 ±5%・銀 ±10%・茶 ±1% など）の組み合わせで読み取ります。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の部品表示や用途に応じてご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+  .cc-top {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+    margin-bottom: 1rem;
+  }
+  .cc-preview {
+    flex: 1 1 auto;
+    min-height: 90px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: #1e3a5f;
+  }
+  .cc-picker-wrap {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    justify-content: center;
+  }
+  .cc-picker-wrap label {
+    font-size: 0.85rem;
+    color: #555;
+  }
+  .cc-picker-wrap input[type='color'] {
+    width: 72px;
+    height: 56px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    padding: 2px;
+  }
+  .cc-grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+  }
+  .cc-grid4 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+  @media (min-width: 560px) {
+    .cc-grid4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .cc-codes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .cc-copy {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+    font-size: 1rem;
+    font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .cc-copy:hover {
+    border-color: #2563eb;
+    background: #f5f8ff;
+  }
+  .cc-copy.copied {
+    border-color: #16a34a;
+    background: #f0fdf4;
+  }
+  .cc-code-label {
+    flex: 0 0 auto;
+    font-size: 0.75rem;
+    color: #888;
+    font-family: inherit;
+  }
+  .cc-intro {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0 0 1rem;
+  }
+  .cc-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.6rem;
+  }
+  .cc-swatch {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid #e2e2e2;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .cc-swatch:hover {
+    border-color: #2563eb;
+    box-shadow: 0 1px 6px rgba(37, 99, 235, 0.15);
+  }
+  .cc-swatch.copied {
+    border-color: #16a34a;
+  }
+  .cc-chip {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+  .cc-sw-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .cc-sw-hex {
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: #777;
+    font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  .rs-bands {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    margin: 1.2rem 0;
+    padding: 0.8rem;
+    background: #f2e3c7;
+    border-radius: 999px;
+  }
+  .rs-band {
+    width: 18px;
+    height: 56px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #ccc;
+  }
+  .cc-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #111;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 9999;
+  }
+  .cc-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+
+<script>
+  import { hexToRgb, rgbToHex, rgbToHsl, hslToRgb, resistorValue } from '../../lib/color-code.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  // タブ切替
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      $('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // トースト
+  let toastEl = null;
+  let toastTimer = null;
+  function toast(msg) {
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.className = 'cc-toast';
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1400);
+  }
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => toast('コピーしました: ' + text)).catch(() => toast(text));
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); toast('コピーしました: ' + text); } catch (e) { toast(text); }
+      ta.remove();
+    }
+  }
+
+  // ── カラー変換（双方向連動）──
+  let updating = false;
+
+  function setOutputs(rgb) {
+    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+    $('cc-preview').style.background = hex;
+    $('cc-picker').value = hex;
+    $('cc-out-hex').textContent = hex;
+    $('cc-out-rgb').textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    $('cc-out-hsl').textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+    return { hex, hsl };
+  }
+
+  function syncFromRgb(rgb, fields) {
+    if (updating) return;
+    updating = true;
+    const { hex, hsl } = setOutputs(rgb);
+    if (!fields || fields.indexOf('hex') < 0) $('cc-hex').value = hex;
+    if (!fields || fields.indexOf('rgb') < 0) {
+      $('cc-r').value = rgb.r; $('cc-g').value = rgb.g; $('cc-b').value = rgb.b;
+    }
+    if (!fields || fields.indexOf('hsl') < 0) {
+      $('cc-h').value = hsl.h; $('cc-s').value = hsl.s; $('cc-l').value = hsl.l;
+    }
+    updating = false;
+  }
+
+  $('cc-hex').addEventListener('input', () => {
+    const rgb = hexToRgb($('cc-hex').value);
+    if (rgb) syncFromRgb(rgb, ['hex']);
+  });
+
+  ['cc-r', 'cc-g', 'cc-b'].forEach((id) =>
+    $(id).addEventListener('input', () => {
+      const rgb = {
+        r: Math.min(255, Math.max(0, parseInt($('cc-r').value, 10) || 0)),
+        g: Math.min(255, Math.max(0, parseInt($('cc-g').value, 10) || 0)),
+        b: Math.min(255, Math.max(0, parseInt($('cc-b').value, 10) || 0)),
+      };
+      syncFromRgb(rgb, ['rgb']);
+    })
+  );
+
+  ['cc-h', 'cc-s', 'cc-l'].forEach((id) =>
+    $(id).addEventListener('input', () => {
+      const h = Math.min(360, Math.max(0, parseInt($('cc-h').value, 10) || 0));
+      const s = Math.min(100, Math.max(0, parseInt($('cc-s').value, 10) || 0));
+      const l = Math.min(100, Math.max(0, parseInt($('cc-l').value, 10) || 0));
+      syncFromRgb(hslToRgb(h, s, l), ['hsl']);
+    })
+  );
+
+  $('cc-picker').addEventListener('input', () => {
+    const rgb = hexToRgb($('cc-picker').value);
+    if (rgb) syncFromRgb(rgb);
+  });
+
+  document.querySelectorAll('.cc-copy').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const text = $(btn.dataset.target).textContent;
+      copyText(text);
+      btn.classList.add('copied');
+      setTimeout(() => btn.classList.remove('copied'), 800);
+    });
+  });
+
+  // ── カラーコード一覧 ──
+  document.querySelectorAll('.cc-swatch').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      copyText(btn.dataset.hex);
+      btn.classList.add('copied');
+      setTimeout(() => btn.classList.remove('copied'), 800);
+    });
+  });
+
+  // ── 抵抗カラーコード ──
+  const BAND_CSS = {
+    black: '#000000', brown: '#8b4513', red: '#e53935', orange: '#fb8c00',
+    yellow: '#fdd835', green: '#43a047', blue: '#1e88e5', violet: '#8e24aa',
+    gray: '#9e9e9e', white: '#ffffff', gold: '#c9a227', silver: '#bdbdbd',
+  };
+
+  function renderResistor() {
+    const b1 = $('rs-b1').value;
+    const b2 = $('rs-b2').value;
+    const mul = $('rs-mul').value;
+    const tol = $('rs-tol').value;
+    $('rs-band-1').style.background = BAND_CSS[b1];
+    $('rs-band-2').style.background = BAND_CSS[b2];
+    $('rs-band-3').style.background = BAND_CSS[mul];
+    $('rs-band-4').style.background = BAND_CSS[tol];
+    const res = resistorValue(b1, b2, mul, tol);
+    if (!res) return;
+    $('rs-display').textContent = res.display;
+    $('rs-ohms').textContent = res.ohms.toLocaleString('ja-JP') + ' Ω';
+    $('rs-tolerance').textContent = res.tolerance;
+  }
+
+  ['rs-b1', 'rs-b2', 'rs-mul', 'rs-tol'].forEach((id) =>
+    $(id).addEventListener('change', renderResistor)
+  );
+
+  // 初期描画
+  syncFromRgb({ r: 30, g: 58, b: 95 });
+  renderResistor();
+</script>

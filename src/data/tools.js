@@ -9,6 +9,7 @@ export const categories = [
   '生活・日常',
   '占い・文化',
   '文字ツール',
+  '変換・ツール',
 ];
 
 export const tools = [
@@ -145,6 +146,42 @@ export const tools = [
     icon: '👶',
     category: '生活・日常',
     short: '休業期間・出産手当金・育休給付金',
+    live: false,
+  },
+  {
+    slug: 'nenrei',
+    nav: '年齢',
+    name: '年齢計算器',
+    icon: '🎂',
+    category: '生活・日常',
+    short: '満年齢・数え年・学年',
+    live: false,
+  },
+  {
+    slug: 'color-code',
+    nav: 'カラーコード',
+    name: 'カラーコード変換ツール',
+    icon: '🎨',
+    category: '変換・ツール',
+    short: 'HEX・RGB・HSL・抵抗カラーコード',
+    live: false,
+  },
+  {
+    slug: 'tani',
+    nav: '単位変換',
+    name: '単位変換器',
+    icon: '📐',
+    category: '変換・ツール',
+    short: '長さ・重さ・面積・温度ほか',
+    live: false,
+  },
+  {
+    slug: 'wareki',
+    nav: '和暦西暦',
+    name: '和暦・西暦変換器',
+    icon: '📅',
+    category: '変換・ツール',
+    short: '元号⇔西暦・年齢早見',
     live: false,
   },
 ];

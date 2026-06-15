@@ -1,0 +1,230 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import { eras, seirekiToWareki } from '../../lib/wareki.js';
+
+const slug = 'wareki';
+const title =
+  '和暦・西暦変換器【令和8年=2026年】元号⇔西暦をかんたん変換 | 計算ツール';
+const description =
+  '和暦と西暦をどちらの向きでも瞬時に変換。「令和8年は西暦何年？」「2026年は令和何年？」がすぐわかります。明治・大正・昭和・平成・令和に対応し、改元年も正しく元年表示。早見表付きの無料変換ツールです。';
+
+// SSR 用の静的早見表データ（令和→明治の代表年を西暦昇順で生成）。
+const TABLE_YEARS = [];
+// 各元号の開始年から、次の元号開始の前年（明治は1868起点）まで主要年を拾う。
+// SEO 向けに「元年」と直近年を中心に各元号数件ずつ掲載する。
+const ranges = [
+  { era: '令和', years: [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026] },
+  { era: '平成', years: [1989, 1990, 1995, 2000, 2005, 2010, 2015, 2018] },
+  { era: '昭和', years: [1926, 1930, 1940, 1950, 1960, 1970, 1980, 1989] },
+  { era: '大正', years: [1912, 1915, 1920, 1925, 1926] },
+  { era: '明治', years: [1868, 1880, 1890, 1900, 1910, 1912] },
+];
+for (const r of ranges) {
+  for (const y of r.years) {
+    const w = seirekiToWareki(y);
+    if (w && w.era === r.era) {
+      TABLE_YEARS.push({ seireki: y, label: w.label });
+    } else if (w) {
+      // 改元境界年（同じ西暦に2元号がある年）は、当該元号側の表記も補完する。
+      const idx = eras.findIndex((e) => e.name === r.era);
+      const eraYear = y - eras[idx].startYear + 1;
+      const lbl = r.era + (eraYear === 1 ? '元' : eraYear) + '年';
+      if (eraYear >= 1) TABLE_YEARS.push({ seireki: y, label: lbl });
+    }
+  }
+}
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '和暦・西暦変換器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 和暦・西暦変換</div>
+    <h1>和暦・西暦変換器（令和8年＝2026年）</h1>
+    <p>西暦から和暦（元号）へ、和暦から西暦へ、どちらの向きでもその場で変換します。明治・大正・昭和・平成・令和に対応し、改元のあった年も「元年」で正しく表示します。</p>
+  </div>
+
+  <div class="calc-card">
+    <!-- 西暦 → 和暦 -->
+    <div class="conv-block">
+      <div class="conv-head">西暦 → 和暦</div>
+      <div class="form-group">
+        <label for="s-year">西暦（年）</label>
+        <input type="number" id="s-year" inputmode="numeric" placeholder="例：2026" />
+      </div>
+      <div class="conv-optional">
+        <div class="form-group">
+          <label for="s-month">月（任意）</label>
+          <input type="number" id="s-month" inputmode="numeric" min="1" max="12" placeholder="例：5" />
+        </div>
+        <div class="form-group">
+          <label for="s-day">日（任意）</label>
+          <input type="number" id="s-day" inputmode="numeric" min="1" max="31" placeholder="例：1" />
+        </div>
+      </div>
+      <p class="conv-note">月・日は改元のあった年（昭和64年/平成元年など）を正確に判定したい場合のみ入力してください。</p>
+      <div class="result-box" id="s-result">
+        <div class="result-label">和暦</div>
+        <div class="result-main" id="s-out">―</div>
+      </div>
+    </div>
+
+    <hr class="conv-divider" />
+
+    <!-- 和暦 → 西暦 -->
+    <div class="conv-block">
+      <div class="conv-head">和暦 → 西暦</div>
+      <div class="conv-optional">
+        <div class="form-group">
+          <label for="w-era">元号</label>
+          <select id="w-era">
+            {eras.map((e) => <option value={e.name}>{e.name}</option>)}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="w-year">年（元年は「1」）</label>
+          <input type="number" id="w-year" inputmode="numeric" min="1" placeholder="例：8" />
+        </div>
+      </div>
+      <div class="result-box" id="w-result">
+        <div class="result-label">西暦</div>
+        <div class="result-main" id="w-out">―</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>上段「西暦→和暦」では西暦の年を入力すると、対応する元号と年が表示されます。改元のあった年（1989年・2019年など）を正確に判定したいときは、月と日も入力してください。下段「和暦→西暦」では元号を選んで年を入力すると、西暦の年が表示されます。元年は「1」と入力してください。</p>
+    <ul>
+      <li><strong>令和8年は西暦2026年</strong>です（令和元年＝2019年、令和n年＝2018＋n年）。</li>
+      <li><strong>平成元年は1989年</strong>、平成31年は2019年です。1989年は1月7日までが昭和64年、1月8日からが平成元年です。</li>
+      <li><strong>2019年</strong>は4月30日までが平成31年、5月1日からが令和元年です。</li>
+      <li><strong>昭和元年は1926年</strong>（12月25日改元）、<strong>大正元年は1912年</strong>（7月30日改元）、<strong>明治元年は1868年</strong>です。</li>
+    </ul>
+    <p>明治より前（1868年10月22日以前）には対応していません。早見表は代表的な年を抜粋して掲載しています。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
+  </section>
+
+  <section class="howto">
+    <h2>和暦・西暦 早見表（明治〜令和）</h2>
+    <table class="wareki-table">
+      <thead>
+        <tr><th>西暦</th><th>和暦</th></tr>
+      </thead>
+      <tbody>
+        {TABLE_YEARS.map((row) => (
+          <tr><td>{row.seireki}年</td><td>{row.label}</td></tr>
+        ))}
+      </tbody>
+    </table>
+    <div class="disclaimer">※ 改元のあった年は和暦が2つ並ぶ場合があります。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<script>
+  import { seirekiToWareki, warekiToSeireki } from '../../lib/wareki.js';
+
+  const $ = (id) => document.getElementById(id);
+  const show = (box) => box.classList.add('visible');
+  const hide = (box) => box.classList.remove('visible');
+
+  function renderSeireki() {
+    const box = $('s-result');
+    const year = $('s-year').value;
+    if (year === '') return hide(box);
+    const month = $('s-month').value;
+    const day = $('s-day').value;
+    const r = seirekiToWareki(
+      Number(year),
+      month === '' ? undefined : Number(month),
+      day === '' ? undefined : Number(day)
+    );
+    if (r === null) {
+      show(box);
+      $('s-out').textContent = '変換できません';
+      return;
+    }
+    show(box);
+    $('s-out').textContent = r.label;
+  }
+
+  function renderWareki() {
+    const box = $('w-result');
+    const era = $('w-era').value;
+    const yr = $('w-year').value;
+    if (yr === '') return hide(box);
+    const r = warekiToSeireki(era, Number(yr));
+    if (r === null) {
+      show(box);
+      $('w-out').textContent = '変換できません';
+      return;
+    }
+    show(box);
+    $('w-out').textContent = r + '年';
+  }
+
+  ['s-year', 's-month', 's-day'].forEach((id) => $(id).addEventListener('input', renderSeireki));
+  $('w-era').addEventListener('change', renderWareki);
+  $('w-year').addEventListener('input', renderWareki);
+</script>
+
+<style>
+  .conv-block { margin-bottom: 0.5rem; }
+  .conv-head {
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    font-size: 1.05rem;
+    color: var(--color-text, #1f2937);
+  }
+  .conv-optional {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .conv-optional .form-group { flex: 1; min-width: 0; }
+  .conv-optional input,
+  .conv-optional select { width: 100%; min-width: 0; }
+  .conv-note {
+    font-size: 0.8rem;
+    color: var(--color-text-muted, #6b7280);
+    margin: 0.4rem 0 0.2rem;
+  }
+  .conv-divider {
+    border: none;
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    margin: 1.5rem 0;
+  }
+  .wareki-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+  }
+  .wareki-table th,
+  .wareki-table td {
+    border: 1px solid var(--color-border, #e5e7eb);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+  .wareki-table th {
+    background: var(--color-bg-subtle, #f9fafb);
+    font-weight: 700;
+  }
+  .wareki-table tbody tr:nth-child(even) {
+    background: var(--color-bg-subtle, #f9fafb);
+  }
+</style>

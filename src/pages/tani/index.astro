@@ -1,0 +1,245 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import { UNITS } from '../../lib/tani.js';
+
+const slug = 'tani';
+const title = '単位変換器 - 長さ・重さ・面積・体積・温度・速さを一括変換 | 計算ツール';
+const description =
+  '長さ・重さ・面積・体積・温度・速さの単位を瞬時に変換できる無料ツール。cm⇔inch、kg⇔lb、坪⇔m²、℃⇔℉など、日常やDIY・料理・海外サイズの換算に。数値を入れるだけで自動計算します。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '単位変換器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+
+const categories = [
+  { id: 'length', label: '長さ' },
+  { id: 'weight', label: '重さ' },
+  { id: 'area', label: '面積' },
+  { id: 'volume', label: '体積' },
+  { id: 'temperature', label: '温度' },
+  { id: 'speed', label: '速さ' },
+];
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ 単位変換</div>
+    <h1>単位変換器</h1>
+    <p>長さ・重さ・面積・体積・温度・速さの単位を、入力するだけで瞬時に変換します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist">
+      {categories.map((c, i) => (
+        <button class={`calc-tab${i === 0 ? ' active' : ''}`} data-cat={c.id} type="button">{c.label}</button>
+      ))}
+    </div>
+
+    <div class="form-group">
+      <label for="tani-value">数値</label>
+      <input type="number" id="tani-value" inputmode="decimal" placeholder="例：100" value="1" />
+    </div>
+
+    <div class="tani-units">
+      <div class="form-group">
+        <label for="tani-from">変換元</label>
+        <select id="tani-from"></select>
+      </div>
+      <div class="tani-swap">
+        <button type="button" id="tani-swap" aria-label="単位を入れ替える">⇅</button>
+      </div>
+      <div class="form-group">
+        <label for="tani-to">変換先</label>
+        <select id="tani-to"></select>
+      </div>
+    </div>
+
+    <div class="result-box visible" id="tani-result">
+      <div class="result-label" id="tani-result-label">変換結果</div>
+      <div class="result-main" id="tani-out">—</div>
+    </div>
+  </div>
+
+  <div class="ad-slot">広告枠（結果直下）</div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>上のタブから変換したいカテゴリ（長さ・重さ・面積・体積・温度・速さ）を選び、数値を入力して「変換元」「変換先」の単位を選ぶと、自動で結果が表示されます。ボタンを押す必要はありません。⇅ ボタンで変換元と変換先を入れ替えられます。</p>
+    <ul>
+      <li><strong>長さ</strong>：mm・cm・m・km のほか、inch（インチ）・feet（フィート）・yard（ヤード）・mile（マイル）、和の単位「寸・尺・里」に対応。海外通販のサイズ表記や身長換算に便利です（例：1 inch = 2.54 cm）。</li>
+      <li><strong>重さ</strong>：mg・g・kg・t に加え、oz（オンス）・lb（ポンド）、和の単位「匁・貫」に対応（1匁 = 3.75 g）。レシピや郵便物の重量換算に。</li>
+      <li><strong>面積</strong>：cm²・m²・km²・a（アール）・ha（ヘクタール）と、不動産でよく使う「坪」「畳」に対応。<strong>1坪 ≈ 3.305785 m²</strong>として計算します。畳は地域差があるため、ここでは<strong>中京間（1.6562 m²）</strong>を採用しています（京間・江戸間とは数値が異なります）。</li>
+      <li><strong>体積</strong>：ml・cc・L・m³ に対応。料理（cc とml は同じ）やタンク容量の計算に。</li>
+      <li><strong>温度</strong>：摂氏（℃）・華氏（℉）・ケルビン（K）を相互変換します（例：0℃ = 32℉ = 273.15K、100℃ = 212℉）。海外のオーブン温度や天気予報の換算に。</li>
+      <li><strong>速さ</strong>：m/s・km/h・mph（マイル毎時）・knot（ノット）に対応（例：100 km/h ≈ 27.78 m/s）。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。坪・畳・尺貫法などの換算値や端数の扱いにより、実際の値とわずかに異なる場合があります。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<script define:vars={{ UNITS }}>
+  const $ = (id) => document.getElementById(id);
+  let currentCat = 'length';
+
+  function fmt(n) {
+    if (!Number.isFinite(n)) return '—';
+    // 大きすぎ/小さすぎは指数、それ以外は有効桁で整形
+    let s;
+    if (n !== 0 && (Math.abs(n) >= 1e15 || Math.abs(n) < 1e-9)) {
+      s = n.toExponential(6);
+    } else {
+      s = Number(n.toPrecision(10)).toString();
+    }
+    // 桁区切り（小数部はそのまま）
+    if (/^-?\d+(\.\d+)?$/.test(s)) {
+      const [int, dec] = s.split('.');
+      const grouped = Number(int).toLocaleString('ja-JP');
+      return dec !== undefined ? grouped + '.' + dec : grouped;
+    }
+    return s;
+  }
+
+  function fillSelects() {
+    const list = UNITS[currentCat];
+    const from = $('tani-from');
+    const to = $('tani-to');
+    from.innerHTML = '';
+    to.innerHTML = '';
+    list.forEach((u) => {
+      from.appendChild(new Option(u.label, u.id));
+      to.appendChild(new Option(u.label, u.id));
+    });
+    // 既定: 1番目 → 2番目（あれば）
+    from.selectedIndex = 0;
+    to.selectedIndex = list.length > 1 ? 1 : 0;
+  }
+
+  // ロジックは lib/tani.js と同一（純静的のため最小限を内包）
+  function toCelsius(v, f) {
+    if (f === 'c') return v;
+    if (f === 'f') return (v - 32) * 5 / 9;
+    if (f === 'k') return v - 273.15;
+    return null;
+  }
+  function fromCelsius(c, t) {
+    if (t === 'c') return c;
+    if (t === 'f') return c * 9 / 5 + 32;
+    if (t === 'k') return c + 273.15;
+    return null;
+  }
+  function convert(cat, value, fromUnit, toUnit) {
+    const list = UNITS[cat];
+    if (!list) return null;
+    if (value === '' || value === null || value === undefined) return null;
+    const n = Number(value);
+    if (!Number.isFinite(n)) return null;
+    if (cat === 'temperature') {
+      const ids = new Set(list.map((u) => u.id));
+      if (!ids.has(fromUnit) || !ids.has(toUnit)) return null;
+      const c = toCelsius(n, fromUnit);
+      return c === null ? null : fromCelsius(c, toUnit);
+    }
+    const from = list.find((u) => u.id === fromUnit);
+    const to = list.find((u) => u.id === toUnit);
+    if (!from || !to) return null;
+    return (n * from.factor) / to.factor;
+  }
+
+  function render() {
+    const box = $('tani-result');
+    const value = $('tani-value').value;
+    const fromId = $('tani-from').value;
+    const toId = $('tani-to').value;
+    const r = convert(currentCat, value, fromId, toId);
+    const list = UNITS[currentCat];
+    const fromLabel = (list.find((u) => u.id === fromId) || {}).label || '';
+    const toLabel = (list.find((u) => u.id === toId) || {}).label || '';
+    if (r === null) {
+      box.classList.remove('visible');
+      return;
+    }
+    box.classList.add('visible');
+    $('tani-result-label').textContent = `${fmt(Number(value))} ${fromLabel} =`;
+    $('tani-out').textContent = `${fmt(r)} ${toLabel}`;
+  }
+
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((t) => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentCat = tab.dataset.cat;
+      fillSelects();
+      render();
+    });
+  });
+
+  $('tani-swap').addEventListener('click', () => {
+    const from = $('tani-from');
+    const to = $('tani-to');
+    const tmp = from.value;
+    from.value = to.value;
+    to.value = tmp;
+    render();
+  });
+
+  ['tani-value', 'tani-from', 'tani-to'].forEach((id) => $(id).addEventListener('input', render));
+
+  fillSelects();
+  render();
+</script>
+
+<style>
+  .tani-units {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.75rem;
+    align-items: end;
+  }
+  .tani-units .form-group {
+    margin-bottom: 0;
+  }
+  .tani-units select {
+    width: 100%;
+  }
+  .tani-swap {
+    padding-bottom: 0.45rem;
+  }
+  .tani-swap button {
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-border, #d1d5db);
+    background: var(--color-surface, #fff);
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+    color: var(--color-text, #1f2937);
+  }
+  .tani-swap button:hover {
+    background: var(--color-bg, #f3f4f6);
+  }
+  #tani-out {
+    word-break: break-all;
+  }
+  @media (max-width: 480px) {
+    .tani-units {
+      grid-template-columns: 1fr;
+    }
+    .tani-swap {
+      justify-self: center;
+      padding-bottom: 0;
+    }
+    .tani-swap button {
+      transform: rotate(90deg);
+    }
+  }
+</style>
