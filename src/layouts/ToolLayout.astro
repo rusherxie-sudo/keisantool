@@ -13,6 +13,14 @@ const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js) — GA4 全站计测。is:inline 必须保留，否则 Astro 会处理脚本导致 GA 失效 -->
+  <script async is:inline src="https://www.googletagmanager.com/gtag/js?id=G-XM8LC5MPHT"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XM8LC5MPHT');
+  </script>
   <title>{title}</title>
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />
