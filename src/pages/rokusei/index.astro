@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'rokusei';
 const title =
@@ -164,6 +165,12 @@ const STAR_PROFILES: StarProfile[] = [
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '自分の運命星はどう調べますか？', a: '生年月日を入力すると、土星人・金星人・火星人・天王星人・木星人・水星人の6つの運命星と、陽（＋）／陰（−）を自動判定します。' },
+    { q: '大殺界とは何ですか？', a: '六星占術で運気が低調とされる「陰影・停止・減退」の3年間のことです。本ツールで今後の運勢ゾーンの目安を表示します。' },
+    { q: '結果は信頼できますか？', a: '占いは文化的な慣習・娯楽を目的としたもので、科学的根拠を保証するものではありません。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 import { TIMEZONES } from '../../lib/jisa.js';
 
 const slug = 'jisa';
@@ -95,6 +96,12 @@ const defaultTz2 = 'America/New_York';
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '時差はどう計算しますか？', a: '2つの都市のタイムゾーンの差から計算します。本ツールは現在時刻と時差をリアルタイムで表示し、サマータイム（夏時間）も自動反映します。' },
+    { q: '任意の日時で変換できますか？', a: 'はい。基準の日時を入力すると、相手の都市では何時になるかを表示します（夏時間も考慮）。' },
+    { q: 'サマータイムは考慮されますか？', a: 'はい。各都市の夏時間の有無を自動判定して計算します。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

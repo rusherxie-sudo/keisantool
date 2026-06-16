@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'color-code';
 const title = 'カラーコード変換ツール - HEX・RGB・HSL相互変換／抵抗カラーコード | 計算ツール';
@@ -200,6 +201,12 @@ const toleranceColors = resistorColors.filter((c) =>
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: 'HEXとRGBの違いは？', a: 'HEXは #1e3a5f のように16進数で色を表す表記、RGBは赤・緑・青を0〜255で表す表記です。本ツールで相互に変換できます。' },
+    { q: 'HSLにも変換できますか？', a: 'はい。HEX・RGB・HSL を相互に変換でき、カラーピッカーで色を選ぶこともできます。' },
+    { q: '抵抗のカラーコードも分かりますか？', a: '抵抗のカラーバンドから抵抗値を読み取る計算にも対応しています。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

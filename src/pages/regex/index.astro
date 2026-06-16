@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'regex';
 const title = '正規表現テストツール - パターンのマッチを即チェック | 計算ツール';
@@ -79,6 +80,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '正規表現のテストはどう使いますか？', a: 'パターンとテスト文字列を入力すると、マッチした箇所をリアルタイムでハイライト表示します。ボタン操作は不要です。' },
+    { q: 'どんなフラグに対応していますか？', a: 'g（全件）・i（大文字小文字を無視）・m（複数行）・s（ドットが改行に一致）に対応しています。' },
+    { q: 'キャプチャグループも確認できますか？', a: 'はい。マッチ数・位置・キャプチャグループ（丸括弧）の一覧も表示します。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

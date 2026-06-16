@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 import { yakudoshiTable } from '../../lib/yakudoshi.js';
 
 const slug = 'yakudoshi';
@@ -137,6 +138,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '厄年は何歳ですか？', a: '数え年で、男性は25・42・61歳、女性は19・33・37・61歳が本厄とされます（特に男性42・女性33は大厄）。その前後の年が前厄・後厄です。' },
+    { q: '厄年は数え年と満年齢どちらで数えますか？', a: '一般に数え年で数えます（生まれた年を1歳とし、元日ごとに1歳加算）。本ツールは数え年で判定します。' },
+    { q: '厄年は気にすべきですか？', a: '厄年は文化的な慣習で、科学的根拠を保証するものではありません。参考程度にご利用ください。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

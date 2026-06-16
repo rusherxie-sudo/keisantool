@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'urlencode';
 const title = 'URL エンコード / デコード - パーセントエンコードを瞬時に変換 | 計算ツール';
@@ -83,6 +84,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: 'URLエンコードとは？', a: '日本語や記号などURLで使えない文字を「%xx」の形式（パーセントエンコード）に変換することです。本ツールでエンコード・デコードできます。' },
+    { q: 'encodeURIとencodeURIComponentの違いは？', a: 'encodeURIはURL全体用で「/」「?」などは変換しません。encodeURIComponentは値だけ用でそれらも変換します。本ツールで両方を選べます。' },
+    { q: '入力内容は送信されますか？', a: 'いいえ。処理はすべてブラウザ内で完結し、サーバーへ送信されることはありません。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'moji';
 const title = '全角半角変換・文字数カウントツール - コピペで即座に変換 | 計算ツール';
@@ -125,6 +126,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '全角と半角の違いは？', a: '全角は「ＡＢＣ１２３」のように1文字分の幅、半角は「ABC123」のように半分の幅の文字です。本ツールで相互に変換できます。' },
+    { q: 'ひらがな⇔カタカナ変換もできますか？', a: 'はい。ひらがな・カタカナの相互変換に対応しています。' },
+    { q: '文字数のカウントに空白は含まれますか？', a: '空白あり・なしの両方を表示できます。原稿用紙換算やSNSの文字数チェックにも使えます。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

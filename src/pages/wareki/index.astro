@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 import { eras, seirekiToWareki } from '../../lib/wareki.js';
 
 const slug = 'wareki';
@@ -132,6 +133,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '令和は西暦何年ですか？', a: '令和元年は西暦2019年です。令和n年は「2018＋n」年で求められます（例：令和8年＝2026年）。' },
+    { q: '改元の年はどう扱いますか？', a: '改元のあった年（昭和64年/平成元年など）は月日まで入力すると正確に判定できます。本ツールは改元の境目も正確に変換します。' },
+    { q: '平成・昭和も変換できますか？', a: '明治・大正・昭和・平成・令和すべてに対応し、和暦⇔西暦を相互変換できます。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

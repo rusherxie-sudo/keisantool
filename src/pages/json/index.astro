@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'json';
 const title = 'JSON 整形・圧縮ツール - コピペで見やすく整形・ミニファイ | 計算ツール';
@@ -68,6 +69,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: 'JSONの整形（フォーマット）とは？', a: '改行とインデントを付けて読みやすく整えることです。本ツールはインデントを2スペース・4スペース・タブから選べます。' },
+    { q: 'JSONの圧縮（ミニファイ）とは？', a: '余分な空白や改行を取り除いて1行にすることです。通信量の削減やコピーに便利です。' },
+    { q: '構文エラーはチェックできますか？', a: 'はい。JSONの書式が正しくない場合は、エラー内容を表示します。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'markdown';
 const title = 'Markdown → HTML 変換ツール - コピペで即座にHTML出力 | 計算ツール';
@@ -78,6 +79,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: 'MarkdownをHTMLに変換するには？', a: 'Markdownを入力欄に貼り付けるだけで、HTMLソースとプレビューが自動で表示されます。ボタン操作は不要です。' },
+    { q: 'どんな記法に対応していますか？', a: '見出し・太字・斜体・リスト・リンク・コード・表などに対応しています（marked を使用）。' },
+    { q: '入力内容は送信されますか？', a: 'いいえ。変換はすべてブラウザ内で完結し、サーバーへ送信されることはありません。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

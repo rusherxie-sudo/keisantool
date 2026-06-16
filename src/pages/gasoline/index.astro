@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'gasoline';
 const title = 'ガソリン代計算器 — 走行距離・燃費から交通費を計算 | 計算ツール';
@@ -112,6 +113,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: 'ガソリン代はどう計算しますか？', a: '走行距離÷燃費×ガソリン単価で求めます。例えば300km・燃費15km/L・170円/Lなら約3,400円です。' },
+    { q: '1か月の交通費も出せますか？', a: '月の出勤日数を入力すると、往復・月額の概算を計算できます。' },
+    { q: '割り勘もできますか？', a: '乗車人数や高速料金を入力して、1人あたりの金額を計算できます。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>
