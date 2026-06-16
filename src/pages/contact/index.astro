@@ -1,0 +1,40 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+
+const title = 'お問い合わせ | 計算ツール';
+const description =
+  '計算ツールへのお問い合わせ窓口。計算結果の誤り・不具合のご報告、ご意見・ご要望はメールにてお寄せください。';
+---
+<ToolLayout title={title} description={description} slug="contact" current="">
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ お問い合わせ</div>
+    <h1>お問い合わせ</h1>
+  </div>
+
+  <div class="legal">
+    <p>
+      当サイト「計算ツール」へのお問い合わせは、下記のメールアドレスまでお願いいたします。
+    </p>
+
+    <h2>メールアドレス</h2>
+    <p>
+      <a href="mailto:contact@keisantool.com">contact@keisantool.com</a>
+    </p>
+
+    <h2>お問い合わせの例</h2>
+    <ul>
+      <li>計算結果の誤り・不具合のご報告</li>
+      <li>ツールへのご意見・ご要望、新しいツールのリクエスト</li>
+      <li>掲載内容・運営に関するお問い合わせ</li>
+    </ul>
+
+    <p>
+      お問い合わせの際に、氏名や住所などの個人情報は不要です。内容によっては、回答までにお時間をいただく場合や、回答いたしかねる場合がございますので、あらかじめご了承ください。
+    </p>
+    <p>
+      計算結果の正確な金額・判定が必要な場合は、<a href="/about/">運営方針</a>に記載のとおり、公的機関・専門家・各事業者へご確認ください。
+    </p>
+
+    <p class="updated">最終更新日：2026年6月16日</p>
+  </div>
+</ToolLayout>
