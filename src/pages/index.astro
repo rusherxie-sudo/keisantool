@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
-import { tools, categories } from '../data/tools.js';
+import { tools, categories, categoryMeta } from '../data/tools.js';
+const catSlug = (name) => categoryMeta.find((c) => c.name === name)?.slug;
 
 const title = '日本語計算ツール一覧 - 税金・健康・占い・給与の無料計算ツール | 計算ツール';
 const description =
@@ -25,7 +26,11 @@ const byCategory = categories
 
   {byCategory.map((cat) => (
     <section class="category-section">
-      <h2 class="category-title">{cat.name}</h2>
+      <h2 class="category-title">
+        {catSlug(cat.name)
+          ? <a href={`/category/${catSlug(cat.name)}/`}>{cat.name} →</a>
+          : cat.name}
+      </h2>
       <div class="tool-grid">
         {cat.items.map((t) => (
           <a href={`/${t.slug}/`} class="tool-card">

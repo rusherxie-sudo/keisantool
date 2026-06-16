@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'kokuho';
 const title = '国民健康保険料計算器 - 年収・世帯人数から保険料をシミュレーション | 計算ツール';
@@ -101,6 +102,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '国民健康保険料はどう決まりますか？', a: '所得割・均等割などの合計で決まり、料率や上限額は市区町村・年度によって異なります。本ツールは目安のシミュレーションです。' },
+    { q: '所得はどの金額を入力しますか？', a: '前年の総所得（給与の場合は収入から給与所得控除を引いた額）を入力します。本ツールは令和7年改正の給与所得控除に対応しています。' },
+    { q: '計算結果はそのまま使えますか？', a: '自治体ごとに料率が異なるため、あくまで概算です。正確な金額はお住まいの市区町村（国保窓口）にご確認ください。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

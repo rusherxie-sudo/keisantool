@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'zeizei';
 const title = '消費税・割引計算器 - 税込・税抜・割引後の価格を瞬時に計算 | 計算ツール';
@@ -124,6 +125,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '消費税の税込・税抜はどう計算しますか？', a: '税抜価格×1.1で税込価格、税込価格÷1.1で税抜価格になります（標準税率10%の場合）。軽減税率8%の対象品は1.08で計算します。' },
+    { q: '税込価格から消費税額（内税）を出すには？', a: '税込価格−（税込価格÷1.1）＝消費税額です（10%の場合）。本ツールは端数を切り捨てで表示します。' },
+    { q: '割引後の価格も計算できますか？', a: 'はい。定価と割引率から割引後価格と割引額を計算でき、複数商品の合算にも対応しています。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

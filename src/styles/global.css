@@ -37,6 +37,7 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 .nav-menu a:hover{background:var(--navy-light);color:var(--navy)}
 .nav-menu a[aria-current="page"]{background:var(--navy-light);color:var(--navy);font-weight:700}
 .nav-menu .nav-ic{font-size:1rem}
+.nav-menu-all{font-weight:700;border-bottom:1px solid var(--border);border-radius:0;margin-bottom:4px;color:var(--navy)}
 .nav-group.open>.nav-menu{display:block}
 @media (min-width:821px) and (hover:hover){
   .nav-group:hover>.nav-menu{display:block}
@@ -133,6 +134,8 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
 .hero-section p{color:var(--text-muted);font-size:.95rem;max-width:560px;margin:0 auto}
 .category-section{margin-bottom:36px}
 .category-title{font-size:.78rem;font-weight:700;letter-spacing:.1em;color:var(--text-muted);border-left:3px solid var(--red);padding-left:10px;margin-bottom:16px;text-transform:uppercase}
+.category-title a{color:inherit;text-decoration:none}
+.category-title a:hover{color:var(--navy)}
 .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
 .tool-card{display:flex;flex-direction:column;padding:18px;border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--text);background:var(--bg);transition:.2s;box-shadow:var(--shadow-sm)}
 .tool-card:hover{border-color:var(--navy);box-shadow:var(--shadow-md);transform:translateY(-2px)}
@@ -196,6 +199,8 @@ body{font-family:var(--font-jp);color:var(--text);background:var(--bg-gray);line
   /* 右カラム: 説明 → 関連ツール → 広告 */
   .page-wrapper:not(.wide) .howto           {grid-column:2;max-width:none;margin:0}
   .page-wrapper:not(.wide) .related         {grid-column:2;max-width:none;margin:24px 0 0}
+  /* FAQ は2カラムを跨いで全幅（カード/説明の整列を崩さない）。内容は max-width で中央寄せ。 */
+  .page-wrapper:not(.wide) .faq             {grid-column:1/-1}
   .page-wrapper:not(.wide) .howto ~ .ad-slot{grid-column:2;max-width:none;margin:24px 0 0}
 
   /* 複雑ツール（wide）: 単一カラム。入力量の多いツール

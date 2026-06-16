@@ -1,0 +1,92 @@
+---
+// 再利用可能な FAQ コンポーネント。
+// 可視の Q&A（<details>）を描画し、同時に FAQPage 構造化データ(JSON-LD)を出力する。
+// items は [{ q, a }] の配列（a はプレーンテキスト）。内容は静的なので scoped CSS が効く。
+const { items = [], title = 'よくある質問' } = Astro.props;
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((it) => ({
+    '@type': 'Question',
+    name: it.q,
+    acceptedAnswer: { '@type': 'Answer', text: it.a },
+  })),
+};
+---
+{items.length > 0 && (
+  <section class="faq">
+    <h2>{title}</h2>
+    {items.map((it) => (
+      <details class="faq-item">
+        <summary>{it.q}</summary>
+        <p>{it.a}</p>
+      </details>
+    ))}
+    <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />
+  </section>
+)}
+
+<style>
+  .faq {
+    max-width: 680px;
+    width: 100%;
+    margin: 32px auto 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 24px 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .faq > h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 16px 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .faq > h2::before {
+    content: '';
+    width: 4px;
+    height: 1em;
+    background: var(--red);
+    border-radius: 2px;
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+  }
+  .faq-item:last-of-type {
+    border-bottom: none;
+  }
+  .faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 14px 28px 14px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    position: relative;
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-item summary::after {
+    content: '＋';
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+  .faq-item[open] summary::after {
+    content: '−';
+  }
+  .faq-item p {
+    margin: 0 0 16px;
+    font-size: 0.86rem;
+    line-height: 1.85;
+    color: var(--text-muted);
+  }
+</style>

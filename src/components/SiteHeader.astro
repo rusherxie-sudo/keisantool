@@ -1,6 +1,7 @@
 ---
-import { tools, categories } from '../data/tools.js';
+import { tools, categories, categoryMeta } from '../data/tools.js';
 const { current } = Astro.props;
+const catSlug = (name) => categoryMeta.find((c) => c.name === name)?.slug;
 
 // カテゴリごとにツールをまとめる（live のみ）。ナビはカテゴリ→ドロップダウン構成。
 const byCategory = categories
@@ -21,6 +22,11 @@ const byCategory = categories
             {cat.name}<span class="nav-caret" aria-hidden="true">▾</span>
           </button>
           <div class="nav-menu" role="menu">
+            {catSlug(cat.name) && (
+              <a href={`/category/${catSlug(cat.name)}/`} role="menuitem" class="nav-menu-all" aria-current={current === catSlug(cat.name) ? 'page' : undefined}>
+                {cat.name}をすべて見る →
+              </a>
+            )}
             {cat.items.map((t) => (
               <a href={`/${t.slug}/`} role="menuitem" aria-current={current === t.slug ? 'page' : undefined}>
                 <span class="nav-ic" aria-hidden="true">{t.icon}</span>{t.nav}

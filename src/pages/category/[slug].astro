@@ -1,0 +1,89 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Faq from '../../components/Faq.astro';
+import { categoryMeta, tools } from '../../data/tools.js';
+
+export function getStaticPaths() {
+  return categoryMeta.map((c) => ({ params: { slug: c.slug }, props: { cat: c } }));
+}
+
+const { cat } = Astro.props;
+const slug = `category/${cat.slug}`;
+const items = tools.filter((t) => t.category === cat.name);
+const others = categoryMeta.filter((c) => c.slug !== cat.slug);
+const base = 'https://keisantool.com';
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: cat.h1,
+  description: cat.description,
+  url: `${base}/category/${cat.slug}/`,
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: items.map((t, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${base}/${t.slug}/`,
+      name: t.name,
+    })),
+  },
+  breadcrumb: {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'ホーム', item: `${base}/` },
+      { '@type': 'ListItem', position: 2, name: cat.name, item: `${base}/category/${cat.slug}/` },
+    ],
+  },
+};
+---
+<ToolLayout title={cat.title} description={cat.description} slug={slug} current={cat.slug} jsonld={jsonld} wide={true}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ {cat.name}</div>
+    <h1>{cat.h1}</h1>
+    <p>{cat.intro}</p>
+  </div>
+
+  <div class="tool-grid">
+    {items.map((t) => (
+      <a href={`/${t.slug}/`} class="tool-card">
+        <span class="t-icon" aria-hidden="true">{t.icon}</span>
+        <span class="t-name">{t.name}</span>
+        <span class="t-kw">{t.short}</span>
+      </a>
+    ))}
+  </div>
+
+  <div class="ad-slot">広告枠（カテゴリ上部）</div>
+
+  <Faq items={cat.faq} title={`${cat.name}に関するよくある質問`} />
+
+  <section class="other-cats">
+    <h2>ほかのカテゴリ</h2>
+    <div class="cat-links">
+      {others.map((c) => (
+        <a href={`/category/${c.slug}/`}>{c.name}</a>
+      ))}
+    </div>
+  </section>
+
+  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+</ToolLayout>
+
+<style>
+  .other-cats { max-width: 680px; margin: 28px auto 0; }
+  .other-cats h2 { font-size: .9rem; font-weight: 700; color: var(--navy); margin-bottom: 12px; }
+  .cat-links { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cat-links a {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: .84rem;
+    color: var(--navy);
+    text-decoration: none;
+    background: var(--bg);
+    transition: .15s;
+  }
+  .cat-links a:hover { background: var(--navy-light); border-color: var(--navy); }
+</style>

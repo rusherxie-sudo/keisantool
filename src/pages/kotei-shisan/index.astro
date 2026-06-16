@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'kotei-shisan';
 const title = '固定資産税計算器 - 課税標準額から固定資産税・都市計画税を計算 | 計算ツール';
@@ -104,6 +105,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '固定資産税の税率は何%ですか？', a: '標準税率は課税標準額の1.4%です。別途、都市計画税が最大0.3%かかる地域もあります（課されない自治体もあります）。' },
+    { q: '新築住宅の軽減措置とは？', a: '要件を満たす新築住宅は、一定期間（一般住宅は3年、耐火構造などは5年）建物分の固定資産税が1/2に軽減されます。本ツールで反映して試算できます。' },
+    { q: '住宅用地は税金が安くなりますか？', a: '小規模住宅用地（200㎡以下の部分）は課税標準が1/6になるなどの軽減があります。用地区分を選んで計算してください。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>
