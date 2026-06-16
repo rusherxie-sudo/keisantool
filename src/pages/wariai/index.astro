@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'wariai';
 const title = '割合・パーセント・比率計算器 - 4種類の計算を一画面で | 計算ツール';
@@ -169,6 +170,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '割合（パーセント）はどう計算しますか？', a: '「AはBの何%か」は A÷B×100 で求めます。例えば50は200の25%です。' },
+    { q: '〇%の金額はどう出しますか？', a: '全体×割合(%)÷100 で求めます。例えば3000円の8%は240円です。手数料やポイント還元の計算に使えます。' },
+    { q: '増減率（前年比）の計算方法は？', a: '(新しい値−元の値)÷元の値×100 で増減率(%)になります。本ツールは歩合の計算にも対応しています。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

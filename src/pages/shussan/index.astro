@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'shussan';
 const title = '出産予定日計算器 - 最終月経日から出産予定日・妊娠週数を自動計算 | 計算ツール';
@@ -96,6 +97,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '出産予定日はどう計算しますか？', a: '最終月経開始日（LMP）に280日（40週）を加えた日が目安です。本ツールはLMPから自動計算します。' },
+    { q: '今は妊娠何週ですか？', a: 'LMPからの経過日数を7で割って「妊娠〇週〇日」で表示します。妊娠月数も確認できます。' },
+    { q: '予定日から逆算できますか？', a: 'はい。出産予定日を入力すると最終月経開始日の目安を逆算できます。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'hensachi';
 const title = '偏差値計算器 - 得点・平均・標準偏差から偏差値を計算 | 計算ツール';
@@ -108,6 +109,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '偏差値はどう計算しますか？', a: '偏差値＝(得点−平均点)÷標準偏差×10＋50 で求めます。平均なら50、平均より上なら50を超えます。' },
+    { q: '標準偏差が分からない場合は？', a: '得点の一覧を入力すれば、本ツールが標準偏差を自動計算して偏差値を出します。' },
+    { q: '偏差値から順位の目安は分かりますか？', a: '偏差値から上位何%かの目安も表示します（正規分布を仮定した概算です）。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

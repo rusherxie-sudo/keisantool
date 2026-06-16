@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'bmi';
 const title = 'BMI計算器（女性・男性）- 体脂肪率・標準体重も同時に計算 | 計算ツール';
@@ -92,6 +93,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: 'BMIの計算式は？', a: 'BMI＝体重(kg)÷(身長(m)×身長(m))で求めます。例えば170cm・65kgなら約22.5です。' },
+    { q: '標準体重はBMIいくつですか？', a: '日本肥満学会の基準ではBMI22が標準（最も病気になりにくいとされる値）です。本ツールは身長から標準体重も表示します。' },
+    { q: '体脂肪率も計算できますか？', a: 'BMI・年齢・性別から体脂肪率の推定値を表示します（あくまで目安です）。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

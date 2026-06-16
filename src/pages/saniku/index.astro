@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'saniku';
 const title = '産休・育休計算器 — 休業期間・出産手当金・育児休業給付金を自動計算 | 計算ツール';
@@ -147,6 +148,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '産休はいつからいつまでですか？', a: '出産予定日の6週間前（多胎は14週間前）から産後8週間までが基本です。本ツールは出産予定日から期間を自動表示します。' },
+    { q: '出産手当金・育休給付金はいくらですか？', a: '出産手当金は標準報酬日額の2/3、育児休業給付金は休業開始時賃金日額をもとに計算します。2025年4月の新制度（出生後休業支援給付など）にも対応しています。' },
+    { q: '計算結果は正確ですか？', a: '標準報酬や上限額により変わるため目安です。正確な額は勤務先・健康保険組合・ハローワークにご確認ください。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

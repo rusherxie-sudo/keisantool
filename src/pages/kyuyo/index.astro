@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'kyuyo';
 const title = '時給・残業代計算器 - 給与・手取り額を簡単に計算 | 計算ツール';
@@ -139,6 +140,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '残業代はどう計算しますか？', a: '時給×割増率×残業時間で計算します。通常残業は1.25倍、深夜は1.5倍、休日は1.35倍などが基本です。本ツールで区分ごとに自動計算できます。' },
+    { q: '月給から時給を求めるには？', a: '月給÷1か月の平均所定労働時間で求めます。本ツールは基本給と労働時間から時給を逆算できます。' },
+    { q: '手取りも分かりますか？', a: '額面から社会保険料・税の概算を引いた手取りの目安を表示します（概算値です）。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>

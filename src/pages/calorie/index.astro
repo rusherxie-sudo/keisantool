@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
 
 const slug = 'calorie';
 const title = 'カロリー・基礎代謝計算器 - TDEE・メンテナンスカロリー・PFCバランスを計算 | 計算ツール';
@@ -117,6 +118,12 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '基礎代謝はどう計算しますか？', a: '本ツールは国立健康・栄養研究所の式（Ganpule式）を標準に、ハリス・ベネディクト式にも切り替えできます。年齢・性別・身長・体重から計算します。' },
+    { q: '1日の消費カロリー（TDEE）とは？', a: '基礎代謝に活動レベル係数を掛けた、1日の総消費エネルギーです。ダイエットや増量の目安になります。' },
+    { q: 'PFCバランスも分かりますか？', a: '目標カロリーをタンパク質・脂質・炭水化物に配分したPFCの目安を表示します。' },
+  ]} />
 
   <div class="ad-slot">広告枠（コンテンツ下部）</div>
 </ToolLayout>
