@@ -7,6 +7,7 @@ import { getColorBySlug, getColorByCategorySlug } from '../data/tools.js';
 
 const { title, description, slug, current, jsonld, wide } = Astro.props;
 const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
+const ogImage = new URL('/og.png', Astro.site).href;
 
 // ページ所属カテゴリのテーマ色を解決：ツールslug優先 → カテゴリslug → ブランド色
 const _toolColor = getColorBySlug(current);
@@ -36,6 +37,13 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
