@@ -1,7 +1,14 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
-import { tools, categories, categoryMeta } from '../data/tools.js';
+import Icon from '../components/Icon.astro';
+import { tools, categories, categoryMeta, categoryColors, getTool } from '../data/tools.js';
+
 const catSlug = (name) => categoryMeta.find((c) => c.name === name)?.slug;
+const catId = (name) => categoryColors[name]?.id;
+const catStyle = (name) => {
+  const c = categoryColors[name];
+  return c ? `--cat-color:${c.accent};--cat-tint:${c.tint}` : '';
+};
 
 const title = '日本語計算ツール一覧 - 税金・健康・占い・給与の無料計算ツール | 計算ツール';
 const description =
@@ -14,32 +21,95 @@ const jsonld = {
   description,
 };
 
+// 高頻ツール（首页ローカルの固定 slug リスト。tools.js のメタ構造は変えない）
+const FEATURED = ['zeizei', 'nenrei', 'bmi', 'color-code', 'tani', 'kyuyo'];
+const featured = FEATURED.map(getTool).filter(Boolean);
+
 const byCategory = categories
-  .map((c) => ({ name: c, items: tools.filter((t) => t.category === c) }))
+  .map((c) => ({ name: c, items: tools.filter((t) => t.category === c && t.live !== false) }))
   .filter((c) => c.items.length > 0);
 ---
 <ToolLayout title={title} description={description} slug="" current="" jsonld={jsonld} wide={true}>
-  <div slot="hero" class="hero-section">
-    <h1>日本語計算ツール一覧</h1>
-    <p>税金・健康・占い・給与など、日常で使う計算を無料でできるツールをまとめました。すべてブラウザ上でその場で計算できます。</p>
+  <div slot="hero" class="home-hero">
+    <div class="home-hero__inner">
+      <h1>日本語計算ツール一覧</h1>
+      <p>税金・健康・日付・変換を、ブラウザですぐ計算。</p>
+    </div>
   </div>
 
-  {byCategory.map((cat) => (
-    <section class="category-section">
-      <h2 class="category-title">
-        {catSlug(cat.name)
-          ? <a href={`/category/${catSlug(cat.name)}/`}>{cat.name} →</a>
-          : cat.name}
-      </h2>
-      <div class="tool-grid">
-        {cat.items.map((t) => (
-          <a href={`/${t.slug}/`} class="tool-card">
-            <span class="t-icon" aria-hidden="true">{t.icon}</span>
-            <span class="t-name">{t.name}</span>
-            <span class="t-kw">{t.short}</span>
-          </a>
-        ))}
-      </div>
-    </section>
-  ))}
+  <!-- よく使われるツール -->
+  <section class="home-featured">
+    <div class="home-h2-row">
+      <h2 class="home-h2">よく使われるツール</h2>
+    </div>
+    <div class="featured-grid">
+      {featured.map((t) => (
+        <a href={`/${t.slug}/`} class="featured-card" style={catStyle(t.category)}>
+          <span class="featured-card__ic"><Icon name={t.slug} size={22} /></span>
+          <span class="featured-card__body">
+            <span class="featured-card__name">{t.nav}</span>
+            <span class="featured-card__desc">{t.short}</span>
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- 工作台：左 rail + 右 矩阵 -->
+  <div class="workbench" id="all-tools">
+    <aside class="cat-rail" aria-label="カテゴリ">
+      <a href="#all-tools" class="rail-item is-active" data-rail="all-tools"><Icon name="grid" size={18} />すべて</a>
+      {byCategory.map((cat) => (
+        <a href={`#cat-${catId(cat.name)}`} class="rail-item" data-rail={`cat-${catId(cat.name)}`} style={catStyle(cat.name)}>
+          <span class="rail-item__ic"><Icon name={catId(cat.name)} size={18} /></span>{cat.name}
+        </a>
+      ))}
+    </aside>
+
+    <div class="cat-matrix">
+      {byCategory.map((cat) => (
+        <section class="cat-block" id={`cat-${catId(cat.name)}`} style={catStyle(cat.name)}>
+          <div class="cat-block__head">
+            <h2 class="cat-block__title">{cat.name}</h2>
+            {catSlug(cat.name) && (
+              <a href={`/category/${catSlug(cat.name)}/`} class="cat-block__all">一覧を見る<Icon name="arrow" size={15} /></a>
+            )}
+          </div>
+          <div class="tool-cards">
+            {cat.items.map((t) => (
+              <a href={`/${t.slug}/`} class="tool-card2">
+                <span class="tool-card2__ic"><Icon name={t.slug} size={22} /></span>
+                <span class="tool-card2__body">
+                  <span class="tool-card2__name">{t.name}</span>
+                  <span class="tool-card2__desc">{t.short}</span>
+                </span>
+                <span class="tool-card2__chev"><Icon name="chevron" size={18} /></span>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
 </ToolLayout>
+
+<script>
+  // rail スクロールスパイ（現在見えているカテゴリをハイライト）
+  const railItems = Array.from(document.querySelectorAll('.rail-item'));
+  const blocks = Array.from(document.querySelectorAll('.cat-block'));
+  const byId = new Map(railItems.map((el) => [el.getAttribute('data-rail'), el]));
+  if ('IntersectionObserver' in window && blocks.length) {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            railItems.forEach((r) => r.classList.remove('is-active'));
+            byId.get(e.target.id)?.classList.add('is-active');
+          }
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
+    );
+    blocks.forEach((b) => obs.observe(b));
+  }
+</script>

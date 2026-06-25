@@ -65,6 +65,19 @@ const hatena = 'https://b.hatena.ne.jp/entry/s/' + url.replace(/^https?:\/\//, '
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeMenu();
   });
+
+  // 結果シェアモジュールが視野に入ったら FAB を退避（設計§5.4：入力・結果・シェアを塞がない）
+  const rshare = document.getElementById('result-share');
+  if (rshare && 'IntersectionObserver' in window) {
+    wrap.style.transition = 'opacity .2s ease';
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        wrap.style.opacity = en.isIntersecting ? '0' : '';
+        wrap.style.pointerEvents = en.isIntersecting ? 'none' : '';
+      });
+    }, { threshold: 0.35 });
+    io.observe(rshare);
+  }
 </script>
 
 <style>
@@ -82,23 +95,22 @@ const hatena = 'https://b.hatena.ne.jp/entry/s/' + url.replace(/^https?:\/\//, '
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    height: 48px;
-    padding: 0 18px 0 16px;
+    height: 50px;
+    padding: 0 20px 0 16px;
     border: none;
     border-radius: 999px;
-    background: var(--navy);
+    background: var(--brand-grad);
     color: #fff;
-    font-family: var(--font-jp);
+    font-family: var(--font-sans);
     font-size: 0.9rem;
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(30, 58, 95, 0.35);
-    transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+    box-shadow: var(--shadow-fab);
+    transition: transform 0.15s, box-shadow 0.15s;
   }
   .fshare-fab:hover {
-    background: var(--navy-dark);
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(30, 58, 95, 0.45);
+    box-shadow: 0 12px 30px -8px rgba(37, 99, 235, 0.55);
   }
   .fshare-fab:active { transform: translateY(0); }
   .fshare-fab svg { flex-shrink: 0; }
@@ -139,8 +151,8 @@ const hatena = 'https://b.hatena.ne.jp/entry/s/' + url.replace(/^https?:\/\//, '
   .fshare-item.x { background: #000; }
   .fshare-item.line { background: #06c755; }
   .fshare-item.fb { background: #1877f2; }
-  .fshare-item.hatena { background: #00a4de; }
-  .fshare-item.copy { background: var(--navy); }
+  .fshare-item.hatena { background: #008fde; }
+  .fshare-item.copy { background: var(--brand-grad); }
 
   @media (max-width: 480px) {
     .fshare { right: 14px; bottom: 14px; }

@@ -1,0 +1,125 @@
+---
+/*
+  結果区シェアモジュール（設計§5.1）。計算結果が出た後に各ページの JS が
+  window.setResultShare('結果サマリー') を呼ぶと表示される。
+  コピー/共有内容は「結果サマリー + ページURL」（URL だけではない）。
+  モバイル優先：LINE / システム共有（navigator.share）/ コピー。
+  ページ末尾の ShareButtons より視覚的に主役（こちらが結果直下の主導線）。
+*/
+---
+<section class="rshare" id="result-share" hidden aria-label="計算結果をシェア">
+  <div class="rshare__text">
+    <span class="rshare__title">結果をシェア</span>
+    <span class="rshare__hint">家族や同僚に送る・あとで見返す</span>
+  </div>
+  <div class="rshare__btns">
+    <button type="button" class="rshare__btn rshare__btn--line" data-act="line">LINEで送る</button>
+    <button type="button" class="rshare__btn rshare__btn--sys" data-act="sys">共有</button>
+    <button type="button" class="rshare__btn rshare__btn--copy" data-act="copy">コピー</button>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const sec = document.getElementById('result-share');
+    if (!sec) return;
+    const pageUrl = () => location.origin + location.pathname;
+    let summary = '';
+    const full = () => (summary ? summary + '\n' : '') + pageUrl();
+
+    // 各ツールページが結果描画後に呼ぶ
+    window.setResultShare = (text) => {
+      summary = (text || '').trim();
+      sec.hidden = false;
+    };
+    window.hideResultShare = () => { sec.hidden = true; };
+
+    const sysBtn = sec.querySelector('[data-act="sys"]');
+    if (!navigator.share) sysBtn.hidden = true;
+
+    sec.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.rshare__btn');
+      if (!btn) return;
+      const act = btn.dataset.act;
+      if (act === 'line') {
+        window.open('https://line.me/R/share?text=' + encodeURIComponent(full()), '_blank', 'noopener');
+      } else if (act === 'sys') {
+        try { await navigator.share({ title: document.title, text: summary, url: pageUrl() }); } catch (err) {}
+      } else if (act === 'copy') {
+        try {
+          await navigator.clipboard.writeText(full());
+          const orig = btn.textContent;
+          btn.textContent = 'コピーしました';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        } catch (err) {}
+      }
+    });
+  })();
+</script>
+
+<style>
+  .rshare {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    max-width: 880px;
+    margin: 18px auto 0;
+    padding: 16px 18px;
+    background: var(--cat-tint);
+    border: 1.5px solid color-mix(in srgb, var(--cat-color) 22%, transparent);
+    border-radius: var(--r-2xl);
+  }
+  .rshare[hidden] { display: none; }
+  .page-wrapper.wide .rshare { max-width: none; }
+
+  .rshare__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .rshare__title {
+    font-size: 0.95rem;
+    font-weight: var(--fw-black);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rshare__title::before {
+    content: '';
+    width: 5px;
+    height: 16px;
+    border-radius: 3px;
+    background: var(--cat-color);
+  }
+  .rshare__hint { font-size: 0.74rem; color: var(--text-muted); padding-left: 13px; }
+
+  .rshare__btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .rshare__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: var(--r-pill);
+    font-size: 0.85rem;
+    font-weight: var(--fw-bold);
+    font-family: var(--font-sans);
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: transform var(--ease), opacity var(--ease), border-color var(--ease), color var(--ease);
+  }
+  .rshare__btn--line { background: #06c755; color: #fff; }
+  .rshare__btn--sys { background: var(--cat-color); color: #fff; }
+  .rshare__btn--copy { background: var(--surface); color: var(--text); border-color: var(--border-input); }
+  .rshare__btn:hover { transform: translateY(-1px); opacity: 0.94; }
+  .rshare__btn--copy:hover {
+    border-color: var(--cat-color);
+    color: color-mix(in srgb, var(--cat-color) 62%, #000);
+  }
+  .rshare__btn[hidden] { display: none; }
+
+  @media (max-width: 560px) {
+    .rshare { padding: 14px 16px; }
+    .rshare__btns { width: 100%; }
+    .rshare__btn { flex: 1; padding: 0 12px; }
+  }
+</style>

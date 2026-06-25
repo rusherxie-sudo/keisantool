@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'nenrei';
 const title = '年齢計算器 - 生年月日から満年齢・数え年・学年・干支を自動計算 | 計算ツール';
@@ -45,7 +46,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方と計算方法</h2>
@@ -75,7 +78,7 @@ const jsonld = {
     { q: '干支（えと）も分かりますか？', a: '生まれ年から干支（十二支）も表示します。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <script>
@@ -100,6 +103,7 @@ const jsonld = {
     const age = mannenrei(birth, ref);
     if (age === null) {
       box.classList.remove('visible');
+      window.hideResultShare?.();
       return;
     }
     box.classList.add('visible');
@@ -116,6 +120,10 @@ const jsonld = {
 
     const e = eto(birthYear);
     $('eto').textContent = e ? `${e}年` : '―';
+
+    window.setResultShare?.(
+      `年齢計算器\n満年齢：${$('mannenrei').textContent}\n数え年：${$('kazoe').textContent}\n学年（日本）：${$('grade').textContent}\n干支：${$('eto').textContent}`
+    );
   }
 
   $('birth').addEventListener('input', render);

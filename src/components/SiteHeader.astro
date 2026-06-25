@@ -1,7 +1,10 @@
 ---
-import { tools, categories, categoryMeta } from '../data/tools.js';
+import { tools, categories, categoryMeta, categoryColors } from '../data/tools.js';
+import Icon from './Icon.astro';
 const { current } = Astro.props;
 const catSlug = (name) => categoryMeta.find((c) => c.name === name)?.slug;
+const catId = (name) => categoryColors[name]?.id;
+const catAccent = (name) => categoryColors[name]?.accent;
 
 // カテゴリごとにツールをまとめる（live のみ）。ナビはカテゴリ→ドロップダウン構成。
 const byCategory = categories
@@ -10,18 +13,21 @@ const byCategory = categories
 ---
 <header class="site-header">
   <div class="header-inner">
-    <a href="/" class="site-logo">計算<span>ツール</span></a>
+    <a href="/" class="site-logo">keisantool<span>計算</span></a>
     <button class="nav-toggle" id="nav-toggle" type="button" aria-label="メニューを開く" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
     <nav class="site-nav" id="site-nav" aria-label="カテゴリ別ツール">
-      <a href="/" class="nav-item nav-home" aria-current={current === '' ? 'page' : undefined}>ホーム</a>
+      <a href="/" class="nav-item nav-home" aria-current={current === '' ? 'page' : undefined}>
+        <Icon name="home" size={17} class="nav-cat-ic" />ホーム
+      </a>
       {byCategory.map((cat) => (
         <div class="nav-group">
           <button class="nav-item nav-cat" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="nav-cat-ic" style={`color:${catAccent(cat.name)}`}><Icon name={catId(cat.name)} size={17} /></span>
             {cat.name}<span class="nav-caret" aria-hidden="true">▾</span>
           </button>
-          <div class="nav-menu" role="menu">
+          <div class="nav-menu" role="menu" style={`--cat-color:${catAccent(cat.name)}`}>
             {catSlug(cat.name) && (
               <a href={`/category/${catSlug(cat.name)}/`} role="menuitem" class="nav-menu-all" aria-current={current === catSlug(cat.name) ? 'page' : undefined}>
                 {cat.name}をすべて見る →
@@ -29,7 +35,7 @@ const byCategory = categories
             )}
             {cat.items.map((t) => (
               <a href={`/${t.slug}/`} role="menuitem" aria-current={current === t.slug ? 'page' : undefined}>
-                <span class="nav-ic" aria-hidden="true">{t.icon}</span>{t.nav}
+                <span class="nav-ic"><Icon name={t.slug} size={18} /></span>{t.nav}
               </a>
             ))}
           </div>
@@ -60,6 +66,9 @@ const byCategory = categories
     if (!open) closeAll();
   });
 
+  const isDesktopHover = () =>
+    window.matchMedia('(hover:hover) and (min-width:821px)').matches;
+
   // カテゴリのクリック開閉（モバイルのタップ・デスクトップのクリック両対応）
   groups.forEach((g) => {
     const btn = g.querySelector('.nav-cat');
@@ -72,6 +81,22 @@ const byCategory = categories
         btn.setAttribute('aria-expanded', 'true');
       }
     });
+    // PC：別カテゴリに hover で入ったら、クリックで開いていた他メニューを閉じる。
+    // 持続する .open と CSS :hover の二重表示（旧バグ）を防ぐ。
+    g.addEventListener('mouseenter', () => {
+      if (!isDesktopHover()) return;
+      groups.forEach((other) => {
+        if (other !== g) {
+          other.classList.remove('open');
+          other.querySelector('.nav-cat')?.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+  });
+
+  // PC：ナビ領域から離れたら開いていたメニューを閉じる
+  siteNav?.addEventListener('mouseleave', () => {
+    if (isDesktopHover()) closeAll();
   });
 
   // 外側クリック・Escで閉じる

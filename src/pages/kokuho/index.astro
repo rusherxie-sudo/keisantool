@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'kokuho';
 const title = '国民健康保険料計算器 - 年収・世帯人数から保険料をシミュレーション | 計算ツール';
@@ -26,50 +27,69 @@ const jsonld = {
 
   <div class="calc-card">
     <div class="calc-panel active">
-      <div class="form-group">
-        <label for="k-mode">入力する金額</label>
-        <div class="radio-group">
-          <input type="radio" name="k-mode" id="k-mode-income" value="income" checked />
-          <label for="k-mode-income">所得で入力</label>
-          <input type="radio" name="k-mode" id="k-mode-salary" value="salary" />
-          <label for="k-mode-salary">年収で入力</label>
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">所得情報</span></div>
+        <div class="field-grid">
+          <div class="field field--full">
+            <span class="field__label">入力する金額</span>
+            <div class="radio-group">
+              <input type="radio" name="k-mode" id="k-mode-income" value="income" checked />
+              <label for="k-mode-income">所得で入力</label>
+              <input type="radio" name="k-mode" id="k-mode-salary" value="salary" />
+              <label for="k-mode-salary">年収で入力</label>
+            </div>
+          </div>
+          <div class="field field--full">
+            <label class="field__label" for="k-amount" id="k-amount-label">前年の総所得（円）</label>
+            <div class="field__box">
+              <input type="number" id="k-amount" inputmode="numeric" placeholder="例：3000000" />
+              <span class="field__suffix">円</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="k-amount" id="k-amount-label">前年の総所得（円）</label>
-        <input type="number" id="k-amount" inputmode="numeric" placeholder="例：3000000" />
-      </div>
-
-      <div class="form-group">
-        <label for="k-members">国保の加入人数（世帯）</label>
-        <input type="number" id="k-members" inputmode="numeric" placeholder="例：2" value="1" />
-      </div>
-
-      <div class="form-group">
-        <label>40〜64歳の加入者（介護分の対象）</label>
-        <div class="radio-group">
-          <input type="radio" name="k-care" id="k-care-no" value="no" checked />
-          <label for="k-care-no">いない</label>
-          <input type="radio" name="k-care" id="k-care-yes" value="yes" />
-          <label for="k-care-yes">いる</label>
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">世帯情報</span></div>
+        <div class="field-grid">
+          <div class="field">
+            <label class="field__label" for="k-members">国保の加入人数（世帯）</label>
+            <div class="field__box">
+              <input type="number" id="k-members" inputmode="numeric" placeholder="例：2" value="1" />
+              <span class="field__suffix">人</span>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field__label">お住まいの自治体</span>
+            <div class="radio-group">
+              <input type="radio" name="k-city" id="k-city-tokyo" value="tokyo23" checked />
+              <label for="k-city-tokyo">東京23区</label>
+              <input type="radio" name="k-city" id="k-city-osaka" value="osaka" />
+              <label for="k-city-osaka">大阪市</label>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>お住まいの自治体</label>
-        <div class="radio-group">
-          <input type="radio" name="k-city" id="k-city-tokyo" value="tokyo23" checked />
-          <label for="k-city-tokyo">東京23区</label>
-          <input type="radio" name="k-city" id="k-city-osaka" value="osaka" />
-          <label for="k-city-osaka">大阪市</label>
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">介護保険</span></div>
+        <div class="field-grid">
+          <div class="field field--full">
+            <span class="field__label">40〜64歳の加入者（介護分の対象）</span>
+            <div class="radio-group">
+              <input type="radio" name="k-care" id="k-care-no" value="no" checked />
+              <label for="k-care-no">いない</label>
+              <input type="radio" name="k-care" id="k-care-yes" value="yes" />
+              <label for="k-care-yes">いる</label>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="result-box" id="k-result">
         <div class="result-label">年間保険料（概算）</div>
         <div class="result-main" id="k-total">¥0</div>
-        <div class="result-rows">
+        <div class="result-rows result__rows--2col">
           <div class="result-row"><span class="label">医療分</span><span class="value" id="k-medical">¥0</span></div>
           <div class="result-row"><span class="label">後期高齢者支援金分</span><span class="value" id="k-support">¥0</span></div>
           <div class="result-row"><span class="label">介護分（40〜64歳）</span><span class="value" id="k-care">¥0</span></div>
@@ -80,7 +100,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方と国保料のしくみ</h2>
@@ -109,7 +131,7 @@ const jsonld = {
     { q: '計算結果はそのまま使えますか？', a: '自治体ごとに料率が異なるため、あくまで概算です。正確な金額はお住まいの市区町村（国保窓口）にご確認ください。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <script>
@@ -130,11 +152,17 @@ const jsonld = {
 
     const box = $('k-result');
     if (members < 1 || ($('k-amount').value === '' && $('k-members').value === '')) {
-      return box.classList.remove('visible');
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
     }
 
     const r = calcKokuho({ income, members, hasCare, city });
-    if (r.total <= 0) return box.classList.remove('visible');
+    if (r.total <= 0) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
     box.classList.add('visible');
 
     $('k-total').textContent = yen(r.total);
@@ -144,6 +172,14 @@ const jsonld = {
     $('k-monthly').textContent = yen(Math.floor(r.total / 12));
     $('k-reduction').textContent =
       r.reduction > 0 ? Math.round(r.reduction * 10) + '割軽減（均等割）' : 'なし';
+
+    window.setResultShare?.(
+      `国民健康保険料計算器\n` +
+      `年間保険料（概算）：${$('k-total').textContent}\n` +
+      `月額の目安：${$('k-monthly').textContent}\n` +
+      `医療分：${$('k-medical').textContent} / 支援金分：${$('k-support').textContent}\n` +
+      `介護分：${$('k-care').textContent}`
+    );
   }
 
   // 入力モード切替でラベルを更新

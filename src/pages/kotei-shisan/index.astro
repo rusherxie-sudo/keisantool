@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'kotei-shisan';
 const title = '固定資産税計算器 - 課税標準額から固定資産税・都市計画税を計算 | 計算ツール';
@@ -26,32 +27,50 @@ const jsonld = {
 
   <div class="calc-card">
     <div class="calc-panel active">
-      <div class="form-group">
-        <label for="land-value">土地の評価額（円）<span class="optional-label">※家屋のみの場合は空欄可</span></label>
-        <input type="number" id="land-value" inputmode="numeric" placeholder="例：12000000" />
-      </div>
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">土地</span></div>
+        <div class="field-grid">
+          <div class="field field--full">
+            <label class="field__label" for="land-value">評価額<span class="optional-label">※家屋のみの場合は空欄可</span></label>
+            <div class="field__box">
+              <input type="number" id="land-value" inputmode="numeric" placeholder="例：12000000" />
+              <span class="field__suffix">円</span>
+            </div>
+          </div>
 
-      <div class="form-group">
-        <label>土地の用地区分</label>
-        <div class="radio-group">
-          <input type="radio" name="land" id="land-small" value="small" checked />
-          <label for="land-small">小規模住宅用地</label>
-          <input type="radio" name="land" id="land-general" value="general" />
-          <label for="land-general">一般住宅用地</label>
-          <input type="radio" name="land" id="land-none" value="none" />
-          <label for="land-none">非住宅</label>
+          <div class="field field--full">
+            <span class="field__label">用地区分</span>
+            <div class="radio-group">
+              <input type="radio" name="land" id="land-small" value="small" checked />
+              <label for="land-small">小規模住宅用地</label>
+              <input type="radio" name="land" id="land-general" value="general" />
+              <label for="land-general">一般住宅用地</label>
+              <input type="radio" name="land" id="land-none" value="none" />
+              <label for="land-none">非住宅</label>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="building-value">家屋（建物）の評価額（円）<span class="optional-label">※土地のみの場合は空欄可</span></label>
-        <input type="number" id="building-value" inputmode="numeric" placeholder="例：8000000" />
-      </div>
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">家屋（建物）</span></div>
+        <div class="field-grid">
+          <div class="field field--full">
+            <label class="field__label" for="building-value">評価額<span class="optional-label">※土地のみの場合は空欄可</span></label>
+            <div class="field__box">
+              <input type="number" id="building-value" inputmode="numeric" placeholder="例：8000000" />
+              <span class="field__suffix">円</span>
+            </div>
+          </div>
 
-      <label class="gengaku-check">
-        <input type="checkbox" id="gengaku-toggle" />
-        <span>新築住宅の減額措置を適用（固定資産税が一定期間1/2。一般3年度・耐火5年度など）</span>
-      </label>
+          <div class="field field--full">
+            <label class="gengaku-check">
+              <input type="checkbox" id="gengaku-toggle" />
+              <span>新築住宅の減額措置を適用（固定資産税が一定期間1/2。一般3年度・耐火5年度など）</span>
+            </label>
+          </div>
+        </div>
+      </div>
 
       <div class="result-box" id="result">
         <div class="result-label">年税額（固定資産税＋都市計画税）</div>
@@ -76,7 +95,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方と固定資産税の計算方法</h2>
@@ -112,7 +133,7 @@ const jsonld = {
     { q: '住宅用地は税金が安くなりますか？', a: '小規模住宅用地（200㎡以下の部分）は課税標準が1/6になるなどの軽減があります。用地区分を選んで計算してください。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <script>
@@ -133,7 +154,11 @@ const jsonld = {
       shinchikuGengaku: gengaku,
     });
     const box = $('result');
-    if (r.total <= 0) return box.classList.remove('visible');
+    if (r.total <= 0) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
     box.classList.add('visible');
 
     $('total').textContent = yen(r.total);
@@ -152,6 +177,15 @@ const jsonld = {
     $('q2').textContent = yen(q2);
     $('q3').textContent = yen(q3);
     $('q4').textContent = yen(q4);
+
+    const lines = [
+      '固定資産税計算器',
+      `年税額（固定資産税＋都市計画税）：${$('total').textContent}`,
+      `土地：${$('land-total').textContent}`,
+    ];
+    if (r.building.total > 0) lines.push(`家屋：${$('building-total').textContent}`);
+    lines.push(`第1期：${$('q1').textContent}（年4回分割）`);
+    window.setResultShare?.(lines.join('\n'));
   }
 
   ['land-value', 'building-value'].forEach((id) => $(id).addEventListener('input', render));
@@ -162,15 +196,14 @@ const jsonld = {
 </script>
 
 <style>
-.optional-label { font-size: .75rem; font-weight: 400; color: #94a3b8; margin-left: 4px; }
+.optional-label { font-size: .75rem; font-weight: 400; color: var(--text-faint); margin-left: 4px; }
 .gengaku-check {
   display: flex;
   align-items: flex-start;
   gap: 8px;
   padding: 12px;
-  margin-bottom: 18px;
-  background: var(--navy-light);
-  border-radius: 6px;
+  background: var(--cat-tint);
+  border-radius: var(--r-md);
   font-size: .82rem;
   color: var(--text);
   cursor: pointer;

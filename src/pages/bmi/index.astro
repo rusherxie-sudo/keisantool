@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'bmi';
 const title = 'BMI計算器（女性・男性）- 体脂肪率・標準体重も同時に計算 | 計算ツール';
@@ -67,7 +68,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>BMIの見方・判定基準</h2>
@@ -100,33 +103,33 @@ const jsonld = {
     { q: '体脂肪率も計算できますか？', a: 'BMI・年齢・性別から体脂肪率の推定値を表示します（あくまで目安です）。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
   .target-block {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px dashed #d0d7de;
+    border-top: 1px dashed color-mix(in srgb, var(--cat-color) 22%, transparent);
   }
   .target-title {
-    font-weight: 700;
+    font-weight: var(--fw-bold);
     font-size: 0.95rem;
     margin-bottom: 0.5rem;
-    color: #374151;
+    color: var(--text-3);
   }
   .target-diff {
     margin-top: 0.75rem;
     padding: 0.6rem 0.8rem;
-    border-radius: 8px;
-    background: #f1f5f9;
-    font-weight: 700;
+    border-radius: var(--r-md);
+    background: var(--surface-sub);
+    font-weight: var(--fw-bold);
     text-align: center;
-    color: #1f2937;
+    color: var(--text);
   }
-  .target-diff.lose { background: #fef2f2; color: #b91c1c; }
-  .target-diff.gain { background: #eff6ff; color: #1d4ed8; }
-  .target-diff.ok   { background: #ecfdf5; color: #047857; }
+  .target-diff.lose { background: var(--danger-bg); color: var(--danger); }
+  .target-diff.gain { background: var(--cat-tint); color: color-mix(in srgb, var(--cat-color) 62%, #000); }
+  .target-diff.ok   { background: color-mix(in srgb, var(--success) 12%, var(--surface)); color: var(--success); }
 </style>
 
 <script>
@@ -136,11 +139,25 @@ const jsonld = {
   const gender = () =>
     document.querySelector('input[name="bmi-gender"]:checked').value;
 
+  function shareSummary() {
+    return [
+      'BMI・体脂肪率計算器',
+      'BMI：' + $('bmi-value').textContent,
+      '判定：' + $('bmi-category').textContent,
+      '標準体重：' + $('bmi-standard').textContent,
+      '体脂肪率：' + $('bmi-bodyfat').textContent,
+    ].join('\n');
+  }
+
   function render() {
     const bmi = calcBmi($('bmi-height').value, $('bmi-weight').value);
     const box = $('bmi-result');
 
-    if (bmi === null) return box.classList.remove('visible');
+    if (bmi === null) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
     box.classList.add('visible');
 
     $('bmi-value').textContent = bmi.toFixed(1);
@@ -161,6 +178,7 @@ const jsonld = {
       $('bmi-target-range').textContent = '−';
       diffEl.textContent = '標準体重まであと − kg';
       diffEl.className = 'target-diff';
+      window.setResultShare?.(shareSummary());
       return;
     }
     $('bmi-target-beauty').textContent = tw.beauty.toFixed(1) + ' kg';
@@ -182,6 +200,8 @@ const jsonld = {
       diffEl.textContent = 'ちょうど標準体重です';
       diffEl.className = 'target-diff ok';
     }
+
+    window.setResultShare?.(shareSummary());
   }
 
   ['bmi-height', 'bmi-weight', 'bmi-age'].forEach((id) =>

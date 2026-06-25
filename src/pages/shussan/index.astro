@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'shussan';
 const title = '出産予定日計算器 - 最終月経日から出産予定日・妊娠週数を自動計算 | 計算ツール';
@@ -69,7 +70,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方と計算方法</h2>
@@ -104,7 +107,7 @@ const jsonld = {
     { q: '予定日から逆算できますか？', a: 'はい。出産予定日を入力すると最終月経開始日の目安を逆算できます。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <script>
@@ -134,6 +137,7 @@ const jsonld = {
     const due = dueDate(lmp);
     if (!due) {
       box.classList.remove('visible');
+      window.hideResultShare?.();
       return;
     }
     box.classList.add('visible');
@@ -159,6 +163,16 @@ const jsonld = {
       $('leave-start').textContent = fmtJP(ml.leaveStart);
       $('leave-end').textContent = fmtJP(ml.leaveEnd);
     }
+
+    // 結果サマリー：DOM の表示値から組み立て（再計算しない）。妊娠週数は分かるときだけ。
+    const fLines = [
+      '出産予定日計算器',
+      `出産予定日：${$('due-date').textContent}`,
+    ];
+    if ($('weeks').textContent !== '―') {
+      fLines.push(`妊娠週数：${$('weeks').textContent}`);
+    }
+    window.setResultShare?.(fLines.join('\n'));
   }
 
   // --- 逆算：出産予定日 → 最終月経開始日・排卵日の目安 ---
@@ -169,6 +183,7 @@ const jsonld = {
     const lmp = lmpFromDue(due);
     if (!lmp) {
       box.classList.remove('visible');
+      window.hideResultShare?.();
       return;
     }
     box.classList.add('visible');
@@ -182,6 +197,11 @@ const jsonld = {
       $('leave-start-rev').textContent = fmtJP(ml.leaveStart);
       $('leave-end-rev').textContent = fmtJP(ml.leaveEnd);
     }
+
+    // 結果サマリー：DOM の表示値から組み立て（再計算しない）。
+    window.setResultShare?.(
+      `出産予定日計算器\n最終月経開始日（目安）：${$('lmp-rev').textContent}\n排卵日・受精日（目安）：${$('ovulation-rev').textContent}`
+    );
   }
 
   $('lmp').addEventListener('input', renderForward);
@@ -203,6 +223,9 @@ const jsonld = {
     tabReverse.setAttribute('aria-selected', String(!isForward));
     panelForward.hidden = !isForward;
     panelReverse.hidden = isForward;
+    // タブ切替時は前モードの結果サマリーを隠し、切替先で値があれば再表示する。
+    window.hideResultShare?.();
+    if (isForward) { renderForward(); } else { renderReverse(); }
   }
 
   tabForward.addEventListener('click', () => activate('forward'));
@@ -217,22 +240,25 @@ const jsonld = {
   }
   .mode-tab {
     flex: 1;
+    min-height: 48px;
     padding: 0.7rem 0.5rem;
     font-size: 0.95rem;
-    font-weight: 600;
-    color: #555;
-    background: #f1f3f5;
-    border: 1px solid #dfe3e6;
-    border-radius: 8px;
+    font-weight: var(--fw-bold);
+    color: var(--text-3);
+    background: var(--surface-sub);
+    border: 1.5px solid var(--border-input);
+    border-radius: var(--r-lg);
     cursor: pointer;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    font-family: var(--font-sans);
+    transition: background var(--ease), color var(--ease), border-color var(--ease);
   }
   .mode-tab:hover {
-    background: #e9ecef;
+    background: var(--surface-sub);
+    border-color: var(--cat-color);
   }
   .mode-tab.is-active {
     color: #fff;
-    background: #2f6fed;
-    border-color: #2f6fed;
+    background: var(--cat-color);
+    border-color: var(--cat-color);
   }
 </style>

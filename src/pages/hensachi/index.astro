@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'hensachi';
 const title = '偏差値計算器 - 得点・平均・標準偏差から偏差値を計算 | 計算ツール';
@@ -89,7 +90,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
@@ -116,7 +119,7 @@ const jsonld = {
     { q: '偏差値から順位の目安は分かりますか？', a: '偏差値から上位何%かの目安も表示します（正規分布を仮定した概算です）。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
@@ -125,38 +128,52 @@ const jsonld = {
     box-sizing: border-box;
     font: inherit;
     padding: 0.6rem 0.7rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
+    background: var(--surface-sub);
+    color: var(--text);
+    border: 1.5px solid var(--border-input);
+    border-radius: var(--r-md);
     resize: vertical;
+    transition: border-color var(--ease);
   }
+  #list-scores:focus {
+    outline: none;
+    border-color: var(--cat-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat-color) 14%, transparent);
+  }
+  #list-scores::placeholder { color: var(--text-faint); }
   .list-hint {
     margin: 0.4rem 0 0;
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-muted);
   }
-  .list-table {
+</style>
+
+<style is:global>
+  /* 得点リストの行は JS の innerHTML で動的生成されるため scoped CSS が効かない
+     → is:global + #list-table 前缀でスコープ限定（CLAUDE.md の落とし穴対策）。 */
+  #list-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 0.8rem;
     font-size: 0.95rem;
   }
-  .list-table th,
-  .list-table td {
+  #list-table th,
+  #list-table td {
     padding: 0.4rem 0.6rem;
     text-align: right;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1.5px solid var(--border-2);
   }
-  .list-table th:first-child,
-  .list-table td:first-child {
+  #list-table th:first-child,
+  #list-table td:first-child {
     text-align: left;
-    color: #64748b;
+    color: var(--text-muted);
   }
-  .list-table thead th {
-    color: #475569;
-    font-weight: 600;
-    border-bottom: 2px solid #cbd5e1;
+  #list-table thead th {
+    color: var(--text-3);
+    font-weight: var(--fw-bold);
+    border-bottom: 2px solid var(--border-input);
   }
-  .list-table tbody:empty {
+  #list-table tbody:empty {
     display: none;
   }
 </style>
@@ -173,25 +190,38 @@ const jsonld = {
       document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
       tab.classList.add('active');
       $('panel-' + tab.dataset.tab).classList.add('active');
+      window.hideResultShare?.();
     });
   });
 
   function renderDev() {
     const value = hensachi($('dev-score').value, $('dev-mean').value, $('dev-sd').value);
     const box = $('dev-result');
-    if (value === null) return box.classList.remove('visible');
+    if (value === null) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
     box.classList.add('visible');
     $('dev-value').textContent = value.toFixed(1);
+    window.setResultShare?.('偏差値計算器\n偏差値：' + $('dev-value').textContent);
   }
 
   function renderRank() {
     const pct = topPercent($('rank-dev').value);
     const box = $('rank-result');
-    if (pct === null) return box.classList.remove('visible');
+    if (pct === null) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
     box.classList.add('visible');
     $('rank-percent').textContent = '上位 ' + pct.toFixed(2) + '%';
     const rank = estimateRank($('rank-dev').value, $('rank-total').value);
     $('rank-position').textContent = rank === null ? '受験者数を入力' : jp(rank) + ' 位';
+    window.setResultShare?.(
+      '偏差値計算器\n' + $('rank-percent').textContent + '\n概算順位：' + $('rank-position').textContent
+    );
   }
 
   // 改行・カンマ・スペース（全角含む）区切りのテキストを数値配列に解析する。
@@ -211,6 +241,7 @@ const jsonld = {
     if (stats === null || devs === null) {
       box.classList.remove('visible');
       tbody.innerHTML = '';
+      window.hideResultShare?.();
       return;
     }
     box.classList.add('visible');
@@ -220,6 +251,11 @@ const jsonld = {
     tbody.innerHTML = tokens
       .map((s, i) => `<tr><td>${i + 1}</td><td>${Number(s)}</td><td>${devs[i].toFixed(1)}</td></tr>`)
       .join('');
+    window.setResultShare?.(
+      '偏差値計算器\n人数：' + $('list-count').textContent +
+      '\n平均点：' + $('list-mean').textContent +
+      '\n標準偏差：' + $('list-sd').textContent
+    );
   }
 
   ['dev-score', 'dev-mean', 'dev-sd'].forEach((id) => $(id).addEventListener('input', renderDev));

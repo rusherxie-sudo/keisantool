@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import Faq from '../../components/Faq.astro';
+import Icon from '../../components/Icon.astro';
 import { categoryMeta, tools } from '../../data/tools.js';
 
 export function getStaticPaths() {
@@ -44,17 +45,20 @@ const jsonld = {
     <p>{cat.intro}</p>
   </div>
 
-  <div class="tool-grid">
+  <div class="tool-cards">
     {items.map((t) => (
-      <a href={`/${t.slug}/`} class="tool-card">
-        <span class="t-icon" aria-hidden="true">{t.icon}</span>
-        <span class="t-name">{t.name}</span>
-        <span class="t-kw">{t.short}</span>
+      <a href={`/${t.slug}/`} class="tool-card2">
+        <span class="tool-card2__ic"><Icon name={t.slug} size={22} /></span>
+        <span class="tool-card2__body">
+          <span class="tool-card2__name">{t.name}</span>
+          <span class="tool-card2__desc">{t.short}</span>
+        </span>
+        <span class="tool-card2__chev"><Icon name="chevron" size={18} /></span>
       </a>
     ))}
   </div>
 
-  <div class="ad-slot">広告枠（カテゴリ上部）</div>
+  <div class="ad-slot"></div>
 
   <Faq items={cat.faq} title={`${cat.name}に関するよくある質問`} />
 
@@ -67,23 +71,23 @@ const jsonld = {
     </div>
   </section>
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
   .other-cats { max-width: 680px; margin: 28px auto 0; }
-  .other-cats h2 { font-size: .9rem; font-weight: 700; color: var(--navy); margin-bottom: 12px; }
+  .other-cats h2 { font-size: .9rem; font-weight: var(--fw-bold); color: var(--text); margin-bottom: 12px; }
   .cat-links { display: flex; flex-wrap: wrap; gap: 8px; }
   .cat-links a {
     display: inline-block;
-    padding: 8px 14px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
+    padding: 9px 15px;
+    border: 1.5px solid var(--border-2);
+    border-radius: var(--r-pill);
     font-size: .84rem;
-    color: var(--navy);
+    color: var(--text-3);
     text-decoration: none;
-    background: var(--bg);
-    transition: .15s;
+    background: var(--surface);
+    transition: all var(--ease);
   }
-  .cat-links a:hover { background: var(--navy-light); border-color: var(--navy); }
+  .cat-links a:hover { background: var(--cat-tint); border-color: var(--cat-color); color: var(--text); }
 </style>

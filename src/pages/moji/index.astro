@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'moji';
 const title = '全角半角変換・文字数カウントツール - コピペで即座に変換 | 計算ツール';
@@ -108,7 +109,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方と各変換について</h2>
@@ -133,53 +136,55 @@ const jsonld = {
     { q: '文字数のカウントに空白は含まれますか？', a: '空白あり・なしの両方を表示できます。原稿用紙換算やSNSの文字数チェックにも使えます。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
   textarea {
     width: 100%;
+    min-height: 96px;
     padding: 12px 14px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    border: 1.5px solid var(--border-input);
+    border-radius: var(--r-lg);
     font-size: 1rem;
-    font-family: var(--font-jp);
+    font-family: var(--font-sans);
     color: var(--text);
-    background: var(--bg);
+    background: var(--surface-sub);
     line-height: 1.7;
     resize: vertical;
-    transition: 0.15s;
+    transition: border-color var(--ease);
     -webkit-appearance: none;
     appearance: none;
   }
   textarea:focus {
     outline: none;
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    border-color: var(--cat-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat-color) 14%, transparent);
   }
   textarea::placeholder {
-    color: #cbd5e1;
+    color: var(--text-faint);
   }
   textarea.output {
-    background: var(--bg-result);
-    border-color: #bfdbfe;
-    color: var(--navy);
+    background: var(--cat-tint);
+    border-color: color-mix(in srgb, var(--cat-color) 22%, transparent);
+    color: var(--text);
   }
   .copy-btn {
     width: 100%;
-    height: 46px;
+    min-height: 48px;
     border: none;
-    border-radius: 6px;
-    background: var(--navy);
+    border-radius: var(--r-pill);
+    background: var(--cat-color);
     color: #fff;
     font-size: 0.9rem;
-    font-weight: 600;
-    font-family: var(--font-jp);
+    font-weight: var(--fw-bold);
+    font-family: var(--font-sans);
     cursor: pointer;
-    transition: 0.15s;
+    transition: opacity var(--ease), transform var(--ease), background var(--ease);
   }
   .copy-btn:hover {
-    background: var(--navy-dark);
+    transform: translateY(-1px);
+    opacity: 0.94;
   }
   .copy-btn.copied {
     background: var(--success);
@@ -193,21 +198,22 @@ const jsonld = {
   .action-btn {
     flex: 1 1 auto;
     min-width: 120px;
-    height: 42px;
+    min-height: 46px;
     padding: 0 14px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--bg);
-    color: var(--navy);
+    border: 1.5px solid var(--border-input);
+    border-radius: var(--r-pill);
+    background: var(--surface);
+    color: var(--text-3);
     font-size: 0.9rem;
-    font-weight: 600;
-    font-family: var(--font-jp);
+    font-weight: var(--fw-bold);
+    font-family: var(--font-sans);
     cursor: pointer;
-    transition: 0.15s;
+    transition: border-color var(--ease), background var(--ease), color var(--ease);
   }
   .action-btn:hover {
-    border-color: var(--border-focus);
-    background: var(--bg-result);
+    border-color: var(--cat-color);
+    background: var(--cat-tint);
+    color: color-mix(in srgb, var(--cat-color) 62%, #000);
   }
 </style>
 
@@ -228,6 +234,9 @@ const jsonld = {
 
   const $ = (id) => document.getElementById(id);
 
+  // シェア用に長文の結果は適度に短縮する
+  const clip = (s) => (s.length > 140 ? s.slice(0, 140) + '…' : s);
+
   // タブ切り替え
   document.querySelectorAll('.calc-tab').forEach((tab) => {
     tab.addEventListener('click', () => {
@@ -235,6 +244,7 @@ const jsonld = {
       document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
       tab.classList.add('active');
       $('panel-' + tab.dataset.tab).classList.add('active');
+      window.hideResultShare?.();
     });
   });
 
@@ -252,13 +262,26 @@ const jsonld = {
       out = kanaToFull(toFullWidth(text));
     }
     $('width-output').value = out;
+    if (out) {
+      const label = m === 'half' ? '半角に変換' : '全角に変換';
+      window.setResultShare?.(`全角半角変換（${label}）\nブラウザ内で変換しました\n変換結果：${clip(out)}`);
+    } else {
+      window.hideResultShare?.();
+    }
   }
 
   // ひらがなカタカナ
   function renderKana() {
     const text = $('kana-input').value;
-    const out = mode('kana-mode') === 'kata' ? hiraToKata(text) : kataToHira(text);
+    const m = mode('kana-mode');
+    const out = m === 'kata' ? hiraToKata(text) : kataToHira(text);
     $('kana-output').value = out;
+    if (out) {
+      const label = m === 'kata' ? 'カタカナに変換' : 'ひらがなに変換';
+      window.setResultShare?.(`ひらがなカタカナ変換（${label}）\nブラウザ内で変換しました\n変換結果：${clip(out)}`);
+    } else {
+      window.hideResultShare?.();
+    }
   }
 
   // 文字数カウント
@@ -271,11 +294,22 @@ const jsonld = {
     $('count-bytes').textContent = bytes.toLocaleString('ja-JP');
     $('count-genko').textContent = countManuscriptSheets(text).toLocaleString('ja-JP') + ' 枚';
     $('count-x').textContent = xCount(text).toLocaleString('ja-JP') + ' / 280';
+    if (chars > 0) {
+      window.setResultShare?.(`文字数カウント\n文字数（空白含む）：${$('count-chars').textContent}\n空白を除いた文字数：${$('count-nospace').textContent}\n行数：${$('count-lines').textContent}\nバイト数（UTF-8）：${$('count-bytes').textContent}`);
+    } else {
+      window.hideResultShare?.();
+    }
   }
 
   // 整形（改行・空白除去）
   function setClean(fn) {
-    $('clean-output').value = fn($('clean-input').value);
+    const out = fn($('clean-input').value);
+    $('clean-output').value = out;
+    if (out) {
+      window.setResultShare?.(`文字整形（改行・空白）\nブラウザ内で整形しました\n整形結果：${clip(out)}`);
+    } else {
+      window.hideResultShare?.();
+    }
   }
 
   $('width-input').addEventListener('input', renderWidth);

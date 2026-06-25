@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'saniku';
 const title = '産休・育休計算器 — 休業期間・出産手当金・育児休業給付金を自動計算 | 計算ツール';
@@ -33,15 +34,25 @@ const jsonld = {
 
     <!-- 休業期間タブ -->
     <div class="calc-panel active" id="panel-schedule">
-      <div class="form-group">
-        <label for="due-date">出産予定日</label>
-        <input type="date" id="due-date" />
-      </div>
-      <div class="radio-group">
-        <input type="radio" name="multiple" id="single" value="single" checked />
-        <label for="single">単胎（1人）</label>
-        <input type="radio" name="multiple" id="multiple" value="multiple" />
-        <label for="multiple">多胎（双子以上）</label>
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">出産予定日と妊娠区分</span></div>
+        <div class="field-grid">
+          <div class="field">
+            <label class="field__label" for="due-date">出産予定日</label>
+            <div class="field__box">
+              <input type="date" id="due-date" />
+            </div>
+          </div>
+          <div class="field">
+            <span class="field__label">妊娠区分</span>
+            <div class="radio-group">
+              <input type="radio" name="multiple" id="single" value="single" checked />
+              <label for="single">単胎（1人）</label>
+              <input type="radio" name="multiple" id="multiple" value="multiple" />
+              <label for="multiple">多胎（双子以上）</label>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="result-box" id="schedule-result">
@@ -80,18 +91,31 @@ const jsonld = {
 
     <!-- 給付金タブ -->
     <div class="calc-panel" id="panel-kyuufu">
-      <div class="form-group">
-        <label for="monthly-wage">標準報酬月額（円）<span class="optional-label">※額面の月給に近い額。残業代等で変動します</span></label>
-        <input type="number" id="monthly-wage" inputmode="numeric" placeholder="例：300000" min="0" />
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">給付金の計算条件</span></div>
+        <div class="field-grid">
+          <div class="field">
+            <label class="field__label" for="monthly-wage">標準報酬月額</label>
+            <div class="field__box">
+              <input type="number" id="monthly-wage" inputmode="numeric" placeholder="例：300000" min="0" />
+              <span class="field__suffix">円</span>
+            </div>
+            <span class="field__hint">額面の月給に近い額。残業代等で変動します</span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="ikukyu-days">育休取得日数</label>
+            <div class="field__box">
+              <input type="number" id="ikukyu-days" inputmode="numeric" placeholder="例：309" min="0" max="730" />
+              <span class="field__suffix">日</span>
+            </div>
+            <span class="field__hint">空欄なら1歳まで約309日で試算</span>
+          </div>
+        </div>
+        <label class="shien-check field--full">
+          <input type="checkbox" id="shien-toggle" />
+          <span>夫婦ともに14日以上の育休を取得（出生後休業支援給付金 +13% を加算）</span>
+        </label>
       </div>
-      <div class="form-group">
-        <label for="ikukyu-days">育休取得日数（日）<span class="optional-label">※空欄なら1歳まで約309日で試算</span></label>
-        <input type="number" id="ikukyu-days" inputmode="numeric" placeholder="例：309" min="0" max="730" />
-      </div>
-      <label class="shien-check">
-        <input type="checkbox" id="shien-toggle" />
-        <span>夫婦ともに14日以上の育休を取得（出生後休業支援給付金 +13% を加算）</span>
-      </label>
 
       <div class="result-box" id="kyuufu-result">
         <div class="result-label">給付金の概算</div>
@@ -105,7 +129,7 @@ const jsonld = {
             <span class="value" id="shussan-teate">¥0</span>
           </div>
         </div>
-        <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1px solid #dbeafe">
+        <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1.5px solid color-mix(in srgb, var(--cat-color) 18%, transparent)">
           <div class="result-row">
             <span class="label">育休給付金（最初180日 67%）</span>
             <span class="value" id="ikukyu-first">¥0</span>
@@ -114,7 +138,7 @@ const jsonld = {
             <span class="label">育休給付金（181日目以降 50%）</span>
             <span class="value" id="ikukyu-rest">¥0</span>
           </div>
-          <div class="result-row" style="padding-top:8px;border-top:1px dashed #bfdbfe;margin-top:4px">
+          <div class="result-row" style="padding-top:8px;border-top:1px dashed color-mix(in srgb, var(--cat-color) 28%, transparent);margin-top:4px">
             <span class="label" style="font-weight:600;color:var(--navy)">育児休業給付金 合計</span>
             <span class="value" id="ikukyu-total">¥0</span>
           </div>
@@ -122,7 +146,7 @@ const jsonld = {
             <span class="label">出生後休業支援給付金（13%・最大28日）</span>
             <span class="value green" id="shien-amount">¥0</span>
           </div>
-          <div class="result-row" style="padding-top:8px;border-top:1px dashed #bfdbfe;margin-top:4px">
+          <div class="result-row" style="padding-top:8px;border-top:1px dashed color-mix(in srgb, var(--cat-color) 28%, transparent);margin-top:4px">
             <span class="label" style="font-weight:600;color:var(--navy)">給付金 総合計</span>
             <span class="value" id="grand-total">¥0</span>
           </div>
@@ -131,7 +155,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
@@ -155,18 +181,18 @@ const jsonld = {
     { q: '計算結果は正確ですか？', a: '標準報酬や上限額により変わるため目安です。正確な額は勤務先・健康保険組合・ハローワークにご確認ください。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
 .ikukyu-section {
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #dbeafe;
+  border-top: 1.5px solid color-mix(in srgb, var(--cat-color) 18%, transparent);
 }
 .ikukyu-label {
   font-size: .78rem;
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--text-muted);
   margin-bottom: 10px;
 }
@@ -174,15 +200,14 @@ const jsonld = {
   font-family: var(--font-mono);
   font-size: .95rem;
 }
-.optional-label { font-size: .75rem; font-weight: 400; color: #94a3b8; margin-left: 4px; }
 .shien-check {
   display: flex;
   align-items: flex-start;
   gap: 8px;
   padding: 12px;
   margin-bottom: 4px;
-  background: var(--navy-light);
-  border-radius: 6px;
+  background: var(--cat-tint);
+  border-radius: var(--r-md);
   font-size: .82rem;
   color: var(--text);
   cursor: pointer;
@@ -224,13 +249,16 @@ const jsonld = {
     const ikukyuEnd   = calcIkukyuEnd(dueDate, extMonths);
 
     const box = $('schedule-result');
-    if (!sanzenStart) { box.classList.remove('visible'); return; }
+    if (!sanzenStart) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
 
     $('sanzen-start').textContent = fmtDate(sanzenStart);
     $('due-disp').textContent     = fmtDate(dueDate);
     $('sango-end').textContent    = fmtDate(sangoEnd);
     $('ikukyu-end').textContent   = fmtDate(ikukyuEnd);
+    window.setResultShare?.(
+      `産休・育休計算器\n産前休業開始日：${$('sanzen-start').textContent}\n産後休業終了日：${$('sango-end').textContent}\n育休終了日（予定）：${$('ikukyu-end').textContent}`
+    );
   }
 
   $('due-date').addEventListener('change', renderSchedule);
@@ -245,6 +273,7 @@ const jsonld = {
     const box = $('kyuufu-result');
     if (!Number.isFinite(monthlyWage) || monthlyWage <= 0) {
       box.classList.remove('visible');
+      window.hideResultShare?.();
       return;
     }
 
@@ -268,6 +297,9 @@ const jsonld = {
     $('shien-row').style.display = shienOn ? 'flex' : 'none';
     $('shien-amount').textContent = yen(shien?.amount ?? 0);
     $('grand-total').textContent = yen(grandTotal);
+    window.setResultShare?.(
+      `産休・育休計算器\n給付金 総合計：${$('grand-total').textContent}\n出産手当金（産前産後98日分）：${$('shussan-teate').textContent}\n育児休業給付金 合計：${$('ikukyu-total').textContent}`
+    );
   }
 
   ['monthly-wage', 'ikukyu-days'].forEach((id) => $(id).addEventListener('input', renderKyuufu));
@@ -280,6 +312,7 @@ const jsonld = {
       document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
       tab.classList.add('active');
       $('panel-' + tab.dataset.tab).classList.add('active');
+      window.hideResultShare?.();
     });
   });
 </script>

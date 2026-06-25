@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 import { UNITS } from '../../lib/tani.js';
 
 const slug = 'tani';
@@ -41,36 +42,28 @@ const categories = [
       ))}
     </div>
 
-    <div class="form-group">
-      <label for="tani-value">数値</label>
-      <input type="number" id="tani-value" inputmode="decimal" placeholder="例：100" value="1" />
-    </div>
-
-    <div class="tani-units">
+    <div class="tani-input">
       <div class="form-group">
-        <label for="tani-from">変換元</label>
+        <label for="tani-value">数値</label>
+        <input type="number" id="tani-value" inputmode="decimal" placeholder="例：100" value="1" />
+      </div>
+      <div class="form-group">
+        <label for="tani-from">単位</label>
         <select id="tani-from"></select>
       </div>
-      <div class="tani-swap">
-        <button type="button" id="tani-swap" aria-label="単位を入れ替える">⇅</button>
-      </div>
-      <div class="form-group">
-        <label for="tani-to">変換先</label>
-        <select id="tani-to"></select>
-      </div>
     </div>
 
-    <div class="result-box visible" id="tani-result">
-      <div class="result-label" id="tani-result-label">変換結果</div>
-      <div class="result-main" id="tani-out">—</div>
-    </div>
+    <div class="tani-result-head" id="tani-result-label">変換結果</div>
+    <div class="result-grid" id="tani-grid"></div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
-    <p>上のタブから変換したいカテゴリ（長さ・重さ・面積・体積・温度・速さ）を選び、数値を入力して「変換元」「変換先」の単位を選ぶと、自動で結果が表示されます。ボタンを押す必要はありません。⇅ ボタンで変換元と変換先を入れ替えられます。</p>
+    <p>上のタブから変換したいカテゴリ（長さ・重さ・面積・体積・温度・速さ）を選び、数値を入力して元になる単位を選ぶだけ。そのカテゴリのすべての単位に換算した結果が一覧で同時に表示されます。ボタンを押す必要はありません。各結果の「コピー」ボタンで数値をクリップボードにコピーできます。</p>
     <ul>
       <li><strong>長さ</strong>：mm・cm・m・km のほか、inch（インチ）・feet（フィート）・yard（ヤード）・mile（マイル）、和の単位「寸・尺・里」に対応。海外通販のサイズ表記や身長換算に便利です（例：1 inch = 2.54 cm）。</li>
       <li><strong>重さ</strong>：mg・g・kg・t に加え、oz（オンス）・lb（ポンド）、和の単位「匁・貫」に対応（1匁 = 3.75 g）。レシピや郵便物の重量換算に。</li>
@@ -90,12 +83,22 @@ const categories = [
     { q: '温度（摂氏・華氏）も変換できますか？', a: '摂氏(℃)・華氏(℉)・ケルビン(K)の変換に対応しています。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <script define:vars={{ UNITS }}>
   const $ = (id) => document.getElementById(id);
   let currentCat = 'length';
+
+  // categories（タブのラベル）は define:vars では渡していないため JS 側にも保持
+  const categories = [
+    { id: 'length', label: '長さ' },
+    { id: 'weight', label: '重さ' },
+    { id: 'area', label: '面積' },
+    { id: 'volume', label: '体積' },
+    { id: 'temperature', label: '温度' },
+    { id: 'speed', label: '速さ' },
+  ];
 
   function fmt(n) {
     if (!Number.isFinite(n)) return '—';
@@ -118,16 +121,12 @@ const categories = [
   function fillSelects() {
     const list = UNITS[currentCat];
     const from = $('tani-from');
-    const to = $('tani-to');
     from.innerHTML = '';
-    to.innerHTML = '';
     list.forEach((u) => {
       from.appendChild(new Option(u.label, u.id));
-      to.appendChild(new Option(u.label, u.id));
     });
-    // 既定: 1番目 → 2番目（あれば）
+    // 既定: 1番目
     from.selectedIndex = 0;
-    to.selectedIndex = list.length > 1 ? 1 : 0;
   }
 
   // ロジックは lib/tani.js と同一（純静的のため最小限を内包）
@@ -161,22 +160,57 @@ const categories = [
     return (n * from.factor) / to.factor;
   }
 
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
   function render() {
-    const box = $('tani-result');
-    const value = $('tani-value').value;
+    const grid = $('tani-grid');
+    const label = $('tani-result-label');
+    const rawValue = $('tani-value').value;
     const fromId = $('tani-from').value;
-    const toId = $('tani-to').value;
-    const r = convert(currentCat, value, fromId, toId);
     const list = UNITS[currentCat];
     const fromLabel = (list.find((u) => u.id === fromId) || {}).label || '';
-    const toLabel = (list.find((u) => u.id === toId) || {}).label || '';
-    if (r === null) {
-      box.classList.remove('visible');
-      return;
+
+    // 入力が空/非数値なら全カードを「—」表示にする
+    const hasInput = rawValue !== '' && Number.isFinite(Number(rawValue));
+    label.textContent = hasInput
+      ? `${fmt(Number(rawValue))} ${fromLabel} =`
+      : '変換結果';
+
+    grid.innerHTML = list
+      .map((u) => {
+        const r = hasInput ? convert(currentCat, rawValue, fromId, u.id) : null;
+        const valText = r === null ? '—' : fmt(r);
+        const isFrom = u.id === fromId;
+        const copyBtn = r === null
+          ? ''
+          : `<button type="button" class="result-card__copy" data-copy="${esc(valText)}">コピー</button>`;
+        return `<div class="result-card${isFrom ? ' is-from' : ''}">
+            <div class="result-card__head"><span class="result-card__label">${esc(u.label)}</span></div>
+            <div class="result-card__value">${esc(valText)}</div>
+            ${copyBtn}
+          </div>`;
+      })
+      .join('');
+
+    // 結果シェア：入力が有効なときだけ、代表的な単位 2〜3 件を要約
+    if (hasInput) {
+      const catLabel = (categories.find((c) => c.id === currentCat) || {}).label || '';
+      const lines = list
+        .filter((u) => u.id !== fromId)
+        .slice(0, 3)
+        .map((u) => {
+          const r = convert(currentCat, rawValue, fromId, u.id);
+          return r === null ? null : `${u.label}：${fmt(r)}`;
+        })
+        .filter(Boolean);
+      window.setResultShare?.(
+        `単位変換（${catLabel}）\n${fmt(Number(rawValue))} ${fromLabel} =\n${lines.join('\n')}`
+      );
+    } else {
+      window.hideResultShare?.();
     }
-    box.classList.add('visible');
-    $('tani-result-label').textContent = `${fmt(Number(value))} ${fromLabel} =`;
-    $('tani-out').textContent = `${fmt(r)} ${toLabel}`;
   }
 
   document.querySelectorAll('.calc-tab').forEach((tab) => {
@@ -189,64 +223,61 @@ const categories = [
     });
   });
 
-  $('tani-swap').addEventListener('click', () => {
-    const from = $('tani-from');
-    const to = $('tani-to');
-    const tmp = from.value;
-    from.value = to.value;
-    to.value = tmp;
-    render();
+  // 結果カードのコピー（イベント委譲：innerHTML 再生成に強い）
+  $('tani-grid').addEventListener('click', (e) => {
+    const btn = e.target.closest('.result-card__copy');
+    if (!btn) return;
+    const text = btn.dataset.copy || '';
+    navigator.clipboard?.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.classList.add('is-copied');
+      btn.textContent = '✓ コピー済み';
+      setTimeout(() => {
+        btn.classList.remove('is-copied');
+        btn.textContent = orig;
+      }, 1400);
+    });
   });
 
-  ['tani-value', 'tani-from', 'tani-to'].forEach((id) => $(id).addEventListener('input', render));
+  ['tani-value', 'tani-from'].forEach((id) => $(id).addEventListener('input', render));
 
   fillSelects();
   render();
 </script>
 
 <style>
-  .tani-units {
+  .tani-input {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr 1.4fr;
     gap: 0.75rem;
     align-items: end;
+    margin-bottom: 20px;
   }
-  .tani-units .form-group {
+  .tani-input .form-group {
     margin-bottom: 0;
   }
-  .tani-units select {
+  .tani-input select {
     width: 100%;
   }
-  .tani-swap {
-    padding-bottom: 0.45rem;
-  }
-  .tani-swap button {
-    width: 2.4rem;
-    height: 2.4rem;
-    border-radius: 50%;
-    border: 1px solid var(--color-border, #d1d5db);
-    background: var(--color-surface, #fff);
-    font-size: 1.1rem;
-    cursor: pointer;
-    line-height: 1;
-    color: var(--color-text, #1f2937);
-  }
-  .tani-swap button:hover {
-    background: var(--color-bg, #f3f4f6);
-  }
-  #tani-out {
-    word-break: break-all;
+  .tani-result-head {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: var(--fw-bold);
+    color: color-mix(in srgb, var(--cat-color) 62%, #000);
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
   }
   @media (max-width: 480px) {
-    .tani-units {
+    .tani-input {
       grid-template-columns: 1fr;
     }
-    .tani-swap {
-      justify-self: center;
-      padding-bottom: 0;
-    }
-    .tani-swap button {
-      transform: rotate(90deg);
-    }
+  }
+</style>
+
+<!-- 動的注入カードの .is-from 強調は scoped では効かないため global で -->
+<style is:global>
+  #tani-grid .result-card.is-from {
+    border-color: color-mix(in srgb, var(--cat-color) 45%, transparent);
+    background: var(--cat-tint);
   }
 </style>

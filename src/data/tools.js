@@ -13,6 +13,18 @@ export const categories = [
   '開発者ツール',
 ];
 
+// 各カテゴリのテーマカラー（accent / tint）。方向B「明朗・親しみ」の7分類色。
+// ツールページは所属カテゴリの色を --cat-color / --cat-tint として継承する（ToolLayout が <main> に注入）。
+export const categoryColors = {
+  '税金・お金':   { id: 'tax',     accent: '#2f6df0', tint: '#eef3ff' },
+  '健康・身体':   { id: 'health',  accent: '#15a06a', tint: '#e8f7f0' },
+  '生活・日常':   { id: 'life',    accent: '#e08a00', tint: '#fdf3e0' },
+  '占い・文化':   { id: 'fortune', accent: '#8b5cf6', tint: '#f2edff' },
+  '文字ツール':   { id: 'text',    accent: '#db4f78', tint: '#fdecf1' },
+  '変換・ツール': { id: 'conv',    accent: '#0e9aa7', tint: '#e4f6f7' },
+  '開発者ツール': { id: 'dev',     accent: '#5566e0', tint: '#ececff' },
+};
+
 export const tools = [
   {
     slug: 'zeizei',
@@ -349,6 +361,23 @@ export function getCategorySlug(name) {
 // slug でツールを取得
 export function getTool(slug) {
   return tools.find((t) => t.slug === slug);
+}
+
+// カテゴリ名からテーマカラーを引く（未定義はブランド色にフォールバック）
+export function getColorByCategory(name) {
+  return categoryColors[name] || { id: '', accent: '#2563eb', tint: '#eef4ff' };
+}
+
+// ツール slug からテーマカラーを引く
+export function getColorBySlug(slug) {
+  const t = getTool(slug);
+  return getColorByCategory(t ? t.category : '');
+}
+
+// カテゴリ slug（ハブURL）からテーマカラーを引く
+export function getColorByCategorySlug(catSlug) {
+  const meta = categoryMeta.find((c) => c.slug === catSlug);
+  return getColorByCategory(meta ? meta.name : '');
 }
 
 // 指定ツールの関連ツールを返す（同カテゴリ優先 → 不足分は他カテゴリで補充）。

@@ -2,11 +2,17 @@
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import ShareButtons from '../components/ShareButtons.astro';
 import FloatingShare from '../components/FloatingShare.astro';
+import { getColorBySlug, getColorByCategorySlug } from '../data/tools.js';
 
 const { title, description, slug, current, jsonld, wide } = Astro.props;
 const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
+
+// ページ所属カテゴリのテーマ色を解決：ツールslug優先 → カテゴリslug → ブランド色
+const _toolColor = getColorBySlug(current);
+const _catColor = getColorByCategorySlug(current);
+const theme = _toolColor.id ? _toolColor : (_catColor.id ? _catColor : { accent: '#2563eb', tint: '#eef4ff' });
+const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -26,13 +32,14 @@ const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
   <link rel="canonical" href={canonical} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="計算ツール" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonical} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
   {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
@@ -40,9 +47,8 @@ const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
 <body>
   <SiteHeader current={current} />
   <slot name="hero" />
-  <main class={wide ? 'page-wrapper wide' : 'page-wrapper'}>
+  <main class={wide ? 'page-wrapper wide' : 'page-wrapper'} style={themeStyle}>
     <slot />
-    <ShareButtons title={title} url={canonical} />
   </main>
   <SiteFooter />
   <FloatingShare title={title} url={canonical} />

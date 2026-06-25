@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'kyuyo';
 const title = '時給・残業代計算器 - 給与・手取り額を簡単に計算 | 計算ツール';
@@ -32,13 +33,24 @@ const jsonld = {
     </div>
 
     <div class="calc-panel active" id="panel-wage">
-      <div class="form-group">
-        <label for="wage-rate">時給（円）</label>
-        <input type="number" id="wage-rate" inputmode="numeric" placeholder="例：1100" />
-      </div>
-      <div class="form-group">
-        <label for="wage-hours">労働時間（時間）</label>
-        <input type="number" id="wage-hours" inputmode="decimal" placeholder="例：8" />
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">給与の計算</span></div>
+        <div class="field-grid">
+          <div class="field">
+            <label class="field__label" for="wage-rate">時給</label>
+            <div class="field__box">
+              <input type="number" id="wage-rate" inputmode="numeric" placeholder="例：1100" />
+              <span class="field__suffix">円</span>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="wage-hours">労働時間</label>
+            <div class="field__box">
+              <input type="number" id="wage-hours" inputmode="decimal" placeholder="例：8" />
+              <span class="field__suffix">時間</span>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="result-box" id="wage-result">
         <div class="result-label">給与（額面）</div>
@@ -54,14 +66,20 @@ const jsonld = {
       <details class="mini-tool" id="from-monthly">
         <summary>基本給から時給を計算する</summary>
         <p class="mini-note">時給が分からない場合は、基本給（月額）と1か月の平均所定労働時間から時給を求められます。</p>
-        <div class="mini-grid">
-          <div class="form-group">
-            <label for="fm-basic">基本給（月額・円）</label>
-            <input type="number" id="fm-basic" inputmode="numeric" placeholder="例：250000" />
+        <div class="field-grid">
+          <div class="field">
+            <label class="field__label" for="fm-basic">基本給（月額）</label>
+            <div class="field__box">
+              <input type="number" id="fm-basic" inputmode="numeric" placeholder="例：250000" />
+              <span class="field__suffix">円</span>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="fm-hours">月平均所定労働時間（時間）</label>
-            <input type="number" id="fm-hours" inputmode="decimal" placeholder="例：160" />
+          <div class="field">
+            <label class="field__label" for="fm-hours">月平均所定労働時間</label>
+            <div class="field__box">
+              <input type="number" id="fm-hours" inputmode="decimal" placeholder="例：160" />
+              <span class="field__suffix">時間</span>
+            </div>
           </div>
         </div>
         <div class="mini-result" id="fm-result">
@@ -70,28 +88,50 @@ const jsonld = {
         </div>
       </details>
 
-      <div class="form-group">
-        <label for="ot-rate">時給（円）</label>
-        <input type="number" id="ot-rate" inputmode="numeric" placeholder="例：1100" />
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">時給</span></div>
+        <div class="field-grid">
+          <div class="field field--full">
+            <label class="field__label" for="ot-rate">時給</label>
+            <div class="field__box">
+              <input type="number" id="ot-rate" inputmode="numeric" placeholder="例：1100" />
+              <span class="field__suffix">円</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <p class="field-heading">残業時間を区分ごとに入力（割増率は自動適用）</p>
-      <div class="ot-grid">
-        <div class="form-group">
-          <label for="ot-h-normal">通常残業（×1.25）</label>
-          <input type="number" id="ot-h-normal" inputmode="decimal" placeholder="時間" />
-        </div>
-        <div class="form-group">
-          <label for="ot-h-night">深夜 22-5時（×1.5）</label>
-          <input type="number" id="ot-h-night" inputmode="decimal" placeholder="時間" />
-        </div>
-        <div class="form-group">
-          <label for="ot-h-holiday">休日（×1.35）</label>
-          <input type="number" id="ot-h-holiday" inputmode="decimal" placeholder="時間" />
-        </div>
-        <div class="form-group">
-          <label for="ot-h-over60">月60時間超（×1.5）</label>
-          <input type="number" id="ot-h-over60" inputmode="decimal" placeholder="時間" />
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">残業時間を区分ごとに入力（割増率は自動適用）</span></div>
+        <div class="field-grid">
+          <div class="field">
+            <label class="field__label" for="ot-h-normal">通常残業（×1.25）</label>
+            <div class="field__box">
+              <input type="number" id="ot-h-normal" inputmode="decimal" placeholder="0" />
+              <span class="field__suffix">時間</span>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="ot-h-night">深夜 22-5時（×1.5）</label>
+            <div class="field__box">
+              <input type="number" id="ot-h-night" inputmode="decimal" placeholder="0" />
+              <span class="field__suffix">時間</span>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="ot-h-holiday">休日（×1.35）</label>
+            <div class="field__box">
+              <input type="number" id="ot-h-holiday" inputmode="decimal" placeholder="0" />
+              <span class="field__suffix">時間</span>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="ot-h-over60">月60時間超（×1.5）</label>
+            <div class="field__box">
+              <input type="number" id="ot-h-over60" inputmode="decimal" placeholder="0" />
+              <span class="field__suffix">時間</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -108,9 +148,17 @@ const jsonld = {
     </div>
 
     <div class="calc-panel" id="panel-net">
-      <div class="form-group">
-        <label for="net-income">月収（額面・円）</label>
-        <input type="number" id="net-income" inputmode="numeric" placeholder="例：300000" />
+      <div class="field-group">
+        <div class="field-group__title"><span class="field-group__title-text">手取りの計算</span></div>
+        <div class="field-grid">
+          <div class="field field--full">
+            <label class="field__label" for="net-income">月収（額面）</label>
+            <div class="field__box">
+              <input type="number" id="net-income" inputmode="numeric" placeholder="例：300000" />
+              <span class="field__suffix">円</span>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="result-box" id="net-result">
         <div class="result-label">手取り額（概算）</div>
@@ -123,7 +171,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
@@ -147,7 +197,7 @@ const jsonld = {
     { q: '手取りも分かりますか？', a: '額面から社会保険料・税の概算を引いた手取りの目安を表示します（概算値です）。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <script>
@@ -162,6 +212,7 @@ const jsonld = {
       document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
       tab.classList.add('active');
       $('panel-' + tab.dataset.tab).classList.add('active');
+      window.hideResultShare?.();
     });
   });
 
@@ -170,11 +221,14 @@ const jsonld = {
     const hours = $('wage-hours').value;
     const { pay } = hourlyWage(rate, hours);
     const box = $('wage-result');
-    if (pay <= 0) return box.classList.remove('visible');
+    if (pay <= 0) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
     $('wage-pay').textContent = yen(pay);
     $('wage-disp-rate').textContent = yen(Number(rate));
     $('wage-disp-hours').textContent = Number(hours).toLocaleString('ja-JP') + ' 時間';
+    window.setResultShare?.(
+      `時給・残業代計算器\n給与（額面）：${$('wage-pay').textContent}\n時給：${$('wage-disp-rate').textContent}\n労働時間：${$('wage-disp-hours').textContent}`
+    );
   }
 
   function renderOt() {
@@ -187,13 +241,16 @@ const jsonld = {
     };
     const { normal, night, holiday, over60, total } = overtimeBreakdown(rate, hours);
     const box = $('ot-result');
-    if (total <= 0) return box.classList.remove('visible');
+    if (total <= 0) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
     $('ot-pay').textContent = yen(total);
     $('ot-r-normal').textContent = yen(normal);
     $('ot-r-night').textContent = yen(night);
     $('ot-r-holiday').textContent = yen(holiday);
     $('ot-r-over60').textContent = yen(over60);
+    window.setResultShare?.(
+      `時給・残業代計算器\n残業代の合計：${$('ot-pay').textContent}\n通常残業（×1.25）：${$('ot-r-normal').textContent}\n深夜（×1.5）：${$('ot-r-night').textContent}\n休日（×1.35）：${$('ot-r-holiday').textContent}`
+    );
   }
 
   // 基本給から時給を計算する小ツール
@@ -215,11 +272,14 @@ const jsonld = {
     const income = $('net-income').value;
     const { takeHome, deduction } = takeHomePay(income);
     const box = $('net-result');
-    if (takeHome <= 0) return box.classList.remove('visible');
+    if (takeHome <= 0) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
     $('net-take').textContent = yen(takeHome);
     $('net-gross').textContent = yen(Number(income));
     $('net-ded').textContent = yen(deduction);
+    window.setResultShare?.(
+      `時給・残業代計算器\n手取り額（概算）：${$('net-take').textContent}\n月収（額面）：${$('net-gross').textContent}\n控除合計（概算 約22%）：${$('net-ded').textContent}`
+    );
   }
 
   ['wage-rate', 'wage-hours'].forEach((id) => $(id).addEventListener('input', renderWage));
@@ -237,33 +297,29 @@ const jsonld = {
 
 <style>
   .mini-tool {
-    border: 1px solid var(--border, #e2e2e2);
-    border-radius: 10px;
+    border: 1.5px solid var(--border-input);
+    border-radius: var(--r-md);
     padding: 0.75rem 1rem;
     margin-bottom: 1.25rem;
-    background: var(--bg-subtle, #fafafa);
+    background: var(--surface-sub);
   }
   .mini-tool > summary {
     cursor: pointer;
-    font-weight: 600;
+    font-weight: var(--fw-bold);
+    color: var(--text);
     list-style: none;
     user-select: none;
   }
   .mini-tool > summary::-webkit-details-marker { display: none; }
   .mini-tool > summary::before {
     content: '＋ ';
-    font-weight: 700;
+    font-weight: var(--fw-black);
   }
   .mini-tool[open] > summary::before { content: '－ '; }
   .mini-note {
     font-size: 0.85rem;
-    color: var(--text-muted, #666);
+    color: var(--text-muted);
     margin: 0.6rem 0;
-  }
-  .mini-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
   }
   .mini-result {
     display: none;
@@ -272,31 +328,21 @@ const jsonld = {
     gap: 0.75rem;
     margin-top: 0.5rem;
     padding-top: 0.6rem;
-    border-top: 1px dashed var(--border, #e2e2e2);
+    border-top: 1px dashed var(--border-input);
   }
   .mini-result.visible { display: flex; }
-  .mini-result strong { font-size: 1.15rem; }
+  .mini-result strong { font-size: 1.15rem; color: var(--text); }
   .mini-result button {
     border: none;
-    border-radius: 8px;
-    padding: 0.4rem 0.9rem;
-    background: var(--accent, #2563eb);
+    border-radius: var(--r-md);
+    min-height: 44px;
+    padding: 0.4rem 1rem;
+    background: var(--cat-color);
     color: #fff;
     font-size: 0.85rem;
+    font-weight: var(--fw-bold);
+    font-family: var(--font-sans);
     cursor: pointer;
   }
   .mini-result button:hover { opacity: 0.9; }
-  .field-heading {
-    font-weight: 600;
-    margin: 1.1rem 0 0.5rem;
-  }
-  .ot-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-  }
-  @media (max-width: 480px) {
-    .mini-grid,
-    .ot-grid { grid-template-columns: 1fr; }
-  }
 </style>

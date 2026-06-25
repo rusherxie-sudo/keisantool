@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 import { TIMEZONES } from '../../lib/jisa.js';
 
 const slug = 'jisa';
@@ -30,34 +31,49 @@ const defaultTz2 = 'America/New_York';
   </div>
 
   <div class="calc-card jisa-card">
-    <div class="jisa-grid">
-      <div class="jisa-col">
+    <div class="jisa-pickers">
+      <div class="jisa-pick">
         <label class="jisa-label" for="tz1">地域 1</label>
         <select id="tz1" class="jisa-select">
           {TIMEZONES.map((tz) => (
             <option value={tz.id} selected={tz.id === defaultTz1}>{tz.label}</option>
           ))}
         </select>
-        <div class="jisa-time" id="time1">--:--:--</div>
-        <div class="jisa-date" id="date1">----/--/--</div>
       </div>
-
-      <div class="jisa-center">
-        <button id="swap" class="swap-btn" title="入れ替え">⇄</button>
-        <div class="jisa-diff" id="diff">--</div>
-        <div class="jisa-diff-label">時差</div>
-      </div>
-
-      <div class="jisa-col">
+      <button id="swap" class="swap-btn" title="入れ替え">⇄</button>
+      <div class="jisa-pick">
         <label class="jisa-label" for="tz2">地域 2</label>
         <select id="tz2" class="jisa-select">
           {TIMEZONES.map((tz) => (
             <option value={tz.id} selected={tz.id === defaultTz2}>{tz.label}</option>
           ))}
         </select>
+      </div>
+    </div>
+
+    <div class="result-grid jisa-results">
+      <div class="result-card jisa-result jisa-result--1">
+        <div class="result-card__head">
+          <span class="result-card__swatch jisa-swatch1"></span>
+          <span class="result-card__label" id="cardLabel1">地域 1</span>
+        </div>
+        <div class="jisa-time" id="time1">--:--:--</div>
+        <div class="jisa-date" id="date1">----/--/--</div>
+      </div>
+
+      <div class="result-card jisa-result jisa-result--2">
+        <div class="result-card__head">
+          <span class="result-card__swatch jisa-swatch2"></span>
+          <span class="result-card__label" id="cardLabel2">地域 2</span>
+        </div>
         <div class="jisa-time" id="time2">--:--:--</div>
         <div class="jisa-date" id="date2">----/--/--</div>
       </div>
+    </div>
+
+    <div class="jisa-diffbar">
+      <span class="jisa-diff" id="diff">--</span>
+      <span class="jisa-diff-label">時差</span>
     </div>
 
     <div class="jisa-summary" id="summary"></div>
@@ -82,7 +98,9 @@ const defaultTz2 = 'America/New_York';
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
@@ -103,74 +121,86 @@ const defaultTz2 = 'America/New_York';
     { q: 'サマータイムは考慮されますか？', a: 'はい。各都市の夏時間の有無を自動判定して計算します。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
 .jisa-card { max-width: 540px; padding: 24px; }
-.jisa-grid {
+
+/* 都市セレクタ行 */
+.jisa-pickers {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  gap: 16px;
-  align-items: start;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 18px;
 }
-.jisa-col { display: flex; flex-direction: column; gap: 10px; }
-.jisa-label { font-size: .78rem; font-weight: 600; color: var(--text-muted); }
+.jisa-pick { display: flex; flex-direction: column; gap: 6px; }
+.jisa-label { font-size: .78rem; font-weight: var(--fw-bold); color: var(--text-muted); }
 .jisa-select {
-  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
-  border-radius: 6px; font-size: .84rem; font-family: var(--font-jp);
-  color: var(--text); background: var(--bg); cursor: pointer;
+  width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--border-input);
+  border-radius: var(--r-md); font-size: .9rem; font-family: var(--font-sans);
+  color: var(--text); background: var(--surface); cursor: pointer;
 }
-.jisa-select:focus { outline: none; border-color: var(--border-focus); }
+.jisa-select:focus { outline: none; border-color: var(--cat-color); }
+.swap-btn {
+  background: var(--cat-tint); border: 1px solid var(--border-input);
+  border-radius: var(--r-pill); width: 44px; height: 44px; font-size: 1.1rem;
+  cursor: pointer; color: var(--cat-color); transition: background var(--ease), color var(--ease);
+  margin-bottom: 2px;
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+.swap-btn:hover { background: var(--cat-color); color: #fff; }
+
+/* 結果カード（E：多結果並べ） */
+.jisa-result { align-items: flex-start; }
+.jisa-result .result-card__label { color: var(--text); }
+.jisa-swatch1 { background: var(--cat-color); border-color: var(--cat-color); }
+.jisa-swatch2 { background: var(--cat-life); border-color: var(--cat-life); }
 .jisa-time {
-  font-family: var(--font-mono); font-size: 2rem; font-weight: 700;
-  color: var(--navy); line-height: 1;
+  font-family: var(--font-mono); font-size: 2rem; font-weight: var(--fw-bold);
+  color: var(--text); line-height: 1;
 }
 .jisa-date { font-size: .8rem; color: var(--text-muted); }
-.jisa-center {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 8px; padding-top: 26px;
+
+/* 時差バー */
+.jisa-diffbar {
+  display: flex; align-items: baseline; justify-content: center; gap: 8px;
+  margin-top: 16px;
 }
-.swap-btn {
-  background: var(--navy-light); border: 1px solid var(--border);
-  border-radius: 50%; width: 38px; height: 38px; font-size: 1.1rem;
-  cursor: pointer; color: var(--navy); transition: .15s;
-  display: flex; align-items: center; justify-content: center;
-}
-.swap-btn:hover { background: var(--navy); color: #fff; }
 .jisa-diff {
-  font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700;
-  color: var(--navy); text-align: center; line-height: 1;
+  font-family: var(--font-mono); font-size: 1.6rem; font-weight: var(--fw-bold);
+  color: var(--cat-color); line-height: 1;
 }
 .jisa-diff-label { font-size: .72rem; color: var(--text-muted); }
 .jisa-summary {
-  margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+  margin-top: 14px; padding-top: 16px; border-top: 1px solid var(--border-2);
   font-size: .84rem; color: var(--text-muted); text-align: center;
   min-height: 1.4em;
 }
-@media (max-width: 420px) {
-  .jisa-grid { grid-template-columns: 1fr; }
-  .jisa-center { flex-direction: row; padding-top: 0; justify-content: center; }
-  .jisa-time { font-size: 1.5rem; }
+@media (max-width: 480px) {
+  .jisa-pickers { grid-template-columns: 1fr; }
+  .swap-btn { justify-self: center; margin: 2px 0; }
+  .jisa-time { font-size: 1.7rem; }
 }
 
 .convert-card { max-width: 540px; padding: 24px; margin-top: 20px; }
-.convert-title { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin: 0 0 6px; }
+.convert-title { font-size: 1.05rem; font-weight: var(--fw-bold); color: var(--text); margin: 0 0 6px; }
 .convert-desc { font-size: .82rem; color: var(--text-muted); margin: 0 0 16px; line-height: 1.6; }
 .convert-input-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
 .conv-input {
-  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
-  border-radius: 6px; font-size: .9rem; font-family: var(--font-mono);
-  color: var(--text); background: var(--bg);
+  width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--border-input);
+  border-radius: var(--r-md); font-size: .95rem; font-family: var(--font-mono);
+  color: var(--text); background: var(--surface);
 }
-.conv-input:focus { outline: none; border-color: var(--border-focus); }
+.conv-input:focus { outline: none; border-color: var(--cat-color); }
 .convert-results { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .convert-result {
-  background: var(--navy-light); border: 1px solid var(--border);
-  border-radius: 8px; padding: 14px; text-align: center;
+  background: var(--surface-sub); border: 1px solid var(--border-2);
+  border-radius: var(--r-md); padding: 14px; text-align: center;
 }
-.convert-region { font-size: .76rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
-.convert-when { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--navy); line-height: 1.4; }
+.convert-region { font-size: .76rem; font-weight: var(--fw-bold); color: var(--text-muted); margin-bottom: 8px; }
+.convert-when { font-family: var(--font-mono); font-size: 1rem; font-weight: var(--fw-bold); color: var(--text); line-height: 1.4; }
 @media (max-width: 420px) {
   .convert-results { grid-template-columns: 1fr; }
 }
@@ -216,12 +246,19 @@ const defaultTz2 = 'America/New_York';
 
     const label1 = TIMEZONES.find((t) => t.id === tz1)?.label ?? tz1;
     const label2 = TIMEZONES.find((t) => t.id === tz2)?.label ?? tz2;
+    $('cardLabel1').textContent = label1;
+    $('cardLabel2').textContent = label2;
     if (diff === 0) {
       $('summary').textContent = `${label1} と ${label2} は同じ時刻です。`;
     } else {
       const direction = diff > 0 ? `${label1} は ${label2} より${formatDiff(diff)}` : `${label1} は ${label2} より${formatDiff(diff)}`;
       $('summary').textContent = direction;
     }
+
+    // 結果シェア：DOM に表示済みの時刻・時差を要約（毎秒の update でも内容を更新）
+    window.setResultShare?.(
+      `時差計算\n${label1}：${$('time1').textContent}\n${label2}：${$('time2').textContent}\n時差：${$('diff').textContent}`
+    );
   }
 
   // ===== 任意の日時を変換 =====

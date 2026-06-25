@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'json';
 const title = 'JSON 整形・圧縮ツール - コピペで見やすく整形・ミニファイ | 計算ツール';
@@ -54,7 +55,9 @@ const jsonld = {
     <button class="copy-btn" type="button" data-target="json-output">結果をコピー</button>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
@@ -76,7 +79,7 @@ const jsonld = {
     { q: '構文エラーはチェックできますか？', a: 'はい。JSONの書式が正しくない場合は、エラー内容を表示します。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
@@ -104,11 +107,11 @@ const jsonld = {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
   }
   textarea::placeholder {
-    color: #cbd5e1;
+    color: var(--text-faint);
   }
   textarea.output {
     background: var(--bg-result);
-    border-color: #bfdbfe;
+    border-color: var(--border-input);
     color: var(--navy);
   }
   .opt-row {
@@ -168,9 +171,9 @@ const jsonld = {
   .error-box {
     margin-bottom: 14px;
     padding: 10px 14px;
-    border: 1px solid #fecaca;
-    background: #fef2f2;
-    color: #b91c1c;
+    border: 1px solid color-mix(in srgb, var(--danger) 45%, transparent);
+    background: var(--danger-bg);
+    color: var(--danger);
     border-radius: 6px;
     font-size: 0.9rem;
     line-height: 1.6;
@@ -213,6 +216,7 @@ const jsonld = {
     box.textContent = '構文エラー: ' + msg;
     box.hidden = false;
     $('json-output').value = '';
+    window.hideResultShare?.();
   }
 
   function clearError() {
@@ -221,24 +225,38 @@ const jsonld = {
     box.textContent = '';
   }
 
-  function run(fn) {
+  // 結果シェア用サマリー（ブラウザ内で変換済み・行数/文字数の概要）
+  function shareResult(label, text) {
+    if (!text) {
+      window.hideResultShare?.();
+      return;
+    }
+    const lines = text.split('\n').length;
+    const chars = text.length;
+    window.setResultShare?.(
+      `JSON 整形・圧縮ツール\n処理：${label}（ブラウザ内で変換）\n行数：${lines.toLocaleString('ja-JP')} 行\n文字数：${chars.toLocaleString('ja-JP')} 文字`
+    );
+  }
+
+  function run(fn, label) {
     const r = fn($('json-input').value);
     if (r.ok) {
       clearError();
       $('json-output').value = r.result;
+      shareResult(label, r.result);
     } else {
       showError(r.error);
     }
   }
 
-  $('btn-format').addEventListener('click', () => run((s) => formatJson(s, currentIndent())));
-  $('btn-minify').addEventListener('click', () => run(minifyJson));
+  $('btn-format').addEventListener('click', () => run((s) => formatJson(s, currentIndent()), '整形'));
+  $('btn-minify').addEventListener('click', () => run(minifyJson, '圧縮'));
 
   // インデント変更時、すでに整形結果があれば追従して再整形
   document.querySelectorAll('input[name="indent"]').forEach((r) =>
     r.addEventListener('change', () => {
       if ($('json-output').value && $('json-error').hidden) {
-        run((s) => formatJson(s, currentIndent()));
+        run((s) => formatJson(s, currentIndent()), '整形');
       }
     })
   );

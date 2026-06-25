@@ -1,5 +1,6 @@
 ---
 import { getRelated } from '../data/tools.js';
+import Icon from './Icon.astro';
 const { current } = Astro.props;
 const related = getRelated(current, 4);
 ---
@@ -8,7 +9,7 @@ const related = getRelated(current, 4);
   <div class="related-grid">
     {related.map((t) => (
       <a href={`/${t.slug}/`} class="related-link">
-        <span class="ic" aria-hidden="true">{t.icon}</span>{t.name}
+        <span class="ic" aria-hidden="true"><Icon name={t.slug} size={20} /></span>{t.name}
       </a>
     ))}
   </div>

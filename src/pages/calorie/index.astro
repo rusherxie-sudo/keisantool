@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'calorie';
 const title = 'カロリー・基礎代謝計算器 - TDEE・メンテナンスカロリー・PFCバランスを計算 | 計算ツール';
@@ -25,73 +26,90 @@ const jsonld = {
   </div>
 
   <div class="calc-card">
-    <div class="form-group">
-      <label>性別</label>
-      <div class="radio-group">
-        <input type="radio" name="sex" id="sex-male" value="male" checked />
-        <label for="sex-male">男性</label>
-        <input type="radio" name="sex" id="sex-female" value="female" />
-        <label for="sex-female">女性</label>
+    <div class="field-group">
+      <div class="field-group__title"><span class="field-group__title-text">基本情報</span></div>
+
+      <div class="form-group">
+        <label>性別</label>
+        <div class="radio-group">
+          <input type="radio" name="sex" id="sex-male" value="male" checked />
+          <label for="sex-male">男性</label>
+          <input type="radio" name="sex" id="sex-female" value="female" />
+          <label for="sex-female">女性</label>
+        </div>
+      </div>
+
+      <div class="field-grid field-grid--3">
+        <label class="field">
+          <span class="field__label">年齢</span>
+          <span class="field__box">
+            <input type="number" id="age" inputmode="numeric" placeholder="例：30" />
+            <span class="field__suffix">歳</span>
+          </span>
+        </label>
+        <label class="field">
+          <span class="field__label">身長</span>
+          <span class="field__box">
+            <input type="number" id="height" inputmode="decimal" placeholder="例：170" />
+            <span class="field__suffix">cm</span>
+          </span>
+        </label>
+        <label class="field">
+          <span class="field__label">体重</span>
+          <span class="field__box">
+            <input type="number" id="weight" inputmode="decimal" placeholder="例：65" />
+            <span class="field__suffix">kg</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="form-group calc-formula">
+        <label>計算式</label>
+        <div class="radio-group radio-group-wrap">
+          <input type="radio" name="formula" id="formula-ganpule" value="ganpule" checked />
+          <label for="formula-ganpule">国立健康・栄養研究所の式（推奨）</label>
+          <input type="radio" name="formula" id="formula-harris" value="harris" />
+          <label for="formula-harris">ハリス・ベネディクト式</label>
+        </div>
       </div>
     </div>
 
-    <div class="form-group">
-      <label>計算式</label>
-      <div class="radio-group radio-group-wrap">
-        <input type="radio" name="formula" id="formula-ganpule" value="ganpule" checked />
-        <label for="formula-ganpule">国立健康・栄養研究所の式（推奨）</label>
-        <input type="radio" name="formula" id="formula-harris" value="harris" />
-        <label for="formula-harris">ハリス・ベネディクト式</label>
+    <div class="field-group">
+      <div class="field-group__title"><span class="field-group__title-text">活動・目標</span></div>
+
+      <div class="form-group">
+        <label>活動レベル</label>
+        <div class="radio-group radio-group-wrap">
+          <input type="radio" name="activity" id="act-1" value="1.2" />
+          <label for="act-1">ほぼ運動なし</label>
+          <input type="radio" name="activity" id="act-2" value="1.375" checked />
+          <label for="act-2">軽い運動</label>
+          <input type="radio" name="activity" id="act-3" value="1.55" />
+          <label for="act-3">中程度</label>
+          <input type="radio" name="activity" id="act-4" value="1.725" />
+          <label for="act-4">激しい</label>
+          <input type="radio" name="activity" id="act-5" value="1.9" />
+          <label for="act-5">非常に激しい</label>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label for="age">年齢（歳）</label>
-      <input type="number" id="age" inputmode="numeric" placeholder="例：30" />
-    </div>
-
-    <div class="form-group">
-      <label for="height">身長（cm）</label>
-      <input type="number" id="height" inputmode="decimal" placeholder="例：170" />
-    </div>
-
-    <div class="form-group">
-      <label for="weight">体重（kg）</label>
-      <input type="number" id="weight" inputmode="decimal" placeholder="例：65" />
-    </div>
-
-    <div class="form-group">
-      <label>活動レベル</label>
-      <div class="radio-group radio-group-wrap">
-        <input type="radio" name="activity" id="act-1" value="1.2" />
-        <label for="act-1">ほぼ運動なし</label>
-        <input type="radio" name="activity" id="act-2" value="1.375" checked />
-        <label for="act-2">軽い運動</label>
-        <input type="radio" name="activity" id="act-3" value="1.55" />
-        <label for="act-3">中程度</label>
-        <input type="radio" name="activity" id="act-4" value="1.725" />
-        <label for="act-4">激しい</label>
-        <input type="radio" name="activity" id="act-5" value="1.9" />
-        <label for="act-5">非常に激しい</label>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>目標</label>
-      <div class="radio-group">
-        <input type="radio" name="goal" id="goal-lose" value="lose" />
-        <label for="goal-lose">減量</label>
-        <input type="radio" name="goal" id="goal-maintain" value="maintain" checked />
-        <label for="goal-maintain">維持</label>
-        <input type="radio" name="goal" id="goal-gain" value="gain" />
-        <label for="goal-gain">増量</label>
+      <div class="form-group">
+        <label>目標</label>
+        <div class="radio-group">
+          <input type="radio" name="goal" id="goal-lose" value="lose" />
+          <label for="goal-lose">減量</label>
+          <input type="radio" name="goal" id="goal-maintain" value="maintain" checked />
+          <label for="goal-maintain">維持</label>
+          <input type="radio" name="goal" id="goal-gain" value="gain" />
+          <label for="goal-gain">増量</label>
+        </div>
       </div>
     </div>
 
     <div class="result-box" id="result">
       <div class="result-label">1日の総消費カロリー（メンテナンスカロリー）</div>
       <div class="result-main" id="tdee">0 kcal</div>
-      <div class="result-rows">
+      <div class="result-rows result__rows--2col">
         <div class="result-row"><span class="label">基礎代謝（BMR）</span><span class="value" id="bmr">0 kcal</span></div>
         <div class="result-row"><span class="label">目標カロリー</span><span class="value red" id="target">0 kcal</span></div>
         <div class="result-row"><span class="label">たんぱく質（P）</span><span class="value green" id="pfc-p">0 g</span></div>
@@ -101,7 +119,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
@@ -125,12 +145,14 @@ const jsonld = {
     { q: 'PFCバランスも分かりますか？', a: '目標カロリーをタンパク質・脂質・炭水化物に配分したPFCの目安を表示します。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
-  .radio-group-wrap { flex-wrap: wrap; }
+  /* .radio-group は global.css で既に flex-wrap:wrap。ここでは pill を等幅で複数列に折り返す調整のみ。 */
   .radio-group-wrap label { flex: 1 1 28%; }
+  /* field-grid の直後に来る form-group（計算式）の上マージンを field-group 内で詰める */
+  .field-grid + .calc-formula { margin-top: 18px; }
 </style>
 
 <script>
@@ -156,7 +178,11 @@ const jsonld = {
 
     const r = calcAll({ sex, age, height, weight, activity, goal, formula });
     const box = $('result');
-    if (r.tdee <= 0) return box.classList.remove('visible');
+    if (r.tdee <= 0) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
     box.classList.add('visible');
     $('tdee').textContent = kcal(r.tdee);
     $('bmr').textContent = kcal(r.bmr);
@@ -164,6 +190,13 @@ const jsonld = {
     $('pfc-p').textContent = gram(r.pfc.p);
     $('pfc-f').textContent = gram(r.pfc.f);
     $('pfc-c').textContent = gram(r.pfc.c);
+    window.setResultShare?.(
+      `カロリー・基礎代謝計算器\n` +
+      `総消費カロリー（TDEE）：${$('tdee').textContent}\n` +
+      `基礎代謝（BMR）：${$('bmr').textContent}\n` +
+      `目標カロリー：${$('target').textContent}\n` +
+      `PFC：P ${$('pfc-p').textContent} / F ${$('pfc-f').textContent} / C ${$('pfc-c').textContent}`
+    );
   }
 
   ['age', 'height', 'weight'].forEach((id) => $(id).addEventListener('input', render));

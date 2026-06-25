@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'gasoline';
 const title = 'ガソリン代計算器 — 走行距離・燃費から交通費を計算 | 計算ツール';
@@ -73,7 +74,7 @@ const jsonld = {
           </div>
         </div>
         <div id="monthly-section" style="display:none">
-          <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1px solid #dbeafe">
+          <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-2)">
             <div class="result-row">
               <span class="label">月額交通費（往復×出勤日数）</span>
               <span class="value" id="monthly">¥0</span>
@@ -81,7 +82,7 @@ const jsonld = {
           </div>
         </div>
         <div id="warikan-section" style="display:none">
-          <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1px solid #dbeafe">
+          <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-2)">
             <div class="result-row">
               <span class="label">合計（往復ガソリン代＋高速料金）</span>
               <span class="value" id="total-cost">¥0</span>
@@ -96,7 +97,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
@@ -120,14 +123,14 @@ const jsonld = {
     { q: '割り勘もできますか？', a: '乗車人数や高速料金を入力して、1人あたりの金額を計算できます。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
-.optional-label { font-size: .75rem; font-weight: 400; color: #94a3b8; margin-left: 4px; }
-.warikan-fields { margin-top: 8px; padding-top: 16px; border-top: 1px dashed #dbeafe; }
-.warikan-title { font-size: .9rem; font-weight: 600; color: #1e40af; margin-bottom: 12px; }
-.warikan-highlight .value { color: #1e40af; font-weight: 700; }
+.optional-label { font-size: .75rem; font-weight: var(--fw-normal); color: var(--text-faint); margin-left: 4px; }
+.warikan-fields { margin-top: 8px; padding-top: 16px; border-top: 1px dashed var(--border-2); }
+.warikan-title { font-size: .9rem; font-weight: var(--fw-bold); color: var(--cat-color); margin-bottom: 12px; }
+.warikan-highlight .value { color: var(--cat-color); font-weight: var(--fw-bold); }
 </style>
 
 <script>
@@ -150,6 +153,7 @@ const jsonld = {
 
     if (!oneWay) {
       result.classList.remove('visible');
+      window.hideResultShare?.();
       return;
     }
     result.classList.add('visible');
@@ -181,6 +185,20 @@ const jsonld = {
     } else {
       warikanSec.style.display = 'none';
     }
+
+    // 結果サマリー：表示中の行だけを DOM から拾って組み立てる（再計算しない）
+    const lines = [
+      'ガソリン代計算器',
+      `片道ガソリン代：${$('one-way').textContent}`,
+      `往復ガソリン代：${$('round-trip').textContent}`,
+    ];
+    if (sec.style.display !== 'none') {
+      lines.push(`月額交通費：${$('monthly').textContent}`);
+    }
+    if (warikanSec.style.display !== 'none') {
+      lines.push(`1人あたり（${$('people-label').textContent}人）：${$('per-person').textContent}`);
+    }
+    window.setResultShare?.(lines.join('\n'));
   }
 
   ['distance', 'fuel-eff', 'gas-price', 'workdays', 'people', 'toll'].forEach((id) =>

@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 import { eras, seirekiToWareki } from '../../lib/wareki.js';
 
 const slug = 'wareki';
@@ -46,14 +47,14 @@ const jsonld = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
 ---
-<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ 和暦・西暦変換</div>
     <h1>和暦・西暦変換器（令和8年＝2026年）</h1>
     <p>西暦から和暦（元号）へ、和暦から西暦へ、どちらの向きでもその場で変換します。明治・大正・昭和・平成・令和に対応し、改元のあった年も「元年」で正しく表示します。</p>
   </div>
 
-  <div class="calc-card">
+  <div class="calc-card wide-input">
     <!-- 西暦 → 和暦 -->
     <div class="conv-block">
       <div class="conv-head">西暦 → 和暦</div>
@@ -102,7 +103,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
@@ -119,16 +122,23 @@ const jsonld = {
 
   <section class="howto">
     <h2>和暦・西暦 早見表（明治〜令和）</h2>
-    <table class="wareki-table">
-      <thead>
-        <tr><th>西暦</th><th>和暦</th></tr>
-      </thead>
-      <tbody>
-        {TABLE_YEARS.map((row) => (
-          <tr><td>{row.seireki}年</td><td>{row.label}</td></tr>
-        ))}
-      </tbody>
-    </table>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>西暦</th><th>和暦</th></tr>
+          </thead>
+          <tbody>
+            {TABLE_YEARS.map((row) => (
+              <tr class={row.seireki === 2026 ? 'is-hit' : undefined}>
+                <td class="num">{row.seireki}年</td>
+                <td>{row.label}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
     <div class="disclaimer">※ 改元のあった年は和暦が2つ並ぶ場合があります。計算結果はあくまで参考値です。</div>
   </section>
 
@@ -140,7 +150,7 @@ const jsonld = {
     { q: '平成・昭和も変換できますか？', a: '明治・大正・昭和・平成・令和すべてに対応し、和暦⇔西暦を相互変換できます。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <script>
@@ -150,10 +160,28 @@ const jsonld = {
   const show = (box) => box.classList.add('visible');
   const hide = (box) => box.classList.remove('visible');
 
+  // 2 つの変換ブロックの有効な結果を集めてシェアサマリーを更新する。
+  // 表示中かつ「変換できません」でない結果だけを採用。どちらも無ければ非表示。
+  function syncShare() {
+    const lines = [];
+    const sBox = $('s-result');
+    const wBox = $('w-result');
+    if (sBox.classList.contains('visible')) {
+      const v = $('s-out').textContent;
+      if (v && v !== '変換できません') lines.push('西暦' + $('s-year').value + '年 → ' + v);
+    }
+    if (wBox.classList.contains('visible')) {
+      const v = $('w-out').textContent;
+      if (v && v !== '変換できません') lines.push($('w-era').value + $('w-year').value + '年 → 西暦' + v);
+    }
+    if (lines.length) window.setResultShare?.('和暦・西暦変換\n' + lines.join('\n'));
+    else window.hideResultShare?.();
+  }
+
   function renderSeireki() {
     const box = $('s-result');
     const year = $('s-year').value;
-    if (year === '') return hide(box);
+    if (year === '') { hide(box); return syncShare(); }
     const month = $('s-month').value;
     const day = $('s-day').value;
     const r = seirekiToWareki(
@@ -164,25 +192,27 @@ const jsonld = {
     if (r === null) {
       show(box);
       $('s-out').textContent = '変換できません';
-      return;
+      return syncShare();
     }
     show(box);
     $('s-out').textContent = r.label;
+    syncShare();
   }
 
   function renderWareki() {
     const box = $('w-result');
     const era = $('w-era').value;
     const yr = $('w-year').value;
-    if (yr === '') return hide(box);
+    if (yr === '') { hide(box); return syncShare(); }
     const r = warekiToSeireki(era, Number(yr));
     if (r === null) {
       show(box);
       $('w-out').textContent = '変換できません';
-      return;
+      return syncShare();
     }
     show(box);
     $('w-out').textContent = r + '年';
+    syncShare();
   }
 
   ['s-year', 's-month', 's-day'].forEach((id) => $(id).addEventListener('input', renderSeireki));
@@ -191,12 +221,20 @@ const jsonld = {
 </script>
 
 <style>
-  .conv-block { margin-bottom: 0.5rem; }
+  /* .wide-input は flex 横並びコンテナ。2 つの変換ブロックを左右 2 カラムにし、
+     画面が狭ければ flex-wrap で縦積みになる。区切り線は不要なので非表示。 */
+  .conv-block {
+    flex: 1 1 320px;
+    min-width: 0;
+    margin-bottom: 0;
+    align-self: stretch;
+  }
+  .conv-divider { display: none; }
   .conv-head {
-    font-weight: 700;
+    font-weight: var(--fw-bold);
     margin-bottom: 0.8rem;
     font-size: 1.05rem;
-    color: var(--color-text, #1f2937);
+    color: var(--text);
   }
   .conv-optional {
     display: flex;
@@ -207,31 +245,7 @@ const jsonld = {
   .conv-optional select { width: 100%; min-width: 0; }
   .conv-note {
     font-size: 0.8rem;
-    color: var(--color-text-muted, #6b7280);
+    color: var(--text-muted);
     margin: 0.4rem 0 0.2rem;
-  }
-  .conv-divider {
-    border: none;
-    border-top: 1px solid var(--color-border, #e5e7eb);
-    margin: 1.5rem 0;
-  }
-  .wareki-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0.5rem 0;
-    font-size: 0.95rem;
-  }
-  .wareki-table th,
-  .wareki-table td {
-    border: 1px solid var(--color-border, #e5e7eb);
-    padding: 0.5rem 0.75rem;
-    text-align: left;
-  }
-  .wareki-table th {
-    background: var(--color-bg-subtle, #f9fafb);
-    font-weight: 700;
-  }
-  .wareki-table tbody tr:nth-child(even) {
-    background: var(--color-bg-subtle, #f9fafb);
   }
 </style>

@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'regex';
 const title = '正規表現テストツール - パターンのマッチを即チェック | 計算ツール';
@@ -64,7 +65,9 @@ const jsonld = {
     <div class="matches" id="re-matches"></div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
@@ -87,7 +90,7 @@ const jsonld = {
     { q: 'キャプチャグループも確認できますか？', a: 'はい。マッチ数・位置・キャプチャグループ（丸括弧）の一覧も表示します。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <script>
@@ -124,6 +127,7 @@ const jsonld = {
       $('re-count').textContent = '0 件';
       highlight.innerHTML = text ? escapeHtml(text) : '<span class="muted">テスト文字列を入力してください。</span>';
       matchesBox.innerHTML = '';
+      window.hideResultShare?.();
       return;
     }
 
@@ -135,11 +139,24 @@ const jsonld = {
       $('re-count').textContent = '— 件';
       highlight.innerHTML = text ? escapeHtml(text) : '';
       matchesBox.innerHTML = '';
+      window.hideResultShare?.();
       return;
     }
 
     errBox.hidden = true;
     $('re-count').textContent = r.matches.length + ' 件';
+
+    // 結果シェア用サマリー（DOM のマッチ数を読む・ブラウザ内で判定）
+    if (text === '') {
+      window.hideResultShare?.();
+    } else {
+      const head = r.matches.length > 0
+        ? `最初のマッチ：${r.matches[0].match}`
+        : 'マッチなし';
+      window.setResultShare?.(
+        `正規表現テスト\nパターン：/${pattern}/${flags}\nマッチ数：${$('re-count').textContent}\n${head}`
+      );
+    }
 
     // ハイライト（重なりは matchAll の順序どおり、空マッチは無視）
     let html = '';
@@ -195,7 +212,7 @@ const jsonld = {
   }
   .pattern-wrap .slash {
     font-size: 1.3rem;
-    color: var(--color-muted, #6b7280);
+    color: var(--text-muted);
     font-weight: 700;
   }
   .pattern-wrap input {
@@ -223,12 +240,12 @@ const jsonld = {
   .flag input { width: auto; margin: 0; }
   .flag strong {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    color: var(--color-primary, #2563eb);
+    color: var(--cat-color);
   }
   .re-error {
-    background: #fef2f2;
-    border: 1px solid #fca5a5;
-    color: #b91c1c;
+    background: var(--danger-bg);
+    border: 1px solid color-mix(in srgb, var(--danger) 55%, transparent);
+    color: var(--danger);
     border-radius: 8px;
     padding: 0.7rem 0.9rem;
     margin-bottom: 1rem;
@@ -240,11 +257,11 @@ const jsonld = {
     font-weight: 700;
     font-size: 0.9rem;
     margin-bottom: 0.4rem;
-    color: var(--color-text, #1f2937);
+    color: var(--text);
   }
   .highlight {
-    background: var(--color-bg-soft, #f9fafb);
-    border: 1px solid var(--color-border, #e5e7eb);
+    background: var(--surface-sub);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 0.8rem;
     min-height: 3rem;
@@ -261,23 +278,23 @@ const jsonld = {
      #re-matches / #re-highlight 配下に限定した is:global で当てる（他ページに漏れない）。 -->
 <style is:global>
   #re-highlight mark {
-    background: #fde047;
-    color: #1f2937;
+    background: color-mix(in srgb, var(--warning) 32%, var(--surface));
+    color: var(--text);
     border-radius: 3px;
     padding: 0 1px;
   }
   #re-highlight .muted,
   #re-matches .muted {
-    color: #9ca3af;
+    color: var(--text-faint);
     font-style: italic;
   }
   #re-matches { margin-top: 1rem; }
   #re-matches .match-item {
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 0.7rem 0.9rem;
     margin-bottom: 0.6rem;
-    background: #fff;
+    background: var(--surface);
   }
   #re-matches .match-head {
     font-weight: 700;
@@ -290,11 +307,11 @@ const jsonld = {
   #re-matches .match-pos {
     font-weight: 500;
     font-size: 0.8rem;
-    color: #6b7280;
+    color: var(--text-muted);
   }
   #re-matches .match-val {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    background: #f9fafb;
+    background: var(--surface-sub);
     border-radius: 6px;
     padding: 0.4rem 0.6rem;
     word-break: break-word;
@@ -309,7 +326,7 @@ const jsonld = {
   }
   #re-matches .group-no {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    color: #2563eb;
+    color: var(--cat-color);
     font-weight: 700;
     flex-shrink: 0;
   }
@@ -319,7 +336,7 @@ const jsonld = {
     white-space: pre-wrap;
   }
   #re-matches .no-match {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 0.9rem;
     padding: 0.5rem 0;
   }

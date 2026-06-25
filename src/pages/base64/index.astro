@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'base64';
 const title = 'Base64 エンコード / デコードツール - 日本語対応・コピペで即変換 | 計算ツール';
@@ -58,7 +59,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>Base64 とは・使い方</h2>
@@ -81,54 +84,56 @@ const jsonld = {
     { q: 'デコードもできますか？', a: 'はい。エンコード（変換）とデコード（復元）の両方に対応しています。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
   textarea {
     width: 100%;
+    min-height: 96px;
     padding: 12px 14px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    border: 1.5px solid var(--border-input);
+    border-radius: var(--r-lg);
     font-size: 1rem;
-    font-family: var(--font-jp);
+    font-family: var(--font-sans);
     color: var(--text);
-    background: var(--bg);
+    background: var(--surface-sub);
     line-height: 1.7;
     resize: vertical;
-    transition: 0.15s;
+    transition: border-color var(--ease);
     -webkit-appearance: none;
     appearance: none;
   }
   textarea:focus {
     outline: none;
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    border-color: var(--cat-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat-color) 14%, transparent);
   }
   textarea::placeholder {
-    color: #cbd5e1;
+    color: var(--text-faint);
   }
   textarea.output {
-    background: var(--bg-result);
-    border-color: #bfdbfe;
-    color: var(--navy);
+    background: var(--cat-tint);
+    border-color: color-mix(in srgb, var(--cat-color) 22%, transparent);
+    color: var(--text);
     word-break: break-all;
   }
   .copy-btn {
     width: 100%;
-    height: 46px;
+    min-height: 48px;
     border: none;
-    border-radius: 6px;
-    background: var(--navy);
+    border-radius: var(--r-pill);
+    background: var(--cat-color);
     color: #fff;
     font-size: 0.9rem;
-    font-weight: 600;
-    font-family: var(--font-jp);
+    font-weight: var(--fw-bold);
+    font-family: var(--font-sans);
     cursor: pointer;
-    transition: 0.15s;
+    transition: opacity var(--ease), transform var(--ease), background var(--ease);
   }
   .copy-btn:hover {
-    background: var(--navy-dark);
+    transform: translateY(-1px);
+    opacity: 0.94;
   }
   .copy-btn.copied {
     background: var(--success);
@@ -136,10 +141,10 @@ const jsonld = {
   .error-msg {
     margin: -4px 0 14px;
     padding: 10px 12px;
-    border: 1px solid #fecaca;
-    border-radius: 6px;
-    background: #fef2f2;
-    color: #b91c1c;
+    border: 1.5px solid color-mix(in srgb, var(--danger) 45%, transparent);
+    border-radius: var(--r-md);
+    background: var(--danger-bg);
+    color: color-mix(in srgb, var(--danger) 70%, #000);
     font-size: 0.9rem;
   }
 </style>
@@ -149,6 +154,9 @@ const jsonld = {
 
   const $ = (id) => document.getElementById(id);
 
+  // シェア用に長文の結果は適度に短縮する
+  const clip = (s) => (s.length > 140 ? s.slice(0, 140) + '…' : s);
+
   // タブ切り替え
   document.querySelectorAll('.calc-tab').forEach((tab) => {
     tab.addEventListener('click', () => {
@@ -156,6 +164,7 @@ const jsonld = {
       document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
       tab.classList.add('active');
       $('panel-' + tab.dataset.tab).classList.add('active');
+      window.hideResultShare?.();
     });
   });
 
@@ -163,6 +172,11 @@ const jsonld = {
   function renderEncode() {
     const out = base64Encode($('encode-input').value);
     $('encode-output').value = out == null ? '' : out;
+    if (out) {
+      window.setResultShare?.(`Base64 エンコード\nブラウザ内で変換しました\nBase64：${clip(out)}`);
+    } else {
+      window.hideResultShare?.();
+    }
   }
 
   // デコード
@@ -172,15 +186,18 @@ const jsonld = {
     if (text === '') {
       $('decode-output').value = '';
       errorEl.hidden = true;
+      window.hideResultShare?.();
       return;
     }
     const out = base64Decode(text);
     if (out == null) {
       $('decode-output').value = '';
       errorEl.hidden = false;
+      window.hideResultShare?.();
     } else {
       $('decode-output').value = out;
       errorEl.hidden = true;
+      window.setResultShare?.(`Base64 デコード\nブラウザ内で変換しました\n原文：${clip(out)}`);
     }
   }
 

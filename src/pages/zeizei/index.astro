@@ -2,6 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'zeizei';
 const title = '消費税・割引計算器 - 税込・税抜・割引後の価格を瞬時に計算 | 計算ツール';
@@ -107,7 +108,9 @@ const jsonld = {
     </div>
   </div>
 
-  <div class="ad-slot">広告枠（結果直下）</div>
+  <ResultShare />
+
+  <div class="ad-slot"></div>
 
   <section class="howto">
     <h2>使い方</h2>
@@ -132,69 +135,48 @@ const jsonld = {
     { q: '割引後の価格も計算できますか？', a: 'はい。定価と割引率から割引後価格と割引額を計算でき、複数商品の合算にも対応しています。' },
   ]} />
 
-  <div class="ad-slot">広告枠（コンテンツ下部）</div>
+  <div class="ad-slot"></div>
 </ToolLayout>
 
-<style>
-  .multi-intro {
-    font-size: 0.9rem;
-    color: #555;
-    margin: 0 0 1rem;
-    line-height: 1.6;
-  }
-  .multi-row {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    margin-bottom: 0.6rem;
-  }
-  .multi-row .m-amount {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding: 0.55rem 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 1rem;
-  }
-  .multi-row .m-rate,
-  .multi-row .m-incl {
-    flex: 0 0 auto;
-    padding: 0.55rem 0.4rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    background: #fff;
-  }
-  .multi-row .m-del {
-    flex: 0 0 auto;
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: #fafafa;
-    color: #999;
-    font-size: 1.1rem;
-    line-height: 1;
-    cursor: pointer;
-  }
-  .multi-row .m-del:hover {
-    background: #f0f0f0;
-    color: #d33;
-  }
-  .multi-add {
-    display: inline-block;
-    margin: 0.3rem 0 0.4rem;
-    padding: 0.5rem 0.9rem;
-    border: 1px dashed #aaa;
-    border-radius: 8px;
-    background: #fff;
-    color: #2563eb;
-    font-size: 0.95rem;
-    cursor: pointer;
-  }
-  .multi-add:hover {
-    border-color: #2563eb;
-    background: #f5f8ff;
+<style is:global>
+  /* 複数商品：行は JS の innerHTML で動的生成されるため scoped CSS が効かない
+     → is:global + #panel-multi 前缀でスコープ限定（CLAUDE.md の落とし穴対策）。
+     設計トークンで統一し、モバイル＝縦積みカード／560px〜＝横並び。 */
+  #panel-multi .multi-intro{font-size:.86rem;color:var(--text-3);margin:0 0 16px;line-height:1.6}
+  #panel-multi #multi-rows{display:flex;flex-direction:column;gap:10px}
+  #panel-multi .mitem{display:flex;flex-direction:column;gap:10px;padding:12px;
+    background:var(--surface-sub);border:1.5px solid var(--border-input);border-radius:var(--r-lg)}
+  #panel-multi .mitem__amount{display:flex;align-items:center;background:var(--surface);
+    border:1.5px solid var(--border-input);border-radius:var(--r-md);overflow:hidden;transition:border-color var(--ease)}
+  #panel-multi .mitem__amount:focus-within{border-color:var(--cat-color)}
+  #panel-multi .m-amount{flex:1;min-width:0;border:none;outline:none;background:transparent;
+    padding:12px 0 12px 14px;font-family:var(--font-mono);font-weight:var(--fw-bold);font-size:1.05rem;color:var(--text)}
+  #panel-multi .m-amount::placeholder{font-family:var(--font-sans);font-weight:400;color:var(--text-faint);font-size:.95rem}
+  #panel-multi .mitem__yen{padding:0 14px;color:var(--text-faint);font-size:.85rem;flex:none}
+  #panel-multi .mitem__row{display:flex;gap:8px}
+  #panel-multi .m-rate,#panel-multi .m-incl{flex:1;min-width:0;height:46px;padding:0 32px 0 13px;
+    background:var(--surface);border:1.5px solid var(--border-input);border-radius:var(--r-md);
+    font-family:var(--font-sans);font-size:.9rem;font-weight:var(--fw-bold);color:var(--text);cursor:pointer;
+    appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 11px center}
+  #panel-multi .m-rate:focus,#panel-multi .m-incl:focus{outline:none;border-color:var(--cat-color);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--cat-color) 14%,transparent)}
+  #panel-multi .m-del{flex:none;width:46px;height:46px;border:1.5px solid var(--border-input);
+    border-radius:var(--r-md);background:var(--surface);color:var(--text-faint);font-size:1.05rem;cursor:pointer;
+    display:grid;place-items:center;transition:border-color var(--ease),color var(--ease),background var(--ease)}
+  #panel-multi .m-del:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-bg)}
+  #panel-multi .multi-add{display:inline-flex;align-items:center;gap:7px;margin-top:14px;
+    padding:12px 20px;border:1.5px dashed color-mix(in srgb,var(--cat-color) 38%,var(--border-input));
+    border-radius:var(--r-pill);background:var(--cat-tint);
+    color:color-mix(in srgb,var(--cat-color) 62%,#000);font-size:.88rem;font-weight:var(--fw-bold);
+    cursor:pointer;transition:border-color var(--ease),transform var(--ease)}
+  #panel-multi .multi-add:hover{border-color:var(--cat-color);transform:translateY(-1px)}
+  @media(min-width:560px){
+    #panel-multi .mitem{flex-direction:row;align-items:center}
+    #panel-multi .mitem__amount{flex:1}
+    #panel-multi .mitem__row{flex:none}
+    #panel-multi .m-rate,#panel-multi .m-incl{width:96px;flex:none}
   }
 </style>
 
@@ -210,6 +192,7 @@ const jsonld = {
       document.querySelectorAll('.calc-panel').forEach((p) => p.classList.remove('active'));
       tab.classList.add('active');
       $('panel-' + tab.dataset.tab).classList.add('active');
+      window.hideResultShare?.();
     });
   });
 
@@ -219,32 +202,35 @@ const jsonld = {
   function renderIncl() {
     const { tax, total } = taxIncluded($('incl-amount').value, rate('incl-rate'));
     const box = $('incl-result');
-    if (total <= 0) return box.classList.remove('visible');
+    if (total <= 0) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
     $('incl-total').textContent = yen(total);
     $('incl-net').textContent = yen(total - tax);
     $('incl-tax').textContent = yen(tax);
+    window.setResultShare?.(`消費税・割引計算器\n税込価格：${yen(total)}\n税抜価格：${yen(total - tax)}\n消費税：${yen(tax)}`);
   }
 
   function renderExcl() {
     const gross = $('excl-amount').value;
     const { net, tax } = taxExcluded(gross, rate('excl-rate'));
     const box = $('excl-result');
-    if (net <= 0) return box.classList.remove('visible');
+    if (net <= 0) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
     $('excl-net').textContent = yen(net);
     $('excl-total').textContent = yen(net + tax);
     $('excl-tax').textContent = yen(tax);
+    window.setResultShare?.(`消費税・割引計算器\n税抜価格：${yen(net)}\n税込価格：${yen(net + tax)}\nうち消費税：${yen(tax)}`);
   }
 
   function renderDisc() {
     const { discounted, saved } = discount($('disc-price').value, $('disc-pct').value);
     const box = $('disc-result');
-    if (discounted <= 0 && saved <= 0) return box.classList.remove('visible');
+    if (discounted <= 0 && saved <= 0) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
     $('disc-final').textContent = yen(discounted);
     $('disc-orig').textContent = yen(discounted + saved);
     $('disc-save').textContent = '−' + yen(saved);
+    window.setResultShare?.(`消費税・割引計算器\n割引後価格：${yen(discounted)}\n節約額：${yen(saved)}`);
   }
 
   ['incl-amount'].forEach((id) => $(id).addEventListener('input', renderIncl));
@@ -258,25 +244,30 @@ const jsonld = {
 
   function makeRow() {
     const row = document.createElement('div');
-    row.className = 'multi-row';
+    row.className = 'mitem';
     row.innerHTML = `
-      <input type="number" class="m-amount" inputmode="numeric" placeholder="金額（円）" />
-      <select class="m-rate">
-        <option value="0.1">10%</option>
-        <option value="0.08">8%</option>
-      </select>
-      <select class="m-incl">
-        <option value="false">税抜</option>
-        <option value="true">税込</option>
-      </select>
-      <button type="button" class="m-del" aria-label="削除">×</button>
+      <div class="mitem__amount">
+        <input type="number" class="m-amount" inputmode="numeric" placeholder="金額" />
+        <span class="mitem__yen">円</span>
+      </div>
+      <div class="mitem__row">
+        <select class="m-rate" aria-label="税率">
+          <option value="0.1">10%</option>
+          <option value="0.08">8%</option>
+        </select>
+        <select class="m-incl" aria-label="税抜・税込">
+          <option value="false">税抜</option>
+          <option value="true">税込</option>
+        </select>
+        <button type="button" class="m-del" aria-label="この商品を削除">✕</button>
+      </div>
     `;
     row.querySelector('.m-amount').addEventListener('input', renderMulti);
     row.querySelector('.m-rate').addEventListener('change', renderMulti);
     row.querySelector('.m-incl').addEventListener('change', renderMulti);
     row.querySelector('.m-del').addEventListener('click', () => {
       row.remove();
-      if (!rowsEl.querySelector('.multi-row')) makeRow();
+      if (!rowsEl.querySelector('.mitem')) makeRow();
       renderMulti();
     });
     rowsEl.appendChild(row);
@@ -284,18 +275,19 @@ const jsonld = {
   }
 
   function renderMulti() {
-    const items = [...rowsEl.querySelectorAll('.multi-row')].map((row) => ({
+    const items = [...rowsEl.querySelectorAll('.mitem')].map((row) => ({
       amount: row.querySelector('.m-amount').value,
       rate: parseFloat(row.querySelector('.m-rate').value),
       taxIncluded: row.querySelector('.m-incl').value === 'true',
     }));
     const { subtotalExcl, totalTax, totalIncl } = sumItems(items);
     const box = $('multi-result');
-    if (totalIncl <= 0) return box.classList.remove('visible');
+    if (totalIncl <= 0) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
     $('multi-incl').textContent = yen(totalIncl);
     $('multi-excl').textContent = yen(subtotalExcl);
     $('multi-tax').textContent = yen(totalTax);
+    window.setResultShare?.(`消費税・割引計算器\n合計（税込）：${yen(totalIncl)}\n税抜合計：${yen(subtotalExcl)}\n消費税：${yen(totalTax)}`);
   }
 
   $('multi-add').addEventListener('click', () => {
