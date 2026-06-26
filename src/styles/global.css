@@ -128,6 +128,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,
 .nav-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:230px;background:var(--surface);
   border:1.5px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--shadow-pop);
   padding:8px;display:none;z-index:var(--z-dropdown)}
+/* hover 桥接：填满按钮与下拉菜单间的 8px 空隙。否则光标从按钮移向菜单时穿过空隙、
+   :hover 丢失 → 菜单先消失 → 根本点不到。透明、仅桌面、不影响按钮点击。 */
+@media (min-width:821px){ .nav-menu::before{content:'';position:absolute;left:0;right:0;top:-10px;height:10px} }
 .nav-menu a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-lg);
   font-size:.84rem;color:var(--text);white-space:nowrap}
 .nav-menu a:hover{background:var(--brand-tint)}
