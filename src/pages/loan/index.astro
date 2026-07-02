@@ -1,0 +1,164 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'loan';
+const title = '住宅ローン返済シミュレーター - 毎月返済額・総返済額・総利息を自動計算 | 計算ツール';
+const description =
+  '借入額・金利・返済期間を入れるだけで、住宅ローンの毎月返済額・総返済額・総利息を「元利均等返済」「元金均等返済」の両方式で自動計算。2つの返済方式を並べて比較できる無料シミュレーターです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '住宅ローン返済シミュレーター',
+  description,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ ローン返済</div>
+    <h1>住宅ローン返済シミュレーター</h1>
+    <p>借入額・金利・返済期間から、毎月返済額・総返済額・総利息を元利均等／元金均等の2方式で自動計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="amount">借入額（万円）</label>
+      <input type="number" id="amount" min="0" step="100" placeholder="3000" />
+    </div>
+    <div class="form-group">
+      <label for="rate">年利率（％）</label>
+      <input type="number" id="rate" min="0" step="0.01" placeholder="1.0" />
+    </div>
+    <div class="form-group">
+      <label for="years">返済期間（年）</label>
+      <input type="number" id="years" min="1" step="1" placeholder="35" />
+    </div>
+
+    <div class="loan-results" id="results">
+      <div class="loan-col">
+        <div class="result-box" id="box-eq">
+          <div class="result-label">元利均等返済</div>
+          <div class="result-sub">毎月返済額</div>
+          <div class="result-main" id="eq-monthly">―</div>
+          <div class="result-rows">
+            <div class="result-row"><span class="label">総返済額</span><span class="value" id="eq-total">―</span></div>
+            <div class="result-row"><span class="label">総利息</span><span class="value" id="eq-interest">―</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="loan-col">
+        <div class="result-box" id="box-ep">
+          <div class="result-label">元金均等返済</div>
+          <div class="result-sub">初回返済額（毎月減少）</div>
+          <div class="result-main" id="ep-first">―</div>
+          <div class="result-rows">
+            <div class="result-row"><span class="label">最終返済額</span><span class="value" id="ep-last">―</span></div>
+            <div class="result-row"><span class="label">総返済額</span><span class="value" id="ep-total">―</span></div>
+            <div class="result-row"><span class="label">総利息</span><span class="value" id="ep-interest">―</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>
+      借入額（万円）・年利率（％）・返済期間（年）を入力すると、<strong>元利均等返済</strong>と<strong>元金均等返済</strong>の2つの返済方式で、毎月返済額・総返済額・総利息をその場で自動計算します。ボーナス払いは含まない、元本と利息のみのシンプルな試算です。
+    </p>
+    <p>
+      <strong>元利均等返済</strong>は、毎月の返済額（元金＋利息）が一定になる方式です。返済計画が立てやすく、住宅ローンで最も一般的に選ばれます。計算式は「毎月返済額＝借入額 × 月利 ×(1＋月利)^回数 ÷((1＋月利)^回数 − 1)」で、月利＝年利率 ÷ 12、回数＝返済年数 × 12 です。
+    </p>
+    <p>
+      <strong>元金均等返済</strong>は、毎月返済する元金を一定（借入額 ÷ 回数）にし、利息を残高に応じて上乗せする方式です。返済当初の負担は大きいものの、元金の減りが早く、総利息は元利均等より少なくなります。初回返済額が最も高く、返済が進むほど毎月の返済額は減っていきます。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の返済額は金融機関の計算方法・端数処理・保証料・団信・手数料等により異なります。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '元利均等返済と元金均等返済はどちらが得ですか？', a: '総利息だけを見れば、元金均等返済のほうが少なくなります。ただし返済当初の負担は元金均等のほうが大きいため、毎月の家計とのバランスで選びます。本ツールで両方式を並べて比較できます。' },
+    { q: 'ボーナス払いや繰上返済には対応していますか？', a: '本ツールは元本と利息のみのシンプルな試算です。ボーナス払い・繰上返済・保証料・団信保険料などは含みません。目安としてご利用ください。' },
+    { q: '金利は変動金利ですか固定金利ですか？', a: '入力した年利率が返済期間中ずっと続くものとして計算します（全期間固定のイメージ）。変動金利の場合は将来の金利変動により実際の返済額が変わります。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .loan-results {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 4px;
+  }
+  @media (min-width: 620px) {
+    .loan-results {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .loan-results .result-box {
+    margin: 0;
+    height: 100%;
+  }
+  .result-sub {
+    font-size: 0.82rem;
+    color: var(--text-3, #6b7280);
+    margin: 2px 0 2px;
+  }
+</style>
+
+<script>
+  import { equalPayment, equalPrincipal } from '../../lib/loan.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (n) => `${n.toLocaleString()}円`;
+
+  function render() {
+    const principal = Number($('amount').value) * 10000; // 万円 → 円
+    const rate = $('rate').value === '' ? NaN : Number($('rate').value);
+    const years = Number($('years').value);
+
+    const eq = equalPayment(principal, rate, years);
+    const ep = equalPrincipal(principal, rate, years);
+    const box = $('results');
+
+    if (!eq || !ep) {
+      $('box-eq').classList.remove('visible');
+      $('box-ep').classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+
+    $('box-eq').classList.add('visible');
+    $('box-ep').classList.add('visible');
+
+    $('eq-monthly').textContent = yen(eq.monthly);
+    $('eq-total').textContent = yen(eq.total);
+    $('eq-interest').textContent = yen(eq.interest);
+
+    $('ep-first').textContent = yen(ep.firstMonthly);
+    $('ep-last').textContent = yen(ep.lastMonthly);
+    $('ep-total').textContent = yen(ep.total);
+    $('ep-interest').textContent = yen(ep.interest);
+
+    window.setResultShare?.(
+      `住宅ローン返済シミュレーター\n【元利均等】毎月：${yen(eq.monthly)} / 総返済：${yen(eq.total)} / 総利息：${yen(eq.interest)}\n【元金均等】初回：${yen(ep.firstMonthly)} / 総返済：${yen(ep.total)} / 総利息：${yen(ep.interest)}`
+    );
+  }
+
+  ['amount', 'rate', 'years'].forEach((id) => {
+    $(id).addEventListener('input', render);
+    $(id).addEventListener('change', render);
+  });
+</script>

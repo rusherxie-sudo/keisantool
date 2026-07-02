@@ -1,0 +1,252 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'nissu';
+const title = '日数計算・日付計算器 - 二つの日付の間の日数／N日後の日付を自動計算 | 計算ツール';
+const description =
+  '開始日と終了日を入れるだけで、間の日数を「初日を含む／含まない」の両方で自動計算。基準日からN日後・N日前の日付と曜日も求められます。締切・記念日・◯日目の管理に便利な無料ツールです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '日数計算・日付計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 日数計算</div>
+    <h1>日数計算・日付計算器</h1>
+    <p>二つの日付の間の日数や、基準日からN日後・N日前の日付をその場で自動計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <section class="nissu-block">
+      <h2 class="nissu-h">二つの日付の間の日数</h2>
+      <div class="form-group">
+        <label for="from">開始日</label>
+        <input type="date" id="from" />
+      </div>
+      <div class="form-group">
+        <label for="to">終了日</label>
+        <input type="date" id="to" />
+      </div>
+      <label class="nissu-check">
+        <input type="checkbox" id="includeBoth" />
+        <span>両端を含む（初日を含めて数える）</span>
+      </label>
+
+      <div class="result-box" id="result1">
+        <div class="result-label">日数</div>
+        <div class="result-main" id="days">―</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">週数に換算</span><span class="value" id="weeks">―</span></div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="nissu-sep" />
+
+    <section class="nissu-block">
+      <h2 class="nissu-h">N日後・N日前の日付</h2>
+      <div class="form-group">
+        <label for="base">基準日</label>
+        <input type="date" id="base" />
+      </div>
+      <div class="form-group">
+        <label for="offset">日数</label>
+        <div class="nissu-inline">
+          <input type="number" id="offset" min="0" step="1" placeholder="100" />
+          <select id="dir">
+            <option value="1">後（未来）</option>
+            <option value="-1">前（過去）</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="result-box" id="result2">
+        <div class="result-label">計算結果の日付</div>
+        <div class="result-main" id="resultDate">―</div>
+      </div>
+    </section>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>
+      このツールは2つの計算ができます。上段は<strong>二つの日付の間の日数</strong>、下段は<strong>基準日からN日後・N日前の日付</strong>です。どちらも日付を選ぶと自動で計算され、ボタンを押す必要はありません。
+    </p>
+    <p>
+      <strong>間の日数</strong>は、既定では「初日を含まない（片端）」で数えます。たとえば1月1日から1月2日までは1日です。「両端を含む」にチェックを入れると初日も1日として数え、同じ例では2日になります。イベントの開催日数や「あと何日」を数えるときは、目的に合わせて切り替えてください。うるう年（2月29日）も正しく考慮します。
+    </p>
+    <p>
+      <strong>N日後・N日前</strong>は、基準日に日数を足したり引いたりして、対象の日付と<strong>曜日</strong>を求めます。「◯日目」や「◯日後が締切」といった予定管理、記念日や100日祝いの逆算などに使えます。
+    </p>
+
+    <h3>「初日を含む・含まない」の基本的な考え方</h3>
+    <p>
+      日数の数え方には「初日を含めない（片端入れ）」と「初日を含める（両端入れ）」の2通りがあります。本ツールの既定は<strong>初日を含めない</strong>方式で、「終了日 − 開始日」の経過日数を求めます。たとえば4月1日から4月10日までは9日です。「両端を含む」にチェックを入れると初日も1日目として数えるため、同じ期間が10日になります。
+    </p>
+    <p>
+      どちらで数えるかは目的で決まります。「あと何日あるか」「何日経過したか」を知りたいときは初日を含めない方式が、イベントの開催日数・宿泊を伴う滞在日数・薬の服用日数のように「その日自体を1日と数える」ときは両端を含む方式が適しています。なお、法律上の期間計算では「初日不算入」（民法第140条）が原則とされており、既定の数え方はこれに近い考え方です。
+    </p>
+
+    <h3>うるう年（2月29日）の扱い</h3>
+    <p>
+      本ツールはカレンダーに実在する日付をそのまま数えるため、うるう年の2月29日も1日として正しくカウントします。1年の日数は平年が365日、うるう年（2024年・2028年など原則4年に1度）が366日です。たとえばうるう年の2月28日から3月1日までは間に2月29日を挟むため2日ですが、平年の同じ日付間は1日になります。年をまたぐ長い期間でも、通過するうるう日の分だけ自動的に日数へ反映されます。
+    </p>
+
+    <h3>数えるのは「暦日」です（営業日ではありません）</h3>
+    <p>
+      本ツールが数えるのは、土日・祝日を含んだ<strong>暦日（カレンダー上の日数）</strong>です。「土日祝を除いた営業日ベースの日数」を求めるモードはないため、納品や振込のように営業日で数えたい場合は、計算結果からその期間の土日・祝日の日数を差し引いてください。
+    </p>
+
+    <h3>日数計算が役立つ場面</h3>
+    <ul>
+      <li><strong>契約・退職の手続き</strong>：契約期間の残り日数や、退職日・入社日までの日数の確認に。</li>
+      <li><strong>イベントまでのカウントダウン</strong>：試験・結婚式・旅行・推しのライブなど「あと何日」の把握に。</li>
+      <li><strong>賃貸の日割り計算</strong>：月の途中で入居・退去する場合の在住日数の確認に。日割り家賃は「家賃 ÷ 当月の日数 × 在住日数」で概算できます。</li>
+      <li><strong>記念日の管理</strong>：交際・結婚からの経過日数の確認や、生後100日（お食い初め）の日付の逆算に。下段の「N日後」の計算と組み合わせると便利です。</li>
+    </ul>
+
+    <h3>日数の早見表</h3>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table">
+          <thead><tr><th>期間</th><th>日数の目安</th></tr></thead>
+          <tbody>
+            <tr><td>1週間</td><td class="num">7日</td></tr>
+            <tr><td>2週間</td><td class="num">14日</td></tr>
+            <tr><td>1ヶ月</td><td class="num">28〜31日</td></tr>
+            <tr><td>3ヶ月</td><td class="num">約89〜92日</td></tr>
+            <tr><td>半年（6ヶ月）</td><td class="num">約181〜184日</td></tr>
+            <tr><td>1年</td><td class="num">365日（うるう年は366日）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p>1ヶ月・3ヶ月・半年の日数は、どの月を含むかによって変わります。正確な日数が必要なときは、上の計算機に実際の日付を入れて確認してください。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '「両端を含む」とは何ですか？', a: '初日も1日として数える方式です。1月1日から1月3日は、含まない場合は2日、含む場合は3日になります。契約日数や滞在日数の数え方に合わせて選べます。' },
+    { q: 'N日後の日付の曜日も分かりますか？', a: 'はい。基準日からN日後・N日前の日付と、その曜日（日〜土）を表示します。' },
+    { q: 'うるう年は考慮されますか？', a: 'はい。2月29日のあるうるう年も正しく計算します。' },
+    { q: '開始日当日は日数に含まれますか？', a: '既定では含みません（「終了日−開始日」の経過日数を表示します）。「両端を含む」にチェックを入れると、開始日当日も1日目として数えます。' },
+    { q: '期間がうるう年をまたぐ場合はどうなりますか？', a: '2月29日も実在する1日としてそのまま数えるため、特別な操作は不要です。うるう年を含む1年間は366日として計算されます。' },
+    { q: '土日・祝日を除いた営業日数は計算できますか？', a: 'いいえ。本ツールは土日・祝日を含む暦日（カレンダー上の日数）を数えます。営業日ベースの日数が必要な場合は、結果からその期間の土日・祝日分を差し引いてください。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .nissu-h {
+    font-size: 1.05rem;
+    margin: 0 0 14px;
+  }
+  .nissu-sep {
+    border: none;
+    border-top: 1px solid var(--border, #e5e7eb);
+    margin: 28px 0;
+  }
+  /* チェックボックスはグローバルの input{width:100%} を継承しないよう限定 */
+  .nissu-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+  .nissu-check input[type='checkbox'] {
+    width: auto;
+    margin: 0;
+  }
+  .nissu-inline {
+    display: flex;
+    gap: 10px;
+  }
+  .nissu-inline input {
+    flex: 1;
+  }
+  .nissu-inline select {
+    flex: 0 0 auto;
+    width: auto;
+  }
+</style>
+
+<script>
+  import { daysBetween, shiftDate, weekdayJa } from '../../lib/nissu.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function share() {
+    const parts = [];
+    if ($('result1').classList.contains('visible')) {
+      parts.push(`間の日数：${$('days').textContent}`);
+    }
+    if ($('result2').classList.contains('visible')) {
+      parts.push(`計算結果の日付：${$('resultDate').textContent}`);
+    }
+    if (parts.length) {
+      window.setResultShare?.(`日数計算・日付計算器\n${parts.join('\n')}`);
+    } else {
+      window.hideResultShare?.();
+    }
+  }
+
+  function renderDays() {
+    const days = daysBetween($('from').value, $('to').value, {
+      includeBoth: $('includeBoth').checked,
+    });
+    const box = $('result1');
+    if (days === null) {
+      box.classList.remove('visible');
+      share();
+      return;
+    }
+    box.classList.add('visible');
+    $('days').textContent = `${days.toLocaleString()}日`;
+    const w = Math.floor(days / 7);
+    const d = days % 7;
+    $('weeks').textContent = d === 0 ? `${w}週間` : `${w}週間 ${d}日`;
+    share();
+  }
+
+  function renderShift() {
+    const base = $('base').value;
+    const n = $('offset').value === '' ? NaN : Number($('offset').value) * Number($('dir').value);
+    const iso = shiftDate(base, n);
+    const box = $('result2');
+    if (iso === null) {
+      box.classList.remove('visible');
+      share();
+      return;
+    }
+    box.classList.add('visible');
+    $('resultDate').textContent = `${iso}（${weekdayJa(iso)}）`;
+    share();
+  }
+
+  ['from', 'to', 'includeBoth'].forEach((id) => {
+    $(id).addEventListener('input', renderDays);
+    $(id).addEventListener('change', renderDays);
+  });
+  ['base', 'offset', 'dir'].forEach((id) => {
+    $(id).addEventListener('input', renderShift);
+    $(id).addEventListener('change', renderShift);
+  });
+</script>

@@ -1,0 +1,173 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'seiza';
+const title = '星座調べ - 誕生日から12星座を自動判定 | 計算ツール';
+const description =
+  '誕生日（生年月日）を入れるだけで、あなたの星座（12星座）を自動で判定する無料ツール。牡羊座から魚座まで、星座の記号・英名・期間もあわせて表示します。娯楽としてお楽しみください。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '星座調べ',
+  description,
+  applicationCategory: 'EntertainmentApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 星座</div>
+    <h1>星座調べ（誕生日から星座）</h1>
+    <p>誕生日を選ぶだけで、あなたの12星座をその場で判定します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="birth">誕生日</label>
+      <input type="date" id="birth" />
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="seiza-symbol" id="symbol">―</div>
+      <div class="result-main" id="name">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">英名</span><span class="value" id="en">―</span></div>
+        <div class="result-row"><span class="label">期間</span><span class="value" id="period">―</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と星座の期間</h2>
+    <p>
+      誕生日を選ぶと、12星座のうちどれに当てはまるかを自動で判定し、星座の記号・英名・期間を表示します。生まれた「月」と「日」だけで決まるため、生まれ年は結果に影響しません。星座占いやプロフィール作成などに気軽にお使いください。
+    </p>
+    <table class="seiza-table">
+      <thead><tr><th>星座</th><th>期間</th></tr></thead>
+      <tbody>
+        <tr><td>♈ 牡羊座（おひつじ座）</td><td>3/21〜4/19</td></tr>
+        <tr><td>♉ 牡牛座（おうし座）</td><td>4/20〜5/20</td></tr>
+        <tr><td>♊ 双子座（ふたご座）</td><td>5/21〜6/21</td></tr>
+        <tr><td>♋ 蟹座（かに座）</td><td>6/22〜7/22</td></tr>
+        <tr><td>♌ 獅子座（しし座）</td><td>7/23〜8/22</td></tr>
+        <tr><td>♍ 乙女座（おとめ座）</td><td>8/23〜9/22</td></tr>
+        <tr><td>♎ 天秤座（てんびん座）</td><td>9/23〜10/23</td></tr>
+        <tr><td>♏ 蠍座（さそり座）</td><td>10/24〜11/22</td></tr>
+        <tr><td>♐ 射手座（いて座）</td><td>11/23〜12/21</td></tr>
+        <tr><td>♑ 山羊座（やぎ座）</td><td>12/22〜1/19</td></tr>
+        <tr><td>♒ 水瓶座（みずがめ座）</td><td>1/20〜2/18</td></tr>
+        <tr><td>♓ 魚座（うお座）</td><td>2/19〜3/20</td></tr>
+      </tbody>
+    </table>
+
+    <h3>境目の日（カスプ）が資料によって1日ずれる理由</h3>
+    <p>
+      星座の区切りは、太陽が天球上の通り道（黄道）を12等分した区画を移り変わる瞬間で決まります。この通過の瞬間は毎年同じではなく、年によって数時間〜1日近く前後します。そのため厳密には「何月何日生まれはこの星座」という境界日も生まれ年によってわずかに動き、雑誌やサイトによって境界日の表記が1日違うのはこのためです。本ツールは、日本の星座占いで広く使われている通行の区分（上の早見表のとおり）を採用しており、生まれ年による補正は行いません。境目の前後1日に生まれた方は、両隣の星座をどちらも参考にしてみてください。
+    </p>
+
+    <h3>黄道十二宮（こうどうじゅうにきゅう）の由来</h3>
+    <p>
+      誕生日の星座は、黄道を30度ずつ12等分した<strong>黄道十二宮</strong>に基づいています。その起源は古代バビロニアの天文学にさかのぼり、のちに古代ギリシャで体系化されて現在の西洋占星術のもとになりました。誕生日から求まる星座は「生まれた日に太陽がどの宮に位置していたか」を表すもので、正確には<strong>太陽星座</strong>と呼ばれます。なお、地球の歳差運動の影響で、実際の夜空の星座の位置は古代から約1宮ぶんずれていますが、西洋占星術では春分点を牡羊座の始まりとする伝統的な区分（トロピカル方式）が使われ続けています。
+    </p>
+
+    <h3>4つのエレメント（火・地・風・水）</h3>
+    <p>西洋占星術では、12星座を3つずつ4つのエレメント（元素）に分類します。同じエレメントの星座は気質が似ているとされ、占いの記事や相性診断でよく登場する分け方です。</p>
+    <table class="seiza-table">
+      <thead><tr><th>エレメント</th><th>星座</th></tr></thead>
+      <tbody>
+        <tr><td>火（情熱・行動）</td><td>牡羊座・獅子座・射手座</td></tr>
+        <tr><td>地（堅実・現実）</td><td>牡牛座・乙女座・山羊座</td></tr>
+        <tr><td>風（知性・社交）</td><td>双子座・天秤座・水瓶座</td></tr>
+        <tr><td>水（感情・共感）</td><td>蟹座・蠍座・魚座</td></tr>
+      </tbody>
+    </table>
+
+    <h3>自分の星座は誕生日ごろの夜空には見えない？</h3>
+    <p>
+      意外に思われがちですが、自分の誕生星座は誕生日の前後には夜空でほとんど見えません。誕生日の星座は「その日に太陽と同じ方向にある宮」なので、星座自体は昼間の空に昇っており、太陽の光で見えないためです。実際に夜空でよく見えるのは、太陽が反対側に移った<strong>誕生日の約半年後</strong>の季節になります。たとえば12月生まれの射手座がきれいに見えるのは夏の夜空です。「誕生日に自分の星座を探したのに見つからない」のは正常というわけです。
+    </p>
+    <div class="disclaimer">※ 星座の境界日は流派や年によって1日程度前後することがあります。計算結果はあくまで参考値です。占いは娯楽としてお楽しみください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '星座は誕生日だけで決まりますか？', a: 'はい。西洋占星術の一般的な区分では、生まれた月日で12星座が決まります（生まれ年は影響しません）。本ツールは誕生日から自動で判定します。' },
+    { q: '境界の日に生まれた場合は？', a: '星座の境界日は流派や年によって1日程度前後することがあります。境目の日付の方は、前後どちらの星座も参考にしてみてください。' },
+    { q: '星座から性格も分かりますか？', a: '本ツールは星座の判定のみを行います。性格や相性の解釈は占いの領域であり、娯楽としてお楽しみください。' },
+    { q: '星座は生まれた年によって変わりますか？', a: '本ツールの判定は月日だけで決まり、生まれた年によって結果が変わることはありません。ただし厳密には、太陽が星座の境界を通過する瞬間が年ごとに前後するため、境目付近の生まれの方は資料によって隣の星座と表記されることがあります。' },
+    { q: 'へびつかい座（13星座占い）には対応していますか？', a: 'いいえ。本ツールは伝統的な12星座（黄道十二宮）の区分で判定します。へびつかい座を加えた13星座占いは、これとは別の区分に基づくものです。' },
+    { q: '「太陽星座」とは何ですか？', a: '生まれた日に太陽が位置していた宮（星座）のことで、誕生日から求まる星座はこれにあたります。星座占いで単に「あなたの星座」という場合、通常はこの太陽星座を指します。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .seiza-symbol {
+    font-size: 2.6rem;
+    line-height: 1;
+    margin-bottom: 6px;
+    color: var(--cat-color, #8b5cf6);
+  }
+  .seiza-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 6px;
+    font-size: 0.88rem;
+  }
+  .seiza-table th,
+  .seiza-table td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border, #e5e7eb);
+  }
+  .seiza-table th {
+    color: var(--text-3, #6b7280);
+    font-weight: 700;
+  }
+</style>
+
+<script>
+  import { seiza } from '../../lib/seiza.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  const PERIODS = {
+    牡羊座: '3/21〜4/19', 牡牛座: '4/20〜5/20', 双子座: '5/21〜6/21',
+    蟹座: '6/22〜7/22', 獅子座: '7/23〜8/22', 乙女座: '8/23〜9/22',
+    天秤座: '9/23〜10/23', 蠍座: '10/24〜11/22', 射手座: '11/23〜12/21',
+    山羊座: '12/22〜1/19', 水瓶座: '1/20〜2/18', 魚座: '2/19〜3/20',
+  };
+
+  function render() {
+    const v = $('birth').value;
+    const box = $('result');
+    const m = v.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    const s = m ? seiza(Number(m[2]), Number(m[3])) : null;
+
+    if (!s) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    box.classList.add('visible');
+    $('symbol').textContent = s.symbol;
+    $('name').textContent = s.name;
+    $('en').textContent = s.en;
+    $('period').textContent = PERIODS[s.name] || '―';
+
+    window.setResultShare?.(`星座調べ\nあなたの星座：${s.symbol} ${s.name}（${s.en}）`);
+  }
+
+  $('birth').addEventListener('input', render);
+  $('birth').addEventListener('change', render);
+</script>

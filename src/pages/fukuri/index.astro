@@ -1,0 +1,217 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'fukuri';
+const title = '複利・積立シミュレーター - 複利運用・毎月積立の将来額を自動計算 | 計算ツール';
+const description =
+  '元本の複利運用や、毎月の積立投資（つみたてNISAなど）の将来額を自動計算する無料シミュレーター。利率・期間から将来いくらになるか、元本と運用益の内訳がその場でわかります。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '複利・積立シミュレーター',
+  description,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 複利・積立</div>
+    <h1>複利・積立シミュレーター</h1>
+    <p>複利運用や毎月積立の将来額と、元本・運用益の内訳をその場で自動計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <section class="fukuri-block">
+      <h2 class="fukuri-h">一括運用（複利）</h2>
+      <div class="form-group">
+        <label for="lump-amount">元本（万円）</label>
+        <input type="number" id="lump-amount" min="0" step="10" placeholder="100" />
+      </div>
+      <div class="form-group">
+        <label for="lump-rate">年利率（％）</label>
+        <input type="number" id="lump-rate" min="0" step="0.1" placeholder="3" />
+      </div>
+      <div class="form-group">
+        <label for="lump-years">運用期間（年）</label>
+        <input type="number" id="lump-years" min="1" step="1" placeholder="10" />
+      </div>
+      <div class="result-box" id="box-lump">
+        <div class="result-label">将来の金額</div>
+        <div class="result-main" id="lump-future">―</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">元本</span><span class="value" id="lump-principal">―</span></div>
+          <div class="result-row"><span class="label">運用益</span><span class="value" id="lump-interest">―</span></div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="fukuri-sep" />
+
+    <section class="fukuri-block">
+      <h2 class="fukuri-h">毎月積立（つみたて）</h2>
+      <div class="form-group">
+        <label for="res-amount">毎月の積立額（円）</label>
+        <input type="number" id="res-amount" min="0" step="1000" placeholder="30000" />
+      </div>
+      <div class="form-group">
+        <label for="res-rate">年利率（％）</label>
+        <input type="number" id="res-rate" min="0" step="0.1" placeholder="3" />
+      </div>
+      <div class="form-group">
+        <label for="res-years">積立期間（年）</label>
+        <input type="number" id="res-years" min="1" step="1" placeholder="20" />
+      </div>
+      <div class="result-box" id="box-res">
+        <div class="result-label">将来の金額</div>
+        <div class="result-main" id="res-future">―</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">積立元本</span><span class="value" id="res-principal">―</span></div>
+          <div class="result-row"><span class="label">運用益</span><span class="value" id="res-interest">―</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>
+      上段は<strong>元本を一括で複利運用</strong>した場合、下段は<strong>毎月一定額を積み立てて運用</strong>した場合の将来額を計算します。どちらも入力すると自動計算され、元本（積立元本）と運用益の内訳がわかります。つみたてNISAやiDeCo、預金の複利効果の目安にお使いください。
+    </p>
+    <p>
+      <strong>一括運用（複利）</strong>は「将来額＝元本 ×(1＋年利率)^年数」で計算します（年1回複利）。複利は利息にもさらに利息がつくため、期間が長いほど効果が大きくなります。
+    </p>
+    <p>
+      <strong>毎月積立</strong>は、毎月末に一定額を積み立て、月利（年利率 ÷ 12）で複利運用するものとして「年金終価」の式で計算します。積立元本は「毎月の積立額 × 積立月数」、運用益はそれを超えた部分です。
+    </p>
+
+    <h3>単利と複利の違い</h3>
+    <p>
+      <strong>単利</strong>は元本に対してのみ利息がつく方式、<strong>複利</strong>は「元本＋それまでの利息」に対して利息がつく方式です。たとえば100万円を年5%で10年間運用した場合、単利では毎年5万円ずつ増えて<strong>150万円</strong>ですが、年1回の複利では<strong>約162.9万円</strong>（100万円 × 1.05の10乗）になります。この約12.9万円の差は利息が利息を生む複利の効果によるもので、期間が長くなるほど加速度的に広がります。
+    </p>
+
+    <h3>72の法則 — 元本が2倍になる年数の目安</h3>
+    <p>
+      複利運用で元本が2倍になるまでの年数は、<strong>「72 ÷ 年利率（%）」</strong>でおおよそ見積もれます（72の法則）。
+    </p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>年利率</th><th>元本が2倍になる年数（概算）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>年1%</td><td class="num">約72年</td></tr>
+            <tr><td>年2%</td><td class="num">約36年</td></tr>
+            <tr><td>年3%</td><td class="num">約24年</td></tr>
+            <tr><td>年5%</td><td class="num">約14.4年</td></tr>
+            <tr><td>年7%</td><td class="num">約10.3年</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p>逆に「20年で2倍にしたい場合は年3.6%程度の利回りが必要」という見積もりにも使えます。正確な金額は、本ツールで利率や期間を変えながらご確認ください。</p>
+
+    <h3>毎月積立の計算式（年金終価）</h3>
+    <p>
+      毎月積立の将来額は、「年金終価」と呼ばれる式 <strong>将来額 ＝ 毎月の積立額 × ｛(1＋i)<sup>N</sup> − 1｝ ÷ i</strong>（i＝月利＝年利率÷12、N＝積立月数）で計算しています。毎月の積立それぞれに複利がつくため、同じ月額でも期間が長いほど運用益の占める割合が大きくなります。たとえば月3万円を年利3%で20年間積み立てると、積立元本720万円に対して将来額は約985万円（運用益は約265万円）です。
+    </p>
+
+    <h3>運用益への課税とNISA</h3>
+    <p>
+      投資で得た運用益（売却益や分配金）には、通常<strong>20.315%</strong>の税金がかかります。内訳は、所得税15%＋復興特別所得税0.315%＋住民税5%です。一方、<strong>NISA口座で得た運用益は非課税</strong>です。本ツールの表示は税引き前の金額のため、課税口座で運用する場合は、運用益からおよそ2割を差し引いた額が手取りの目安になります。なお、金融庁の「<a href="https://www.fsa.go.jp/policy/nisa2/tsumitate-simulator/" target="_blank" rel="noopener">つみたてシミュレーター</a>」でも同様の積立シミュレーションができます。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。税金（運用益への課税）・手数料・インフレ・金利変動は考慮していません。実際の投資には元本割れのリスクがあります。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '複利と単利の違いは？', a: '単利は元本にのみ利息がつくのに対し、複利は「元本＋これまでの利息」に対して利息がつきます。期間が長いほど複利のほうが大きく増えます。本ツールは複利で計算します。' },
+    { q: 'つみたてNISAのシミュレーションに使えますか？', a: '毎月の積立額・想定利回り・積立期間を入れれば、将来額と運用益の目安を確認できます。ただし税金・手数料は考慮していない参考値です。' },
+    { q: '運用益に税金はかかりますか？', a: '通常、投資の運用益には20.315%（所得税15%＋復興特別所得税0.315%＋住民税5%）の税金がかかります。NISA口座での運用益は非課税です。本ツールは税引き前の金額を表示します。' },
+    { q: '複利と単利はどちらが増えますか？', a: '同じ利率・期間なら複利のほうが増えます。100万円を年5%で10年運用した場合、単利では150万円、年1回の複利では約162.9万円です。利息が利息を生む複利の効果は、期間が長いほど大きくなります。' },
+    { q: '利回り何%だと何年で元本が2倍になりますか？', a: '「72 ÷ 年利率」でおおよその年数を見積もれます（72の法則）。年3%なら約24年、年6%なら約12年で元本が2倍になる計算です。正確な金額は本ツールでご確認ください。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .fukuri-h {
+    font-size: 1.05rem;
+    margin: 0 0 14px;
+  }
+  .fukuri-sep {
+    border: none;
+    border-top: 1px solid var(--border, #e5e7eb);
+    margin: 28px 0;
+  }
+</style>
+
+<script>
+  import { compoundLumpSum, compoundReserve } from '../../lib/fukuri.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (n) => `${n.toLocaleString()}円`;
+
+  function share() {
+    const parts = [];
+    if ($('box-lump').classList.contains('visible')) {
+      parts.push(`【一括複利】将来：${$('lump-future').textContent}（運用益 ${$('lump-interest').textContent}）`);
+    }
+    if ($('box-res').classList.contains('visible')) {
+      parts.push(`【毎月積立】将来：${$('res-future').textContent}（運用益 ${$('res-interest').textContent}）`);
+    }
+    if (parts.length) {
+      window.setResultShare?.(`複利・積立シミュレーター\n${parts.join('\n')}`);
+    } else {
+      window.hideResultShare?.();
+    }
+  }
+
+  function renderLump() {
+    const principal = Number($('lump-amount').value) * 10000; // 万円 → 円
+    const rate = $('lump-rate').value === '' ? NaN : Number($('lump-rate').value);
+    const years = Number($('lump-years').value);
+    const res = compoundLumpSum(principal, rate, years);
+    const box = $('box-lump');
+    if (!res) { box.classList.remove('visible'); share(); return; }
+    box.classList.add('visible');
+    $('lump-future').textContent = yen(res.future);
+    $('lump-principal').textContent = yen(res.principal);
+    $('lump-interest').textContent = yen(res.interest);
+    share();
+  }
+
+  function renderReserve() {
+    const monthly = Number($('res-amount').value);
+    const rate = $('res-rate').value === '' ? NaN : Number($('res-rate').value);
+    const years = Number($('res-years').value);
+    const res = compoundReserve(monthly, rate, years);
+    const box = $('box-res');
+    if (!res) { box.classList.remove('visible'); share(); return; }
+    box.classList.add('visible');
+    $('res-future').textContent = yen(res.future);
+    $('res-principal').textContent = yen(res.principal);
+    $('res-interest').textContent = yen(res.interest);
+    share();
+  }
+
+  ['lump-amount', 'lump-rate', 'lump-years'].forEach((id) => {
+    $(id).addEventListener('input', renderLump);
+    $(id).addEventListener('change', renderLump);
+  });
+  ['res-amount', 'res-rate', 'res-years'].forEach((id) => {
+    $(id).addEventListener('input', renderReserve);
+    $(id).addEventListener('change', renderReserve);
+  });
+</script>

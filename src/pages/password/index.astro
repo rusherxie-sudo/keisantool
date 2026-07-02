@@ -1,0 +1,220 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'password';
+const title = 'パスワード生成ツール - 安全で強力なパスワードをその場で生成 | 計算ツール';
+const description =
+  '長さと文字種（大文字・小文字・数字・記号）を選ぶだけで、安全で強力なランダムパスワードを生成する無料ツール。生成はすべてブラウザ内で完結し、入力・生成した内容は送信されません。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'パスワード生成ツール',
+  description,
+  applicationCategory: 'SecurityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/dev-tool/">開発者ツール</a> ／ パスワード生成</div>
+    <h1>パスワード生成ツール</h1>
+    <p>長さと文字種を選ぶだけで、安全で強力なパスワードをその場で生成します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="pw-output-row">
+      <input type="text" id="output" readonly placeholder="ここに生成されます" />
+      <button type="button" id="copy" class="pw-btn">コピー</button>
+    </div>
+
+    <div class="form-group">
+      <label for="length">長さ：<span id="lenLabel">16</span> 文字</label>
+      <input type="range" id="length" min="4" max="64" step="1" value="16" />
+    </div>
+
+    <div class="pw-checks">
+      <label class="pw-check"><input type="checkbox" id="upper" checked /><span>大文字（A-Z）</span></label>
+      <label class="pw-check"><input type="checkbox" id="lower" checked /><span>小文字（a-z）</span></label>
+      <label class="pw-check"><input type="checkbox" id="digits" checked /><span>数字（0-9）</span></label>
+      <label class="pw-check"><input type="checkbox" id="symbols" checked /><span>記号（!@#…）</span></label>
+    </div>
+
+    <button type="button" id="regen" class="pw-regen">🔄 パスワードを生成</button>
+    <p class="pw-warn" id="warn" hidden>※ 文字種を1つ以上選んでください。</p>
+  </div>
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と安全性について</h2>
+    <p>
+      パスワードの長さ（4〜64文字）と、使用する文字種（大文字・小文字・数字・記号）を選んで「パスワードを生成」を押すと、ランダムなパスワードが作られます。設定を変えると自動で作り直され、「コピー」ボタンでクリップボードにコピーできます。
+    </p>
+    <p>
+      生成にはブラウザの暗号学的乱数（<code>crypto.getRandomValues</code>）を使用しています。<strong>生成処理はすべてお使いのブラウザ内で完結し、生成したパスワードがサーバーに送信されることはありません。</strong>
+    </p>
+    <p>
+      安全性を高めるには、<strong>できるだけ長く（12文字以上を推奨）</strong>、複数の文字種を組み合わせてください。同じパスワードを複数のサービスで使い回さないこと、パスワード管理ツールでの保管もおすすめします。
+    </p>
+
+    <h3>安全なパスワードの条件 — 長さが最重要</h3>
+    <p>
+      パスワードの強度を決める最大の要素は<strong>長さ</strong>です。米国国立標準技術研究所（NIST）のガイドライン「<a href="https://pages.nist.gov/800-63-3/sp800-63b.html" target="_blank" rel="noopener">SP 800-63B</a>」でも、記号の使用などを細かく強制するより、十分に長いパスワードやパスフレーズを使うことが推奨されています。また同ガイドラインでは、<strong>定期的な変更の強制は、かえって単純で弱いパスワードにつながりやすいとして非推奨</strong>に変わりました。現在は「漏えいの兆候があったときに変更する」という考え方が主流です。
+    </p>
+
+    <h3>長さ・文字種と強度の目安</h3>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>設定例</th><th>使用文字</th><th>組み合わせ数（概算）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>8文字・小文字のみ</td><td class="num">26種</td><td class="num">約2×10<sup>11</sup>通り</td></tr>
+            <tr><td>12文字・英大小＋数字</td><td class="num">62種</td><td class="num">約3.2×10<sup>21</sup>通り</td></tr>
+            <tr><td>12文字・4種すべて</td><td class="num">85種</td><td class="num">約1.4×10<sup>23</sup>通り</td></tr>
+            <tr><td>16文字・4種すべて</td><td class="num">85種</td><td class="num">約7×10<sup>30</sup>通り</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p>
+      長さを1文字増やすごとに、組み合わせ数は使用文字数のぶん（26〜85倍）掛け算で増えます。文字種を増やすことにも効果はありますが、総当たり攻撃への耐性を大きく高めるのは、まず長くすることです。
+    </p>
+
+    <h3>本ツールの生成の仕組み</h3>
+    <p>
+      乱数には <code>Math.random()</code> ではなく、予測が困難な暗号学的乱数 <code>crypto.getRandomValues</code> を使用しています。また、チェックした文字種が<strong>それぞれ必ず1文字以上含まれる</strong>よう先に1文字ずつ確保し、残りを選択した全文字からランダムに埋めたうえで、全体をシャッフル（Fisher–Yates法）しています。このため「特定の文字種が先頭に固まる」といった位置の偏りはありません。記号として使われるのは <code>!@#$%^&amp;*()-_=+[]&#123;&#125;;:,.?</code> の23種類です。
+    </p>
+
+    <h3>使い回しを避け、管理ツールと二段階認証を</h3>
+    <p>
+      どれほど強力なパスワードでも、複数のサービスで使い回すと、どこか1か所の漏えいをきっかけに他のアカウントへ不正ログインされる「パスワードリスト攻撃」の被害につながります。<strong>サービスごとに異なるパスワードを生成し、パスワード管理ツール（パスワードマネージャー）で保管する</strong>運用が現実的です。あわせて、重要なアカウントには二段階認証（多要素認証）を設定しておくと、万一パスワードが漏れた場合の被害を大きく抑えられます。
+    </p>
+    <div class="disclaimer">※ 生成したパスワードの管理は利用者の責任で行ってください。重要なアカウントには二段階認証の併用を推奨します。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '生成したパスワードは外部に送信されますか？', a: 'いいえ。生成はすべてブラウザ内（クライアントサイド）で行われ、パスワードがサーバーへ送信・保存されることはありません。' },
+    { q: 'どのくらいの長さにすべきですか？', a: '一般的に12文字以上が推奨されます。重要なアカウントでは16文字以上＋複数の文字種の組み合わせが安心です。' },
+    { q: '本当にランダムですか？', a: 'はい。ブラウザの暗号学的乱数生成器（crypto.getRandomValues）を使用しており、予測されにくい安全な乱数で生成しています。選んだ文字種は必ず1文字以上含まれ、位置はシャッフルにより偏りなく決まります。' },
+    { q: '記号が使えないサイトではどうすればよいですか？', a: '「記号」のチェックを外して生成し、そのぶん長さを16〜20文字などに伸ばしてください。強度は文字種の数より長さの影響が大きいため、記号なしでも長くすれば十分な強度を確保できます。' },
+    { q: 'パスワードは定期的に変更すべきですか？', a: '以前は定期変更が推奨されていましたが、現在は「漏えいの疑いがあるときに変更すればよい」という考え方が主流です（NIST SP 800-63Bなど）。定期変更を強制すると、単純で覚えやすいパスワードの使い回しにつながりやすいためです。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .pw-output-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .pw-output-row input {
+    flex: 1;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+  }
+  .pw-btn,
+  .pw-regen {
+    cursor: pointer;
+    border-radius: var(--r-lg, 10px);
+    font-weight: 700;
+    border: 1.5px solid var(--cat-color, #5566e0);
+  }
+  .pw-btn {
+    flex: 0 0 auto;
+    padding: 0 16px;
+    background: #fff;
+    color: var(--cat-color, #5566e0);
+  }
+  .pw-regen {
+    width: 100%;
+    padding: 13px;
+    margin-top: 6px;
+    background: var(--cat-color, #5566e0);
+    color: #fff;
+    font-size: 1rem;
+  }
+  .pw-checks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 4px 0 18px;
+  }
+  .pw-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.92rem;
+  }
+  /* グローバルの input{width:100%} を継承させない */
+  .pw-check input[type='checkbox'] {
+    width: auto;
+    margin: 0;
+  }
+  .pw-warn {
+    color: #d9480f;
+    font-size: 0.88rem;
+    margin-top: 10px;
+  }
+</style>
+
+<script>
+  import { generatePassword } from '../../lib/password.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function render() {
+    const length = Number($('length').value);
+    $('lenLabel').textContent = length;
+    const opts = {
+      length,
+      upper: $('upper').checked,
+      lower: $('lower').checked,
+      digits: $('digits').checked,
+      symbols: $('symbols').checked,
+    };
+    // 乱数源は lib 既定の crypto.getRandomValues（安全なデフォルト）。
+    const pw = generatePassword(opts);
+    if (pw === null) {
+      $('output').value = '';
+      $('warn').hidden = false;
+      return;
+    }
+    $('warn').hidden = true;
+    $('output').value = pw;
+  }
+
+  $('regen').addEventListener('click', render);
+  ['length', 'upper', 'lower', 'digits', 'symbols'].forEach((id) => {
+    $(id).addEventListener('input', render);
+    $(id).addEventListener('change', render);
+  });
+
+  $('copy').addEventListener('click', async () => {
+    const v = $('output').value;
+    if (!v) return;
+    try {
+      await navigator.clipboard.writeText(v);
+      const btn = $('copy');
+      const orig = btn.textContent;
+      btn.textContent = '✓ コピー済';
+      setTimeout(() => (btn.textContent = orig), 1500);
+    } catch {
+      // クリップボード非対応時は選択状態にする
+      $('output').select();
+    }
+  });
+
+  // 初期表示で1つ生成。
+  render();
+</script>

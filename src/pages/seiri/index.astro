@@ -1,0 +1,152 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'seiri';
+const title = '排卵日・生理日計算器 - 生理周期から次回の生理・排卵日を予測 | 計算ツール';
+const description =
+  '前回の生理開始日と生理周期を入れるだけで、次回以降の生理予定日・排卵日・妊娠しやすい時期を自動で予測する無料ツール。生理管理や妊活の目安にお使いください。結果はあくまで参考値です。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '排卵日・生理日計算器',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/kenko/">健康・身体</a> ／ 排卵日・生理日</div>
+    <h1>排卵日・生理日計算器</h1>
+    <p>前回の生理開始日と周期から、次回の生理・排卵日・妊娠しやすい時期を予測します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="last">前回の生理開始日</label>
+      <input type="date" id="last" />
+    </div>
+    <div class="form-group">
+      <label for="cycle">生理周期（日）※一般的には25〜38日</label>
+      <input type="number" id="cycle" min="20" max="45" step="1" value="28" />
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">排卵日（予測）</div>
+      <div class="result-main" id="ovulation">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">妊娠しやすい時期</span><span class="value" id="fertile">―</span></div>
+        <div class="result-row"><span class="label">次回の生理（予測）</span><span class="value" id="next1">―</span></div>
+        <div class="result-row"><span class="label">次々回の生理</span><span class="value" id="next2">―</span></div>
+        <div class="result-row"><span class="label">3回目の生理</span><span class="value" id="next3">―</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>
+      前回の生理が始まった日と、あなたの生理周期（前回の生理開始日から次の生理開始日までの日数）を入力すると、次回以降の生理予定日・排卵日・妊娠しやすい時期を自動で予測します。周期の初期値は一般的な28日です。
+    </p>
+    <p>
+      <strong>次回の生理予定日</strong>は「前回の生理開始日 ＋ 周期」で計算します。<strong>排卵日</strong>は、排卵から次の生理までの黄体期がおよそ14日で安定していることから「次回の生理予定日 − 14日（＝前回開始日 ＋ 周期 − 14日）」で予測します。
+    </p>
+    <p>
+      <strong>妊娠しやすい時期</strong>は、精子と卵子の寿命を考慮し、排卵日の約5日前から1日後までを目安として表示します。排卵日はストレスや体調で前後するため、あくまで目安です。
+    </p>
+
+    <h3>正常な月経周期の範囲（25〜38日）</h3>
+    <p>
+      月経周期は「生理が始まった日から、次の生理が始まる前日まで」の日数で数えます。日本産科婦人科学会の定義では、正常な月経周期は<strong>25〜38日</strong>（周期ごとの変動が6日以内）とされ、24日以内は「頻発月経」、39日以上は「稀発月経」と呼ばれます。初期値の28日はあくまで平均的な目安であり、25〜38日の範囲に収まっていれば、日数に個人差があるのは一般的なことです。
+    </p>
+
+    <h3>本ツールの計算根拠と限界</h3>
+    <p>
+      本ツールは「排卵から次の生理開始までの黄体期は約14日でほぼ一定」という一般的な知見に基づき、排卵日を「次回の生理予定日 − 14日」として推定しています。一方、生理開始から排卵までの卵胞期は、個人差や体調・ストレスによる変動が大きく、同じ人でも周期ごとにずれます。このため、<strong>周期が不規則な方ほど予測の精度は下がります</strong>。なお、本ツールで計算できる周期は15〜60日の範囲です（黄体期を14日とする仮定では、15日未満の周期は計算が成り立たないため）。この範囲外の値を入力した場合、結果は表示されません。
+    </p>
+
+    <h3>より正確に排卵日を知る方法</h3>
+    <ul>
+      <li><strong>基礎体温の記録：</strong>毎朝起き上がる前に基礎体温を測って記録すると、低温期から高温期への変化から、排卵の有無やおおよその時期を確認できます。</li>
+      <li><strong>排卵検査薬：</strong>尿中のLH（黄体形成ホルモン）の急上昇をとらえて、排卵日を約1日前に予測する検査薬が市販されています。</li>
+      <li><strong>婦人科での検査：</strong>超音波検査による卵胞の観察やホルモン検査により、より正確に排卵時期を把握できます。</li>
+    </ul>
+    <p>カレンダー計算はあくまで最初の目安と考え、必要に応じてこれらの方法を組み合わせることをおすすめします。</p>
+
+    <h3>避妊目的には使用できません</h3>
+    <p>
+      <strong>本ツールの予測を避妊の判断に用いることはできません。</strong>周期計算で「妊娠しにくい日」を推定する方法（いわゆるオギノ式）は、排卵日のずれにより失敗率が高いことが知られています。妊娠を望まない場合は、医師に相談のうえ、確実性の高い避妊方法を選択してください。
+    </p>
+
+    <h3>婦人科受診の目安</h3>
+    <p>次のような場合は、婦人科の受診を検討してください。</p>
+    <ul>
+      <li>周期が25日未満、または39日以上の状態が続く</li>
+      <li>3か月以上生理が来ない</li>
+      <li>生理のとき以外に出血がある（不正出血）</li>
+      <li>経血量が急に変わった、日常生活に支障が出るほど生理痛が重い</li>
+    </ul>
+    <p>
+      女性の健康に関する基礎知識は、厚生労働省研究班監修の情報サイト「<a href="https://w-health.jp/" target="_blank" rel="noopener">ヘルスケアラボ</a>」でも確認できます。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。周期は体調・年齢・ストレス等で変動します。避妊・妊娠・体調に関する判断は医療機関にご相談ください。本ツールは医学的な診断を行うものではありません。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '排卵日はどうやって計算していますか？', a: '排卵から次の生理までの黄体期が約14日で安定していることを利用し、「次回の生理予定日 − 14日」で予測しています。周期の長さによって排卵日も前後します。' },
+    { q: '生理周期がわからない場合は？', a: '一般的な平均である28日を初期値にしています。数か月間の生理開始日を記録すると、より正確な周期がわかります。' },
+    { q: '予測どおりに避妊・妊娠できますか？', a: 'いいえ。排卵日は体調やストレスで前後し、本ツールの予測はあくまで目安です。避妊や妊活の判断は医療機関にご相談ください。' },
+    { q: '排卵日は正確に予測できますか？', a: 'カレンダー計算だけで排卵日を正確に特定することはできません。排卵は体調・ストレス・ホルモンバランスにより、同じ人でも周期ごとに前後するためです。より正確に知りたい場合は、基礎体温の記録や排卵検査薬、婦人科での検査を併用してください。' },
+    { q: '避妊に使えますか？', a: '使えません。周期計算で妊娠しにくい日を推定する方法（オギノ式）は失敗率が高く、避妊法としては推奨されません。妊娠を望まない場合は、医師に相談のうえ、確実性の高い避妊方法を選択してください。' },
+    { q: '生理周期が不規則な場合はどうすればいいですか？', a: '周期が不規則な場合、本ツールの予測精度は大きく下がります。まず数か月分の生理開始日を記録して、ご自身の周期の傾向を把握してください。周期が25日未満・39日以上の状態が続く場合や、3か月以上生理がない場合は、婦人科の受診をおすすめします。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { predictPeriods, ovulation, fertileWindow } from '../../lib/seiri.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function render() {
+    const last = $('last').value;
+    const cycle = Number($('cycle').value);
+    const box = $('result');
+
+    const ov = ovulation(last, cycle);
+    const fw = fertileWindow(last, cycle);
+    const nexts = predictPeriods(last, cycle, 3);
+
+    if (!ov || !fw || !nexts) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    box.classList.add('visible');
+    $('ovulation').textContent = ov;
+    $('fertile').textContent = `${fw.start} 〜 ${fw.end}`;
+    $('next1').textContent = nexts[0];
+    $('next2').textContent = nexts[1];
+    $('next3').textContent = nexts[2];
+
+    window.setResultShare?.(
+      `排卵日・生理日計算器\n排卵日（予測）：${ov}\n妊娠しやすい時期：${fw.start}〜${fw.end}\n次回の生理：${nexts[0]}`
+    );
+  }
+
+  $('last').addEventListener('input', render);
+  $('last').addEventListener('change', render);
+  $('cycle').addEventListener('input', render);
+  $('cycle').addEventListener('change', render);
+</script>
