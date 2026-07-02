@@ -5,7 +5,7 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'base64';
-const title = 'Base64 エンコード / デコードツール - 日本語対応・コピペで即変換 | 計算ツール';
+const title = 'Base64 エンコード/デコード（日本語対応） | 計算ツール';
 const description =
   '文字列とBase64を相互変換できる無料ツール。UTF-8に対応し、日本語や絵文字を含む文字列も文字化けせず正しくエンコード・デコードできます。処理はブラウザ内で完結し、入力内容がサーバーへ送信されることはありません。';
 const jsonld = {
@@ -20,7 +20,7 @@ const jsonld = {
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
-    <div class="crumb"><a href="/">ホーム</a> ／ Base64 変換</div>
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/dev-tool/">開発者ツール</a> ／ Base64 変換</div>
     <h1>Base64 エンコード / デコードツール</h1>
     <p>文字列とBase64を相互に変換できるツールです。UTF-8に対応しているので、日本語や絵文字を含む文字列も文字化けせずに変換できます。テキストを入力すると自動で結果が表示されます。</p>
   </div>

@@ -5,7 +5,7 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'calorie';
-const title = 'カロリー・基礎代謝計算器 - TDEE・メンテナンスカロリー・PFCバランスを計算 | 計算ツール';
+const title = 'カロリー・基礎代謝計算器 - TDEE・PFC計算 | 計算ツール';
 const description =
   '性別・年齢・身長・体重と活動レベルから、基礎代謝（BMR）と1日の総消費カロリー（TDEE）を計算。維持・減量・増量の目標別メンテナンスカロリーと、たんぱく質・脂質・炭水化物のPFCバランス（g）まで瞬時に算出する無料ツールです。';
 const jsonld = {
@@ -20,7 +20,7 @@ const jsonld = {
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
-    <div class="crumb"><a href="/">ホーム</a> ／ カロリー計算</div>
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/kenko/">健康・身体</a> ／ カロリー計算</div>
     <h1>カロリー・基礎代謝計算器</h1>
     <p>基礎代謝（BMR）と1日の総消費カロリー（TDEE）、目標別メンテナンスカロリーとPFCバランスをまとめて計算します。</p>
   </div>

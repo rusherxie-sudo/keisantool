@@ -10,7 +10,7 @@ const catStyle = (name) => {
   return c ? `--cat-color:${c.accent};--cat-tint:${c.tint}` : '';
 };
 
-const title = '日本語計算ツール一覧 - 税金・健康・占い・給与の無料計算ツール | 計算ツール';
+const title = '無料計算ツール一覧 - 税金・健康・占い・給与・日付の計算 | 計算ツール';
 const description =
   '消費税・BMI・厄年・出産予定日・給与・偏差値・国民健康保険料など、日常で使える計算ツールを無料でまとめました。すべてブラウザ上でその場で計算できます。';
 const jsonld = {
@@ -22,7 +22,8 @@ const jsonld = {
 };
 
 // 高頻ツール（首页ローカルの固定 slug リスト。tools.js のメタ構造は変えない）
-const FEATURED = ['zeizei', 'nenrei', 'bmi', 'color-code', 'tani', 'kyuyo'];
+// rokusei は GSC 実測で全站クリックの 2/3 を占めるトップページ（2026-07 レビュー）。
+const FEATURED = ['rokusei', 'zeizei', 'nenrei', 'bmi', 'color-code', 'kyuyo'];
 const featured = FEATURED.map(getTool).filter(Boolean);
 
 const byCategory = categories
@@ -32,7 +33,7 @@ const byCategory = categories
 <ToolLayout title={title} description={description} slug="" current="" jsonld={jsonld} wide={true}>
   <div slot="hero" class="home-hero">
     <div class="home-hero__inner">
-      <h1>日本語計算ツール一覧</h1>
+      <h1>無料計算ツール一覧</h1>
       <p>税金・健康・日付・変換を、ブラウザですぐ計算。</p>
     </div>
   </div>

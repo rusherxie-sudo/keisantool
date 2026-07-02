@@ -3,11 +3,34 @@ import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import FloatingShare from '../components/FloatingShare.astro';
-import { getColorBySlug, getColorByCategorySlug } from '../data/tools.js';
+import { getColorBySlug, getColorByCategorySlug, getTool, getCategorySlug } from '../data/tools.js';
 
 const { title, description, slug, current, jsonld, wide } = Astro.props;
 const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
 const ogImage = new URL('/og.png', Astro.site).href;
+
+// WebApplication に url が無ければ canonical を補完（各ページの frontmatter を触らず一括対応）
+const jsonldFinal =
+  jsonld && jsonld['@type'] === 'WebApplication' && !jsonld.url
+    ? { ...jsonld, url: canonical }
+    : jsonld;
+
+// ツールページには BreadcrumbList を一括注入（ホーム ／ カテゴリ ／ ツール名）。
+// カテゴリページは自前で BreadcrumbList を持つため getTool が undefined → 注入しない。
+const _tool = getTool(current);
+const _crumbCat = _tool ? getCategorySlug(_tool.category) : '';
+const breadcrumbJsonld =
+  _tool && _crumbCat
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
+          { '@type': 'ListItem', position: 2, name: _tool.category, item: new URL(`/category/${_crumbCat}/`, Astro.site).href },
+          { '@type': 'ListItem', position: 3, name: _tool.name, item: canonical },
+        ],
+      }
+    : null;
 
 // ページ所属カテゴリのテーマ色を解決：ツールslug優先 → カテゴリslug → ブランド色
 const _toolColor = getColorBySlug(current);
@@ -32,7 +55,9 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   <meta name="description" content={description} />
   <link rel="canonical" href={canonical} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ja_JP" />
   <meta property="og:site_name" content="計算ツール" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
@@ -50,7 +75,8 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
     href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
-  {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
+  {jsonldFinal && <script type="application/ld+json" set:html={JSON.stringify(jsonldFinal)} />}
+  {breadcrumbJsonld && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonld)} />}
 </head>
 <body>
   <SiteHeader current={current} />

@@ -13,14 +13,14 @@ const jsonld = {
   '@type': 'WebApplication',
   name: '年齢計算器',
   description,
-  applicationCategory: 'UtilitiesApplication',
+  applicationCategory: 'UtilityApplication',
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
-    <div class="crumb"><a href="/">ホーム</a> ／ 年齢計算</div>
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 年齢計算</div>
     <h1>年齢計算器</h1>
     <p>生年月日を入力するだけで、満年齢・数え年・学年・干支をその場で自動計算します。</p>
   </div>

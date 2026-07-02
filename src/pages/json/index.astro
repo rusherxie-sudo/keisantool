@@ -20,7 +20,7 @@ const jsonld = {
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
-    <div class="crumb"><a href="/">ホーム</a> ／ JSON整形</div>
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/dev-tool/">開発者ツール</a> ／ JSON整形</div>
     <h1>JSON 整形・圧縮ツール</h1>
     <p>JSON を貼り付けて「整形」または「圧縮」を押すだけ。読みやすいインデント付きに整えたり、一行に圧縮（ミニファイ）したりできます。構文エラーがあれば内容を表示します。処理はすべてお使いのブラウザ内で完結します。</p>
   </div>
@@ -68,6 +68,54 @@ const jsonld = {
       <li><strong>構文チェック</strong>：JSON の書式が正しくない場合は、結果のかわりにエラー内容を赤字で表示します。カンマの付け忘れやクォートの不一致などの確認に使えます。</li>
     </ul>
     <p>「結果をコピー」ボタンを押すと、整形・圧縮した JSON をそのままクリップボードにコピーできます。</p>
+
+    <h3>JSON とは</h3>
+    <p>
+      JSON（JavaScript Object Notation）は、RFC 8259 として標準化されている軽量なデータ交換フォーマットです。<code>{'{"キー": 値}'}</code> の形のオブジェクトと <code>[ ]</code> の配列を組み合わせて構造を表し、値に使えるのは文字列・数値・真偽値（true / false）・null・オブジェクト・配列の6種類だけです。文法がシンプルでプログラミング言語を問わず扱えるため、Web API のレスポンスや設定ファイルの形式として広く使われています。
+    </p>
+
+    <h3>よくある構文エラーと直し方</h3>
+    <p>「構文エラー」と表示されたら、まず次の4パターンを疑ってください。いずれも JavaScript のコードでは許されても、JSON の仕様では認められない書き方です。</p>
+    <table class="json-err-table">
+      <thead><tr><th>エラーの原因</th><th>NG の例</th><th>正しい書き方</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>末尾カンマ</td>
+          <td><code>{'{"a": 1,}'}</code></td>
+          <td><code>{'{"a": 1}'}</code>（最後の要素の後ろにカンマを置かない）</td>
+        </tr>
+        <tr>
+          <td>シングルクォート</td>
+          <td><code>{"{'name': '太郎'}"}</code></td>
+          <td><code>{'{"name": "太郎"}'}</code>（文字列は必ずダブルクォート）</td>
+        </tr>
+        <tr>
+          <td>キーの引用符漏れ</td>
+          <td><code>{'{name: "太郎"}'}</code></td>
+          <td><code>{'{"name": "太郎"}'}</code>（キーにも必ず引用符を付ける）</td>
+        </tr>
+        <tr>
+          <td>コメントの記入</td>
+          <td><code>{'{"a": 1 // メモ}'}</code></td>
+          <td>コメントは削除する（JSON にコメントは書けません）</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>エラーメッセージの読み方</h3>
+    <p>
+      エラーメッセージはお使いのブラウザの JSON パーサーが出力するもので、多くのブラウザでは「Unexpected token ...」のように<strong>想定外だった文字</strong>と、その<strong>位置</strong>（先頭から数えた文字数や行・列番号）が示されます。示された位置そのものではなく、その直前に原因があることも多いため、位置の少し手前のカンマや引用符を重点的に確認するのがコツです。エラーを直しては再度ボタンを押す、を繰り返せば構文チェッカーとしても使えます。
+    </p>
+
+    <h3>整形（フォーマット）と圧縮（ミニファイ）の使い分け</h3>
+    <p>
+      <strong>整形</strong>は「人が読む」場面に向いています。API レスポンスの中身の確認、エラー原因の調査、レビューや資料への貼り付けなど、構造を目で追いたいときに使ってください。<strong>圧縮</strong>は「機械が扱う」場面に向いています。余分な空白と改行を取り除いてデータ量を減らせるため、通信量の節約、設定値としての埋め込み、ログへの1行出力などに便利です。JSON では空白や改行はデータの意味に影響しないため、整形・圧縮のどちらを行っても中身の値は一切変わりません。
+    </p>
+
+    <h3>JSON と JavaScript オブジェクトの違い</h3>
+    <p>
+      見た目はよく似ていますが、JSON はあくまで「テキスト（文字列）の形式」であり、JavaScript のオブジェクトそのものではありません。JSON にはキーを必ずダブルクォートで囲む、シングルクォートを使えない、コメント・末尾カンマ・undefined・関数を書けない、といった JavaScript より厳しい制約があります。JavaScript 側では <code>JSON.parse()</code> でテキストをオブジェクトに、<code>JSON.stringify()</code> でオブジェクトをテキストに変換でき、本ツールの整形・圧縮・構文チェックもこの標準の仕組みに基づいて処理しています。
+    </p>
     <div class="disclaimer">※ 処理はすべてお使いのブラウザ内で完結し、入力した JSON がサーバーへ送信されることはありません。計算結果はあくまで参考値です。</div>
   </section>
 
@@ -77,6 +125,9 @@ const jsonld = {
     { q: 'JSONの整形（フォーマット）とは？', a: '改行とインデントを付けて読みやすく整えることです。本ツールはインデントを2スペース・4スペース・タブから選べます。' },
     { q: 'JSONの圧縮（ミニファイ）とは？', a: '余分な空白や改行を取り除いて1行にすることです。通信量の削減やコピーに便利です。' },
     { q: '構文エラーはチェックできますか？', a: 'はい。JSONの書式が正しくない場合は、エラー内容を表示します。' },
+    { q: 'JSON にコメントは書けますか？', a: 'いいえ。JSON の仕様（RFC 8259）にはコメントの定義がなく、// や /* */ を書くと構文エラーになります。どうしてもメモを残したい場合は、"_comment" のようなキーを持つ通常のデータとして書く方法が使われます。' },
+    { q: '「\\u30c6\\u30b9\\u30c8」のような表記（\\uXXXX）を日本語に戻せますか？', a: 'はい。Unicode エスケープ（\\uXXXX）を含む JSON を整形・圧縮すると、読める日本語の文字として出力されます。逆に、本ツールが日本語を \\uXXXX 形式に変換して出力することはありません。' },
+    { q: '整形すると数値の表記が変わることがありますか？', a: 'あります。JavaScript の数値として解釈し直すため、「1.0」が「1」になるなど表記が正規化されるほか、約16桁を超える大きな数値は丸められることがあります。桁数の大きい ID などは文字列として扱うのが安全です。' },
   ]} />
 
   <div class="ad-slot"></div>
@@ -197,6 +248,35 @@ const jsonld = {
   }
   .copy-btn.copied {
     background: var(--success);
+  }
+  /* 「よくあるエラー」表と説明文中のインラインコード */
+  .json-err-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 18px;
+    font-size: 0.88rem;
+  }
+  .json-err-table th,
+  .json-err-table td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.7;
+  }
+  .json-err-table th {
+    color: var(--text-3, #6b7280);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .howto code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.84em;
+    background: var(--bg-result, #f3f6fb);
+    border: 1px solid var(--border-2, #e5e7eb);
+    border-radius: 4px;
+    padding: 1px 6px;
+    word-break: break-all;
   }
 </style>
 

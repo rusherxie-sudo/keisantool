@@ -1,7 +1,11 @@
 ---
+import { categoryMeta } from '../data/tools.js';
 ---
 <footer class="site-footer">
   <div class="site-footer__inner">
+    <div class="footer-links footer-links--cats">
+      {categoryMeta.map((c) => <a href={`/category/${c.slug}/`}>{c.name}</a>)}
+    </div>
     <div class="footer-links">
       <a href="/">ホーム</a>
       <a href="/about/">このサイトについて</a>

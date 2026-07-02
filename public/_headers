@@ -1,0 +1,9 @@
+# ハッシュ付き静的アセットは1年キャッシュ（Cloudflare Pages の _headers 規約）
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=86400
+
+/favicon.ico
+  Cache-Control: public, max-age=86400

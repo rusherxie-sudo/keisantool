@@ -5,7 +5,7 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'color-code';
-const title = 'カラーコード変換ツール - HEX・RGB・HSL相互変換／抵抗カラーコード | 計算ツール';
+const title = 'カラーコード変換 - HEX・RGB・HSL・抵抗 | 計算ツール';
 const description =
   'HEX・RGB・HSLを相互に変換できる無料カラーコードツール。カラーピッカーで色を選んでコードを取得、よく使う色見本のコピー、4色環の抵抗カラーコードから抵抗値も計算できます。';
 const jsonld = {
@@ -58,7 +58,7 @@ const toleranceColors = resistorColors.filter((c) =>
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
-    <div class="crumb"><a href="/">ホーム</a> ／ カラーコード変換ツール</div>
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/henkan/">変換・ツール</a> ／ カラーコード変換ツール</div>
     <h1>カラーコード変換ツール</h1>
     <p>HEX・RGB・HSL を相互に変換。カラーピッカーで色を選んだり、よく使う色のコピー、抵抗カラーコードからの抵抗値計算もできます。</p>
   </div>

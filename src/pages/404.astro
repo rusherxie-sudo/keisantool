@@ -1,0 +1,65 @@
+---
+import ToolLayout from '../layouts/ToolLayout.astro';
+import { getTool } from '../data/tools.js';
+
+// Cloudflare Pages は dist/404.html があると SPA フォールバックを止め、
+// 存在しないURLに正しく 404 を返す（ソフト404対策の要）。
+const title = 'ページが見つかりません（404） | 計算ツール';
+const description =
+  'お探しのページは見つかりませんでした。URLが変更・削除された可能性があります。トップページや人気の計算ツールからお探しください。';
+const popular = ['rokusei', 'nenrei', 'zeizei', 'bmi', 'wareki', 'nissu'].map(getTool).filter(Boolean);
+---
+<ToolLayout title={title} description={description} slug="404" current="">
+  <div class="page-hero">
+    <h1>ページが見つかりません</h1>
+    <p>お探しのページは、URLが変更されたか、削除された可能性があります。</p>
+  </div>
+
+  <div class="calc-card nf-card">
+    <p class="nf-code" aria-hidden="true">404</p>
+    <p>入力したURLに誤りがないかご確認のうえ、以下からお探しください。</p>
+    <p><a class="nf-home" href="/">← トップページへ戻る</a></p>
+    <h2 class="nf-h2">よく使われる計算ツール</h2>
+    <ul class="nf-list">
+      {popular.map((t) => (
+        <li><a href={`/${t.slug}/`}>{t.icon} {t.name}</a></li>
+      ))}
+    </ul>
+  </div>
+</ToolLayout>
+
+<style>
+  .nf-card {
+    text-align: center;
+  }
+  .nf-code {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--cat-color, #2563eb);
+    margin: 6px 0 14px;
+  }
+  .nf-home {
+    display: inline-block;
+    margin: 6px 0 10px;
+    font-weight: 700;
+  }
+  .nf-h2 {
+    font-size: 1.05rem;
+    margin: 22px 0 10px;
+  }
+  .nf-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 420px;
+    text-align: left;
+  }
+  .nf-list li {
+    padding: 7px 0;
+    border-bottom: 1px solid #eef1f5;
+  }
+  .nf-list li:last-child {
+    border-bottom: none;
+  }
+</style>
