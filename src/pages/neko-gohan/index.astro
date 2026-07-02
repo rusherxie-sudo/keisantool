@@ -1,0 +1,196 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'neko-gohan';
+const title = '猫のごはん量計算器 - 体重とフードのカロリーから1日の餌の量を計算 | 計算ツール';
+const description =
+  '猫の体重・避妊去勢・BCS・フードのカロリーから、1日に必要なごはんの量（グラム）を計算する無料ツール。獣医栄養学の標準式（RER・DER）に基づきます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '猫のごはん量計算器',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/pet/">ペット・動物</a> ／ 猫のごはん量計算</div>
+    <h1>猫のごはん量計算器</h1>
+    <p>愛猫の体重・避妊去勢の状態・BCS（体型）と、フードのカロリーを入力するだけで、1日に必要なごはんの量（グラム）を自動で計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="field-group">
+      <div class="field-group__title"><span class="field-group__title-text">愛猫の情報</span></div>
+
+      <div class="field-grid">
+        <label class="field">
+          <span class="field__label">現在の体重</span>
+          <span class="field__box">
+            <input type="number" id="weight" inputmode="decimal" step="0.1" min="0" placeholder="例：4.0" />
+            <span class="field__suffix">kg</span>
+          </span>
+        </label>
+
+        <label class="field">
+          <span class="field__label">ライフステージ・状態</span>
+          <span class="field__box">
+            <select id="state">
+              <option value="neutered" selected>去勢・避妊済みの成猫</option>
+              <option value="intact">未去勢の成猫</option>
+              <option value="obeseProne">肥満傾向・減量中</option>
+              <option value="kitten">子猫（成長期）</option>
+            </select>
+          </span>
+        </label>
+      </div>
+
+      <div class="field-grid" style="margin-top:14px">
+        <label class="field">
+          <span class="field__label">BCS（体型 / 9段階・5が理想）</span>
+          <span class="field__box">
+            <select id="bcs">
+              <option value="1">1 — 痩せすぎ（肋骨が浮き出る）</option>
+              <option value="2">2 — 痩せ</option>
+              <option value="3">3 — やや痩せ</option>
+              <option value="4">4 — やや細め</option>
+              <option value="5" selected>5 — 理想体型</option>
+              <option value="6">6 — やや太め</option>
+              <option value="7">7 — 太り気味</option>
+              <option value="8">8 — 肥満</option>
+              <option value="9">9 — 重度の肥満</option>
+            </select>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group__title"><span class="field-group__title-text">フード・食事</span></div>
+
+      <div class="field-grid">
+        <label class="field">
+          <span class="field__label">フードのカロリー</span>
+          <span class="field__box">
+            <input type="number" id="kcal" inputmode="numeric" min="0" placeholder="例：400（総合栄養食の目安）" />
+            <span class="field__suffix">kcal/100g</span>
+          </span>
+        </label>
+
+        <label class="field">
+          <span class="field__label">1日の食事回数</span>
+          <span class="field__box">
+            <input type="number" id="meals" inputmode="numeric" min="1" value="2" />
+            <span class="field__suffix">回</span>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">1日のごはん量</div>
+      <div class="result-main" id="daily">― g</div>
+      <div class="result-rows result__rows--2col">
+        <div class="result-row"><span class="label">1回あたり</span><span class="value green" id="per-meal">― g</span></div>
+        <div class="result-row"><span class="label">理想体重</span><span class="value" id="ideal">― kg</span></div>
+        <div class="result-row"><span class="label">安静時エネルギー（RER）</span><span class="value" id="rer">― kcal</span></div>
+        <div class="result-row"><span class="label">1日エネルギー（DER）</span><span class="value" id="der">― kcal</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>愛猫の現在の体重・ライフステージ・BCS（体型）と、与えているフードのカロリー（kcal/100g）を入力すると、1日に必要なごはんの量がその場で自動計算されます。ボタンを押す必要はありません。フードのカロリーはパッケージの「代謝エネルギー（ME）」の表示を、100gあたりの値で入力してください。</p>
+    <p>計算は獣医栄養学で広く使われる次の標準式に基づいています。</p>
+    <ul>
+      <li><strong>RER（安静時エネルギー要求量）＝70 ×（理想体重kg）<sup>0.75</sup></strong>：何もせず安静にしていても消費する、生命維持に必要な1日の最低限のカロリーです。</li>
+      <li><strong>DER（1日エネルギー要求量）＝RER × 活動係数</strong>：RERにライフステージや避妊去勢の状態に応じた係数をかけ、1日に実際に必要なカロリーを求めます。本ツールの猫の係数は、去勢・避妊済みの成猫＝1.2、未去勢の成猫＝1.4、肥満傾向・減量中＝1.0、子猫＝2.5を用います（Merck/NRC由来）。</li>
+      <li><strong>1日の給与量（g）＝DER ÷（フードのkcal/100g）× 100</strong>：必要カロリーをフードのカロリー密度で割って、グラム数に換算します。グラム数は安全側に切り捨てで表示し、1回量は1日量を食事回数で割った値（切り捨て）です。</li>
+    </ul>
+    <p>カロリー計算の基準には、現在の体重ではなく<strong>理想体重</strong>を使います。理想体重はBCS（ボディコンディションスコア）から推定しています。</p>
+    <ul>
+      <li><strong>BCS 1〜3</strong>：痩せ気味。肋骨や背骨が浮き出て見えます。</li>
+      <li><strong>BCS 4〜5</strong>：理想体型。肋骨に軽く触れられ、上から見てゆるやかなくびれがあります（5が理想）。</li>
+      <li><strong>BCS 6〜9</strong>：肥満傾向。肋骨に触れにくく、お腹にたるみが目立ちます。</li>
+    </ul>
+    <p>BCSが5（理想）であれば理想体重は現在の体重とほぼ同じになり、太り気味（6以上）なら現在より軽い体重を、痩せ気味（4以下）なら現在より重い体重を目標として計算します。</p>
+    <p>なお、「シニア（高齢猫）」専用の活動係数は一次資料に明確な定めがないため、本ツールでは設けていません。シニア猫の場合は、活動量に応じて「去勢・避妊済みの成猫」または「肥満傾向・減量中」の係数を目安として選んでください。実際の適量は、年齢・運動量・健康状態・フードの種類によって個体差があります。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。理想体重やフード量は個体差があり、健康・医療に関わる判断は必ずかかりつけの獣医師にご相談ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '猫の1日のごはんの量はどうやって決めますか？', a: 'まずBCS（体型）から理想体重を求め、その理想体重で安静時エネルギー要求量（RER＝70×体重^0.75）を計算します。これに避妊去勢の状態などに応じた活動係数をかけて1日に必要なカロリー（DER）を出し、フードのカロリーで割ってグラム数に換算します。本ツールが自動で計算します。' },
+    { q: 'BCS（ボディコンディションスコア）とは何ですか？', a: '猫の体型を1〜9の9段階で表す指標で、5が理想です。肋骨の触れやすさや上から見たくびれで判断します。BCSが理想からずれていると、現在の体重と理想体重が異なるため、ごはんの量も変わります。' },
+    { q: 'フードのカロリーはどこを見ればいいですか？', a: 'フードのパッケージに「代謝エネルギー（ME）」や「エネルギー」として100gあたりや1kgあたりのkcalが記載されています。100gあたりの値に換算して入力してください（例：1kgあたり4000kcalなら100gあたり400kcal）。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  /* select を中身いっぱいに */
+  .field__box select { width: 100%; }
+</style>
+
+<script>
+  import { rer, der, dailyGrams, idealWeight, FACTORS } from '../../lib/pet-food.js';
+
+  const $ = (id) => document.getElementById(id);
+  const SPECIES = 'cat';
+
+  const gram = (n) => Math.round(n).toLocaleString('ja-JP') + ' g';
+  const kg = (n) => (Math.round(n * 10) / 10).toLocaleString('ja-JP') + ' kg';
+  const kcal = (n) => Math.round(n).toLocaleString('ja-JP') + ' kcal';
+
+  function render() {
+    const weight = parseFloat($('weight').value);
+    const bcs = parseInt($('bcs').value, 10);
+    const state = $('state').value;
+    const kcalPer100g = parseFloat($('kcal').value);
+    let meals = parseInt($('meals').value, 10);
+    if (!Number.isFinite(meals) || meals < 1) meals = 1;
+
+    const box = $('result');
+    const ideal = idealWeight(weight, bcs);
+    const factor = FACTORS[SPECIES][state];
+    const rerVal = ideal !== null ? rer(ideal) : null;
+    const derVal = ideal !== null ? der(ideal, factor) : null;
+    const daily = derVal !== null ? dailyGrams(derVal, kcalPer100g) : null;
+
+    if (daily === null) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+
+    box.classList.add('visible');
+    $('daily').textContent = gram(daily);
+    $('per-meal').textContent = gram(Math.floor(daily / meals));
+    $('ideal').textContent = kg(ideal);
+    $('rer').textContent = kcal(rerVal);
+    $('der').textContent = kcal(derVal);
+
+    window.setResultShare?.(
+      `猫のごはん量計算器\n` +
+      `1日のごはん量：${$('daily').textContent}\n` +
+      `1回あたり：${$('per-meal').textContent}（1日${meals}回）\n` +
+      `理想体重：${$('ideal').textContent} ／ DER：${$('der').textContent}`
+    );
+  }
+
+  ['weight', 'kcal', 'meals'].forEach((id) => $(id).addEventListener('input', render));
+  ['state', 'bcs'].forEach((id) => $(id).addEventListener('change', render));
+</script>

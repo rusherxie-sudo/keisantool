@@ -1,0 +1,134 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'inu-ninshin';
+const title = '犬の妊娠期間計算器 - 交配日から出産予定日・妊娠日数を自動計算 | 計算ツール';
+const description =
+  '犬の交配日を入力するだけで、出産予定日（交配日＋63日）と出産可能範囲、現在の妊娠日数・週数・時期を自動計算する無料ツール。Cornell・AKC・Merck 等の獣医情報に基づきます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '犬の妊娠期間計算器',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/pet/">ペット・動物</a> ／ 犬の妊娠期間計算</div>
+    <h1>犬の妊娠期間計算器</h1>
+    <p>犬の交配日を入力するだけで、出産予定日・出産可能範囲・現在の妊娠日数・妊娠時期を自動で計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="mating">交配日</label>
+      <input type="date" id="mating" />
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">出産予定日（交配日＋63日）</div>
+      <div class="result-main" id="due-date">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">出産可能範囲（＋56〜72日）</span><span class="value" id="due-range">―</span></div>
+        <div class="result-row"><span class="label">現在の妊娠日数</span><span class="value" id="elapsed">―</span></div>
+        <div class="result-row"><span class="label">妊娠時期</span><span class="value" id="stage">―</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>
+      犬が交配した日（交配日）を選ぶだけで、出産予定日・出産可能範囲・現在の妊娠日数と妊娠時期をその場で自動計算します。ボタンを押す必要はありません。
+    </p>
+    <p>
+      犬の妊娠期間は<strong>平均約63日</strong>とされますが、<strong>交配日を基準にすると±7日ほどの幅</strong>が出やすく、出産予定日は56〜72日の範囲で前後します。これは、<strong>精子が雌の体内で7日以上生存</strong>でき、雌が排卵の前後数日にわたって交配を受け入れるため、交配日と実際の受精・着床日がずれやすいことが理由です。動物病院でホルモン検査などにより<strong>排卵日を特定できた場合は、排卵日から63日（±1〜2日）</strong>でより正確に予定日を求められます。本ツールは入力された交配日を基準に計算します。
+    </p>
+    <p>
+      現在の妊娠日数は、交配日から本日までの経過日数を「妊娠○日目（○週○日）」の形で表示します。妊娠時期のおおまかな発育の目安は次のとおりです。
+    </p>
+    <ul>
+      <li><strong>前期</strong>（〜4週ごろ）：受精・着床の時期。外見の変化はほとんどありません。</li>
+      <li><strong>中期</strong>（5〜6週ごろ）：胎子が大きく育ち、お腹のふくらみや乳腺の発達が目立ってくる時期です。</li>
+      <li><strong>後期</strong>（7週ごろ〜）：出産に向けて胎子の発育が仕上がる時期。<strong>妊娠55日以降</strong>であればレントゲン検査で胎子の数を確認できます。<strong>分娩の12〜24時間前には体温が一時的に低下</strong>するため、出産が近づいたら体温を測ると目安になります。</li>
+    </ul>
+    <p>
+      巣作りや落ち着きのなさ、食欲の変化など出産のサインが見られたら、分娩に備えましょう。正確な妊娠の確認や胎子の数・健康状態の把握、出産日の最終的な判断は、<strong>必ずかかりつけの獣医師</strong>の診察を受けてください。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。出産予定日には個体差があり、健康・医療に関わる判断は必ずかかりつけの獣医師にご相談ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '犬の妊娠期間は何日くらいですか？', a: '平均で約63日です。ただし交配日を基準にすると±7日ほどの幅が出やすく、56〜72日の範囲で前後します。' },
+    { q: '出産予定日の幅が大きいのはなぜですか？', a: '精子が体内で7日以上生存し、雌が排卵前後の数日に交配を受け入れるため、交配日と受精日がずれやすいからです。排卵日が特定できれば排卵日＋63日でより正確に求められます。' },
+    { q: '出産が近いことはどうやって分かりますか？', a: '分娩の12〜24時間前には体温が一時的に低下します。妊娠55日以降ならレントゲンで胎子の数も確認でき、巣作りなどの行動も目安になります。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { dueDate, dueRange, elapsed, pregnancyStage } from '../../lib/pet-pregnancy.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  // ISO（YYYY-MM-DD）→ 「〇年〇月〇日」
+  const fmtJP = (iso) => {
+    const [y, m, d] = iso.split('-');
+    return `${Number(y)}年${Number(m)}月${Number(d)}日`;
+  };
+
+  function render() {
+    const mating = $('mating').value;
+    const box = $('result');
+
+    const due = dueDate(mating, 'inu');
+    if (!due) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    box.classList.add('visible');
+    $('due-date').textContent = fmtJP(due);
+
+    const range = dueRange(mating, 'inu');
+    $('due-range').textContent = range ? `${fmtJP(range.early)} 〜 ${fmtJP(range.late)}` : '―';
+
+    const el = elapsed(mating, new Date());
+    if (el) {
+      const w = Math.floor(el.days / 7);
+      const d = el.days % 7;
+      $('elapsed').textContent = `妊娠${el.days}日目（${w}週${d}日）`;
+      const stage = pregnancyStage(el.days, 'inu');
+      $('stage').textContent = stage || '―';
+    } else {
+      $('elapsed').textContent = '―';
+      $('stage').textContent = '―';
+    }
+
+    // 結果サマリー：DOM の表示値から組み立て（再計算しない）。
+    const lines = [
+      '犬の妊娠期間計算器',
+      `出産予定日：${$('due-date').textContent}`,
+    ];
+    if ($('elapsed').textContent !== '―') {
+      lines.push(`現在：${$('elapsed').textContent}`);
+    }
+    window.setResultShare?.(lines.join('\n'));
+  }
+
+  $('mating').addEventListener('input', render);
+  $('mating').addEventListener('change', render);
+</script>

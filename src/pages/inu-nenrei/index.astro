@@ -1,0 +1,164 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { dogHumanAge } from '../../lib/pet-age.js';
+
+const slug = 'inu-nenrei';
+const title =
+  '犬の年齢計算器（人間換算）- 犬の年齢は人間で何歳？体型別に計算 | 計算ツール';
+const description =
+  '犬の年齢を人間の年齢に換算する無料ツール。環境省データに基づき、小型・中型・大型犬の体型別に人間換算年齢を計算し、1〜20歳の早見表も掲載。';
+
+// SSR 用の静的早見表データ（犬の年齢 1〜20 歳を 3 体型分まとめて生成）。
+// 小型・中型は同一式のため「小型・中型」1 列、大型 1 列の計 2 列で併記する。
+const AGE_TABLE = [];
+for (let age = 1; age <= 20; age++) {
+  AGE_TABLE.push({
+    age,
+    small: dogHumanAge(age, 'small'), // 小型・中型 共通
+    large: dogHumanAge(age, 'large'),
+  });
+}
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '犬の年齢計算器（人間換算）',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/pet/">ペット・動物</a> ／ 犬の年齢計算</div>
+    <h1>犬の年齢計算器（人間換算）</h1>
+    <p>愛犬の年齢を入力するだけで、人間の年齢に換算します。体型（小型・中型・大型）を選ぶと、犬種の大きさに応じた人間換算年齢をその場で計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="age">犬の年齢（歳）</label>
+      <input type="number" id="age" inputmode="decimal" min="0" step="0.5" placeholder="例：5" />
+    </div>
+
+    <div class="form-group">
+      <label>体型（犬種の大きさ）</label>
+      <div class="radio-group">
+        <input type="radio" name="size" id="size-small" value="small" checked />
+        <label for="size-small">小型（〜10kg）</label>
+        <input type="radio" name="size" id="size-medium" value="medium" />
+        <label for="size-medium">中型（〜25kg）</label>
+        <input type="radio" name="size" id="size-large" value="large" />
+        <label for="size-large">大型（25kg〜）</label>
+      </div>
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">人間換算年齢</div>
+      <div class="result-main" id="human-age">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">犬の年齢</span><span class="value" id="dog-age">―</span></div>
+        <div class="result-row"><span class="label">体型</span><span class="value" id="size-label">―</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>
+      愛犬の年齢（歳）を入力し、体型を選ぶだけで、人間の年齢に換算した「人間の〇歳相当」をその場で自動表示します。ボタンを押す必要はありません。1歳未満や「1歳6ヶ月＝1.5歳」のように、月齢から小数で入力しても目安が計算できます。
+    </p>
+    <p>
+      換算には、環境省『飼い主のためのペットフード・ガイドライン』で示されている考え方をもとにした<strong>2区分式</strong>を使っています。犬は体が大きいほど老化が早く、寿命も短い傾向があるため、<strong>小型犬・中型犬</strong>と<strong>大型犬</strong>で計算式を分けています。
+    </p>
+    <ul>
+      <li><strong>小型犬・中型犬</strong>：1歳＝人間の15歳、2歳＝人間の24歳。<strong>3歳以降は1年ごとに＋4歳</strong>（24＋（犬の年齢−2）×4）。</li>
+      <li><strong>大型犬</strong>：1歳＝人間の12歳。<strong>2歳以降は1年ごとに＋7歳</strong>（12＋（犬の年齢−1）×7）。大型犬は小型・中型より老化が早く進みます。</li>
+    </ul>
+    <p>
+      なお、子犬の1年目は人間に換算すると一気に十数歳ぶん成長する特別な時期で、<strong>1歳は計算式の例外値</strong>（小型・中型＝15歳、大型＝12歳）として扱います。体重から体型がわからない場合は、おおよそ10kg以下を小型、10〜25kgを中型、25kgを超えると大型の目安としてください。
+    </p>
+
+    <h3>犬の年齢早見表（人間換算・1〜20歳）</h3>
+    <p>犬の年齢を人間の年齢に換算した早見表です。小型・中型犬は同じ計算式のため1つの列にまとめています。</p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>犬の年齢</th><th>小型・中型犬</th><th>大型犬</th></tr>
+          </thead>
+          <tbody>
+            {AGE_TABLE.map((row) => (
+              <tr>
+                <td class="num">{row.age}歳</td>
+                <td>人間の{row.small}歳</td>
+                <td>人間の{row.large}歳</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。犬種・個体差があり、健康・医療に関わる判断は必ず獣医師にご相談ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '犬の年齢は人間で何歳ですか？', a: '小型・中型犬は1歳＝人間の15歳、2歳＝24歳で、3歳以降は1年ごとに＋4歳です。大型犬は1歳＝12歳で、2歳以降は1年ごとに＋7歳になります。体型を選んで犬の年齢を入力すると自動で換算できます。' },
+    { q: '大型犬と小型犬で年齢の数え方は違いますか？', a: 'はい。犬は体が大きいほど老化が早いため、大型犬は小型・中型犬より人間換算年齢が大きくなります。たとえば10歳のとき、小型・中型犬は人間の56歳相当、大型犬は人間の75歳相当です。' },
+    { q: '子犬（1歳未満）の年齢も計算できますか？', a: '「0.5歳」のように小数で入力すれば目安が出せます。犬の1年目は成長が非常に早く、1歳で人間の十数歳に相当します。あくまで参考値としてご利用ください。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { dogHumanAge } from '../../lib/pet-age.js';
+
+  const $ = (id) => document.getElementById(id);
+  const SIZE_LABEL = { small: '小型犬（〜10kg）', medium: '中型犬（〜25kg）', large: '大型犬（25kg〜）' };
+
+  function selectedSize() {
+    const el = document.querySelector('input[name="size"]:checked');
+    return el ? el.value : 'small';
+  }
+
+  function render() {
+    const box = $('result');
+    const raw = $('age').value;
+    if (raw === '') {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    const years = Number(raw);
+    const size = selectedSize();
+    const human = dogHumanAge(years, size);
+    if (human === null) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    box.classList.add('visible');
+    $('human-age').textContent = `人間の${human}歳相当`;
+    $('dog-age').textContent = `${years}歳`;
+    $('size-label').textContent = SIZE_LABEL[size];
+
+    window.setResultShare?.(
+      `犬の年齢計算器（人間換算）\n犬の年齢：${years}歳（${SIZE_LABEL[size]}）\n人間換算：人間の${human}歳相当`
+    );
+  }
+
+  $('age').addEventListener('input', render);
+  document.querySelectorAll('input[name="size"]').forEach((el) => el.addEventListener('change', render));
+</script>

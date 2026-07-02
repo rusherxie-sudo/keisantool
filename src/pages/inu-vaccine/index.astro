@@ -1,0 +1,215 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'inu-vaccine';
+const title = '犬のワクチン接種スケジュール計算器 - 生年月日から接種時期の目安を表示 | 計算ツール';
+const description =
+  '子犬の生年月日を入力すると、混合ワクチン（初年度3回の目安）と狂犬病ワクチン（生後91日〜）の接種時期の目安を表示する無料ツール。WSAVA・狂犬病予防法に基づく一般的な目安です。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '犬のワクチン接種スケジュール計算器',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/pet/">ペット・動物</a> ／ 犬のワクチン接種スケジュール</div>
+    <h1>犬のワクチン接種スケジュール計算器</h1>
+    <p>子犬の生年月日を入力するだけで、混合ワクチンと狂犬病ワクチンの接種時期の目安をその場で表示します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="birth">子犬の生年月日</label>
+      <input type="date" id="birth" />
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">接種時期の目安カレンダー</div>
+
+      <div class="iv-section">
+        <h3 class="iv-h">① 混合ワクチン（初年度・3回の目安）</h3>
+        <div id="iv-core"></div>
+      </div>
+
+      <div class="iv-section">
+        <h3 class="iv-h">② 狂犬病ワクチン（生後91日〜）</h3>
+        <div id="iv-rabies"></div>
+      </div>
+
+      <div class="iv-section">
+        <h3 class="iv-h">③ 成犬になってからの追加（年1回 / 3年に1回）</h3>
+        <p class="iv-note" id="iv-adult">―</p>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と接種スケジュールの考え方</h2>
+    <p>
+      子犬の生年月日を選ぶだけで、混合ワクチン（初年度）と狂犬病ワクチンの接種時期の目安をその場で表示します。ボタンを押す必要はありません。表示されるのは<strong>あくまで一般的な目安のカレンダー</strong>で、医療上のアドバイスではありません。実際の接種時期・回数・ワクチンの種類は、必ずかかりつけの獣医師にご相談ください。
+    </p>
+
+    <h3>混合ワクチン（初年度）の目安</h3>
+    <p>
+      子犬は母犬からの移行抗体が残っているあいだはワクチンが効きにくいとされ、世界小動物獣医師会（WSAVA）のガイドラインでは、移行抗体が消える時期に確実に免疫をつけるため、<strong>生後6〜8週ごろに開始し、3〜4週ごとに、最後の接種が16週齢以降になるよう複数回</strong>接種する考え方が一般的です。本ツールでは目安として<strong>生後8週・12週・16週ごろの3回</strong>を表示しています。開始時期や回数・間隔は動物病院の方針や子犬の状態によって異なります。
+    </p>
+
+    <h3>狂犬病ワクチン（生後91日〜）</h3>
+    <p>
+      日本では<strong>狂犬病予防法</strong>により、<strong>生後91日以上の犬</strong>の飼い主には、市区町村への登録と、<strong>年1回の狂犬病予防注射</strong>が義務づけられています（違反した場合は罰則の対象になります）。本ツールでは生後91日にあたる日を「1回目を受けられる時期の目安」として表示し、以降は毎年1回の接種が必要です。
+    </p>
+    <p class="iv-callout">
+      ご注意：狂犬病の予防注射の期間は、現在は原則として<strong>毎年4〜6月</strong>とされていますが、2027年4月以降は通年で受けられるよう見直される見通しです（年1回の接種義務そのものは変わりません）。また、混合ワクチンと狂犬病ワクチンは、体への負担を考えて<strong>通常は同じ日には接種しません</strong>。接種の順番や間隔は獣医師の指示にしたがってください。
+    </p>
+
+    <h3>成犬になってからの追加接種（両論併記）</h3>
+    <p>
+      初年度の接種が終わった後の混合ワクチンの追加（追加接種・ブースター）の頻度には、考え方が分かれています。
+    </p>
+    <ul>
+      <li><strong>日本の動物病院では、混合ワクチンを年1回追加する</strong>運用が一般的です。ドッグランやペットホテル、トリミングサロンなどで「1年以内の接種証明」を求められることも多く、これに合わせて毎年接種する飼い主も多くいます。</li>
+      <li>一方、<strong>WSAVA のガイドラインでは、コアワクチン（ジステンパー・パルボなど）の追加は3年に1回で十分</strong>とされ、毎年は必要ないとする考え方も示されています。</li>
+    </ul>
+    <p>
+      どちらが適しているかは、犬の年齢・健康状態・生活環境（多頭飼い、外出や他犬との接触の多さなど）や、感染リスクによって変わります。抗体検査で必要性を確認する方法もあります。最終的な接種計画は、生活環境やリスクをふまえて<strong>かかりつけの獣医師にご相談のうえ</strong>決めてください。狂犬病ワクチンについては、上記のとおり法律で年1回の接種が義務づけられている点にご注意ください。
+    </p>
+    <div class="disclaimer">※ これは一般的な目安です。計算結果はあくまで参考値であり、実際の接種スケジュール・ワクチンの種類は子犬の体調や生活環境、動物病院の方針で異なります。必ずかかりつけの獣医師にご相談ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '子犬の混合ワクチンはいつから何回打ちますか？', a: '一般的な目安として、生後6〜8週ごろに始め、3〜4週ごとに、最後が16週齢以降になるよう複数回（本ツールでは8週・12週・16週ごろの3回）接種する考え方が知られています。実際の時期・回数は獣医師にご相談ください。' },
+    { q: '狂犬病ワクチンはいつから必要ですか？', a: '日本では狂犬病予防法により、生後91日以上の犬の飼い主に市区町村への登録と年1回の狂犬病予防注射が義務づけられています。生後91日にあたる日以降、できるだけ早く1回目を受けるのが目安です。' },
+    { q: '成犬になっても毎年ワクチンが必要ですか？', a: '狂犬病は法律で年1回が義務です。混合ワクチンは日本では年1回追加が一般的ですが、WSAVA ガイドラインではコアワクチンは3年に1回で十分とする考え方もあります。生活環境やリスクをふまえ獣医師にご相談ください。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { coreSchedule, rabiesFirstDate } from '../../lib/pet-vaccine.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  // ISO（YYYY-MM-DD）→ 「〇年〇月〇日」
+  const fmtJP = (iso) => {
+    const [y, m, d] = iso.split('-');
+    return `${Number(y)}年${Number(m)}月${Number(d)}日`;
+  };
+
+  function render() {
+    const birth = $('birth').value;
+    const box = $('result');
+
+    const core = coreSchedule(birth);
+    if (!core) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    box.classList.add('visible');
+
+    // ① 混合ワクチン（3回）— 動的テーブル
+    const rows = core
+      .map(
+        (r) =>
+          `<tr><td class="iv-td-times">${r.times}回目</td><td class="iv-td-weeks">生後${r.weeks}週ごろ</td><td class="iv-td-date">${fmtJP(r.date)}ごろ</td></tr>`
+      )
+      .join('');
+    $('iv-core').innerHTML =
+      `<table class="iv-table"><thead><tr><th>回</th><th>時期</th><th>目安日</th></tr></thead><tbody>${rows}</tbody></table>`;
+
+    // ② 狂犬病ワクチン
+    const rabies = rabiesFirstDate(birth);
+    $('iv-rabies').innerHTML = rabies
+      ? `<p class="iv-note">生後91日＝<strong>${fmtJP(rabies)}ごろ</strong>以降に、できるだけ早く1回目を受けるのが目安です。以降は毎年1回の接種が必要です（狂犬病予防法による義務）。</p>`
+      : '<p class="iv-note">―</p>';
+
+    // ③ 成犬の追加（両論併記）
+    $('iv-adult').innerHTML =
+      '混合ワクチンの追加は、<strong>日本では年1回</strong>が一般的ですが、<strong>WSAVA では3年に1回</strong>で十分とする考え方もあります。狂犬病は毎年1回が法律で義務です。生活環境やリスクをふまえ獣医師にご相談ください。';
+
+    // 結果サマリー：DOM の表示値から組み立て（再計算しない）。
+    const lines = [
+      '犬のワクチン接種スケジュール（目安）',
+      `混合 1回目：生後${core[0].weeks}週ごろ・${fmtJP(core[0].date)}ごろ`,
+      `混合 3回目：生後${core[2].weeks}週ごろ・${fmtJP(core[2].date)}ごろ`,
+    ];
+    if (rabies) {
+      lines.push(`狂犬病 1回目：${fmtJP(rabies)}ごろ以降`);
+    }
+    window.setResultShare?.(lines.join('\n'));
+  }
+
+  $('birth').addEventListener('input', render);
+  $('birth').addEventListener('change', render);
+</script>
+
+<!-- 動的 innerHTML で生成する表・段落のスタイルは scoped CSS が効かないため、
+     ページ唯一 id 前缀（#iv-core / #iv-rabies / #iv-adult）で is:global に書く。 -->
+<style is:global>
+  #result .iv-section { margin-top: 18px; }
+  #result .iv-section:first-of-type { margin-top: 0; }
+  #result .iv-h {
+    font-size: 0.92rem;
+    font-weight: var(--fw-black);
+    color: color-mix(in srgb, var(--cat-color) 62%, #000);
+    margin: 0 0 10px;
+  }
+  #result .iv-note {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.75;
+    color: var(--text-3);
+  }
+  #iv-core .iv-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  #iv-core .iv-table th,
+  #iv-core .iv-table td {
+    padding: 9px 10px;
+    text-align: left;
+    border-bottom: 1.5px solid color-mix(in srgb, var(--cat-color) 15%, transparent);
+  }
+  #iv-core .iv-table th {
+    font-size: 0.74rem;
+    font-weight: var(--fw-bold);
+    color: var(--text-muted);
+  }
+  #iv-core .iv-table tbody tr:last-child td { border-bottom: none; }
+  #iv-core .iv-td-times { font-weight: var(--fw-bold); color: var(--text); white-space: nowrap; }
+  #iv-core .iv-td-weeks { color: var(--text-3); white-space: nowrap; }
+  #iv-core .iv-td-date {
+    font-family: var(--font-mono);
+    font-weight: var(--fw-bold);
+    color: var(--text);
+  }
+</style>
+
+<style>
+  /* 注意喚起の囲み（接種時期の通年化・同日接種しない 等） */
+  .iv-callout {
+    margin-top: 6px;
+    padding: 14px 16px;
+    background: var(--cat-tint);
+    border-left: 4px solid var(--cat-color);
+    border-radius: var(--r-md);
+    font-size: 0.88rem;
+    line-height: 1.8;
+  }
+</style>

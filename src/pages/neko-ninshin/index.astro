@@ -1,0 +1,134 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'neko-ninshin';
+const title = '猫の妊娠期間計算器 - 交配日から出産予定日・妊娠日数を自動計算 | 計算ツール';
+const description =
+  '猫の交配日を入力するだけで、出産予定日（交配日＋65日）と出産可能範囲、現在の妊娠日数・週数・時期（前期/中期/後期）を自動計算する無料ツール。iCatCare・Merck 等の獣医情報に基づきます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '猫の妊娠期間計算器',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/pet/">ペット・動物</a> ／ 猫の妊娠期間計算</div>
+    <h1>猫の妊娠期間計算器</h1>
+    <p>猫の交配日を入力するだけで、出産予定日・出産可能範囲・現在の妊娠日数・妊娠時期を自動で計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="mating">交配日</label>
+      <input type="date" id="mating" />
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">出産予定日（交配日＋65日）</div>
+      <div class="result-main" id="due-date">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">出産可能範囲（＋63〜67日）</span><span class="value" id="due-range">―</span></div>
+        <div class="result-row"><span class="label">現在の妊娠日数</span><span class="value" id="elapsed">―</span></div>
+        <div class="result-row"><span class="label">妊娠時期</span><span class="value" id="stage">―</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>
+      猫が交配した日（交配日）を選ぶだけで、出産予定日・出産可能範囲・現在の妊娠日数と妊娠時期をその場で自動計算します。ボタンを押す必要はありません。
+    </p>
+    <p>
+      猫の妊娠期間は<strong>平均約65日</strong>で、正常な範囲は<strong>63〜67日</strong>とされています。本ツールは交配日に65日を加えた日を出産予定日、63〜67日を加えた範囲を「出産可能範囲」として表示します。ただし猫は<strong>交尾排卵動物</strong>で、交尾の刺激によって排卵が起こるため、実際の受胎日（受精日）を正確に特定するのは困難です。複数回交配することも多く、出産予定日はあくまで±数日の幅をもった目安としてご覧ください。
+    </p>
+    <p>
+      現在の妊娠日数は、交配日から本日までの経過日数を「妊娠○日目（○週○日）」の形で表示します。妊娠時期のおおまかな発育の目安は次のとおりです。
+    </p>
+    <ul>
+      <li><strong>前期</strong>（〜3週ごろ）：受精卵が子宮に着床し、器官の形成が始まる時期。外見の変化はまだほとんどありません。</li>
+      <li><strong>中期</strong>（4〜6週ごろ）：胎子が大きく育ち、乳頭が目立ちはじめ、お腹がふくらんでくる時期です。</li>
+      <li><strong>後期</strong>（7〜9週ごろ）：胎子が完成に近づき出産の準備に入ります。<strong>妊娠55日（約8週）以降</strong>であればレントゲン検査で胎子の数を確認できるようになります。</li>
+    </ul>
+    <p>
+      食欲や行動の変化、巣作りなど出産が近いサインが見られたら、分娩に備えましょう。正確な妊娠の確認や胎子の数・健康状態の把握、出産日の最終的な判断は、<strong>必ずかかりつけの獣医師</strong>の診察を受けてください。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。出産予定日には個体差があり、健康・医療に関わる判断は必ずかかりつけの獣医師にご相談ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '猫の妊娠期間は何日くらいですか？', a: '平均で約65日（正常範囲63〜67日）です。本ツールは交配日に65日を加えた日を出産予定日として自動計算します。' },
+    { q: '出産予定日に幅があるのはなぜですか？', a: '猫は交尾の刺激で排卵する交尾排卵動物で受胎日を特定しにくく、複数回交配することも多いため、予定日は±数日の幅をもった目安になります。' },
+    { q: '生まれる子猫の数は調べられますか？', a: '妊娠55日（約8週）以降であれば、動物病院のレントゲン検査で胎子の数を確認できます。詳しくは獣医師にご相談ください。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { dueDate, dueRange, elapsed, pregnancyStage } from '../../lib/pet-pregnancy.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  // ISO（YYYY-MM-DD）→ 「〇年〇月〇日」
+  const fmtJP = (iso) => {
+    const [y, m, d] = iso.split('-');
+    return `${Number(y)}年${Number(m)}月${Number(d)}日`;
+  };
+
+  function render() {
+    const mating = $('mating').value;
+    const box = $('result');
+
+    const due = dueDate(mating, 'neko');
+    if (!due) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    box.classList.add('visible');
+    $('due-date').textContent = fmtJP(due);
+
+    const range = dueRange(mating, 'neko');
+    $('due-range').textContent = range ? `${fmtJP(range.early)} 〜 ${fmtJP(range.late)}` : '―';
+
+    const el = elapsed(mating, new Date());
+    if (el) {
+      const w = Math.floor(el.days / 7);
+      const d = el.days % 7;
+      $('elapsed').textContent = `妊娠${el.days}日目（${w}週${d}日）`;
+      const stage = pregnancyStage(el.days, 'neko');
+      $('stage').textContent = stage || '―';
+    } else {
+      $('elapsed').textContent = '―';
+      $('stage').textContent = '―';
+    }
+
+    // 結果サマリー：DOM の表示値から組み立て（再計算しない）。
+    const lines = [
+      '猫の妊娠期間計算器',
+      `出産予定日：${$('due-date').textContent}`,
+    ];
+    if ($('elapsed').textContent !== '―') {
+      lines.push(`現在：${$('elapsed').textContent}`);
+    }
+    window.setResultShare?.(lines.join('\n'));
+  }
+
+  $('mating').addEventListener('input', render);
+  $('mating').addEventListener('change', render);
+</script>

@@ -1,0 +1,140 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { catHumanAge } from '../../lib/pet-age.js';
+
+const slug = 'neko-nenrei';
+const title =
+  '猫の年齢計算器（人間換算）- 猫の年齢は人間で何歳？早見表つき | 計算ツール';
+const description =
+  '猫の年齢を人間の年齢に換算する無料ツール。環境省・iCatCare の基準に基づき人間換算年齢を計算し、1〜20歳の早見表も掲載します。';
+
+// SSR 用の静的早見表データ（猫の年齢 1〜20 歳の人間換算を生成）。
+const AGE_TABLE = [];
+for (let age = 1; age <= 20; age++) {
+  AGE_TABLE.push({ age, human: catHumanAge(age) });
+}
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '猫の年齢計算器（人間換算）',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/pet/">ペット・動物</a> ／ 猫の年齢計算</div>
+    <h1>猫の年齢計算器（人間換算）</h1>
+    <p>愛猫の年齢を入力するだけで、人間の年齢に換算します。環境省・iCatCare の基準にもとづいて「人間の〇歳相当」をその場で計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="age">猫の年齢（歳）</label>
+      <input type="number" id="age" inputmode="decimal" min="0" step="0.5" placeholder="例：5" />
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">人間換算年齢</div>
+      <div class="result-main" id="human-age">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">猫の年齢</span><span class="value" id="cat-age">―</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>
+      愛猫の年齢（歳）を入力するだけで、人間の年齢に換算した「人間の〇歳相当」をその場で自動表示します。ボタンを押す必要はありません。「1歳6ヶ月＝1.5歳」のように、月齢から小数で入力しても目安が計算できます。
+    </p>
+    <p>
+      換算には、環境省や国際的な猫の福祉団体 iCatCare（AAHA・AAFP 公認）が示している基準をもとにした計算式を使っています。
+    </p>
+    <ul>
+      <li><strong>1歳</strong>＝人間の15歳</li>
+      <li><strong>2歳</strong>＝人間の24歳</li>
+      <li><strong>3歳以降</strong>は1年ごとに<strong>＋4歳</strong>（24＋（猫の年齢−2）×4）</li>
+    </ul>
+    <p>
+      猫は1年目で人間の15歳ぶん、2年目でさらに9歳ぶん成長し、3歳以降は1年あたり人間の約4歳ずつ年を取っていきます。子猫の時期の成長が特に早いため、<strong>1歳・2歳は計算式の例外値</strong>として扱います。
+    </p>
+    <p>
+      なお、保険会社などでは「1歳＝人間の18歳」とする換算（au損保系の一説）も見かけますが、本ツールでは環境省・iCatCare の基準にあわせて<strong>1歳＝15歳に統一</strong>しています。
+    </p>
+
+    <h3>猫の年齢早見表（人間換算・1〜20歳）</h3>
+    <p>猫の年齢を人間の年齢に換算した早見表です。</p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>猫の年齢</th><th>人間の年齢</th></tr>
+          </thead>
+          <tbody>
+            {AGE_TABLE.map((row) => (
+              <tr>
+                <td class="num">{row.age}歳</td>
+                <td>人間の{row.human}歳</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。猫種・個体差があり、健康・医療に関わる判断は必ず獣医師にご相談ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '猫の年齢は人間で何歳ですか？', a: '猫は1歳＝人間の15歳、2歳＝24歳で、3歳以降は1年ごとに＋4歳です。たとえば10歳の猫は人間の56歳相当になります。猫の年齢を入力すると自動で換算できます。' },
+    { q: '「1歳＝18歳」と聞いたことがありますが？', a: '保険会社などでは1歳を人間の18歳とする換算もありますが、本ツールでは環境省・iCatCare（AAHA・AAFP公認）の基準にあわせて1歳＝15歳に統一しています。どちらも目安であり、個体差があります。' },
+    { q: '子猫（1歳未満）の年齢も計算できますか？', a: '「0.5歳」のように小数で入力すれば目安が出せます。猫の1年目は成長が非常に早く、1歳で人間の15歳に相当します。あくまで参考値としてご利用ください。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { catHumanAge } from '../../lib/pet-age.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function render() {
+    const box = $('result');
+    const raw = $('age').value;
+    if (raw === '') {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    const years = Number(raw);
+    const human = catHumanAge(years);
+    if (human === null) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    box.classList.add('visible');
+    $('human-age').textContent = `人間の${human}歳相当`;
+    $('cat-age').textContent = `${years}歳`;
+
+    window.setResultShare?.(
+      `猫の年齢計算器（人間換算）\n猫の年齢：${years}歳\n人間換算：人間の${human}歳相当`
+    );
+  }
+
+  $('age').addEventListener('input', render);
+</script>
