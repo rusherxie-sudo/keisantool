@@ -1,6 +1,6 @@
 # keisantool 交接文档
 
-> 面向接手的新会话。读完这份 + `CLAUDE.md` 即可上手。最后更新：2026-06-15。
+> 面向接手的新会话。读完这份 + `CLAUDE.md` 即可上手。最后更新：2026-07-02。
 
 ## 1. 这是什么
 
@@ -27,12 +27,13 @@ npx wrangler pages deploy dist --project-name=keisantool
 - CF Pages 项目名：`keisantool`，正式域名 keisantool.com，每次部署给一个 `xxxx.keisantool.pages.dev` 预览URL。
 - **注意**：本地 git 没有配置 remote（`origin` 不存在），所以 `git push` 会失败。部署走 wrangler，不走 git。commit 只是本地留痕。
 
-## 3. 当前状态（2026-06-15）
+## 3. 当前状态（2026-07-02）
 
-- **24 个工具全部 live、已上线、全部有页面**。
-- **测试 715 个全绿**（24 个测试文件）。
-- 工作树已提交（最新 commit：開発者ツール5種 + 分类下拉导航）。
-- 依赖：构建期新增了 `marked`（给 Markdown 工具用）。
+- **38 个工具全部 live、已上线**（新增第 8 分类「ペット・動物」8 工具 + loan/fukuri/nissu/password/seiri/seiza）。另有 8 个分类 hub 页（`/category/<slug>/`）和 404 页。
+- **测试 854 个全绿**（34 个测试文件）。
+- 2026-07-02 做过一次四维全面 review（产品/代码/SEO/流量），修复清单见 §8 末条。
+- **AdSense 尚未接入**（无 ca-pub 代码、无 ads.txt）——Owner 决定暂缓，接入前站点零收入。
+- 依赖：`marked`（Markdown 工具）、`@astrojs/sitemap`。
 
 ## 4. 关键约定（必须遵守，详见 CLAUDE.md）
 
@@ -71,12 +72,22 @@ npx wrangler pages deploy dist --project-name=keisantool
 | 開発者ツール | urlencode | URL エンコード/デコード |
 | 開発者ツール | regex | 正規表現テスト |
 | 開発者ツール | markdown | Markdown → HTML（用 marked） |
+| 税金・お金 | loan | 住宅ローン返済（元利均等/元金均等） |
+| 税金・お金 | fukuri | 複利・積立シミュレーター |
+| 生活・日常 | nissu | 日数計算・日付計算 |
+| 生活・日常 | seiri | 排卵日・生理日計算（周期15〜60日限定） |
+| 生活・日常 | seiza | 星座調べ（誕生日→12星座） |
+| 開発者ツール | password | パスワード生成（crypto、各文字種保証） |
+| ペット・動物 | inu-nenrei / neko-nenrei | 犬猫の年齢人間換算（環境省式） |
+| ペット・動物 | inu-gohan / neko-gohan | ごはん量（RER=70×kg^0.75×係数） |
+| ペット・動物 | inu-ninshin / neko-ninshin | 妊娠期間（犬63日/猫65日） |
+| ペット・動物 | inu-vaccine / neko-vaccine | ワクチンスケジュール（WSAVA・狂犬病予防法） |
 
-分类（`tools.js` 的 `categories`）：税金・お金 / 健康・身体 / 生活・日常 / 占い・文化 / 文字ツール / 変換・ツール / 開発者ツール。
+分类（`tools.js` 的 `categories`）：税金・お金 / 健康・身体 / 生活・日常 / 占い・文化 / 文字ツール / 変換・ツール / 開発者ツール / ペット・動物。注意：**hensachi（偏差値）在「生活・日常」**（2026-07 从健康・身体移出）。
 
-## 6. ⚠️ 当前最优先的未完成项：PC 桌面布局拥挤
+## 6. ~~PC 桌面布局拥挤~~（✅ 已解决）
 
-**这是本次交接的核心待办。Owner 明确不满。**
+> 2026-06-25「Clear Pocket Calculator」全站改版落地：已废弃两栏 grid，统一为单栏居中 + `wide` 铺宽两档。现行布局规范见 `CLAUDE.md`「架构大图」。以下保留为历史记录。
 
 ### 现象
 1440px 等大屏下，很多工具（尤其内容多的：**markdown / regex / json / color-code / tani**）被压在左侧很窄的区域里，右边大片空白浪费，编辑区/多栏内容挤成一团，非常局促。
@@ -114,6 +125,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 - **calorie 公式**：默认用「国立健康・栄養研究所式(Ganpule)」，HB式可切换。
 - **导航**：已是分类下拉式（`SiteHeader.astro`：PC hover/点击展开，移动端汉堡+手风琴）。工具再增多也不会挤爆导航。
 - **浮动分享**：`FloatingShare.astro` 全站右下角 FAB，移动端优先 `navigator.share`。
+- **2026-07-02 全面 review 落地的修复**（详见当日会话）：① loan 0% 金利総利息为负 → 0% 分支直接 `{total:P, interest:0}`，其余 `Math.max(0,…)`；② password 默认乱数源 Math.random → `crypto.getRandomValues` + 各文字種保証 + Fisher-Yates（tests 里有「不得调用 Math.random」的契约测试）；③ pet-age ≥1歳 分支补 floor；④ seiri 周期限 15〜60；⑤ loan/fukuri 测试加了**外部锚点值**（91,855 / 108,928 / 9,849,059——改公式必挂）；⑥ 新增 404 页（消软404，CF Pages 有 404.html 才关 SPA 回退）；⑦ 面包屑三层化 + ToolLayout 统一注入 BreadcrumbList；⑧ GSC 洞察：rokusei 占全站 2/3 点击（占い赛道已验证）、kokuho 第12位0点击（匿名站金钱词天花板）。**选品新规矩：做 YMYL 词前先查 SERP 现任者，只做匿名工具站已在首页存活的词。**
 
 ## 9. 目录结构
 

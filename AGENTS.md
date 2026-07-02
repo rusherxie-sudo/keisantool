@@ -1,9 +1,9 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 > 只放**稳定的约定、架构与陷阱**。会变的状态（进度、全工具清单、待办）看 `HANDOFF.md`，不在这里重复。
-> 和 Owner 沟通、写文档**一律用中文**；页面里的日文内容由 Claude 生成（Owner 不懂日文、无法校对）。
+> 和 Owner 沟通、写文档**一律用中文**；页面里的日文内容由 Codex 生成（Owner 不懂日文、无法校对）。
 
 ## 这是什么
 
@@ -34,10 +34,10 @@ npm run build && npx wrangler pages deploy dist --project-name=keisantool
 
 **页面 = 壳 + 内容**：每个 `src/pages/<slug>/index.astro` 用 `src/layouts/ToolLayout.astro` 包裹。ToolLayout 负责 `<head>`/SEO/JSON-LD/页头页脚/分享按钮；页面 body 一般是 `.page-hero`(h1+说明) → `.calc-card`(计算 UI) → `.ad-slot` → `.howto`(使い方) → `<RelatedTools>` → `.ad-slot`。计算逻辑从 `src/lib/<slug>.js`（纯函数）import，DOM 交互写在页面自己的 `<script>`。
 
-**两套宽度模式（改版后统一为「单栏居中」，定义在 `src/styles/global.css`）**：
-- **默认（窄）**：`.calc-card` / `.ad-slot` / `.howto` / `.related` 各区块统一 `max-width:880px` 居中，自上而下堆叠（计算卡 → 广告 → 说明 → 关联）。`.page-wrapper` 上限 1040px。简单计算器用这套。
-- **`wide` 铺宽**：内容多的工具（编辑器型 / 多内栏 / 宽表格）给 `<ToolLayout … wide>` → 各区块 `max-width:none`、`.page-wrapper` 上限 `var(--container)`，计算卡铺满宽度。当前用 wide 的：markdown / regex / json / color-code / tani / moji / yakudoshi。
-- ⚠️ 已无"左卡片+右侧栏"的两栏 grid（改版前的旧结构，连同 `grid-auto-flow:dense` 一并废弃）。工具内部若要并排（如结果对比），自己在页面 `<style>` 里写 grid + 断点（参考 `loan` 的 `.loan-results`）。
+**两套桌面布局（≥1024px，定义在 `src/styles/global.css`）**：
+- **默认两栏**：左 `.calc-card`(560px) + 右 `.howto`/`.related` 侧栏。简单计算器用这套。
+- **`wide` 单栏**：内容多的工具（编辑器型 / 多内栏 / 宽表格）给 `<ToolLayout … wide>` → 单栏居中 900px，计算卡铺宽、说明在下方。当前用 wide 的：markdown / regex / json / color-code / tani / moji / yakudoshi。
+- ⚠️ 两栏网格**必须保留 `grid-auto-flow:dense`**：否则左栏"卡片+紧邻广告"占两行，右栏 `howto` 会掉到卡片下方，宽屏右上角留一大片空白。
 - **卡片内边距**：内容放进 `.calc-panel`（带 24px 内边距，带 tab 的工具用），或不放 panel 时由 `.calc-card:not(:has(.calc-panel)){padding:24px}` 兜底。别让内容直接贴卡片边框。
 
 ## 必守约定（别打折扣）
@@ -64,7 +64,7 @@ npm run build && npx wrangler pages deploy dist --project-name=keisantool
 2. 写 `tests/<tool>.test.js` → 确认 **RED**。
 3. 写 `src/lib/<tool>.js` → 确认 **GREEN**。
 4. 建 `src/pages/<slug>/index.astro`：仿 `zeizei`/`wariai`/`moji`，SEO frontmatter 齐全。**工具专属样式写页面内 `<style>`**；只有全站级布局/卡片/导航才动 `global.css`。内容多就传 `wide`（见「架构大图」）。
-5. `npm run build` + 浏览器多尺寸验证 **1920 / 1440 / 768 / 375**（务必测超宽屏和 375，横向溢出/铺宽异常只在极端尺寸暴露）。
+5. `npm run build` + 浏览器多尺寸验证 **1920 / 1440 / 768 / 375**（务必测超宽屏，两栏对齐问题只在宽屏暴露）。
 6. wrangler 部署。
 
 ## 陷阱（已踩过，别重犯）
