@@ -45,6 +45,8 @@ function sourceFileForUrl(url) {
   if (path === '') return join(pagesDir, 'index.astro');
   // カテゴリハブは動的ルート（全ハブが同一ファイル＝ハブのテンプレ／内容が変わった日になる）
   if (path.startsWith('category/')) return join(pagesDir, 'category/[slug].astro');
+  // 生まれ年ページも動的ルート（全年が同一テンプレ）
+  if (path.startsWith('umaredoshi/')) return join(pagesDir, 'umaredoshi/[year].astro');
   const nested = join(pagesDir, path, 'index.astro'); // <slug>/index.astro
   if (existsSync(nested)) return nested;
   const flat = join(pagesDir, `${path}.astro`); // <slug>.astro
