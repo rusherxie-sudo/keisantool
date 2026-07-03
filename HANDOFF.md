@@ -34,6 +34,7 @@ npx wrangler pages deploy dist --project-name=keisantool
   - **「年齢早見表」hub-and-spoke**（对标 nenrei-hayami.net 模式）：hub `/nenrei-hayami/`（明治元年〜今年 西暦×和暦×満年齢×数え年×干支 大表、SSR+print CSS，目标词「年齢早見表」1〜3月报税季峰值）+ spoke `/umaredoshi/<year>/` ×111 页（1900〜2010，每年一页「今年何歳・和暦・干支・厄年・星座・六星占術運命星」，复用 nenrei/wareki/yakudoshi/seiza/rokusei + 新 lib `hayami.js`）。基准年 build 时固定（`new Date().getFullYear()`），**每年 1 月 1 日重 build 续命**。预期管理：长尾年份页先起量（数月内），头词是长期战（竞对是十年老站+完全一致域名）。
   - 合并后全站约 **311 URL**。另有 8 个分类 hub 页（`/category/<slug>/`）和 404 页。
   - GSC 催收录（年齢早見表组）：hub+1991/1985/1990/1980/1995/2000 共 **7 个已催**（2026-07-03 配额用尽）；**1975/1973/1965 三个待次日催**。
+  - GSC 催收录（相性组）：/seiza-aisho/（hub）+ /tanjobi-aisho/ + /ketsueki-aisho/ 共 **3 个已催**（2026-07-03，深链方式，均确认「已请求编入索引」）；144 个组合页不逐个催，靠 sitemap 自然收录。两组合计当日 10 个，配额到顶。
   - ⚠️ **教训：两个并行 worktree 各自 `wrangler pages deploy` 会互相全量覆盖生产**（07-03 当天互顶过一次）。并行开发时部署前必须先互相 merge。
 - **测试 934 个全绿**（38 个测试文件）。
 - 2026-07-02 做过一次四维全面 review（产品/代码/SEO/流量），修复清单见 §8 末条。
