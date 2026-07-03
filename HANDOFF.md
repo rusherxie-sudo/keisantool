@@ -27,10 +27,10 @@ npx wrangler pages deploy dist --project-name=keisantool
 - CF Pages 项目名：`keisantool`，正式域名 keisantool.com，每次部署给一个 `xxxx.keisantool.pages.dev` 预览URL。
 - **注意**：本地 git 没有配置 remote（`origin` 不存在），所以 `git push` 会失败。部署走 wrangler，不走 git。commit 只是本地留痕。
 
-## 3. 当前状态（2026-07-02）
+## 3. 当前状态（2026-07-03）
 
-- **38 个工具全部 live、已上线**（新增第 8 分类「ペット・動物」8 工具 + loan/fukuri/nissu/password/seiri/seiza）。另有 8 个分类 hub 页（`/category/<slug>/`）和 404 页。
-- **测试 854 个全绿**（34 个测试文件）。
+- **41 个工具全部 live、已上线**（最新：「相性」系列第一期 tanjobi-aisho / seiza-aisho / ketsueki-aisho，其中星座相性含 **144 个程序化组合页** `/seiza-aisho/<sign1>-<sign2>/`，全站 199 URL）。另有 8 个分类 hub 页（`/category/<slug>/`）和 404 页。
+- **测试 909 个全绿**（37 个测试文件）。
 - 2026-07-02 做过一次四维全面 review（产品/代码/SEO/流量），修复清单见 §8 末条。
 - **AdSense 尚未接入**（无 ca-pub 代码、无 ads.txt）——Owner 决定暂缓，接入前站点零收入。
 - 依赖：`marked`（Markdown 工具）、`@astrojs/sitemap`。
@@ -44,7 +44,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 5. **日期处理**：用 UTC 正午基准（见 `src/lib/shussan.js` 的 `toDate/toISO/addDays`），避免时区/夏令时跨日 bug。
 6. **法规/数值每年要复核**：日本税制·社保每年 4月/8月 改定。已知踩过的坑见第 8 节。
 
-## 5. 全工具清单（24个，按分类）
+## 5. 全工具清单（41个，按分类）
 
 | 分类 | slug | 工具 |
 |------|------|------|
@@ -63,6 +63,9 @@ npx wrangler pages deploy dist --project-name=keisantool
 | 生活・日常 | saniku | 産休・育休（含出生後支援+13%等2025新制） |
 | 生活・日常 | nenrei | 年齢計算（満年齢/数え年/学年/干支） |
 | 占い・文化 | rokusei | 六星占術・大殺界（含12型解说SSR） |
+| 占い・文化 | tanjobi-aisho | 誕生日相性診断（数秘術45对判定表+六星地運双向，総合=floor平均） |
+| 占い・文化 | seiza-aisho | 星座相性診断 hub + **144程序化页** `[pair].astro`（エレメント×アスペクト7档） |
+| 占い・文化 | ketsueki-aisho | 血液型相性診断（10无序对判定表+16方向性评语，单页tab型） |
 | 文字ツール | moji | 全角半角・かな・文字数カウント（含字节/原稿用紙/X文字数） |
 | 変換・ツール | color-code | カラーコード変換（HEX/RGB/HSL+取色器+抵抗カラーコード） |
 | 変換・ツール | tani | 単位変換（長さ/重さ/面積/体積/温度/速さ） |
@@ -125,6 +128,8 @@ npx wrangler pages deploy dist --project-name=keisantool
 - **calorie 公式**：默认用「国立健康・栄養研究所式(Ganpule)」，HB式可切换。
 - **导航**：已是分类下拉式（`SiteHeader.astro`：PC hover/点击展开，移动端汉堡+手风琴）。工具再增多也不会挤爆导航。
 - **浮动分享**：`FloatingShare.astro` 全站右下角 FAB，移动端优先 `navigator.share`。
+- **相性系列（2026-07-03）的判定表口径**：占い相性没有唯一正解，两家公开源的六星占術星对星表互相矛盾（流派差）→ 六星部分**不建星同士表**，改用「相手の生年年支落在自分タイプ12ゾーン哪格」的地運方式（100%复用 `fortuneZone`，出典框架 hosokikazuko.com）；数秘術45对表和血液型10对表是「综合通行说法的本站判定基准」，**整表在测试里用独立字面量锚定**（tests/tanjobi-aisho.test.js、tests/ketsueki-aisho.test.js），页面上全部公开判定基准+注明流派差。**「MBTI」字样全站禁用**（日本MBTI協会商标），未来做16类型内容用「16タイプ」措辞。设计文档：`docs/superpowers/specs/2026-07-03-aisho-series-design.md`。
+- **144 程序化页的三个接线点**：① `seiza-aisho/[pair].astro` 是工具页下动态路由的首个先例（getStaticPaths 从 lib 的 `allPairs()` 生成）；② ToolLayout 新增可选 `breadcrumb` prop 覆盖默认三层面包屑（pair 页传四层）；③ `astro.config.mjs` 的 sitemap lastmod 解析器加了 `seiza-aisho/` 前缀分支（同 category 先例）。
 - **2026-07-02 全面 review 落地的修复**（详见当日会话）：① loan 0% 金利総利息为负 → 0% 分支直接 `{total:P, interest:0}`，其余 `Math.max(0,…)`；② password 默认乱数源 Math.random → `crypto.getRandomValues` + 各文字種保証 + Fisher-Yates（tests 里有「不得调用 Math.random」的契约测试）；③ pet-age ≥1歳 分支补 floor；④ seiri 周期限 15〜60；⑤ loan/fukuri 测试加了**外部锚点值**（91,855 / 108,928 / 9,849,059——改公式必挂）；⑥ 新增 404 页（消软404，CF Pages 有 404.html 才关 SPA 回退）；⑦ 面包屑三层化 + ToolLayout 统一注入 BreadcrumbList；⑧ GSC 洞察：rokusei 占全站 2/3 点击（占い赛道已验证）、kokuho 第12位0点击（匿名站金钱词天花板）。**选品新规矩：做 YMYL 词前先查 SERP 现任者，只做匿名工具站已在首页存活的词。**
 
 ## 9. 目录结构

@@ -1,0 +1,256 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { suuhiAisho } from '../../lib/tanjobi-aisho.js';
+
+const slug = 'tanjobi-aisho';
+const title = '誕生日相性診断 - ふたりの生年月日から相性を計算（数秘術×六星占術）| 計算ツール';
+const description =
+  'ふたりの誕生日（生年月日）を入れるだけで、数秘術の誕生数と六星占術の運命周期から相性度を自動計算する無料の誕生日相性診断。判定基準はすべてページ内で公開。登録不要・娯楽としてお楽しみください。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '誕生日相性診断',
+  description,
+  applicationCategory: 'EntertainmentApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+
+// 数秘術相性早見表（9×9）をビルド時に生成（静的コンテンツとして掲載）
+const NUMS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const matrix = NUMS.map((a) => NUMS.map((b) => suuhiAisho(a, b).rank));
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 誕生日相性</div>
+    <h1>誕生日相性診断（生年月日から相性を計算）</h1>
+    <p>ふたりの誕生日を入れるだけで、数秘術×六星占術の相性度をその場で自動計算します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="ta-inputs">
+      <div class="form-group">
+        <label for="ta-d1">あなたの生年月日</label>
+        <input type="date" id="ta-d1" min="1900-01-01" max="2099-12-31" />
+      </div>
+      <div class="ta-x" aria-hidden="true">×</div>
+      <div class="form-group">
+        <label for="ta-d2">相手の生年月日</label>
+        <input type="date" id="ta-d2" min="1900-01-01" max="2099-12-31" />
+      </div>
+    </div>
+
+    <div class="result-box" id="ta-result">
+      <div class="result-label">ふたりの相性度</div>
+      <div class="result-main"><span id="ta-score">―</span><span class="ta-unit">点</span></div>
+      <div class="ta-rank" id="ta-rank">―</div>
+      <div class="ta-meter" aria-hidden="true"><span id="ta-meter-bar"></span></div>
+
+      <div class="result-rows">
+        <div class="result-row"><span class="label">数秘術の相性（誕生数）</span><span class="value" id="ta-suuhi">―</span></div>
+        <div class="result-row"><span class="label">六星占術の相性（運命周期）</span><span class="value" id="ta-rokusei">―</span></div>
+      </div>
+      <div class="ta-note" id="ta-suuhi-comment"></div>
+
+      <div class="ta-persons">
+        <div class="ta-person">
+          <div class="ta-person-head">あなた</div>
+          <div class="ta-person-num" id="ta-p1-num">―</div>
+          <div class="ta-person-catch" id="ta-p1-catch"></div>
+          <div class="ta-person-desc" id="ta-p1-desc"></div>
+          <div class="ta-person-star" id="ta-p1-star"></div>
+        </div>
+        <div class="ta-person">
+          <div class="ta-person-head">相手</div>
+          <div class="ta-person-num" id="ta-p2-num">―</div>
+          <div class="ta-person-catch" id="ta-p2-catch"></div>
+          <div class="ta-person-desc" id="ta-p2-desc"></div>
+          <div class="ta-person-star" id="ta-p2-star"></div>
+        </div>
+      </div>
+
+      <div class="ta-rokusei-detail">
+        <div class="result-label">六星占術で見るふたりの巡り（地運の考え方）</div>
+        <div class="ta-direction">
+          <div class="ta-direction-head" id="ta-a2b-head">―</div>
+          <p class="ta-direction-body" id="ta-a2b-body"></p>
+        </div>
+        <div class="ta-direction">
+          <div class="ta-direction-head" id="ta-b2a-head">―</div>
+          <p class="ta-direction-body" id="ta-b2a-body"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>誕生日相性診断の仕組み（判定基準を公開）</h2>
+    <p>
+      本ツールは「なんとなく」ではなく、<strong>決まった計算式と判定表</strong>だけで相性度を算出します。占いの内容は文化的な慣習に基づくものですが、計算の過程はすべて機械的で、同じ誕生日の組み合わせなら必ず同じ結果になります。
+    </p>
+
+    <h3>① 数秘術パート：誕生数の組み合わせ（50%）</h3>
+    <p>
+      生年月日の数字をすべて足し、1桁になるまで繰り返した数が「誕生数（ライフパスナンバー）」です。例えば1990年8月15日なら 1+9+9+0+0+8+1+5＝33。途中で <strong>11・22・33</strong> になった場合は「マスターナンバー」としてそこで止めます（数秘術で通行の計算手順）。
+    </p>
+    <p>
+      ふたりの誕生数の組み合わせを、下の相性早見表（本ツールの判定基準）で判定します。◎＝88点・○＝76点・△＝62点・▲＝50点です。マスターナンバーは対応する基数（11→2・22→4・33→6）を強めた数として扱い、対応する基数との組み合わせは特に共鳴しやすい◎とします。
+    </p>
+
+    <div class="data-table-wrap ta-matrix">
+      <div class="data-table-scroll">
+        <table class="data-table">
+          <caption class="ta-caption">数秘術 誕生数相性早見表（◎88点・○76点・△62点・▲50点）</caption>
+          <thead>
+            <tr><th>あなた＼相手</th>{NUMS.map((n) => <th>{n}</th>)}</tr>
+          </thead>
+          <tbody>
+            {NUMS.map((a, i) => (
+              <tr>
+                <td class="ta-rowhead">{a}</td>
+                {NUMS.map((b, j) => <td class={matrix[i][j] === '◎' ? 'ta-best' : ''}>{matrix[i][j]}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>② 六星占術パート：運命周期による巡り（50%）</h3>
+    <p>
+      六星占術では、生年月日から土星人・金星人・火星人・天王星人・木星人・水星人の「運命星」と陽陰が決まり、12年周期の運勢ゾーン（種子〜減退）が巡ります。相性には生まれ持った「地運」があるとされ、本ツールでは<strong>相手の生まれ年の干支が、あなたの運命周期のどのゾーンに当たるか</strong>を双方向で計算し、その平均を六星占術パートのスコアとします（達成・立花・安定などに当たれば高く、大殺界の陰影・停止・減退に当たれば低くなります）。
+    </p>
+    <p>
+      運命星の算出方法は<a href="/rokusei/">六星占術・大殺界計算器</a>と同じ「日の空亡」方式です。相性に地運・天運の二面があるという枠組みは公開されている六星占術の解説（hosokikazuko.com ほか）を参照しています。
+    </p>
+
+    <h3>③ 総合相性度</h3>
+    <p>
+      総合相性度＝（数秘術スコア＋六星占術スコア）÷2（端数切り捨て）。<strong>◎85点以上／○70〜84点／△55〜69点／▲55点未満</strong>の4段階で表示します。
+    </p>
+    <div class="disclaimer">
+      ※ 占いは娯楽・文化的慣習に基づくものであり、科学的根拠はありません。相性の見方は流派・書籍により異なります。計算結果はあくまで参考値です。結婚・交際など人生の大切な判断は、結果に頼らずご自身の責任でお決めください。
+    </div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '誕生数（ライフパスナンバー）とは何ですか？', a: '数秘術で使う、生年月日の数字をすべて足して1桁（または11・22・33）まで還元した数です。例えば1990年8月15日生まれなら1+9+9+0+0+8+1+5=33で、誕生数は33になります。' },
+    { q: 'マスターナンバー（11・22・33）とは？', a: '数秘術で特別な意味を持つとされる数です。本ツールでは対応する基数（11→2、22→4、33→6）の性質を強めた数として扱い、相性判定では基数の表を使います（対応する基数との組み合わせは特に共鳴しやすい◎とします）。' },
+    { q: '六星占術の相性はどう計算していますか？', a: '相手の生まれ年の干支が、あなたのタイプ（運命星＋陽陰）の12年周期のどのゾーンに当たるかを双方向で調べ、平均しています。大殺界のゾーンに当たると低め、達成・安定などに当たると高めになります。' },
+    { q: '同じ誕生日同士でも診断できますか？', a: 'はい。誕生数は同じ数同士、六星占術は同じタイプ同士として判定します。' },
+    { q: '結果は信頼できますか？', a: '占いは娯楽・文化的慣習に基づくもので、科学的根拠を保証するものではありません。判定基準はページ内で公開していますので、参考程度にお楽しみください。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .ta-inputs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: end; }
+  .ta-inputs .form-group { margin-bottom: 0; }
+  .ta-x { font-size: 1.2rem; font-weight: var(--fw-black); color: var(--text-faint); padding-bottom: 16px; }
+  @media (max-width: 560px) {
+    .ta-inputs { grid-template-columns: 1fr; gap: 10px; }
+    .ta-x { display: none; }
+  }
+  .result-box { margin-top: 22px; }
+  .ta-unit { font-size: 1.2rem; font-weight: var(--fw-bold); margin-left: 4px; }
+  .ta-rank { font-size: 1rem; font-weight: var(--fw-bold); color: color-mix(in srgb, var(--cat-color) 62%, #000); margin-top: 4px; }
+  .ta-meter { height: 10px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--cat-color) 14%, #fff); margin-top: 12px; overflow: hidden; }
+  .ta-meter span { display: block; height: 100%; width: 0; border-radius: var(--r-pill); background: var(--cat-color); transition: width .5s ease; }
+  .ta-note { font-size: .84rem; color: var(--text-3); line-height: 1.75; margin-top: 12px; }
+
+  .ta-persons { display: grid; gap: 10px; margin-top: 18px; }
+  @media (min-width: 560px) { .ta-persons { grid-template-columns: 1fr 1fr; } }
+  .ta-person { background: var(--surface); border-radius: var(--r-md); padding: 14px 16px; }
+  .ta-person-head { font-size: .74rem; font-weight: var(--fw-bold); color: var(--text-muted); }
+  .ta-person-num { font-family: var(--font-mono); font-size: 1.5rem; font-weight: var(--fw-black); color: var(--cat-color); margin-top: 2px; }
+  .ta-person-catch { font-size: .9rem; font-weight: var(--fw-bold); color: var(--text); margin-top: 2px; }
+  .ta-person-desc { font-size: .8rem; color: var(--text-3); line-height: 1.7; margin-top: 6px; }
+  .ta-person-star { font-size: .78rem; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border-2); }
+
+  .ta-rokusei-detail { margin-top: 18px; padding-top: 16px; border-top: 1.5px solid color-mix(in srgb, var(--cat-color) 15%, transparent); }
+  .ta-direction { margin-top: 10px; }
+  .ta-direction-head { font-size: .84rem; font-weight: var(--fw-bold); color: var(--text); }
+  .ta-direction-body { font-size: .8rem; color: var(--text-3); line-height: 1.7; margin: 4px 0 0; }
+
+  .ta-matrix { margin: 14px 0 6px; }
+  .ta-caption { caption-side: top; text-align: left; font-size: .8rem; font-weight: var(--fw-bold); color: var(--text-muted); padding: 10px 14px 6px; }
+  .ta-matrix .data-table { min-width: 480px; }
+  .ta-matrix .data-table td { text-align: center; padding: 10px 8px; }
+  .ta-matrix .data-table th { text-align: center; padding: 10px 8px; }
+  .ta-matrix .ta-rowhead { font-weight: var(--fw-bold); background: var(--cat-tint); color: color-mix(in srgb, var(--cat-color) 62%, #000); }
+  .ta-matrix .ta-best { color: var(--cat-color); font-weight: var(--fw-black); }
+</style>
+
+<script>
+  import { tanjobiAisho, NUMBER_PROFILES } from '../../lib/tanjobi-aisho.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function parse(v) {
+    const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m ? { y: Number(m[1]), m: Number(m[2]), d: Number(m[3]) } : null;
+  }
+
+  function numLabel(birth) {
+    return birth.isMaster ? `${birth.number}（マスターナンバー）` : String(birth.number);
+  }
+
+  function render() {
+    const p1 = parse($('ta-d1').value);
+    const p2 = parse($('ta-d2').value);
+    const box = $('ta-result');
+    const r = p1 && p2 ? tanjobiAisho(p1, p2) : null;
+    if (!r) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    box.classList.add('visible');
+
+    $('ta-score').textContent = r.total.score;
+    $('ta-rank').textContent = `${r.total.rank} ${r.total.label}`;
+    $('ta-meter-bar').style.width = `${r.total.score}%`;
+
+    $('ta-suuhi').textContent = `${r.suuhi.rank}（${r.suuhi.score}点）`;
+    $('ta-rokusei').textContent = `${r.rokusei.score}点`;
+    $('ta-suuhi-comment').textContent = r.suuhi.comment;
+
+    const prof1 = NUMBER_PROFILES[r.p1.birth.number];
+    const prof2 = NUMBER_PROFILES[r.p2.birth.number];
+    $('ta-p1-num').textContent = `誕生数 ${numLabel(r.p1.birth)}`;
+    $('ta-p1-catch').textContent = prof1.catch;
+    $('ta-p1-desc').textContent = prof1.desc;
+    $('ta-p1-star').textContent = `六星占術：${r.p1.rokusei.type}`;
+    $('ta-p2-num').textContent = `誕生数 ${numLabel(r.p2.birth)}`;
+    $('ta-p2-catch').textContent = prof2.catch;
+    $('ta-p2-desc').textContent = prof2.desc;
+    $('ta-p2-star').textContent = `六星占術：${r.p2.rokusei.type}`;
+
+    $('ta-a2b-head').textContent = `あなた（${r.p1.rokusei.type}）から見た相手：${r.rokusei.a2b.zone}の巡り（${r.rokusei.a2b.score}点）`;
+    $('ta-a2b-body').textContent = r.rokusei.a2b.comment;
+    $('ta-b2a-head').textContent = `相手（${r.p2.rokusei.type}）から見たあなた：${r.rokusei.b2a.zone}の巡り（${r.rokusei.b2a.score}点）`;
+    $('ta-b2a-body').textContent = r.rokusei.b2a.comment;
+
+    window.setResultShare?.(
+      '誕生日相性診断\n' +
+        `相性度：${r.total.score}点（${r.total.rank} ${r.total.label}）\n` +
+        `数秘術：誕生数${r.p1.birth.number}×${r.p2.birth.number} ${r.suuhi.rank}\n` +
+        `六星占術：${r.p1.rokusei.type}×${r.p2.rokusei.type} ${r.rokusei.score}点`
+    );
+  }
+
+  ['ta-d1', 'ta-d2'].forEach((id) => {
+    $(id).addEventListener('input', render);
+    $(id).addEventListener('change', render);
+  });
+</script>

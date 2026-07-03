@@ -1,0 +1,219 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { TYPES, ketsuekiAisho, allCombos } from '../../lib/ketsueki-aisho.js';
+
+const slug = 'ketsueki-aisho';
+const title = '血液型相性診断 - A・B・O・AB型 全16組み合わせの相性 | 計算ツール';
+const description =
+  'A型・B型・O型・AB型の血液型の組み合わせから相性度を判定する無料の血液型相性診断。全16組み合わせの相性早見表と、組み合わせごとの特徴・付き合い方のコツつき。判定基準は公開。登録不要・娯楽としてお楽しみください。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '血液型相性診断',
+  description,
+  applicationCategory: 'EntertainmentApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+
+// 4×4 マトリクスと10組の詳細（ビルド時生成）
+const matrix = TYPES.map((a) => TYPES.map((b) => ketsuekiAisho(a, b)));
+const combos = allCombos().map(({ t1, t2 }) => ({
+  t1,
+  t2,
+  r: ketsuekiAisho(t1, t2),
+  forward: ketsuekiAisho(t1, t2).comment,
+  backward: t1 === t2 ? null : ketsuekiAisho(t2, t1).comment,
+}));
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 血液型相性</div>
+    <h1>血液型相性診断（A・B・O・AB型）</h1>
+    <p>ふたりの血液型を選ぶだけで、全16組み合わせの相性度をその場で表示します。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="ka-inputs">
+      <div class="form-group">
+        <span class="ka-label" id="ka-l1">あなたの血液型</span>
+        <div class="radio-group" role="radiogroup" aria-labelledby="ka-l1">
+          {TYPES.map((t, i) => (
+            <>
+              <input type="radio" name="ka-t1" id={`ka-t1-${t}`} value={t} />
+              <label for={`ka-t1-${t}`}>{t}型</label>
+            </>
+          ))}
+        </div>
+      </div>
+      <div class="form-group">
+        <span class="ka-label" id="ka-l2">相手の血液型</span>
+        <div class="radio-group" role="radiogroup" aria-labelledby="ka-l2">
+          {TYPES.map((t) => (
+            <>
+              <input type="radio" name="ka-t2" id={`ka-t2-${t}`} value={t} />
+              <label for={`ka-t2-${t}`}>{t}型</label>
+            </>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="result-box" id="ka-result">
+      <div class="result-label">ふたりの相性度</div>
+      <div class="ka-pair" id="ka-pair">―</div>
+      <div class="result-main"><span id="ka-score">―</span><span class="ka-unit">点</span></div>
+      <div class="ka-rank" id="ka-rank">―</div>
+      <div class="ka-meter" aria-hidden="true"><span id="ka-meter-bar"></span></div>
+      <p class="ka-comment" id="ka-comment"></p>
+      <div class="ka-advice">
+        <span class="ka-advice-label">うまく付き合うコツ</span>
+        <p id="ka-advice"></p>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>血液型相性 早見表（全16組み合わせ）</h2>
+    <p>行があなた、列が相手の血液型です。◎＝とても良い（85点以上）・○＝良い（70点以上）・△＝工夫しだい、の3段階です。スコアは組み合わせで決まり、どちらから見ても同じです。</p>
+    <div class="data-table-wrap ka-matrix">
+      <div class="data-table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>あなた＼相手</th>{TYPES.map((t) => <th>{t}型</th>)}</tr>
+          </thead>
+          <tbody>
+            {TYPES.map((a, i) => (
+              <tr>
+                <td class="ka-rowhead">{a}型</td>
+                {TYPES.map((b, j) => (
+                  <td class={matrix[i][j].rank === '◎' ? 'ka-best' : ''}>
+                    {matrix[i][j].rank}<span class="ka-cell-score">{matrix[i][j].score}</span>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h2 class="ka-h2">組み合わせ別の相性（全パターン解説）</h2>
+    <div class="ka-combo-list">
+      {combos.map(({ t1, t2, r, forward, backward }) => (
+        <details class="ka-combo">
+          <summary>
+            <span class="ka-combo-pair">{t1}型 × {t2}型</span>
+            <span class="ka-combo-score">{r.score}点 {r.rank}</span>
+          </summary>
+          <div class="ka-combo-body">
+            <p><strong>{t1}型のあなたから見ると：</strong>{forward}</p>
+            {backward && <p><strong>{t2}型のあなたから見ると：</strong>{backward}</p>}
+            <p class="ka-combo-advice"><strong>コツ：</strong>{r.advice}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+
+    <h2 class="ka-h2">判定の考え方</h2>
+    <p>
+      本ツールの相性度は、日本の血液型占いで広く言われる組み合わせの傾向（O型×A型は補い合う定番の好相性、A型×B型はペースの違いから「努力が必要」とされる、B型×O型は波長が合う、AB型×AB型は互いのペースを守れる、など）をもとに、<strong>16組み合わせを固定の判定表として点数化</strong>したものです。同じ組み合わせなら必ず同じ結果になります。
+    </p>
+    <div class="disclaimer">
+      ※ 血液型と性格・相性の関連に科学的根拠はありません。血液型占いは娯楽・文化的慣習に基づくものです。計算結果はあくまで参考値です。話のタネとしてお楽しみください。
+    </div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '血液型で本当に相性がわかりますか？', a: '血液型と性格・相性の関連に科学的根拠はありません。日本で広く親しまれている血液型占い（娯楽・文化的慣習）の通説を、わかりやすく点数化したものです。話のタネとしてお楽しみください。' },
+    { q: '一番相性が良い組み合わせはどれですか？', a: '本ツールの判定基準では O型×A型の90点が最高です。おおらかなO型と細やかなA型が互いの苦手をフォローし合える、定番の好相性とされています。' },
+    { q: 'A型×B型は本当に相性が悪いのですか？', a: '通説では唯一「努力が必要」とされる組み合わせですが、ペースの違いは裏を返せば互いにない魅力です。本ツールでも最低の52点ながら「工夫しだい」の△としています。' },
+    { q: 'どちらがA型でどちらがB型かで結果は変わりますか？', a: '相性度（点数）は組み合わせで決まるため同じです。コメントは「あなた」側の視点に合わせて変わります。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .ka-inputs { display: grid; gap: 16px; }
+  @media (min-width: 640px) { .ka-inputs { grid-template-columns: 1fr 1fr; } }
+  .ka-inputs .form-group { margin-bottom: 0; }
+  .ka-label { display: block; font-size: .8rem; font-weight: var(--fw-bold); color: var(--text-muted); margin-bottom: 8px; }
+  .result-box { margin-top: 22px; }
+  .ka-pair { font-size: 1.05rem; font-weight: var(--fw-bold); color: var(--text); }
+  .ka-unit { font-size: 1.2rem; font-weight: var(--fw-bold); margin-left: 4px; }
+  .ka-rank { font-size: 1rem; font-weight: var(--fw-bold); color: color-mix(in srgb, var(--cat-color) 62%, #000); margin-top: 4px; }
+  .ka-meter { height: 10px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--cat-color) 14%, #fff); margin-top: 12px; overflow: hidden; }
+  .ka-meter span { display: block; height: 100%; width: 0; border-radius: var(--r-pill); background: var(--cat-color); transition: width .5s ease; }
+  .ka-comment { font-size: .88rem; color: var(--text); line-height: 1.85; margin: 16px 0 0; }
+  .ka-advice { margin-top: 14px; background: var(--surface); border-radius: var(--r-md); padding: 12px 14px; }
+  .ka-advice-label { display: inline-block; font-size: .74rem; font-weight: var(--fw-bold); color: var(--cat-color); margin-bottom: 4px; }
+  .ka-advice p { font-size: .84rem; color: var(--text-3); line-height: 1.75; margin: 0; }
+
+  .ka-matrix { margin: 14px 0 6px; }
+  .ka-matrix .data-table { min-width: 420px; }
+  .ka-matrix .data-table th { text-align: center; padding: 12px 10px; }
+  .ka-matrix .data-table td { text-align: center; padding: 12px 10px; }
+  .ka-matrix .ka-rowhead { font-weight: var(--fw-bold); background: var(--cat-tint); color: color-mix(in srgb, var(--cat-color) 62%, #000); }
+  .ka-matrix .ka-best { color: var(--cat-color); font-weight: var(--fw-black); }
+  .ka-cell-score { display: block; font-size: .68rem; color: var(--text-muted); font-weight: var(--fw-normal); }
+  .ka-matrix .ka-best .ka-cell-score { color: var(--cat-color); }
+
+  .ka-h2 { margin-top: 26px; }
+  .ka-combo-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .ka-combo { border: 1.5px solid var(--border-2); border-radius: var(--r-md); background: var(--surface); overflow: hidden; }
+  .ka-combo > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 16px; }
+  .ka-combo > summary::-webkit-details-marker { display: none; }
+  .ka-combo-pair { font-size: .92rem; font-weight: var(--fw-bold); color: var(--text); }
+  .ka-combo-score { font-family: var(--font-mono); font-size: .84rem; font-weight: var(--fw-bold); color: var(--cat-color); }
+  .ka-combo-body { padding: 0 16px 14px; }
+  .ka-combo-body p { font-size: .84rem; line-height: 1.8; color: var(--text-3); margin: 0 0 8px; }
+  .ka-combo-advice { padding-top: 4px; }
+</style>
+
+<script>
+  import { ketsuekiAisho } from '../../lib/ketsueki-aisho.js';
+
+  const $ = (id) => document.getElementById(id);
+  const RANK_LABELS = { '◎': 'とても良い相性', '○': '良い相性', '△': '工夫しだいの相性' };
+
+  function picked(name) {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : '';
+  }
+
+  function render() {
+    const t1 = picked('ka-t1');
+    const t2 = picked('ka-t2');
+    const box = $('ka-result');
+    if (!t1 || !t2) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
+    const r = ketsuekiAisho(t1, t2);
+    if (!r) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
+    box.classList.add('visible');
+
+    $('ka-pair').textContent = `${t1}型（あなた） × ${t2}型（相手）`;
+    $('ka-score').textContent = r.score;
+    $('ka-rank').textContent = `${r.rank} ${RANK_LABELS[r.rank]}`;
+    $('ka-meter-bar').style.width = `${r.score}%`;
+    $('ka-comment').textContent = r.comment;
+    $('ka-advice').textContent = r.advice;
+
+    window.setResultShare?.(
+      '血液型相性診断\n' +
+        `${t1}型 × ${t2}型：${r.score}点（${r.rank} ${RANK_LABELS[r.rank]}）`
+    );
+  }
+
+  document.querySelectorAll('input[name="ka-t1"], input[name="ka-t2"]').forEach((el) => {
+    el.addEventListener('change', render);
+  });
+</script>
