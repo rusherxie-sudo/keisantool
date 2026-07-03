@@ -5,7 +5,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 import FloatingShare from '../components/FloatingShare.astro';
 import { getColorBySlug, getColorByCategorySlug, getTool, getCategorySlug } from '../data/tools.js';
 
-const { title, description, slug, current, jsonld, wide } = Astro.props;
+const { title, description, slug, current, jsonld, wide, breadcrumb } = Astro.props;
 const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
 const ogImage = new URL('/og.png', Astro.site).href;
 
@@ -17,10 +17,12 @@ const jsonldFinal =
 
 // ツールページには BreadcrumbList を一括注入（ホーム ／ カテゴリ ／ ツール名）。
 // カテゴリページは自前で BreadcrumbList を持つため getTool が undefined → 注入しない。
+// breadcrumb prop が渡された場合はそれを優先する（星座相性の144組ページなど4階層のページ用）。
 const _tool = getTool(current);
 const _crumbCat = _tool ? getCategorySlug(_tool.category) : '';
 const breadcrumbJsonld =
-  _tool && _crumbCat
+  breadcrumb ??
+  (_tool && _crumbCat
     ? {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
@@ -30,7 +32,7 @@ const breadcrumbJsonld =
           { '@type': 'ListItem', position: 3, name: _tool.name, item: canonical },
         ],
       }
-    : null;
+    : null);
 
 // ページ所属カテゴリのテーマ色を解決：ツールslug優先 → カテゴリslug → ブランド色
 const _toolColor = getColorBySlug(current);

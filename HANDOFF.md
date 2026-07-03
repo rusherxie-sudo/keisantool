@@ -29,13 +29,13 @@ npx wrangler pages deploy dist --project-name=keisantool
 
 ## 3. 当前状态（2026-07-03）
 
-- **39 个工具全部 live、已上线**（新增第 8 分类「ペット・動物」8 工具 + loan/fukuri/nissu/password/seiri/seiza + nenrei-hayami）。另有 8 个分类 hub 页（`/category/<slug>/`）、404 页。
-- **2026-07-03 新增「年齢早見表」hub-and-spoke 页面群**（对标 nenrei-hayami.net 的模式）：
-  - hub `/nenrei-hayami/`：明治元年〜今年的 西暦×和暦×満年齢×数え年×干支 完整大表（SSR + print CSS），目标词「年齢早見表」（1〜3月报税季峰值）。
-  - spoke `/umaredoshi/<year>/` ×111 页（1900〜2010，`[year].astro` 动态路由）：每年一页「今年何歳・和暦・干支・厄年・星座・六星占術運命星」，复用 nenrei/wareki/yakudoshi/seiza/rokusei 五个 lib + 新 lib `hayami.js`。基准年 build 时固定（`new Date().getFullYear()`），**每年 1 月 1 日重 build 续命**（title/h1/表格全自动跟随）。
-  - 站点从 52 页 → **164 页**。GSC 催收录：hub+1991/1985/1990/1980/1995/2000 共 **7 个已催**（2026-07-03，配额用尽）；**1975/1973/1965 三个待次日催**。
-  - 预期管理：长尾年份页先起量（数月内），头词「年齢早見表」是长期战（竞对是十年老站+完全一致域名）。
-- **测试 879 个全绿**（35 个测试文件）。
+- **42 个工具全部 live、已上线**。2026-07-03 并行上了两组程序化页面群（分属两个 worktree，已合并统一部署）：
+  - **「相性」系列第一期**：tanjobi-aisho / seiza-aisho / ketsueki-aisho 3 工具，其中星座相性含 **144 个程序化组合页** `/seiza-aisho/<sign1>-<sign2>/`。
+  - **「年齢早見表」hub-and-spoke**（对标 nenrei-hayami.net 模式）：hub `/nenrei-hayami/`（明治元年〜今年 西暦×和暦×満年齢×数え年×干支 大表、SSR+print CSS，目标词「年齢早見表」1〜3月报税季峰值）+ spoke `/umaredoshi/<year>/` ×111 页（1900〜2010，每年一页「今年何歳・和暦・干支・厄年・星座・六星占術運命星」，复用 nenrei/wareki/yakudoshi/seiza/rokusei + 新 lib `hayami.js`）。基准年 build 时固定（`new Date().getFullYear()`），**每年 1 月 1 日重 build 续命**。预期管理：长尾年份页先起量（数月内），头词是长期战（竞对是十年老站+完全一致域名）。
+  - 合并后全站约 **311 URL**。另有 8 个分类 hub 页（`/category/<slug>/`）和 404 页。
+  - GSC 催收录（年齢早見表组）：hub+1991/1985/1990/1980/1995/2000 共 **7 个已催**（2026-07-03 配额用尽）；**1975/1973/1965 三个待次日催**。
+  - ⚠️ **教训：两个并行 worktree 各自 `wrangler pages deploy` 会互相全量覆盖生产**（07-03 当天互顶过一次）。并行开发时部署前必须先互相 merge。
+- **测试 934 个全绿**（38 个测试文件）。
 - 2026-07-02 做过一次四维全面 review（产品/代码/SEO/流量），修复清单见 §8 末条。
 - **AdSense 尚未接入**（无 ca-pub 代码、无 ads.txt）——Owner 决定暂缓，接入前站点零收入。
 - 依赖：`marked`（Markdown 工具）、`@astrojs/sitemap`。
@@ -49,7 +49,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 5. **日期处理**：用 UTC 正午基准（见 `src/lib/shussan.js` 的 `toDate/toISO/addDays`），避免时区/夏令时跨日 bug。
 6. **法规/数值每年要复核**：日本税制·社保每年 4月/8月 改定。已知踩过的坑见第 8 节。
 
-## 5. 全工具清单（39个，按分类）
+## 5. 全工具清单（42个，按分类）
 
 | 分类 | slug | 工具 |
 |------|------|------|
@@ -68,6 +68,9 @@ npx wrangler pages deploy dist --project-name=keisantool
 | 生活・日常 | saniku | 産休・育休（含出生後支援+13%等2025新制） |
 | 生活・日常 | nenrei | 年齢計算（満年齢/数え年/学年/干支） |
 | 占い・文化 | rokusei | 六星占術・大殺界（含12型解说SSR） |
+| 占い・文化 | tanjobi-aisho | 誕生日相性診断（数秘術45对判定表+六星地運双向，総合=floor平均） |
+| 占い・文化 | seiza-aisho | 星座相性診断 hub + **144程序化页** `[pair].astro`（エレメント×アスペクト7档） |
+| 占い・文化 | ketsueki-aisho | 血液型相性診断（10无序对判定表+16方向性评语，单页tab型） |
 | 文字ツール | moji | 全角半角・かな・文字数カウント（含字节/原稿用紙/X文字数） |
 | 変換・ツール | color-code | カラーコード変換（HEX/RGB/HSL+取色器+抵抗カラーコード） |
 | 変換・ツール | tani | 単位変換（長さ/重さ/面積/体積/温度/速さ） |
@@ -131,6 +134,8 @@ npx wrangler pages deploy dist --project-name=keisantool
 - **calorie 公式**：默认用「国立健康・栄養研究所式(Ganpule)」，HB式可切换。
 - **导航**：已是分类下拉式（`SiteHeader.astro`：PC hover/点击展开，移动端汉堡+手风琴）。工具再增多也不会挤爆导航。
 - **浮动分享**：`FloatingShare.astro` 全站右下角 FAB，移动端优先 `navigator.share`。
+- **相性系列（2026-07-03）的判定表口径**：占い相性没有唯一正解，两家公开源的六星占術星对星表互相矛盾（流派差）→ 六星部分**不建星同士表**，改用「相手の生年年支落在自分タイプ12ゾーン哪格」的地運方式（100%复用 `fortuneZone`，出典框架 hosokikazuko.com）；数秘術45对表和血液型10对表是「综合通行说法的本站判定基准」，**整表在测试里用独立字面量锚定**（tests/tanjobi-aisho.test.js、tests/ketsueki-aisho.test.js），页面上全部公开判定基准+注明流派差。**「MBTI」字样全站禁用**（日本MBTI協会商标），未来做16类型内容用「16タイプ」措辞。设计文档：`docs/superpowers/specs/2026-07-03-aisho-series-design.md`。
+- **144 程序化页的三个接线点**：① `seiza-aisho/[pair].astro` 是工具页下动态路由的首个先例（getStaticPaths 从 lib 的 `allPairs()` 生成）；② ToolLayout 新增可选 `breadcrumb` prop 覆盖默认三层面包屑（pair 页传四层）；③ `astro.config.mjs` 的 sitemap lastmod 解析器加了 `seiza-aisho/` 前缀分支（同 category 先例）。
 - **2026-07-02 全面 review 落地的修复**（详见当日会话）：① loan 0% 金利総利息为负 → 0% 分支直接 `{total:P, interest:0}`，其余 `Math.max(0,…)`；② password 默认乱数源 Math.random → `crypto.getRandomValues` + 各文字種保証 + Fisher-Yates（tests 里有「不得调用 Math.random」的契约测试）；③ pet-age ≥1歳 分支补 floor；④ seiri 周期限 15〜60；⑤ loan/fukuri 测试加了**外部锚点值**（91,855 / 108,928 / 9,849,059——改公式必挂）；⑥ 新增 404 页（消软404，CF Pages 有 404.html 才关 SPA 回退）；⑦ 面包屑三层化 + ToolLayout 统一注入 BreadcrumbList；⑧ GSC 洞察：rokusei 占全站 2/3 点击（占い赛道已验证）、kokuho 第12位0点击（匿名站金钱词天花板）。**选品新规矩：做 YMYL 词前先查 SERP 现任者，只做匿名工具站已在首页存活的词。**
 
 ## 9. 目录结构

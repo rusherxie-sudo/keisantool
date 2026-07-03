@@ -1,0 +1,262 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { SIGNS, seizaAisho } from '../../lib/seiza-aisho.js';
+
+const slug = 'seiza-aisho';
+const title = '星座相性診断 - 12星座の相性表・全144組み合わせを計算 | 計算ツール';
+const description =
+  '12星座の相性を西洋占星術のエレメント（火・地・風・水）とアスペクト（角度）で自動計算する無料の星座相性診断。おひつじ座×おうし座など全144組み合わせの相性表と詳細ページつき。登録不要・娯楽としてお楽しみください。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '星座相性診断',
+  description,
+  applicationCategory: 'EntertainmentApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+
+// 12×12 の相性マトリクス（ビルド時生成・全144ページへの内部リンク）
+const matrix = SIGNS.map((a) =>
+  SIGNS.map((b) => ({
+    href: `/seiza-aisho/${a.slug}-${b.slug}/`,
+    rank: seizaAisho(a.slug, b.slug).rank,
+    score: seizaAisho(a.slug, b.slug).score,
+    label: `${a.name}×${b.name}の相性`,
+  }))
+);
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 星座相性</div>
+    <h1>星座相性診断（12星座の相性表）</h1>
+    <p>ふたりの星座を選ぶだけで、エレメントとアスペクト（角度）から相性度を自動計算。全144組み合わせの相性表つきです。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="sa-inputs">
+      <div class="sa-side">
+        <div class="form-group">
+          <label for="sa-s1">あなたの星座</label>
+          <select id="sa-s1">
+            <option value="">選んでください</option>
+            {SIGNS.map((s) => <option value={s.slug}>{s.symbol} {s.name}（{s.kana}）</option>)}
+          </select>
+        </div>
+        <details class="sa-bd">
+          <summary>誕生日から選ぶ</summary>
+          <input type="date" id="sa-b1" aria-label="あなたの誕生日" />
+        </details>
+      </div>
+      <div class="sa-x" aria-hidden="true">×</div>
+      <div class="sa-side">
+        <div class="form-group">
+          <label for="sa-s2">相手の星座</label>
+          <select id="sa-s2">
+            <option value="">選んでください</option>
+            {SIGNS.map((s) => <option value={s.slug}>{s.symbol} {s.name}（{s.kana}）</option>)}
+          </select>
+        </div>
+        <details class="sa-bd">
+          <summary>誕生日から選ぶ</summary>
+          <input type="date" id="sa-b2" aria-label="相手の誕生日" />
+        </details>
+      </div>
+    </div>
+
+    <div class="result-box" id="sa-result">
+      <div class="result-label">ふたりの相性度</div>
+      <div class="sa-pair" id="sa-pair">―</div>
+      <div class="result-main"><span id="sa-score">―</span><span class="sa-unit">点</span></div>
+      <div class="sa-rank" id="sa-rank">―</div>
+      <div class="sa-meter" aria-hidden="true"><span id="sa-meter-bar"></span></div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">アスペクト（角度の関係）</span><span class="value" id="sa-aspect">―</span></div>
+        <div class="result-row"><span class="label">エレメント</span><span class="value" id="sa-element">―</span></div>
+      </div>
+      <p class="sa-comment" id="sa-comment"></p>
+      <a class="sa-detail-link" id="sa-detail-link" href="#">この組み合わせの詳しい相性を見る →</a>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="sa-matrix-sec">
+    <h2>12星座 相性早見表（全144組み合わせ）</h2>
+    <p class="sa-matrix-note">行があなた、列が相手の星座です。記号を押すと、その組み合わせの詳しい相性ページが開きます（◎とても良い／○良い／△工夫しだい／▲刺激し合う）。</p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table sa-table">
+          <thead>
+            <tr>
+              <th>あなた＼相手</th>
+              {SIGNS.map((s) => <th><span class="sa-th-symbol">{s.symbol}</span><span class="sa-th-name">{s.name.replace('座', '')}</span></th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {SIGNS.map((a, i) => (
+              <tr>
+                <td class="sa-rowhead">{a.symbol} {a.name}</td>
+                {SIGNS.map((b, j) => (
+                  <td class={matrix[i][j].rank === '◎' ? 'sa-best' : ''}>
+                    <a href={matrix[i][j].href} title={matrix[i][j].label}>{matrix[i][j].rank}</a>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>星座相性の計算方法（判定基準を公開）</h2>
+    <p>
+      本ツールの星座相性は、西洋占星術で通行の<strong>エレメント</strong>と<strong>アスペクト（2つの星座の角度）</strong>の考え方だけで機械的に計算しています。同じ組み合わせなら必ず同じ結果になります。
+    </p>
+
+    <h3>① 4つのエレメント（火・地・風・水）</h3>
+    <p>12星座は3つずつ、4つのエレメント（元素）に分かれます。同じエレメント同士は気質が似ており、火と風、地と水は互いを活かし合う相性とされます。</p>
+    <table class="sa-mini-table">
+      <thead><tr><th>エレメント</th><th>星座</th></tr></thead>
+      <tbody>
+        <tr><td>火（情熱・行動）</td><td>牡羊座・獅子座・射手座</td></tr>
+        <tr><td>地（堅実・現実）</td><td>牡牛座・乙女座・山羊座</td></tr>
+        <tr><td>風（知性・社交）</td><td>双子座・天秤座・水瓶座</td></tr>
+        <tr><td>水（感情・共感）</td><td>蟹座・蠍座・魚座</td></tr>
+      </tbody>
+    </table>
+
+    <h3>② アスペクト（角度）と相性度</h3>
+    <p>黄道十二宮を30度ずつ並べたとき、2つの星座が何個離れているか（＝角度）で関係性が決まります。本ツールの判定基準は次の7段階です。</p>
+    <table class="sa-mini-table">
+      <thead><tr><th>離れ方</th><th>アスペクト</th><th>相性度</th></tr></thead>
+      <tbody>
+        <tr><td>4つ（120度）</td><td>トライン＝同じエレメント</td><td>92点 ◎</td></tr>
+        <tr><td>2つ（60度）</td><td>セクスタイル＝火×風／地×水</td><td>84点 ○</td></tr>
+        <tr><td>0（同じ星座）</td><td>コンジャンクション</td><td>80点 ○</td></tr>
+        <tr><td>6つ（180度）</td><td>オポジション＝正反対で惹かれ合う</td><td>76点 ○</td></tr>
+        <tr><td>1つ（30度）</td><td>セミセクスタイル＝お隣同士</td><td>62点 △</td></tr>
+        <tr><td>5つ（150度）</td><td>インコンジャンクト</td><td>55点 △</td></tr>
+        <tr><td>3つ（90度）</td><td>スクエア＝刺激し合う緊張関係</td><td>48点 ▲</td></tr>
+      </tbody>
+    </table>
+    <p>
+      自分の星座がわからない場合は<a href="/seiza/">星座調べ（誕生日から星座）</a>で確認できます。生まれ年ごとの運勢を知りたい方は<a href="/rokusei/">六星占術・大殺界計算器</a>もどうぞ。
+    </p>
+    <div class="disclaimer">
+      ※ 星座占い・相性占いは娯楽・文化的慣習に基づくものであり、科学的根拠はありません。計算結果はあくまで参考値です。人間関係の大切な判断は、結果に頼らずご自身の責任でお決めください。
+    </div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '星座の相性はどうやって決まりますか？', a: '本ツールでは、西洋占星術で通行の「エレメント（火・地・風・水）」と「アスペクト（2つの星座の角度）」で判定します。同じエレメント（120度）が最も調和しやすく、90度（スクエア）は刺激し合う関係とされます。判定表はページ内で公開しています。' },
+    { q: '相性が▲（48点）だったら付き合わない方がいいですか？', a: 'いいえ。スクエア（90度）は「刺激し合い、成長させ合う関係」ともされ、実際に長続きするカップルも多い組み合わせです。占いは娯楽ですので、参考程度にお楽しみください。' },
+    { q: '自分の星座がわかりません。', a: '「誕生日から選ぶ」を開いて生年月日を入れると自動で星座を選択します。詳しくは星座調べ（誕生日から星座）のページでも確認できます。' },
+    { q: '144通りすべての組み合わせが見られますか？', a: 'はい。ページ内の相性早見表から、12星座×12星座＝全144組み合わせの詳細ページに移動できます。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .sa-inputs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: start; max-width: 760px; margin: 0 auto; }
+  .sa-side .form-group { margin-bottom: 6px; }
+  .sa-x { font-size: 1.2rem; font-weight: var(--fw-black); color: var(--text-faint); padding-top: 44px; }
+  @media (max-width: 560px) {
+    .sa-inputs { grid-template-columns: 1fr; gap: 10px; }
+    .sa-x { display: none; }
+  }
+  .sa-bd summary { font-size: .78rem; color: var(--text-muted); cursor: pointer; padding: 2px 0 6px; }
+  .sa-bd input { width: 100%; height: 44px; padding: 0 12px; border: 1.5px solid var(--border-input); border-radius: var(--r-md); background: var(--surface-sub); font-family: var(--font-mono); }
+  .result-box { margin-top: 22px; max-width: 760px; margin-left: auto; margin-right: auto; }
+  .sa-pair { font-size: 1.05rem; font-weight: var(--fw-bold); color: var(--text); }
+  .sa-unit { font-size: 1.2rem; font-weight: var(--fw-bold); margin-left: 4px; }
+  .sa-rank { font-size: 1rem; font-weight: var(--fw-bold); color: color-mix(in srgb, var(--cat-color) 62%, #000); margin-top: 4px; }
+  .sa-meter { height: 10px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--cat-color) 14%, #fff); margin-top: 12px; overflow: hidden; }
+  .sa-meter span { display: block; height: 100%; width: 0; border-radius: var(--r-pill); background: var(--cat-color); transition: width .5s ease; }
+  .sa-comment { font-size: .86rem; color: var(--text-3); line-height: 1.8; margin: 14px 0 0; }
+  .sa-detail-link { display: inline-block; margin-top: 14px; font-size: .88rem; font-weight: var(--fw-bold); color: var(--cat-color); text-decoration: none; }
+  .sa-detail-link:hover { text-decoration: underline; }
+
+  .sa-matrix-sec { margin-top: 28px; }
+  .sa-matrix-sec h2 { font-size: 1.15rem; font-weight: var(--fw-black); color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+  .sa-matrix-sec h2::before { content: ''; width: 6px; height: 1.1em; background: var(--cat-color); border-radius: 3px; }
+  .sa-matrix-note { font-size: .84rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.7; }
+  .sa-table { min-width: 720px; }
+  .sa-table th { text-align: center; padding: 10px 6px; }
+  .sa-th-symbol { display: block; font-size: 1rem; }
+  .sa-th-name { display: block; font-size: .68rem; font-weight: var(--fw-bold); }
+  .sa-table td { text-align: center; padding: 0; }
+  .sa-table td a { display: block; padding: 10px 6px; text-decoration: none; color: var(--text); font-weight: var(--fw-bold); }
+  .sa-table td a:hover { background: var(--cat-tint); }
+  .sa-table .sa-rowhead { text-align: left; padding: 10px 12px; font-weight: var(--fw-bold); background: var(--cat-tint); color: color-mix(in srgb, var(--cat-color) 62%, #000); white-space: nowrap; }
+  .sa-table .sa-best a { color: var(--cat-color); }
+
+  .sa-mini-table { width: 100%; border-collapse: collapse; margin: 12px 0 6px; font-size: .88rem; }
+  .sa-mini-table th, .sa-mini-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border-2); }
+  .sa-mini-table th { color: var(--text-muted); font-weight: var(--fw-bold); font-size: .8rem; }
+</style>
+
+<script>
+  import { seizaAisho, signBySlug } from '../../lib/seiza-aisho.js';
+  import { SIGNS } from '../../lib/seiza-aisho.js';
+  import { seiza } from '../../lib/seiza.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  // 誕生日→星座（seiza.js は漢字名を返すので slug に引き直す）
+  function slugFromDate(v) {
+    const m = v.match(/^\d{4}-(\d{2})-(\d{2})$/);
+    if (!m) return '';
+    const s = seiza(Number(m[1]), Number(m[2]));
+    if (!s) return '';
+    const hit = SIGNS.find((x) => x.name === s.name);
+    return hit ? hit.slug : '';
+  }
+
+  function render() {
+    const v1 = $('sa-s1').value;
+    const v2 = $('sa-s2').value;
+    const box = $('sa-result');
+    if (!v1 || !v2) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
+    const r = seizaAisho(v1, v2);
+    if (!r) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
+    const s1 = signBySlug(v1);
+    const s2 = signBySlug(v2);
+    box.classList.add('visible');
+
+    $('sa-pair').textContent = `${s1.symbol} ${s1.name} × ${s2.symbol} ${s2.name}`;
+    $('sa-score').textContent = r.score;
+    $('sa-rank').textContent = `${r.rank} ${r.rank === '◎' ? 'とても良い相性' : r.rank === '○' ? '良い相性' : r.rank === '△' ? '工夫しだいの相性' : '刺激し合う相性'}`;
+    $('sa-meter-bar').style.width = `${r.score}%`;
+    $('sa-aspect').textContent = r.aspect.name;
+    $('sa-element').textContent = `${r.element1} × ${r.element2}`;
+    $('sa-comment').textContent = r.comment;
+    $('sa-detail-link').setAttribute('href', `/seiza-aisho/${v1}-${v2}/`);
+
+    window.setResultShare?.(
+      '星座相性診断\n' +
+        `${s1.name} × ${s2.name}：${r.score}点（${r.rank}）\n` +
+        `${r.aspect.name}・${r.element1}×${r.element2}`
+    );
+  }
+
+  ['sa-s1', 'sa-s2'].forEach((id) => $(id).addEventListener('change', render));
+  [['sa-b1', 'sa-s1'], ['sa-b2', 'sa-s2']].forEach(([bd, sel]) => {
+    $(bd).addEventListener('change', () => {
+      const slug = slugFromDate($(bd).value);
+      if (slug) { $(sel).value = slug; render(); }
+    });
+  });
+</script>
