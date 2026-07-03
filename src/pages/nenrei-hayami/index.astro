@@ -1,0 +1,164 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import { hayamiTable, UMAREDOSHI_FROM, UMAREDOSHI_TO } from '../../lib/hayami.js';
+import { seirekiToWareki } from '../../lib/wareki.js';
+
+const slug = 'nenrei-hayami';
+
+// 基準年はビルド時に固定（毎年1月1日の再ビルドで自動更新される）。
+const BASE_YEAR = new Date().getFullYear();
+const BASE_WAREKI = seirekiToWareki(BASE_YEAR).label; // 例：令和8年
+const FROM_YEAR = 1868; // 明治元年
+// 生まれ年の個別ページ（/umaredoshi/<year>/）がある範囲
+const SPOKE_FROM = UMAREDOSHI_FROM;
+const SPOKE_TO = UMAREDOSHI_TO;
+
+// 新しい年が上（今年 → 明治元年）の表データ
+const rows = hayamiTable(FROM_YEAR, BASE_YEAR, BASE_YEAR).reverse();
+
+const title = `年齢早見表【${BASE_YEAR}年（${BASE_WAREKI}）版】西暦・和暦・満年齢・数え年・干支 | 計算ツール`;
+const description = `${BASE_YEAR}年（${BASE_WAREKI}）版の年齢早見表。明治・大正・昭和・平成・令和の生まれ年ごとに、西暦・和暦・満年齢・数え年・干支をひと目で確認できます。印刷にも対応し、確定申告や履歴書など書類記入時の年齢確認にそのまま使えます。`;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '年齢早見表',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 年齢早見表</div>
+    <h1>年齢早見表【{BASE_YEAR}年・{BASE_WAREKI}版】</h1>
+    <p>
+      {BASE_YEAR}年（{BASE_WAREKI}）時点の年齢早見表です。明治元年（1868年）から今年まで、生まれ年ごとの<strong>西暦・和暦・満年齢・数え年・干支</strong>を一覧できます。確定申告や履歴書・公的書類の記入、数え年の確認にご利用ください。
+    </p>
+  </div>
+
+  <section class="hayami-main">
+    <div class="hayami-lead">
+      <p class="hayami-note">
+        表の<strong>満年齢は「{BASE_YEAR}年の誕生日を迎えた後」の年齢</strong>です。まだ誕生日が来ていない方は<strong>マイナス1歳</strong>してください。数え年は「生まれた年を1歳とし、1月1日ごとに1歳加える」数え方です。
+      </p>
+      <button id="print-btn" class="print-btn" type="button">🖨 この早見表を印刷する</button>
+    </div>
+
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table hayami-table">
+          <thead>
+            <tr><th>西暦</th><th>和暦</th><th>満年齢</th><th>数え年</th><th>干支</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr class={r.seireki === BASE_YEAR ? 'is-hit' : undefined}>
+                <td class="num">
+                  {r.seireki >= SPOKE_FROM && r.seireki <= SPOKE_TO ? (
+                    <a href={`/umaredoshi/${r.seireki}/`} title={`${r.seireki}年生まれの年齢・干支・厄年`}>{r.seireki}年</a>
+                  ) : (
+                    `${r.seireki}年`
+                  )}
+                </td>
+                <td class="num--sub">{r.wareki}</td>
+                <td class="num">{r.age}歳</td>
+                <td class="num--sub">{r.kazoe}歳</td>
+                <td class="num--sub">{r.eto}（{r.etoYomi}）</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="hayami-note">
+      ※ 満年齢は誕生日を迎えた後の年齢（誕生日前は−1歳）。改元のあった年は和暦を「旧元号／新元号」で併記しています。西暦のリンクから、各生まれ年の<strong>干支・厄年・星座・六星占術</strong>までまとめた個別ページを開けます。計算結果はあくまで参考値です。
+    </p>
+  </section>
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>年齢早見表の見方</h2>
+    <p>
+      この早見表は<strong>{BASE_YEAR}年（{BASE_WAREKI}）時点</strong>の年齢をまとめたものです。「満年齢」の列は、今年の誕生日を迎えた後の年齢を表示しています。誕生日がまだの方は表の年齢から1を引いてください。たとえば履歴書や公的書類には満年齢を記入するのが原則です。
+    </p>
+    <ul>
+      <li><strong>満年齢</strong>：生まれた日を0歳とし、誕生日ごとに1歳加える数え方。書類記入は原則こちら。生年月日から正確に計算したいときは<a href="/nenrei/">年齢計算器</a>が便利です。</li>
+      <li><strong>数え年</strong>：生まれた年を1歳とし、1月1日（元日）ごとに1歳加える数え方。厄年・七五三・長寿祝いなど伝統行事で使われます。</li>
+      <li><strong>和暦</strong>：昭和64年／平成元年のように改元のあった年は2つの元号を併記しています。細かい換算は<a href="/wareki/">和暦・西暦変換器</a>で確認できます。</li>
+      <li><strong>干支（十二支）</strong>：子・丑・寅…の12年周期。年賀状や厄年の話題でよく使われます。</li>
+    </ul>
+    <p>
+      なお、厄年（数え年で男性25・42・61歳、女性19・33・37・61歳）に当たるかどうかは<a href="/yakudoshi/">厄年チェッカー</a>で自動判定できます。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '年齢早見表の満年齢はいつ時点の年齢ですか？', a: `${BASE_YEAR}年（${BASE_WAREKI}）の誕生日を迎えた後の満年齢です。まだ誕生日が来ていない方は、表の年齢から1歳引いてください。` },
+    { q: '満年齢と数え年はどう違いますか？', a: '満年齢は生まれた日を0歳とし誕生日ごとに1歳増える数え方で、履歴書や公的書類は原則こちらを使います。数え年は生まれた年を1歳とし、1月1日ごとに1歳増える数え方で、厄年や長寿祝いなどの伝統行事で使われます。' },
+    { q: '昭和64年と平成元年のように、同じ西暦に和暦が2つあるのはなぜですか？', a: '年の途中で改元があったためです。1989年は1月7日までが昭和64年、1月8日からが平成元年です。本早見表では改元のあった年は両方の元号を併記しています。' },
+    { q: 'この早見表は印刷できますか？', a: 'はい。「この早見表を印刷する」ボタン（またはブラウザの印刷機能）で、表だけをきれいに印刷できるレイアウトになっています。確定申告など書類記入時の手元資料としてご利用ください。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  document.getElementById('print-btn')?.addEventListener('click', () => window.print());
+</script>
+
+<style>
+  .hayami-main { max-width: 880px; width: 100%; margin: 0 auto; }
+  .hayami-lead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .hayami-lead .hayami-note { flex: 1 1 320px; margin: 0; }
+  .hayami-note { font-size: .82rem; color: var(--text-muted); margin: 8px 0 0; line-height: 1.7; }
+  .print-btn {
+    flex: none;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-weight: var(--fw-bold);
+    font-size: .82rem;
+    padding: 9px 16px;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+  }
+  .print-btn:hover { border-color: var(--cat-color); color: var(--cat-color); }
+  /* 5列を880pxに収める：paddingを詰め、最小幅を下げる（375pxでは横スクロール） */
+  .hayami-table { min-width: 480px; }
+  .hayami-table th, .hayami-table td { padding: 9px 12px; }
+  .hayami-table td a { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
+  .hayami-table td a:hover { opacity: .75; }
+</style>
+
+<!-- 印刷用：表以外を隠し、159行の長表をインク節約レイアウトで出す。
+     site-footer / fshare などレイアウト側の要素も隠すため is:global（header/ad は global.css 側で対応済み） -->
+<style is:global>
+  @media print {
+    .site-footer, .fshare, .print-btn, .howto, .faq, .related, .ad-slot,
+    .page-hero .crumb, .page-hero p { display: none !important; }
+    .page-hero { margin-bottom: 6px; }
+    .page-hero h1 { font-size: 14pt; }
+    .hayami-main .data-table-wrap { border: none; border-radius: 0; }
+    .hayami-main .data-table-scroll { overflow: visible; }
+    .hayami-main .hayami-table { min-width: 0; font-size: 8.5pt; }
+    .hayami-main .hayami-table th, .hayami-main .hayami-table td { padding: 2px 8px; }
+    .hayami-main .hayami-table td a { color: inherit; text-decoration: none; }
+    .hayami-main .hayami-table thead { display: table-header-group; }
+    .hayami-main .hayami-table tr { break-inside: avoid; }
+  }
+</style>

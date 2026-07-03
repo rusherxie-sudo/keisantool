@@ -245,6 +245,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'nenrei-hayami',
+    nav: '年齢早見表',
+    name: '年齢早見表',
+    icon: '📋',
+    category: '生活・日常',
+    short: '西暦・和暦・満年齢・数え年・干支',
+    live: true,
+  },
+  {
     slug: 'color-code',
     nav: 'カラーコード',
     name: 'カラーコード変換ツール',

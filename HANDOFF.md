@@ -29,8 +29,13 @@ npx wrangler pages deploy dist --project-name=keisantool
 
 ## 3. 当前状态（2026-07-03）
 
-- **41 个工具全部 live、已上线**（最新：「相性」系列第一期 tanjobi-aisho / seiza-aisho / ketsueki-aisho，其中星座相性含 **144 个程序化组合页** `/seiza-aisho/<sign1>-<sign2>/`，全站 199 URL）。另有 8 个分类 hub 页（`/category/<slug>/`）和 404 页。
-- **测试 909 个全绿**（37 个测试文件）。
+- **42 个工具全部 live、已上线**。2026-07-03 并行上了两组程序化页面群（分属两个 worktree，已合并统一部署）：
+  - **「相性」系列第一期**：tanjobi-aisho / seiza-aisho / ketsueki-aisho 3 工具，其中星座相性含 **144 个程序化组合页** `/seiza-aisho/<sign1>-<sign2>/`。
+  - **「年齢早見表」hub-and-spoke**（对标 nenrei-hayami.net 模式）：hub `/nenrei-hayami/`（明治元年〜今年 西暦×和暦×満年齢×数え年×干支 大表、SSR+print CSS，目标词「年齢早見表」1〜3月报税季峰值）+ spoke `/umaredoshi/<year>/` ×111 页（1900〜2010，每年一页「今年何歳・和暦・干支・厄年・星座・六星占術運命星」，复用 nenrei/wareki/yakudoshi/seiza/rokusei + 新 lib `hayami.js`）。基准年 build 时固定（`new Date().getFullYear()`），**每年 1 月 1 日重 build 续命**。预期管理：长尾年份页先起量（数月内），头词是长期战（竞对是十年老站+完全一致域名）。
+  - 合并后全站约 **311 URL**。另有 8 个分类 hub 页（`/category/<slug>/`）和 404 页。
+  - GSC 催收录（年齢早見表组）：hub+1991/1985/1990/1980/1995/2000 共 **7 个已催**（2026-07-03 配额用尽）；**1975/1973/1965 三个待次日催**。
+  - ⚠️ **教训：两个并行 worktree 各自 `wrangler pages deploy` 会互相全量覆盖生产**（07-03 当天互顶过一次）。并行开发时部署前必须先互相 merge。
+- **测试 934 个全绿**（38 个测试文件）。
 - 2026-07-02 做过一次四维全面 review（产品/代码/SEO/流量），修复清单见 §8 末条。
 - **AdSense 尚未接入**（无 ca-pub 代码、无 ads.txt）——Owner 决定暂缓，接入前站点零收入。
 - 依赖：`marked`（Markdown 工具）、`@astrojs/sitemap`。
@@ -44,7 +49,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 5. **日期处理**：用 UTC 正午基准（见 `src/lib/shussan.js` 的 `toDate/toISO/addDays`），避免时区/夏令时跨日 bug。
 6. **法规/数值每年要复核**：日本税制·社保每年 4月/8月 改定。已知踩过的坑见第 8 节。
 
-## 5. 全工具清单（41个，按分类）
+## 5. 全工具清单（42个，按分类）
 
 | 分类 | slug | 工具 |
 |------|------|------|
@@ -78,8 +83,9 @@ npx wrangler pages deploy dist --project-name=keisantool
 | 税金・お金 | loan | 住宅ローン返済（元利均等/元金均等） |
 | 税金・お金 | fukuri | 複利・積立シミュレーター |
 | 生活・日常 | nissu | 日数計算・日付計算 |
-| 生活・日常 | seiri | 排卵日・生理日計算（周期15〜60日限定） |
-| 生活・日常 | seiza | 星座調べ（誕生日→12星座） |
+| 生活・日常 | nenrei-hayami | 年齢早見表（明治〜今年SSR大表+print、spoke=/umaredoshi/1900..2010） |
+| 健康・身体 | seiri | 排卵日・生理日計算（周期15〜60日限定） |
+| 占い・文化 | seiza | 星座調べ（誕生日→12星座） |
 | 開発者ツール | password | パスワード生成（crypto、各文字種保証） |
 | ペット・動物 | inu-nenrei / neko-nenrei | 犬猫の年齢人間換算（環境省式） |
 | ペット・動物 | inu-gohan / neko-gohan | ごはん量（RER=70×kg^0.75×係数） |

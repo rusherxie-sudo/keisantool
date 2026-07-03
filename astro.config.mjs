@@ -45,6 +45,8 @@ function sourceFileForUrl(url) {
   if (path === '') return join(pagesDir, 'index.astro');
   // カテゴリハブは動的ルート（全ハブが同一ファイル＝ハブのテンプレ／内容が変わった日になる）
   if (path.startsWith('category/')) return join(pagesDir, 'category/[slug].astro');
+  // 生まれ年ページも動的ルート（全年が同一テンプレ）
+  if (path.startsWith('umaredoshi/')) return join(pagesDir, 'umaredoshi/[year].astro');
   // 星座相性の144組み合わせページも動的ルート（テンプレの最終更新日を lastmod にする）
   if (/^seiza-aisho\/.+/.test(path)) return join(pagesDir, 'seiza-aisho/[pair].astro');
   const nested = join(pagesDir, path, 'index.astro'); // <slug>/index.astro

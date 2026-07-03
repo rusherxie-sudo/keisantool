@@ -1,0 +1,350 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Faq from '../../components/Faq.astro';
+import Icon from '../../components/Icon.astro';
+import {
+  warekiLabels,
+  etoYomi,
+  rokuseiSegments,
+  seizaRanges,
+  yakudoshiSeirekiYears,
+  UMAREDOSHI_FROM,
+  UMAREDOSHI_TO,
+} from '../../lib/hayami.js';
+import { kazoedoshi } from '../../lib/nenrei.js';
+import { polarity } from '../../lib/rokusei.js';
+import { getColorByCategory } from '../../data/tools.js';
+
+export function getStaticPaths() {
+  // 範囲は src/lib/hayami.js の UMAREDOSHI_FROM/TO（ハブ表のリンク範囲と共通）
+  const paths = [];
+  for (let y = 1900; y <= 2010; y++) paths.push({ params: { year: String(y) } });
+  return paths;
+}
+
+const year = Number(Astro.params.year);
+
+// 基準年はビルド時に固定（毎年1月1日の再ビルドで自動更新される）。
+const BASE_YEAR = new Date().getFullYear();
+const BASE_WAREKI = warekiLabels(BASE_YEAR); // 例：令和8年
+
+const wareki = warekiLabels(year);
+const e = etoYomi(year);
+const age = BASE_YEAR - year; // 誕生日を迎えた後の満年齢
+const kazoe = kazoedoshi(year, BASE_YEAR);
+const pol = polarity(year); // 六星占術の陽陰（年支で決まる＝同年生まれは全員同じ）
+const polMark = pol === 'プラス' ? '（＋）' : '（−）';
+const segs = rokuseiSegments(year);
+const segsFirstHalf = segs.filter((s) => s.from.month <= 6);
+const segsSecondHalf = segs.filter((s) => s.from.month >= 7);
+const zodiac = seizaRanges();
+const yakuM = yakudoshiSeirekiYears(year, 'male');
+const yakuF = yakudoshiSeirekiYears(year, 'female');
+const hitM = yakuM.filter((r) => r.year === BASE_YEAR);
+const hitF = yakuF.filter((r) => r.year === BASE_YEAR);
+const honyakuListM = yakuM.filter((r) => r.kind === '本厄');
+const honyakuListF = yakuF.filter((r) => r.kind === '本厄');
+
+const prevYear = year > UMAREDOSHI_FROM ? year - 1 : null;
+const nextYear = year < UMAREDOSHI_TO ? year + 1 : null;
+
+const slug = `umaredoshi/${year}`;
+const canonicalUrl = new URL(`/umaredoshi/${year}/`, Astro.site).href;
+
+const title = `${year}年（${wareki}）生まれは今年何歳？年齢・干支・厄年・星座【${BASE_YEAR}年版】| 計算ツール`;
+const description = `${year}年（${wareki}）生まれの人は、${BASE_YEAR}年の誕生日で満${age}歳（誕生日前は${age - 1}歳）、数え年${kazoe}歳。干支は${e.kanji}（${e.yomi}）年です。男女の厄年に当たる年、誕生日ごとの星座、六星占術の運命星まで、${year}年生まれの「今」をまとめて確認できます。`;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: `${year}年（${wareki}）生まれの年齢・干支・厄年・星座早見`,
+  description,
+  url: canonicalUrl,
+};
+
+// ハブ配下のページとして手動でパンくずを出す（tools.js 未登録のため ToolLayout の自動注入は効かない）
+const breadcrumbJsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: '年齢早見表', item: new URL('/nenrei-hayami/', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: `${year}年生まれ`, item: canonicalUrl },
+  ],
+};
+
+// テーマ色：未登録slugのため ToolLayout はブランド色にフォールバックする。
+// ハブ（生活・日常）と同族に見せたいので、ページ側でカテゴリ色を上書きする。
+const color = getColorByCategory('生活・日常');
+---
+<ToolLayout title={title} description={description} slug={slug} current="umaredoshi" jsonld={jsonld}>
+  <div class="um-root" style={`--cat-color:${color.accent};--cat-tint:${color.tint}`}>
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonld)} />
+
+    <div class="page-hero">
+      <div class="crumb"><a href="/">ホーム</a> ／ <a href="/nenrei-hayami/">年齢早見表</a> ／ {year}年生まれ</div>
+      <h1>{year}年（{wareki}）生まれ｜年齢・干支・厄年・星座【{BASE_YEAR}年版】</h1>
+      <p>
+        {year}年（{wareki}）生まれの方の<strong>{BASE_YEAR}年（{BASE_WAREKI}）時点</strong>の満年齢・数え年、干支、厄年に当たる年、誕生日ごとの星座と六星占術の運命星をまとめた早見ページです。
+      </p>
+    </div>
+
+    <div class="calc-card">
+      <div class="um-summary">
+        <div class="um-main">
+          <div class="um-main-label">{BASE_YEAR}年の誕生日で</div>
+          <div class="um-main-num">満{age}歳</div>
+          <div class="um-main-sub">誕生日前は {age - 1}歳</div>
+        </div>
+        <dl class="um-facts">
+          <div class="um-fact"><dt>数え年</dt><dd>{kazoe}歳</dd></div>
+          <div class="um-fact"><dt>和暦</dt><dd>{wareki}</dd></div>
+          <div class="um-fact"><dt>干支</dt><dd>{e.kanji}（{e.yomi}）年</dd></div>
+          <div class="um-fact"><dt>六星占術の陽陰</dt><dd>{pol}{polMark}</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="ad-slot"></div>
+
+    <section class="howto um-section">
+      <h2>{year}年生まれの厄年はいつ？</h2>
+      <p>
+        厄年は<strong>数え年</strong>（生まれた年を1歳とし、1月1日ごとに1歳加算）で数えます。{year}年生まれの方が厄年に当たる年は次のとおりです。
+        {hitM.length > 0 ? (
+          <strong>男性は{BASE_YEAR}年が数え{hitM[0].kazoe}歳の{hitM[0].kind}{hitM[0].isTaiyaku ? '（大厄）' : ''}に当たります。</strong>
+        ) : (
+          <span>男性は{BASE_YEAR}年は厄年に当たりません。</span>
+        )}
+        {hitF.length > 0 ? (
+          <strong>女性は{BASE_YEAR}年が数え{hitF[0].kazoe}歳の{hitF[0].kind}{hitF[0].isTaiyaku ? '（大厄）' : ''}に当たります。</strong>
+        ) : (
+          <span>女性は{BASE_YEAR}年は厄年に当たりません。</span>
+        )}
+      </p>
+
+      <div class="um-yaku-grid">
+        <div>
+          <h3 class="um-h3">男性の厄年（{year}年生まれ）</h3>
+          <div class="data-table-wrap">
+            <div class="data-table-scroll">
+              <table class="data-table um-table">
+                <thead><tr><th>区分</th><th>数え年</th><th>西暦</th></tr></thead>
+                <tbody>
+                  {yakuM.map((r) => (
+                    <tr class={r.year === BASE_YEAR ? 'is-hit' : undefined}>
+                      <td>{r.kind}{r.isTaiyaku && <span class="data-table__badge um-badge--taiyaku">大厄</span>}</td>
+                      <td class="num">{r.kazoe}歳</td>
+                      <td class="num">{r.year}年</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="um-h3">女性の厄年（{year}年生まれ）</h3>
+          <div class="data-table-wrap">
+            <div class="data-table-scroll">
+              <table class="data-table um-table">
+                <thead><tr><th>区分</th><th>数え年</th><th>西暦</th></tr></thead>
+                <tbody>
+                  {yakuF.map((r) => (
+                    <tr class={r.year === BASE_YEAR ? 'is-hit' : undefined}>
+                      <td>{r.kind}{r.isTaiyaku && <span class="data-table__badge um-badge--taiyaku">大厄</span>}</td>
+                      <td class="num">{r.kazoe}歳</td>
+                      <td class="num">{r.year}年</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="um-note">
+        ※ 厄年の数え方は地域・神社により異なる場合があります。今年の判定や次の厄年までの年数は<a href="/yakudoshi/">厄年チェッカー</a>で確認できます。計算結果はあくまで参考値です。
+      </p>
+    </section>
+
+    <section class="howto um-section">
+      <h2>{year}年生まれの六星占術（運命星）</h2>
+      <p>
+        六星占術の<strong>運命星</strong>は生年月日から決まり、同じ{year}年生まれでも誕生日によって異なります。いっぽう陽陰（プラス／マイナス）は生まれ年で決まるため、<strong>{year}年生まれは全員「{pol}{polMark}」</strong>です。下の表で自分の誕生日の区間を探し、「運命星＋{pol}」があなたのタイプになります（例：{segs[0].star}{pol}）。
+      </p>
+      <div class="um-rokusei-grid">
+        <div class="data-table-wrap">
+          <div class="data-table-scroll">
+            <table class="data-table um-table">
+              <thead><tr><th>誕生日（1〜6月）</th><th>運命星</th></tr></thead>
+              <tbody>
+                {segsFirstHalf.map((s) => (
+                  <tr>
+                    <td class="num--sub">{s.from.month}/{s.from.day}〜{s.to.month}/{s.to.day}</td>
+                    <td>{s.star}{pol}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="data-table-wrap">
+          <div class="data-table-scroll">
+            <table class="data-table um-table">
+              <thead><tr><th>誕生日（7〜12月）</th><th>運命星</th></tr></thead>
+              <tbody>
+                {segsSecondHalf.map((s) => (
+                  <tr>
+                    <td class="num--sub">{s.from.month}/{s.from.day}〜{s.to.month}/{s.to.day}</td>
+                    <td>{s.star}{pol}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <p class="um-note">
+        ※ 六星占術は文化的な慣習（娯楽）に基づくもので、科学的根拠を保証するものではありません。今年の大殺界の判定は<a href="/rokusei/">六星占術・大殺界計算器</a>でできます。
+      </p>
+    </section>
+
+    <section class="howto um-section">
+      <h2>{year}年生まれの星座（誕生日から）</h2>
+      <p>
+        12星座は生まれ年に関係なく誕生日（月日）で決まります。{year}年生まれの方も、次の区間表で自分の星座を確認できます。
+      </p>
+      <div class="data-table-wrap">
+        <div class="data-table-scroll">
+          <table class="data-table um-table">
+            <thead><tr><th>星座</th><th>誕生日</th></tr></thead>
+            <tbody>
+              {zodiac.map((z) => (
+                <tr>
+                  <td>{z.symbol} {z.name}（{z.en}）</td>
+                  <td class="num--sub">{z.from.month}月{z.from.day}日〜{z.to.month}月{z.to.day}日</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="um-note">※ 境界日生まれの方は年によって前後する場合があります。<a href="/seiza/">星座調べ</a>で誕生日から判定できます。</p>
+    </section>
+
+    <section class="howto um-section">
+      <h2>{year}年生まれの年齢の数え方</h2>
+      <p>
+        <strong>満年齢</strong>は誕生日ごとに1歳増える数え方で、{year}年生まれの方は{BASE_YEAR}年の誕生日で<strong>満{age}歳</strong>になります（誕生日前は{age - 1}歳）。履歴書や公的書類には満年齢を記入します。<strong>数え年</strong>は生まれた年を1歳として1月1日ごとに1歳増える数え方で、{BASE_YEAR}年の数え年は<strong>{kazoe}歳</strong>です。厄年・七五三・長寿祝いなどは数え年で数えるのが一般的です。生年月日から今日時点の正確な満年齢を知りたいときは<a href="/nenrei/">年齢計算器</a>を、他の年の一覧は<a href="/nenrei-hayami/">年齢早見表</a>をご覧ください。
+      </p>
+      <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
+    </section>
+
+    <Faq items={[
+      { q: `${year}年生まれは今年（${BASE_YEAR}年）何歳ですか？`, a: `${BASE_YEAR}年の誕生日を迎えると満${age}歳、誕生日前は満${age - 1}歳です。数え年では${kazoe}歳になります。` },
+      { q: `${year}年生まれの厄年はいつですか？`, a: `数え年で数えて、男性の本厄は${honyakuListM.map((r) => `${r.year}年（${r.kazoe}歳${r.isTaiyaku ? '・大厄' : ''}）`).join('、')}、女性の本厄は${honyakuListF.map((r) => `${r.year}年（${r.kazoe}歳${r.isTaiyaku ? '・大厄' : ''}）`).join('、')}です。それぞれ前年が前厄、翌年が後厄になります。` },
+      { q: `${year}年の干支は何ですか？`, a: `${year}年（${wareki}）の干支（十二支）は${e.kanji}（${e.yomi}）です。干支は12年周期なので、${year - 12}年や${year + 12}年生まれの方と同じ干支になります。` },
+    ]} />
+
+    <nav class="um-nav" aria-label="前後の生まれ年">
+      {prevYear ? <a class="um-nav-link" href={`/umaredoshi/${prevYear}/`}>← {prevYear}年生まれ</a> : <span />}
+      {nextYear ? <a class="um-nav-link" href={`/umaredoshi/${nextYear}/`}>{nextYear}年生まれ →</a> : <span />}
+    </nav>
+
+    <section class="related">
+      <h3>関連ツール</h3>
+      <div class="related-grid">
+        <a href="/nenrei-hayami/" class="related-link"><span class="ic" aria-hidden="true"><Icon name="nenrei-hayami" size={20} /></span>年齢早見表（全年一覧）</a>
+        <a href="/nenrei/" class="related-link"><span class="ic" aria-hidden="true"><Icon name="nenrei" size={20} /></span>年齢計算器</a>
+        <a href="/wareki/" class="related-link"><span class="ic" aria-hidden="true"><Icon name="wareki" size={20} /></span>和暦・西暦変換器</a>
+        <a href="/yakudoshi/" class="related-link"><span class="ic" aria-hidden="true"><Icon name="yakudoshi" size={20} /></span>厄年チェッカー</a>
+        <a href="/seiza/" class="related-link"><span class="ic" aria-hidden="true"><Icon name="seiza" size={20} /></span>星座調べ</a>
+        <a href="/rokusei/" class="related-link"><span class="ic" aria-hidden="true"><Icon name="rokusei" size={20} /></span>六星占術・大殺界計算器</a>
+      </div>
+    </section>
+
+    <div class="ad-slot"></div>
+  </div>
+</ToolLayout>
+
+<style>
+  /* ラッパー div は幅に影響させない（各セクションの max-width は global 側で制御） */
+  .um-root { display: contents; }
+
+  /* サマリーカード */
+  .um-summary {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  .um-main { flex: 0 1 auto; text-align: center; padding: 8px 18px; }
+  .um-main-label { font-size: .8rem; color: var(--text-muted); font-weight: var(--fw-bold); }
+  .um-main-num {
+    font-family: var(--font-mono);
+    font-size: clamp(2.2rem, 7vw, 3rem);
+    font-weight: var(--fw-bold);
+    color: var(--cat-color);
+    line-height: 1.2;
+  }
+  .um-main-sub { font-size: .8rem; color: var(--text-muted); }
+  .um-facts {
+    flex: 1 1 280px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+  }
+  .um-fact {
+    background: var(--surface-sub, var(--bg));
+    border: 1.5px solid var(--border-2);
+    border-radius: var(--r-md);
+    padding: 10px 14px;
+  }
+  .um-fact dt { font-size: .72rem; color: var(--text-muted); font-weight: var(--fw-bold); margin-bottom: 2px; }
+  .um-fact dd { margin: 0; font-weight: var(--fw-bold); color: var(--text); font-size: .95rem; }
+
+  /* セクション共通 */
+  .um-section { margin-top: 28px; }
+  .um-h3 { font-size: .95rem; margin: 0 0 8px; color: var(--text); }
+  .um-note { font-size: .8rem; color: var(--text-muted); margin-top: 8px; line-height: 1.7; }
+  .um-table { min-width: 0; }
+  .um-table th, .um-table td { padding: 8px 12px; }
+  .um-badge--taiyaku { margin-left: 6px; background: var(--danger); color: #fff; vertical-align: middle; }
+  .data-table tr.is-hit td { color: var(--cat-color); }
+
+  /* 厄年・六星の2カラム（モバイルは縦積み） */
+  .um-yaku-grid, .um-rokusei-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    align-items: start;
+  }
+  @media (max-width: 700px) {
+    .um-yaku-grid, .um-rokusei-grid { grid-template-columns: 1fr; }
+    .um-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .um-main { margin: 0 auto; }
+  }
+
+  /* 前後年ナビ */
+  .um-nav {
+    max-width: 880px;
+    width: 100%;
+    margin: 28px auto 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .um-nav-link {
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-weight: var(--fw-bold);
+    font-size: .85rem;
+    padding: 10px 16px;
+    border-radius: var(--r-pill);
+    text-decoration: none;
+  }
+  .um-nav-link:hover { border-color: var(--cat-color); color: var(--cat-color); }
+</style>
