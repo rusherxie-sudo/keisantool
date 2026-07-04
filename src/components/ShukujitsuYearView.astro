@@ -1,0 +1,75 @@
+---
+// 祝日・連休の年間ビュー（/shukujitsu/ ハブと /shukujitsu/<year>/ スポークで共有）。
+const { year, holidays, renkyu } = Astro.props;
+const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+const KIND_LABEL = { holiday: '祝日', furikae: '振替休日', kokumin: '国民の休日' };
+
+function weekdayOf(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return WEEKDAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+}
+function md(dateStr) {
+  const [, m, d] = dateStr.split('-').map(Number);
+  return `${m}/${d}`;
+}
+---
+{renkyu.length > 0 && (
+  <div class="sk-renkyu">
+    <div class="sk-renkyu-label">{year}年の連休</div>
+    <div class="sk-renkyu-rows">
+      {renkyu.map((r) => (
+        <div class="sk-renkyu-item">
+          <span class="sk-renkyu-range">{md(r.from)}（{weekdayOf(r.from)}）〜{md(r.to)}（{weekdayOf(r.to)}）</span>
+          <span class="sk-renkyu-len">{r.length}連休</span>
+          <span class="sk-renkyu-names">{r.holidayNames.join('・')}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+<div class="data-table-wrap">
+  <div class="data-table-scroll">
+    <table class="data-table sk-table">
+      <thead>
+        <tr><th>日付</th><th>曜日</th><th>名称</th><th>区分</th></tr>
+      </thead>
+      <tbody>
+        {holidays.map((h) => (
+          <tr class={weekdayOf(h.date) === '日' ? 'is-sun' : undefined}>
+            <td class="num">{md(h.date)}</td>
+            <td class="num--sub">{weekdayOf(h.date)}</td>
+            <td>{h.name}</td>
+            <td class="num--sub">{KIND_LABEL[h.kind]}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .sk-renkyu {
+    background: var(--surface-sub);
+    border: 1.5px solid var(--border-2);
+    border-radius: var(--r-md);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .sk-renkyu-label { font-size: .78rem; font-weight: var(--fw-bold); color: var(--text-muted); margin-bottom: 8px; }
+  .sk-renkyu-rows { display: flex; flex-direction: column; gap: 8px; }
+  .sk-renkyu-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    font-size: .86rem;
+  }
+  .sk-renkyu-range { font-weight: var(--fw-bold); color: var(--text); }
+  .sk-renkyu-len { color: var(--success); font-weight: var(--fw-bold); font-size: .78rem; background: color-mix(in srgb, var(--success) 12%, transparent); padding: 2px 10px; border-radius: var(--r-pill); }
+  .sk-renkyu-names { color: var(--text-muted); font-size: .78rem; }
+
+  .sk-table { min-width: 420px; }
+  .sk-table th, .sk-table td { padding: 9px 14px; }
+  .sk-table tr.is-sun td { color: var(--danger); }
+</style>

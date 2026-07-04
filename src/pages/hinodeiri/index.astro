@@ -1,0 +1,120 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { listCities } from '../../lib/hinodeiri.js';
+
+const slug = 'hinodeiri';
+const cities = listCities();
+
+const title = '日の出・日の入り時刻計算器 - 全国主要都市の日の出日の入り | 計算ツール';
+const description =
+  '日付と都市を選ぶだけで、日の出・日の入り時刻と昼の長さをその場で計算します。札幌・東京・大阪・福岡・那覇など全国15都市に対応。旅行・写真撮影・釣りの計画などにご利用ください。無料・登録不要。';
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '日の出・日の入り時刻計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 日の出・日の入り</div>
+    <h1>日の出・日の入り時刻計算器</h1>
+    <p>日付と都市を選ぶだけで、日の出・日の入り時刻と昼の長さをその場で計算します。旅行や写真撮影、釣りの計画などにご利用ください。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="hd-date">日付</label>
+      <input type="date" id="hd-date" />
+    </div>
+    <div class="form-group">
+      <label for="hd-city">都市</label>
+      <select id="hd-city">
+        {cities.map((c) => <option value={c.id}>{c.name}</option>)}
+      </select>
+    </div>
+
+    <div class="result-box" id="hd-result">
+      <div class="result-label" id="hd-city-label">東京の日の出・日の入り</div>
+      <div class="result-main" id="hd-main">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">日の出</span><span class="value" id="hd-sunrise">―</span></div>
+        <div class="result-row"><span class="label">日の入り</span><span class="value" id="hd-sunset">―</span></div>
+        <div class="result-row"><span class="label">昼の長さ</span><span class="value" id="hd-length">―</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方と計算方法</h2>
+    <p>
+      日付と都市を選ぶと、その日の日の出・日の入り時刻と昼の長さ（日の出から日の入りまでの時間）がその場で自動計算されます。ボタンを押す必要はありません。北は稚内・札幌から南は那覇まで、全国15都市に対応しています。
+    </p>
+    <p>
+      計算には、NOAA（米国海洋大気庁）が公開している太陽位置式（低精度版）を使用しています。地球の公転軌道・地軸の傾き・各都市の緯度経度から、太陽が地平線に対して沈む角度（大気差・視半径を考慮した基準）になる時刻を求めています。国立天文台の実測値との突き合わせで、実際の時刻とのずれはおおむね1分以内であることを確認しています。
+    </p>
+    <p>
+      緯度が高い地域ほど、夏は昼が長く冬は昼が短くなる差が大きくなります。たとえば夏至の頃は稚内のほうが那覇より昼が長く、冬至の頃は逆に那覇のほうが昼が長くなります。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です（実際の時刻と1分程度の差が生じる場合があります）。標高や地形による見え方の違いは考慮していません。正式な時刻は国立天文台の発表をご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '日の出・日の入り時刻はどうやって計算していますか？', a: 'NOAA（米国海洋大気庁）が公開している太陽位置の計算式をもとに、各都市の緯度・経度と日付から算出しています。国立天文台の実測値との誤差はおおむね1分以内です。' },
+    { q: 'どの都市に対応していますか？', a: '稚内・札幌・仙台・新潟・金沢・東京・横浜・名古屋・京都・大阪・神戸・広島・福岡・鹿児島・那覇の全国15都市に対応しています。' },
+    { q: '昼の長さとは何ですか？', a: '日の出から日の入りまでの時間です。緯度が高い都市ほど、夏至と冬至での昼の長さの差が大きくなります。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { hinodeIri } from '../../lib/hinodeiri.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function todayISO() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }
+
+  function render() {
+    const dateVal = $('hd-date').value;
+    const cityId = $('hd-city').value;
+    if (!dateVal) return;
+    const [y, m, d] = dateVal.split('-').map(Number);
+    const r = hinodeIri(y, m, d, cityId);
+    if (!r) return;
+
+    $('hd-city-label').textContent = `${r.city}の日の出・日の入り`;
+    $('hd-main').textContent = `${r.sunrise} 〜 ${r.sunset}`;
+    $('hd-sunrise').textContent = r.sunrise;
+    $('hd-sunset').textContent = r.sunset;
+    const h = Math.floor(r.dayLengthMinutes / 60);
+    const mi = r.dayLengthMinutes % 60;
+    $('hd-length').textContent = `${h}時間${mi}分`;
+    $('hd-result').classList.add('visible');
+
+    window.setResultShare?.(
+      `日の出・日の入り時刻計算\n${dateVal} ${r.city}\n日の出：${r.sunrise}\n日の入り：${r.sunset}\n昼の長さ：${h}時間${mi}分`
+    );
+  }
+
+  $('hd-date').value = todayISO();
+  $('hd-date').addEventListener('input', render);
+  $('hd-city').addEventListener('change', render);
+  render();
+</script>

@@ -1,6 +1,6 @@
 # keisantool 交接文档
 
-> 面向接手的新会话。读完这份 + `CLAUDE.md` 即可上手。最后更新：2026-07-02。
+> 面向接手的新会话。读完这份 + `CLAUDE.md` 即可上手。最后更新：2026-07-04。
 
 ## 1. 这是什么
 
@@ -27,18 +27,25 @@ npx wrangler pages deploy dist --project-name=keisantool
 - CF Pages 项目名：`keisantool`，正式域名 keisantool.com，每次部署给一个 `xxxx.keisantool.pages.dev` 预览URL。
 - **注意**：本地 git 没有配置 remote（`origin` 不存在），所以 `git push` 会失败。部署走 wrangler，不走 git。commit 只是本地留痕。
 
-## 3. 当前状态（2026-07-03）
+## 3. 当前状态（2026-07-04）
 
-- **42 个工具全部 live、已上线**。2026-07-03 并行上了两组程序化页面群（分属两个 worktree，已合并统一部署）：
-  - **「相性」系列第一期**：tanjobi-aisho / seiza-aisho / ketsueki-aisho 3 工具，其中星座相性含 **144 个程序化组合页** `/seiza-aisho/<sign1>-<sign2>/`。
-  - **「年齢早見表」hub-and-spoke**（对标 nenrei-hayami.net 模式）：hub `/nenrei-hayami/`（明治元年〜今年 西暦×和暦×満年齢×数え年×干支 大表、SSR+print CSS，目标词「年齢早見表」1〜3月报税季峰值）+ spoke `/umaredoshi/<year>/` ×111 页（1900〜2010，每年一页「今年何歳・和暦・干支・厄年・星座・六星占術運命星」，复用 nenrei/wareki/yakudoshi/seiza/rokusei + 新 lib `hayami.js`）。基准年 build 时固定（`new Date().getFullYear()`），**每年 1 月 1 日重 build 续命**。预期管理：长尾年份页先起量（数月内），头词是长期战（竞对是十年老站+完全一致域名）。
-  - 合并后全站约 **311 URL**。另有 8 个分类 hub 页（`/category/<slug>/`）和 404 页。
-  - GSC 催收录（年齢早見表组）：hub+1991/1985/1990/1980/1995/2000 共 **7 个已催**（2026-07-03 配额用尽）；**1975/1973/1965 三个待次日催**。
-  - ⚠️ **教训：两个并行 worktree 各自 `wrangler pages deploy` 会互相全量覆盖生产**（07-03 当天互顶过一次）。并行开发时部署前必须先互相 merge。
-- **测试 934 个全绿**（38 个测试文件）。
+- **47 个工具全部 live、已上线**。2026-07-03〜04 连续两天上了「日本历法工具生态」系列页面（分属多个 worktree 并行开发，已合并统一部署）：
+  - **「相性」系列第一期**（07-03）：tanjobi-aisho / seiza-aisho / ketsueki-aisho 3 工具，其中星座相性含 **144 个程序化组合页** `/seiza-aisho/<sign1>-<sign2>/`。
+  - **「年齢早見表」hub-and-spoke**（07-03，对标 nenrei-hayami.net 模式）：hub `/nenrei-hayami/`（明治元年〜今年 西暦×和暦×満年齢×数え年×干支 大表、SSR+print CSS）+ spoke `/umaredoshi/<year>/` ×111 页（1900〜2010）。lib：`hayami.js`。
+  - **学年早見表**（07-04）：`/gakunen-hayami/` 単一页，生まれ年度→学年の一覧（`hayami.js` の `gakunenTable()`、既存 `schoolGrade()` を代表日呼び出しで再利用・二重実装なし）。
+  - **和暦西暦早見表フルテーブル化**（07-04）：`/wareki/` の抜粋表を明治元年〜今年の**全年表**に置換（`hayamiTable()` 再利用、フラジャイルな改元境界ロジックを削除）。
+  - **六曜・大安カレンダー**（07-04）：hub `/rokuyo/`（今月）+ spoke `/rokuyo/<year>-<month>/` ×48 页（前1年〜後2年）。lib：`rokuyo.js`。**依存追加：`lunar-javascript`**（6tail、MIT、旧暦変換）。今月の大安クイックリストと月間カレンダーグリッドの2構成。
+  - **祝日・連休カレンダー**（07-04）：hub `/shukujitsu/`（今年）+ spoke `/shukujitsu/<year>/` ×5 页（前1年〜後3年）。lib：`shukujitsu.js`（振替休日・国民の休日・3連休以上抽出まで自前実装、外部パッケージ不使用）。
+  - **日の出・日の入り時刻計算器**（07-04）：`/hinodeiri/` 単一の対話型ページ（全国15都市×任意日付、クライアントサイド計算）。lib：`hinodeiri.js`（NOAA低精度太陽位置式）。
+  - 全站 URL 数：**368**（合并后）。另有 8 个分类 hub 页（`/category/<slug>/`）和 404 页。
+  - GSC 催收录（年齢早見表组，07-03）：hub+1991/1985/1990/1980/1995/2000 共 **7 个已催**（配额用尽）；**1975/1973/1965 三个待催**（07-04 及以后）。
+  - ⚠️ **教训：两个并行 worktree 各自 `wrangler pages deploy` 会互相全量覆盖生产**（07-03 当天互顶过一次，已用 git merge 恢复）。并行开发时部署前必须先互相 merge，且要 `--branch=main` 才进生产。
+  - ⚠️ **教训：多 agent 并行调研到的「官方数据表」也可能有转录错误**——07-04 做祝日库时，某个调研 agent 转录的 2026 年振替休日表漏了一格（5/6），若直接信表会导致库输出**少一天**振替休日。后来用 JS Date 独立验证 + WebSearch 交叉核对3个独立信源（JR东日本媒体、JPX官方、9rando.info）才发现并订正。**教训：官方数据类锚点即使来自"调研"，只要是可用代码独立复算的（如星期几这种纯日历算术），也要自己再算一遍交叉验证，不能只信转录**。
+  - ⚠️ **技术选型：六曜/旧暦转换没有从零手写天文算法**，评估后选用 npm 包 `lunar-javascript`（6tail，MIT，GitHub 1500+ star，2025-11 活跃维护），用其 `.getLiuYao()` 官方六曜方法 + 12 个日本旧暦网站（benri.jp/arachne.jp）实测锚点（含2020/2023两个闰月年边界日）交叉验证全部吻合才采用。已知风险：库对 Date 对象用宿主本地时区取值——因此只用 `Solar.fromYmd(y,m,d)` 显式整数构造器，不传 Date 对象。
+- **测试 988 个全绿**（41 个测试文件）。
 - 2026-07-02 做过一次四维全面 review（产品/代码/SEO/流量），修复清单见 §8 末条。
 - **AdSense 尚未接入**（无 ca-pub 代码、无 ads.txt）——Owner 决定暂缓，接入前站点零收入。
-- 依赖：`marked`（Markdown 工具）、`@astrojs/sitemap`。
+- 依赖：`marked`（Markdown 工具）、`@astrojs/sitemap`、`lunar-javascript`（六曜・旧暦変換）。
 
 ## 4. 关键约定（必须遵守，详见 CLAUDE.md）
 
@@ -49,7 +56,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 5. **日期处理**：用 UTC 正午基准（见 `src/lib/shussan.js` 的 `toDate/toISO/addDays`），避免时区/夏令时跨日 bug。
 6. **法规/数值每年要复核**：日本税制·社保每年 4月/8月 改定。已知踩过的坑见第 8 节。
 
-## 5. 全工具清单（42个，按分类）
+## 5. 全工具清单（47个，按分类）
 
 | 分类 | slug | 工具 |
 |------|------|------|
@@ -91,6 +98,10 @@ npx wrangler pages deploy dist --project-name=keisantool
 | ペット・動物 | inu-gohan / neko-gohan | ごはん量（RER=70×kg^0.75×係数） |
 | ペット・動物 | inu-ninshin / neko-ninshin | 妊娠期間（犬63日/猫65日） |
 | ペット・動物 | inu-vaccine / neko-vaccine | ワクチンスケジュール（WSAVA・狂犬病予防法） |
+| 生活・日常 | gakunen-hayami | 学年早見表（生まれ年度→学年、hayami.js の gakunenTable） |
+| 生活・日常 | rokuyo | 六曜カレンダー hub + **48スポーク** `/rokuyo/<year>-<month>/`（lunar-javascript 依存） |
+| 生活・日常 | shukujitsu | 祝日・連休カレンダー hub + **5スポーク** `/shukujitsu/<year>/`（振替休日・国民の休日自前実装） |
+| 生活・日常 | hinodeiri | 日の出・日の入り時刻計算器（全国15都市、NOAA太陽位置式） |
 
 分类（`tools.js` 的 `categories`）：税金・お金 / 健康・身体 / 生活・日常 / 占い・文化 / 文字ツール / 変換・ツール / 開発者ツール / ペット・動物。注意：**hensachi（偏差値）在「生活・日常」**（2026-07 从健康・身体移出）。
 

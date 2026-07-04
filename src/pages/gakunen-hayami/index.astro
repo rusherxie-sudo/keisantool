@@ -1,0 +1,106 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import { gakunenTable } from '../../lib/hayami.js';
+import { seirekiToWareki } from '../../lib/wareki.js';
+
+const slug = 'gakunen-hayami';
+
+// 基準学年度はビルド時に固定（4/2 を境に年度が切り替わる。毎年 4/2 以降に再ビルドすれば自動更新される）。
+const now = new Date();
+const y = now.getFullYear();
+const m = now.getMonth() + 1;
+const d = now.getDate();
+const BASE_SCHOOL_YEAR = m > 4 || (m === 4 && d >= 2) ? y : y - 1;
+const BASE_WAREKI = seirekiToWareki(BASE_SCHOOL_YEAR).label; // 例：令和8年
+
+const rows = gakunenTable(BASE_SCHOOL_YEAR);
+const g1 = rows.find((r) => r.grade === 1);
+const g6 = rows.find((r) => r.grade === 6);
+const g7 = rows.find((r) => r.grade === 7);
+const g12 = rows.find((r) => r.grade === 12);
+
+const title = `学年早見表【${BASE_SCHOOL_YEAR}年度・${BASE_WAREKI}度版】生まれ年からすぐわかる | 計算ツール`;
+const description = `${BASE_SCHOOL_YEAR}年度（${BASE_WAREKI}度）版の学年早見表。生まれた年度（4月2日〜翌4月1日）から、小学校〜高校の学年と満年齢が一覧でわかります。早生まれも正しく判定。お子さまの学年確認や、入学・卒業年度の逆算にご利用ください。`;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '学年早見表',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 学年早見表</div>
+    <h1>学年早見表【{BASE_SCHOOL_YEAR}年度・{BASE_WAREKI}度版】</h1>
+    <p>
+      {BASE_SCHOOL_YEAR}年度（{BASE_WAREKI}度）時点の学年早見表です。生まれた年度（4月2日〜翌年4月1日）から、小学校〜高校の学年と満年齢がひと目でわかります。早生まれ（1〜3月生まれ）も正しく前年度扱いで判定しています。
+    </p>
+  </div>
+
+  <section class="gakunen-main">
+    <p class="gakunen-note">
+      学年は<strong>4月2日〜翌年4月1日生まれ</strong>を1つの区切りとします（早生まれの子は前の年度生まれと同学年）。満年齢は{BASE_SCHOOL_YEAR}年4月2日時点の年齢です。
+    </p>
+
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table gakunen-table">
+          <thead>
+            <tr><th>学年</th><th>生まれ年度（西暦）</th><th>満年齢</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr>
+                <td>{r.label}</td>
+                <td class="num--sub">{r.cohortLabel}</td>
+                <td class="num">{r.age}歳</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="gakunen-note">※ 計算結果はあくまで参考値です。</p>
+  </section>
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>学年早見表の見方・学年の数え方</h2>
+    <p>
+      日本の学校は<strong>4月始まり</strong>のため、学年は暦年（1〜12月）ではなく「その年の4月2日〜翌年4月1日生まれ」で区切ります。たとえば{g1?.cohortLabel}生まれの方は、{BASE_SCHOOL_YEAR}年度時点で<strong>{g1?.label}</strong>です。1〜3月生まれ（早生まれ）は、暦年上は翌年生まれでも学年上は前の年度生まれの子と同学年になる点に注意してください。
+    </p>
+    <ul>
+      <li><strong>小学校</strong>：{g1?.label}〜{g6?.label}（6年間）。{g1?.cohortLabel}生まれが{g1?.label}、{g6?.cohortLabel}生まれが{g6?.label}です。</li>
+      <li><strong>中学校</strong>：{g7?.label}〜中学3年生（3年間）。</li>
+      <li><strong>高等学校</strong>：高校1年生〜{g12?.label}（3年間）。{g12?.cohortLabel}生まれが{BASE_SCHOOL_YEAR}年度の{g12?.label}です。</li>
+    </ul>
+    <p>
+      正確な生年月日から満年齢・数え年・学年・干支をまとめて計算したいときは<a href="/nenrei/">年齢計算器</a>を、複数の生まれ年をまとめて見たいときは<a href="/nenrei-hayami/">年齢早見表</a>をご利用ください。
+    </p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。学校教育法上の例外（就学猶予など）は考慮していません。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '学年はどの期間で区切られますか？', a: '4月2日から翌年4月1日生まれまでが同じ学年です。3月31日生まれと4月1日生まれは同学年、4月2日生まれは1つ下の学年になります。' },
+    { q: '早生まれとは何ですか？学年はどうなりますか？', a: '1月1日〜4月1日生まれを「早生まれ」と呼びます。暦年では翌年生まれでも、学年上は前年4月2日〜その年4月1日生まれのグループと同学年になります。' },
+    { q: `${BASE_SCHOOL_YEAR}年度、小学1年生は何年生まれですか？`, a: g1 ? `${g1.cohortLabel}生まれの方が${BASE_SCHOOL_YEAR}年度の小学1年生です。` : '' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .gakunen-main { max-width: 880px; width: 100%; margin: 0 auto; }
+  .gakunen-note { font-size: .82rem; color: var(--text-muted); margin: 8px 0; line-height: 1.7; }
+  .gakunen-table { min-width: 420px; }
+  .gakunen-table th, .gakunen-table td { padding: 10px 14px; }
+</style>

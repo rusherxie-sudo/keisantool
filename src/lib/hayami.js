@@ -4,7 +4,7 @@
 // 基準年は必ず引数で受け取る（テスト再現性のため）。
 
 import { seirekiToWareki } from './wareki.js';
-import { eto, kazoedoshi } from './nenrei.js';
+import { eto, kazoedoshi, schoolGrade, mannenrei } from './nenrei.js';
 import { unmeiStar } from './rokusei.js';
 import { seiza } from './seiza.js';
 import { yakudoshiList } from './yakudoshi.js';
@@ -149,6 +149,32 @@ export function seizaRanges() {
   // 牡羊座（3/21〜）始まりに回転
   const start = segs.findIndex((s) => s.name === '牡羊座');
   return start > 0 ? [...segs.slice(start), ...segs.slice(0, start)] : segs;
+}
+
+/**
+ * 学年早見表：指定した学年度(baseSchoolYear、例2026=令和8年度)における、
+ * 各生まれ年度(4/2〜翌4/1)ごとの学年を返す（高3〜未就学、grade降順）。
+ * ロジックは既存の schoolGrade() を「学年度の4/2」代表日で呼び出すことで導出し、
+ * 早見表と単発計算（/nenrei/ ツール）が二重実装にならないようにする。
+ *   [{ cohortYear, cohortLabel, grade, label, age }]
+ */
+export function gakunenTable(baseSchoolYear) {
+  const base = toInt(baseSchoolYear);
+  if (Number.isNaN(base)) return [];
+  const refDate = `${base}-04-02`;
+  const rows = [];
+  for (let cohortYear = base - 19; cohortYear <= base - 5; cohortYear++) {
+    const birthDate = `${cohortYear}-04-02`;
+    const g = schoolGrade(birthDate, refDate);
+    rows.push({
+      cohortYear,
+      cohortLabel: `${cohortYear}年4月2日〜${cohortYear + 1}年4月1日`,
+      grade: g.grade,
+      label: g.label,
+      age: mannenrei(birthDate, refDate),
+    });
+  }
+  return rows;
 }
 
 /**
