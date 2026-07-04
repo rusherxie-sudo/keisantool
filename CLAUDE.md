@@ -23,9 +23,10 @@ npm run build                         # 生产构建 → dist/
 部署（Owner 要求"改完直接部署，不必每次问"）：
 
 ```bash
-npm run build && npx wrangler pages deploy dist --project-name=keisantool
+npm run build && npx wrangler pages deploy dist --project-name=keisantool --branch=main
 ```
 
+- ⚠️ **`--branch=main` 不能省**：wrangler 按当前 git 分支决定通道，在 worktree（`claude/*` 分支）上省略会部署成 **preview 别名**，生产域名拿不到新内容、新页 404（2026-07-03 已踩）。
 - ⚠️ 本地 git **没有 remote**（`origin` 不存在），`git push` 会失败。部署走 wrangler，`git commit` 只是本地留痕。
 
 ## 架构大图（需读多个文件才懂的部分）

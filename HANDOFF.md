@@ -29,22 +29,18 @@ npx wrangler pages deploy dist --project-name=keisantool
 
 ## 3. 当前状态（2026-07-04）
 
-- **47 个工具全部 live、已上线**。2026-07-03〜04 连续两天上了「日本历法工具生态」系列页面（分属多个 worktree 并行开发，已合并统一部署）：
+- **46 个工具全部 live、已上线**（口径：`grep -c "live: true" src/data/tools.js`——⚠️ 别用 `grep -c "slug:"`，`tools.js` 里 `categoryMeta`（8个分类hub页）也有 `slug` 字段，会把工具数算多8个，本轮两个并行会话都踩过这个坑，分别错报成47/50）。2026-07-03〜04 连续两天多个 worktree 并行上了三批内容：
   - **「相性」系列第一期**（07-03）：tanjobi-aisho / seiza-aisho / ketsueki-aisho 3 工具，其中星座相性含 **144 个程序化组合页** `/seiza-aisho/<sign1>-<sign2>/`。
-  - **「年齢早見表」hub-and-spoke**（07-03，对标 nenrei-hayami.net 模式）：hub `/nenrei-hayami/`（明治元年〜今年 西暦×和暦×満年齢×数え年×干支 大表、SSR+print CSS）+ spoke `/umaredoshi/<year>/` ×111 页（1900〜2010）。lib：`hayami.js`。
-  - **学年早見表**（07-04）：`/gakunen-hayami/` 単一页，生まれ年度→学年の一覧（`hayami.js` の `gakunenTable()`、既存 `schoolGrade()` を代表日呼び出しで再利用・二重実装なし）。
-  - **和暦西暦早見表フルテーブル化**（07-04）：`/wareki/` の抜粋表を明治元年〜今年の**全年表**に置換（`hayamiTable()` 再利用、フラジャイルな改元境界ロジックを削除）。
-  - **六曜・大安カレンダー**（07-04）：hub `/rokuyo/`（今月）+ spoke `/rokuyo/<year>-<month>/` ×48 页（前1年〜後2年）。lib：`rokuyo.js`。**依存追加：`lunar-javascript`**（6tail、MIT、旧暦変換）。今月の大安クイックリストと月間カレンダーグリッドの2構成。
-  - **祝日・連休カレンダー**（07-04）：hub `/shukujitsu/`（今年）+ spoke `/shukujitsu/<year>/` ×5 页（前1年〜後3年）。lib：`shukujitsu.js`（振替休日・国民の休日・3連休以上抽出まで自前実装、外部パッケージ不使用）。
-  - **日の出・日の入り時刻計算器**（07-04）：`/hinodeiri/` 単一の対話型ページ（全国15都市×任意日付、クライアントサイド計算）。lib：`hinodeiri.js`（NOAA低精度太陽位置式）。
-  - 全站 URL 数：**368**（合并后）。另有 8 个分类 hub 页（`/category/<slug>/`）和 404 页。
-  - GSC 催收录（年齢早見表组，07-03）：hub+1991/1985/1990/1980/1995/2000 共 **7 个已催**（配额用尽）；**1975/1973/1965 三个待催**（07-04 及以后）。
-  - ⚠️ **教训：两个并行 worktree 各自 `wrangler pages deploy` 会互相全量覆盖生产**（07-03 当天互顶过一次，已用 git merge 恢复）。并行开发时部署前必须先互相 merge，且要 `--branch=main` 才进生产。
-  - ⚠️ **教训：多 agent 并行调研到的「官方数据表」也可能有转录错误**——07-04 做祝日库时，某个调研 agent 转录的 2026 年振替休日表漏了一格（5/6），若直接信表会导致库输出**少一天**振替休日。后来用 JS Date 独立验证 + WebSearch 交叉核对3个独立信源（JR东日本媒体、JPX官方、9rando.info）才发现并订正。**教训：官方数据类锚点即使来自"调研"，只要是可用代码独立复算的（如星期几这种纯日历算术），也要自己再算一遍交叉验证，不能只信转录**。
+  - **「年齢早見表」hub-and-spoke**（07-03，对标 nenrei-hayami.net 模式）：hub `/nenrei-hayami/`（明治元年〜今年 西暦×和暦×満年齢×数え年×干支 大表、SSR+print CSS，目标词「年齢早見表」1〜3月报税季峰值）+ spoke `/umaredoshi/<year>/` ×111 页（1900〜2010）。lib：`hayami.js`。基准年 build 时固定（`new Date().getFullYear()`），**每年 1 月 1 日重 build 续命**。
+  - **「日本历法工具生态」续作**（07-04）：学年早見表 `/gakunen-hayami/`（`hayami.js` 的 `gakunenTable()`，复用 `schoolGrade()`）；和暦西暦早見表**全表化**（`/wareki/` 抜粋表换成明治元年〜今年全表，复用 `hayamiTable()`，删掉了原本脆弱的改元境界分支逻辑和一处硬编码 2026 的 bug）；六曜・大安カレンダー `/rokuyo/`（hub今月+48 spoke月页，**新依赖 `lunar-javascript`**，见下方踩坑）；祝日・連休カレンダー `/shukujitsu/`（hub今年+5 spoke年页，振替休日/国民の休日/ハッピーマンデー/春分秋分近似式全部自实现，无外部依赖）；日の出日の入り `/hinodeiri/`（NOAA 太阳位置式，全国15城市）。
+  - 分支合并现状：`claude/brave-hugle-20c09b` + `claude/cool-visvesvaraya-c8c5c6` 两个 worktree 已于 07-04 合并回 `main`（此前只在生产部署层面合流，git 上 main 一度没有这两组代码——下次不知情从 main 部署会把页面冲掉，**已修复**）。合并后测试全绿。
+  - GSC 催收录进度：年齢早見表组 10 个全催完（hub+1991/1985/1990/1980/1995/2000+1975/1973/1965）；相性组 3 个（hub+tanjobi-aisho+ketsueki-aisho，144 组合页靠 sitemap 自然收录不逐个催）；pet/金融组 5 个（seiri/neko-gohan/inu-vaccine/neko-ninshin/inu-ninshin）；本轮（07-04 历法生态续作）5 个新 hub 页**尚待催收录**。
+  - `RelatedTools`（`getRelated`，同分类优先）在两组内容合并后才生效串联：`rokusei`（全站流量占比最高页）现在正确关联到 seiza/tanjobi-aisho/seiza-aisho/ketsueki-aisho 这 4 个「占い・文化」同类工具——**提醒：并行分支若迟迟不合并到 main，RelatedTools 会一直导流到错误/次优的关联工具，是仅靠"生产环境已可见"发现不了的隐性成本**。
+  - ⚠️ **教训：两个并行 worktree 各自 `wrangler pages deploy` 会互相全量覆盖生产**（07-03 当天互顶过一次）。并行开发时部署前必须先互相 merge 到 main，且要 `--branch=main` 才进生产。
+  - ⚠️ **教训：多 agent 并行调研到的「官方数据表」也可能有转录错误**——07-04 做祝日库时，某个调研 agent 转录的 2026 年振替休日表漏了一格（5/6，憲法記念日5/3是周日应顺延），若直接信表会导致库输出少一天振替休日。后来用 JS Date 独立复算 + WebSearch 交叉核对3个独立信源（JR东日本媒体、JPX官方、9rando.info）才发现并订正。**只要是代码几秒钟能独立复算的事实（如星期几这类纯日历算术），即使来自"调研"也要自己再算一遍，不能照单全收**。
   - ⚠️ **技术选型：六曜/旧暦转换没有从零手写天文算法**，评估后选用 npm 包 `lunar-javascript`（6tail，MIT，GitHub 1500+ star，2025-11 活跃维护），用其 `.getLiuYao()` 官方六曜方法 + 12 个日本旧暦网站（benri.jp/arachne.jp）实测锚点（含2020/2023两个闰月年边界日）交叉验证全部吻合才采用。已知风险：库对 Date 对象用宿主本地时区取值——因此只用 `Solar.fromYmd(y,m,d)` 显式整数构造器，不传 Date 对象。
-- **测试 988 个全绿**（41 个测试文件）。
 - 2026-07-02 做过一次四维全面 review（产品/代码/SEO/流量），修复清单见 §8 末条。
-- **AdSense 尚未接入**（无 ca-pub 代码、无 ads.txt）——Owner 决定暂缓，接入前站点零收入。
+- **AdSense 尚未接入**（无 ca-pub 代码、无 ads.txt）——2026-07-04 数据复核：站点仅上线约3周，多数工具页仅 rokusei 有实质流量，多数页面排名20-40名/零点击，Owner 决定暂缓；建议再观察2-3周积累更多页面真实点击后再申请（被拒不扣分，可对症优化重投）。
 - 依赖：`marked`（Markdown 工具）、`@astrojs/sitemap`、`lunar-javascript`（六曜・旧暦変換）。
 
 ## 4. 关键约定（必须遵守，详见 CLAUDE.md）
@@ -56,7 +52,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 5. **日期处理**：用 UTC 正午基准（见 `src/lib/shussan.js` 的 `toDate/toISO/addDays`），避免时区/夏令时跨日 bug。
 6. **法规/数值每年要复核**：日本税制·社保每年 4月/8月 改定。已知踩过的坑见第 8 节。
 
-## 5. 全工具清单（47个，按分类）
+## 5. 全工具清单（46个，按分类；下表部分行是犬猫成对工具合并展示，行数≠工具数）
 
 | 分类 | slug | 工具 |
 |------|------|------|
