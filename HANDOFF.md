@@ -26,6 +26,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 ```
 - CF Pages 项目名：`keisantool`，正式域名 keisantool.com，每次部署给一个 `xxxx.keisantool.pages.dev` 预览URL。
 - **注意**：本地 git 没有配置 remote（`origin` 不存在），所以 `git push` 会失败。部署走 wrangler，不走 git。commit 只是本地留痕。
+- **部署后顺手催 Bing 收录（IndexNow，2026-07-04 起）**：新增/改动页面 build+deploy 后，跑一次 `python3 scripts/indexnow-submit.py`（不传参数=提交 sitemap 全部 URL；也可传具体 URL 列表只推增量）。key 文件在 `public/bdddcbdf5763d849cfc0e7486c209c24.txt`，别删。背景：07-04 发现 Bing 14 天只有 1 click/24 impressions，几乎没收录，查出站点从没配置过 IndexNow——纯靠 Bing 被动爬 sitemap 太慢，尤其这几天密集加了两百多个程序化页。
 
 ## 3. 当前状态（2026-07-04）
 
