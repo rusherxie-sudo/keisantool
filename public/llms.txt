@@ -1,0 +1,78 @@
+# 計算ツール（keisantool.com）
+
+> 日本語の計算・変換ツール集。税金・健康・暮らし・占い・開発まわりの計算を、登録不要・ブラウザ内完結・無料で提供しています。入力内容はサーバーに送信されません。計算結果はすべて参考値です。
+
+このサイトは Astro によって静的生成され、JavaScript を実行しなくても全ページの本文（HTML）を取得できます。
+
+## 税金・お金
+
+- [消費税・割引計算器](https://keisantool.com/zeizei/): 税込・税抜・割引後の価格を計算（軽減税率8%対応）
+- [固定資産税計算器](https://keisantool.com/kotei-shisan/): 固定資産税・都市計画税を試算
+- [国民健康保険料計算器](https://keisantool.com/kokuho/): 所得・加入人数・自治体から国保料をシミュレーション
+- [割合・パーセント・比率計算器](https://keisantool.com/wariai/): パーセント・比率の各種計算
+- [住宅ローン返済シミュレーター](https://keisantool.com/loan/): 毎月返済額・総返済額・総利息を試算
+- [複利・積立シミュレーター](https://keisantool.com/fukuri/): 複利運用・毎月積立の将来額を計算
+
+## 健康・身体
+
+- [BMI・体脂肪率計算器](https://keisantool.com/bmi/): BMIと標準体重を計算
+- [カロリー・基礎代謝計算器](https://keisantool.com/calorie/): TDEE・PFCバランスを計算
+- [排卵日・生理日計算器](https://keisantool.com/seiri/): 生理周期から次回・排卵日を予測
+
+## 生活・日常
+
+- [偏差値計算器](https://keisantool.com/hensachi/): 得点から偏差値を計算
+- [出産予定日計算器](https://keisantool.com/shussan/): 最終月経日から妊娠週数・出産予定日を計算
+- [厄年チェッカー](https://keisantool.com/yakudoshi/): 前厄・本厄・後厄を判定
+- [給与・時給・残業代計算器](https://keisantool.com/kyuyo/): 時給・残業代・手取りを計算
+- [時差計算器](https://keisantool.com/jisa/): 世界の都市との時差をリアルタイム表示
+- [ガソリン代計算器](https://keisantool.com/gasoline/): 走行距離・燃費から交通費を計算
+- [産休・育休計算器](https://keisantool.com/saniku/): 休業期間・出産手当金・育休給付金を計算
+- [年齢計算器](https://keisantool.com/nenrei/): 満年齢・数え年・学年を計算
+- [日数計算・日付計算器](https://keisantool.com/nissu/): 日付間の日数・N日後の日付を計算
+- [年齢早見表](https://keisantool.com/nenrei-hayami/): 西暦・和暦・満年齢・数え年・干支の早見表（1900〜2010年の生まれ年別ページあり）
+
+## 占い・文化
+
+- [六星占術・大殺界計算器](https://keisantool.com/rokusei/): 生年月日から運命星・大殺界を判定
+- [星座調べ](https://keisantool.com/seiza/): 誕生日から12星座を判定
+- [誕生日相性診断](https://keisantool.com/tanjobi-aisho/): 数秘術・六星占術で二人の相性を計算
+- [星座相性診断](https://keisantool.com/seiza-aisho/): 12星座×12星座、全144組の相性表
+- [血液型相性診断](https://keisantool.com/ketsueki-aisho/): 血液型の組み合わせで相性を判定
+
+## 文字ツール
+
+- [全角半角変換・文字数カウントツール](https://keisantool.com/moji/): 全角半角・かな変換・文字数カウント
+
+## 変換・ツール
+
+- [カラーコード変換ツール](https://keisantool.com/color-code/): HEX・RGB・HSL・抵抗カラーコードの変換
+- [単位変換器](https://keisantool.com/tani/): 長さ・重さ・面積・温度ほかの単位変換
+- [和暦・西暦変換器](https://keisantool.com/wareki/): 元号⇔西暦の変換
+
+## 開発者ツール
+
+- [Base64 エンコード / デコード](https://keisantool.com/base64/): 文字列のBase64変換
+- [JSON 整形・圧縮ツール](https://keisantool.com/json/): JSONの整形・圧縮・検証
+- [URL エンコード / デコード](https://keisantool.com/urlencode/): URL文字列の変換
+- [正規表現テストツール](https://keisantool.com/regex/): 正規表現のパターンマッチ確認
+- [Markdown → HTML 変換](https://keisantool.com/markdown/): MarkdownをHTMLに変換
+- [パスワード生成ツール](https://keisantool.com/password/): 安全なパスワードをその場で生成
+
+## ペット・動物
+
+- [猫の妊娠期間計算器](https://keisantool.com/neko-ninshin/): 交配日から出産予定日を計算
+- [犬の年齢計算器](https://keisantool.com/inu-nenrei/): 犬の年齢を人間に換算
+- [猫の年齢計算器](https://keisantool.com/neko-nenrei/): 猫の年齢を人間に換算
+- [猫のごはん量計算器](https://keisantool.com/neko-gohan/): 体重から1日のごはん量を計算
+- [犬のごはん量計算器](https://keisantool.com/inu-gohan/): 体重から1日のごはん量を計算
+- [犬のワクチン接種スケジュール計算器](https://keisantool.com/inu-vaccine/): 接種時期の目安カレンダー
+- [犬の妊娠期間計算器](https://keisantool.com/inu-ninshin/): 交配日から出産予定日を計算
+- [猫のワクチン接種スケジュール計算器](https://keisantool.com/neko-vaccine/): 接種時期の目安カレンダー
+
+## サイト情報
+
+- [このサイトについて](https://keisantool.com/about/): 運営方針・独立性・免責事項
+- [プライバシーポリシー](https://keisantool.com/privacy/)
+- [利用規約・免責事項](https://keisantool.com/terms/)
+- [お問い合わせ](https://keisantool.com/contact/)
