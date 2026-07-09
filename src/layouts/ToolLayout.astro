@@ -1,19 +1,33 @@
 ---
 import '../styles/global.css';
+import { join } from 'node:path';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import FloatingShare from '../components/FloatingShare.astro';
 import { getColorBySlug, getColorByCategorySlug, getTool, getCategorySlug } from '../data/tools.js';
+import { lastModifiedISO, sourceFileForUrl } from '../lib/lastmod.js';
 
 const { title, description, slug, current, jsonld, wide, breadcrumb } = Astro.props;
 const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
 const ogImage = new URL('/og.png', Astro.site).href;
 
 // WebApplication に url が無ければ canonical を補完（各ページの frontmatter を触らず一括対応）
-const jsonldFinal =
+const jsonldWithUrl =
   jsonld && jsonld['@type'] === 'WebApplication' && !jsonld.url
     ? { ...jsonld, url: canonical }
     : jsonld;
+
+// dateModified を一括注入：sitemap の lastmod（astro.config.mjs）と同じ git コミット日時ロジックを共有。
+// AIクローラーがページ本体からも鮮度を読み取れるようにする（GEO監査 2026-07-04 指摘）。
+// Astro のビルドは .astro を dist/.prerender/chunks/ にバンドルするため import.meta.url は使えない
+// （バンドル後のパスになり src/pages を指せない）。process.cwd() はビルド実行時のプロジェクトルート。
+const pagesDir = join(process.cwd(), 'src/pages');
+const sourceFile = sourceFileForUrl(pagesDir, slug ?? '');
+const dateModified = sourceFile ? lastModifiedISO(sourceFile) : null;
+const jsonldFinal =
+  jsonldWithUrl && dateModified && !jsonldWithUrl.dateModified
+    ? { ...jsonldWithUrl, dateModified }
+    : jsonldWithUrl;
 
 // ツールページには BreadcrumbList を一括注入（ホーム ／ カテゴリ ／ ツール名）。
 // カテゴリページは自前で BreadcrumbList を持つため getTool が undefined → 注入しない。

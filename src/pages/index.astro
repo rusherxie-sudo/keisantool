@@ -21,6 +21,16 @@ const jsonld = {
   description,
 };
 
+// サイト全体を代表する Organization を明示（GEO監査 2026-07-04 指摘：エンティティ認識の手がかりが無かった）。
+// sameAs は今後、外部プロフィール（X等）を開設した際にここへ追記する。
+const organizationJsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: '計算ツール',
+  url: 'https://keisantool.com/',
+  description,
+};
+
 // 高頻ツール（首页ローカルの固定 slug リスト。tools.js のメタ構造は変えない）
 // rokusei は GSC 実測で全站クリックの 2/3 を占めるトップページ（2026-07 レビュー）。
 const FEATURED = ['rokusei', 'zeizei', 'nenrei', 'bmi', 'color-code', 'kyuyo'];
@@ -31,6 +41,7 @@ const byCategory = categories
   .filter((c) => c.items.length > 0);
 ---
 <ToolLayout title={title} description={description} slug="" current="" jsonld={jsonld} wide={true}>
+  <script type="application/ld+json" set:html={JSON.stringify(organizationJsonld)} />
   <div slot="hero" class="home-hero">
     <div class="home-hero__inner">
       <h1>無料計算ツール一覧</h1>
