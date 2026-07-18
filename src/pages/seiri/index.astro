@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
@@ -101,6 +102,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '排卵日はどうやって計算していますか？', a: '排卵から次の生理までの黄体期が約14日で安定していることを利用し、「次回の生理予定日 − 14日」で予測しています。周期の長さによって排卵日も前後します。' },

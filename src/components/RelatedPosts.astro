@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import BlogCard from './BlogCard.astro';
+
+const { current, category, count = 3 } = Astro.props;
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const catPosts = allPosts.filter((p) => p.id !== current && p.data.category === category);
+const others = allPosts.filter((p) => p.id !== current && p.data.category !== category);
+const related = [...catPosts, ...others].slice(0, count);
+---
+{related.length > 0 && (
+  <section class="related-posts">
+    <h3 class="related-posts__title">関連記事</h3>
+    <div class="related-posts__grid">
+      {related.map((p) => (
+        <BlogCard post={p} />
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .related-posts { margin-top: 40px; }
+  .related-posts__title {
+    font-size: .82rem;
+    font-weight: var(--fw-bold);
+    color: var(--text-muted);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .related-posts__grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 681px) {
+    .related-posts__grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  }
+</style>

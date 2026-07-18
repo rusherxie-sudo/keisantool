@@ -1,0 +1,110 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'suisui';
+const title = '水分摂取量計算器 - 体重から1日の推奨水分量を計算 | 計算ツール';
+const description =
+  '体重と活動量から1日の推奨水分摂取量を計算。ダイエットや健康管理の目安に役立ちます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '水分摂取量計算器',
+  description,
+  applicationCategory: 'HealthApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/kenko/">健康・身体</a> ／ 水分摂取量計算</div>
+    <h1>水分摂取量計算器</h1>
+    <p>体重と活動量から、1日に必要な水分量を計算するツールです。ダイエットや健康管理の目安に役立ちます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="weight">体重（kg）</label>
+      <input type="number" id="weight" inputmode="numeric" placeholder="例：60" />
+    </div>
+
+    <div class="form-group">
+      <label>活動量</label>
+      <div class="radio-group">
+        <label><input type="radio" name="activity" value="normal" checked /> 普通（オフィスワークなど）</label>
+        <label><input type="radio" name="activity" value="active" /> 多い（スポーツや外勤など）</label>
+        <label><input type="radio" name="activity" value="sedentary" /> 少ない（ほとんど座っている）</label>
+      </div>
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">1日の推奨水分量</div>
+      <div class="result-main" id="recommended">0ml</div>
+      <div class="result-rows" id="details"></div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>体重と活動量を選択するだけで、1日に必要な水分量が自動で計算されます。ボタンを押す必要はありません。</p>
+    <ul>
+      <li><strong>体重</strong>：現在の体重をkg単位で入力します。</li>
+      <li><strong>活動量</strong>：<strong>普通</strong>はオフィスワークなど日常的な活動、<strong>多い</strong>はスポーツや外勤など汗をたくさんかく場合、<strong>少ない</strong>はほとんど座っている場合です。</li>
+    </ul>
+    <p>計算式は、体重（kg）× 係数（普通:30、多い:40、少ない:25）で算出しています。目安として参考にしてください。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。個人の体質や環境によって適切な水分量は異なります。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '1日にどれくらい水を飲めばいいですか？', a: '一般的な目安は体重1kgあたり約30mlとされています。例えば60kgの人であれば約1800mlです。活動量が多い場合はさらに多めに摂取する必要があります。' },
+    { q: '水分摂取量はなぜ重要ですか？', a: '水分は体温調整や代謝をはじめ、体内の様々な機能に欠かせません。不足すると脱水症状を引き起こし、疲れや頭痛、集中力の低下などの原因になります。' },
+    { q: 'ダイエット中は水分を多めに摂った方がいいですか？', a: '適度な水分摂取はダイエットに役立ちます。代謝を促進したり、空腹感を和らげたりする効果があります。ただし、飲みすぎには注意が必要です。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calcSuisui } from '../../lib/suisui.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function show(box) { box.classList.add('visible'); }
+  function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
+
+  function render() {
+    const box = $('result');
+    const weight = $('weight').value;
+    const activity = document.querySelector('input[name="activity"]:checked')?.value || 'normal';
+
+    const r = calcSuisui(weight, activity);
+    if (r.recommended === 0) return hide(box);
+
+    show(box);
+    $('recommended').textContent = r.recommended.toLocaleString('ja-JP') + 'ml';
+
+    const details = $('details');
+    details.innerHTML = `
+      <div class="result-row"><span class="label">目安コップ数（1杯約150ml）</span><span class="value">${r.glasses}杯</span></div>
+    `;
+
+    window.setResultShare?.('水分摂取量計算器\n1日の推奨量：' + $('recommended').textContent);
+  }
+
+  $('weight').addEventListener('input', render);
+  document.querySelectorAll('input[name="activity"]').forEach((el) => {
+    el.addEventListener('change', render);
+  });
+</script>

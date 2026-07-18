@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { dogHumanAge } from '../../lib/pet-age.js';
@@ -112,6 +113,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '犬の年齢は人間で何歳ですか？', a: '小型・中型犬は1歳＝人間の15歳、2歳＝24歳で、3歳以降は1年ごとに＋4歳です。大型犬は1歳＝12歳で、2歳以降は1年ごとに＋7歳になります。体型を選んで犬の年齢を入力すると自動で換算できます。' },

@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { catHumanAge } from '../../lib/pet-age.js';
@@ -97,6 +98,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '猫の年齢は人間で何歳ですか？', a: '猫は1歳＝人間の15歳、2歳＝24歳で、3歳以降は1年ごとに＋4歳です。たとえば10歳の猫は人間の56歳相当になります。猫の年齢を入力すると自動で換算できます。' },

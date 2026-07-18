@@ -1,0 +1,67 @@
+---
+import { getCollection } from 'astro:content';
+
+const { toolSlug, count = 3 } = Astro.props;
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const relatedPosts = allPosts.filter((p) => p.data.relatedTools && p.data.relatedTools.includes(toolSlug));
+const posts = relatedPosts.slice(0, count);
+---
+{posts.length > 0 && (
+  <section class="related-articles">
+    <h3 class="related-articles__title">関連コラム</h3>
+    <div class="related-articles__list">
+      {posts.map((p) => (
+        <a href={`/blog/${p.id}/`} class="related-articles__item">
+          <span class="related-articles__date">{new Date(p.data.pubDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+          <span class="related-articles__title">{p.data.title}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .related-articles {
+    margin-top: 32px;
+    padding: 24px;
+    background: var(--bg-soft);
+    border-radius: 12px;
+  }
+  .related-articles__title {
+    font-size: .82rem;
+    font-weight: var(--fw-bold);
+    color: var(--text-muted);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+  .related-articles__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .related-articles__item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    transition: background .2s;
+  }
+  .related-articles__item:hover {
+    background: var(--bg-hover);
+  }
+  .related-articles__date {
+    font-size: .75rem;
+    color: var(--text-muted);
+  }
+  .related-articles__title {
+    font-size: .95rem;
+    font-weight: var(--fw-semibold);
+    line-height: 1.5;
+  }
+</style>

@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { eras, seirekiToWareki } from '../../lib/wareki.js';
@@ -165,6 +166,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '令和は西暦何年ですか？', a: '令和元年は西暦2019年です。令和n年は「2018＋n」年で求められます（例：令和6年＝2024年、令和8年＝2026年）。逆に西暦から令和を求めるときは「西暦−2018」で計算します。' },

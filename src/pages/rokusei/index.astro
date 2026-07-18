@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
@@ -177,6 +178,8 @@ const STAR_PROFILES: StarProfile[] = [
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '自分の運命星はどう調べますか？', a: '生年月日を入力すると、土星人・金星人・火星人・天王星人・木星人・水星人の6つの運命星と、陽（＋）／陰（−）を自動判定します。' },

@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
@@ -71,6 +72,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '満年齢と数え年の違いは？', a: '満年齢は誕生日ごとに1歳増え、数え年は元日（1月1日）ごとに1歳増えます。本ツールは生年月日から両方を表示します。' },

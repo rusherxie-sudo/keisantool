@@ -21,6 +21,9 @@ const byCategory = categories
       <a href="/" class="nav-item nav-home" aria-current={current === '' ? 'page' : undefined}>
         <Icon name="home" size={17} class="nav-cat-ic" />ホーム
       </a>
+      <a href="/blog/" class="nav-item" aria-current={current === 'blog' ? 'page' : undefined}>
+        <span class="nav-cat-ic">📝</span>ブログ
+      </a>
       {byCategory.map((cat) => (
         <div class="nav-group">
           <button class="nav-item nav-cat" type="button" aria-haspopup="true" aria-expanded="false">

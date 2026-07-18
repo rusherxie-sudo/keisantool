@@ -1,0 +1,133 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'warikai';
+const title = '割り勘計算器 - 金額と人数から一人あたりの金額を計算 | 計算ツール';
+const description =
+  '飲み会や旅行の割り勘を簡単に計算。金額と人数を入力するだけで一人あたりの料金が自動で出ます。切り上げ・切り捨て・四捨五入に対応。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '割り勘計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 割り勘計算</div>
+    <h1>割り勘計算器</h1>
+    <p>飲み会や旅行の費用をみんなで割り勘するときに役立つ計算ツールです。金額と人数を入力するだけで、一人あたりの料金が自動で計算されます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="amount">合計金額（円）</label>
+      <input type="number" id="amount" inputmode="numeric" placeholder="例：5000" />
+    </div>
+
+    <div class="form-group">
+      <label for="people">人数</label>
+      <input type="number" id="people" inputmode="numeric" placeholder="例：5" />
+    </div>
+
+    <div class="form-group">
+      <label>端数処理</label>
+      <div class="radio-group">
+        <label><input type="radio" name="method" value="ceil" checked /> 切り上げ（一番簡単）</label>
+        <label><input type="radio" name="method" value="floor" /> 切り捨て</label>
+        <label><input type="radio" name="method" value="round" /> 四捨五入</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label><input type="checkbox" id="organizer" /> 幹事が端数を負担する</label>
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">一人あたり</div>
+      <div class="result-main" id="perPerson">¥0</div>
+      <div class="result-rows" id="details"></div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>合計金額と人数を入力するだけで、一人あたりの料金が自動で計算されます。ボタンを押す必要はありません。</p>
+    <ul>
+      <li><strong>合計金額</strong>：みんなで払った合計の費用を入力します。例えば飲み会で5000円だったら「5000」と入力します。</li>
+      <li><strong>人数</strong>：割り勘する人数を入力します。5人で割り勘なら「5」と入力します。</li>
+      <li><strong>端数処理</strong>：割り切れない場合の処理方法を選びます。<strong>切り上げ</strong>が一番よく使われる方法で、例えば1001円を5人で割ると一人201円になります。</li>
+      <li><strong>幹事負担</strong>：チェックを入れると、端数分だけ幹事が多めに払う形になります。みんなが同額払えるようになります。</li>
+    </ul>
+    <p>切り上げの場合、一人あたりの金額×人数で算出される合計が元の金額よりも多くなることがあります。幹事負担を選ぶと、その端数分を幹事が負担してくれる形になります。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '割り勘はどう計算しますか？', a: '合計金額を人数で割ります。割り切れない場合は切り上げ・切り捨て・四捨五入のいずれかで処理します。本ツールでは三種類の端数処理に対応しています。' },
+    { q: '幹事負担とは何ですか？', a: '幹事が端数分を多めに払うことで、他の人が同額払えるようにする方法です。例えば1001円を5人で割ると、他の4人は200円ずつ、幹事が201円払う形になります。' },
+    { q: 'ガソリン代の割り勘はできますか？', a: 'はい、合計ガソリン代と乗車人数を入力すれば一人あたりの料金が算出されます。合計金額に高速代なども含めて入力することもできます。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calcWarikai } from '../../lib/warikai.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
+
+  function show(box) { box.classList.add('visible'); }
+  function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
+
+  function render() {
+    const box = $('result');
+    const amount = $('amount').value;
+    const people = $('people').value;
+    const method = document.querySelector('input[name="method"]:checked')?.value || 'ceil';
+    const organizerPays = $('organizer').checked;
+
+    const r = calcWarikai(amount, people, method, organizerPays);
+    if (r.perPerson === 0) return hide(box);
+
+    show(box);
+    $('perPerson').textContent = yen(r.perPerson);
+
+    const details = $('details');
+    if (organizerPays && r.organizerPays !== r.perPerson) {
+      details.innerHTML = `
+        <div class="result-row"><span class="label">幹事が払う額</span><span class="value">${yen(r.organizerPays)}</span></div>
+        <div class="result-row"><span class="label">合計金額</span><span class="value">${yen(r.total)}</span></div>
+      `;
+    } else {
+      details.innerHTML = `
+        <div class="result-row"><span class="label">合計金額</span><span class="value">${yen(r.total)}</span></div>
+      `;
+    }
+
+    window.setResultShare?.('割り勘計算器\n一人あたり：' + $('perPerson').textContent);
+  }
+
+  $('amount').addEventListener('input', render);
+  $('people').addEventListener('input', render);
+  document.querySelectorAll('input[name="method"]').forEach((el) => {
+    el.addEventListener('change', render);
+  });
+  $('organizer').addEventListener('change', render);
+</script>

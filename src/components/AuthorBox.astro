@@ -1,0 +1,58 @@
+---
+import { blogAuthors } from '../data/blog.js';
+
+const { name, date, updatedDate } = Astro.props;
+const author = blogAuthors[name] || blogAuthors['計算ツール編集部'];
+const dateStr = date?.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+const updatedStr = updatedDate?.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+<div class="author-box">
+  <div class="author-box__avatar" aria-hidden="true">{author.avatar}</div>
+  <div class="author-box__body">
+    <div class="author-box__name">{author.name}</div>
+    <div class="author-box__meta">
+      <span>公開日: <time datetime={date?.toISOString()}>{dateStr}</time></span>
+      {updatedStr && updatedStr !== dateStr && (
+        <>
+          <span class="author-box__sep">／</span>
+          <span>更新日: <time datetime={updatedDate?.toISOString()}>{updatedStr}</time></span>
+        </>
+      )}
+    </div>
+  </div>
+</div>
+
+<style>
+  .author-box {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--surface-sub);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-xl);
+  }
+  .author-box__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--cat-tint);
+    display: grid;
+    place-items: center;
+    font-size: 1.5rem;
+    flex: none;
+  }
+  .author-box__body { min-width: 0; flex: 1; }
+  .author-box__name {
+    font-size: .92rem;
+    font-weight: var(--fw-bold);
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .author-box__meta {
+    font-size: .78rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+  .author-box__sep { margin: 0 6px; color: var(--text-faint); }
+</style>

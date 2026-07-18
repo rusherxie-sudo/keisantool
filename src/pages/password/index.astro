@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 
 const slug = 'password';
@@ -98,6 +99,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '生成したパスワードは外部に送信されますか？', a: 'いいえ。生成はすべてブラウザ内（クライアントサイド）で行われ、パスワードがサーバーへ送信・保存されることはありません。' },

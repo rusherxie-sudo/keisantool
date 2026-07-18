@@ -1,0 +1,163 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'nematsu';
+const title = '年末調整計算器 - 源泉徴収差額調整 | 計算ツール';
+const description =
+  '年末調整を簡単に計算。年間給与所得、源泉徴収された所得税、各種控除額から、還付額または追徴額を精算できる無料ツールです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '年末調整計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 年末調整</div>
+    <h1>年末調整計算器</h1>
+    <p>年末調整を簡単に計算します。年間給与所得、源泉徴収された所得税、各種控除額から、還付額または追徴額を精算できます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="yearly-salary">年間給与収入（円）</label>
+      <input type="number" id="yearly-salary" inputmode="numeric" placeholder="例：3600000" />
+    </div>
+    <div class="form-group">
+      <label for="withheld-tax">源泉徴収された所得税合計（円）</label>
+      <input type="number" id="withheld-tax" inputmode="numeric" placeholder="例：140000" />
+    </div>
+    <div class="form-group">
+      <label for="social-insurance">社会保険料月額（円）</label>
+      <input type="number" id="social-insurance" inputmode="numeric" placeholder="例：40000" />
+    </div>
+    <div class="form-group">
+      <label for="life-insurance">一般生命保険料（新契約・年額）</label>
+      <input type="number" id="life-insurance" inputmode="numeric" placeholder="例：60000" />
+    </div>
+    <div class="form-group">
+      <label for="earthquake-insurance">地震保険料年額（円）</label>
+      <input type="number" id="earthquake-insurance" inputmode="numeric" placeholder="例：10000" />
+    </div>
+
+    <div class="result-box" id="result-box">
+      <div class="result-label" id="result-label">年末調整結果</div>
+      <div class="result-main" id="result-main">¥0</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">年間給与収入</span><span class="value" id="row-salary">¥0</span></div>
+        <div class="result-row"><span class="label">給与所得控除</span><span class="value" id="row-deduction">¥0</span></div>
+        <div class="result-row"><span class="label">社会保険料控除</span><span class="value" id="row-social">¥0</span></div>
+        <div class="result-row"><span class="label">生命保険料控除</span><span class="value" id="row-life">¥0</span></div>
+        <div class="result-row"><span class="label">地震保険料控除</span><span class="value" id="row-earthquake">¥0</span></div>
+        <div class="result-row"><span class="label">課税所得</span><span class="value" id="row-taxable">¥0</span></div>
+        <div class="result-row"><span class="label">実際の所得税</span><span class="value" id="row-actual">¥0</span></div>
+        <div class="result-row"><span class="label">源泉徴収額</span><span class="value" id="row-withheld">¥0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>年間給与収入、源泉徴収額、年末調整で扱う主な控除を入力すると、還付または追徴の目安を計算します。</p>
+    <h3>年末調整とは</h3>
+    <p>年末調整とは、一年間に源泉徴収された所得税と実際の所得税の差額を調整する制度です。源泉徴収が多かった場合は還付され、少なかった場合は追徴されます。</p>
+    <h3>各種控除</h3>
+    <ul>
+      <li><strong>社会保険料控除</strong>：健康保険料、厚生年金保険料、雇用保険料の年間支払額が控除されます。</li>
+      <li><strong>生命保険料控除</strong>：本ツールでは新契約の一般生命保険料のみを扱い、上限は4万円です。</li>
+      <li><strong>地震保険料控除</strong>：支払額を控除し、上限は5万円です。</li>
+      <li><strong>医療費控除</strong>：年末調整ではなく、原則として確定申告で手続きします。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の年末調整は勤務先の給与担当者が行います。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '年末調整とは何ですか？', a: '年末調整とは、一年間に源泉徴収された所得税と実際の所得税の差額を調整する制度です。源泉徴収が多かった場合は還付され、少なかった場合は追徴されます。' },
+    { q: '生命保険料控除の上限はいくらですか？', a: '新契約の一般生命保険料控除は、所得税では最高4万円です。介護医療・個人年金・旧契約は計算方法が異なるため本ツールには含めていません。' },
+    { q: '医療費控除は年末調整できますか？', a: '原則としてできません。医療費控除を受ける場合は、確定申告で手続きします。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calcNematsu } from '../../lib/nematsu.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (n) => '¥' + Math.floor(n).toLocaleString('ja-JP');
+
+  function show(box) { box.classList.add('visible'); }
+  function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
+
+  function render() {
+    const box = $('result-box');
+    const salary = $('yearly-salary').value;
+    const withheld = $('withheld-tax').value;
+    const deductions = {
+      socialInsurance: $('social-insurance').value,
+      lifeInsurance: $('life-insurance').value,
+      earthquakeInsurance: $('earthquake-insurance').value,
+    };
+    
+    const result = calcNematsu(salary, withheld, deductions);
+    
+    if (result.yearlySalary === 0) return hide(box);
+    
+    show(box);
+    
+    const refund = result.refund;
+    const additional = result.additional;
+    
+    if (refund > 0) {
+      $('result-label').textContent = '還付額';
+      $('result-main').textContent = '+' + yen(refund);
+      $('result-main').classList.add('green');
+      $('result-main').classList.remove('red');
+    } else if (additional > 0) {
+      $('result-label').textContent = '追徴額';
+      $('result-main').textContent = '-' + yen(additional);
+      $('result-main').classList.add('red');
+      $('result-main').classList.remove('green');
+    } else {
+      $('result-label').textContent = '差額なし';
+      $('result-main').textContent = '¥0';
+      $('result-main').classList.remove('green', 'red');
+    }
+    
+    $('row-salary').textContent = yen(result.yearlySalary);
+    $('row-deduction').textContent = yen(result.salaryDeduction);
+    $('row-social').textContent = yen(result.breakdown.socialInsurance);
+    $('row-life').textContent = yen(result.breakdown.lifeInsurance);
+    $('row-earthquake').textContent = yen(result.breakdown.earthquakeInsurance);
+    $('row-taxable').textContent = yen(result.taxableIncome);
+    $('row-actual').textContent = yen(result.actualTax);
+    $('row-withheld').textContent = yen(result.withheldTax);
+
+    window.setResultShare?.(
+      '年末調整計算器\n' + $('result-label').textContent + '：' + $('result-main').textContent +
+      '\n年間給与所得：' + $('row-salary').textContent +
+      '\n実際の所得税：' + $('row-actual').textContent +
+      '\n源泉徴収額：' + $('row-withheld').textContent
+    );
+  }
+
+  ['yearly-salary', 'withheld-tax', 'social-insurance', 'life-insurance', 'earthquake-insurance'].forEach((id) => {
+    $(id).addEventListener('input', render);
+  });
+</script>

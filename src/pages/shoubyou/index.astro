@@ -1,0 +1,133 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'shoubyou';
+const title = '傷病手当金計算器 - 健康保険の傷病手当金 | 計算ツール';
+const description =
+  '健康保険の傷病手当金を計算。給与の約60%を支給（最長1年6ヶ月）。月収と療養期間から日額・月額・総額を一括で計算できる無料ツールです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '傷病手当金計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 傷病手当金</div>
+    <h1>傷病手当金計算器</h1>
+    <p>健康保険の傷病手当金を計算します。給与の約60%を支給（最長1年6ヶ月）。月収と療養期間から日額・月額・総額を一括で計算できます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="monthly-salary">月間給与（円）</label>
+      <input type="number" id="monthly-salary" inputmode="numeric" placeholder="例：300000" />
+    </div>
+
+    <div class="form-group">
+      <label for="start-date">療養開始日</label>
+      <input type="date" id="start-date" />
+    </div>
+
+    <div class="form-group">
+      <label for="end-date">療養終了日</label>
+      <input type="date" id="end-date" />
+    </div>
+
+    <div class="result-box" id="result-box">
+      <div class="result-label">傷病手当金（総額）</div>
+      <div class="result-main" id="result-total">¥0</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">月間給与</span><span class="value" id="row-salary">¥0</span></div>
+        <div class="result-row"><span class="label">標準報酬月額</span><span class="value" id="row-base">¥0</span></div>
+        <div class="result-row"><span class="label">日額（60%）</span><span class="value" id="row-daily">¥0</span></div>
+        <div class="result-row"><span class="label">月額</span><span class="value" id="row-monthly">¥0</span></div>
+        <div class="result-row"><span class="label">給付日数</span><span class="value" id="row-days">0日</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>月間給与と療養期間（開始日と終了日）を入力するだけで、傷病手当金が自動計算されます。給付日数は対象期間から待期期間3日を差し引きます。</p>
+    <h3>傷病手当金の計算方法</h3>
+    <ul>
+      <li>日額 = 標準報酬月額 ÷ 30 × 60%</li>
+      <li>給付日数 = 療養期間 - 待期期間3日</li>
+      <li>総額 = 日額 × 給付日数</li>
+    </ul>
+    <h3>支給条件</h3>
+    <ul>
+      <li>健康保険の被保険者であること</li>
+      <li>業務外の病気やケガで療養が必要なこと</li>
+      <li>療養のために働けない期間があること</li>
+      <li>最長支給期間：1年6ヶ月（546日）</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の支給額は健康保険組合が決定します。請求は勤務先の担当部署にお問い合わせください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '傷病手当金とは何ですか？', a: '傷病手当金は、健康保険の被保険者が業務外の病気やケガで療養するため働けない期間に支給される給付金です。給与の約60%が支給されます。' },
+    { q: '待期期間とは何ですか？', a: '待期期間は、傷病手当金の支給が開始されるまでの期間で、3日間です。療養期間が3日未満の場合は支給されません。' },
+    { q: '最長支給期間はどれくらいですか？', a: '傷病手当金の最長支給期間は1年6ヶ月（546日）です。ただし、再発や慢性の場合は延長される場合があります。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calcShoubyou } from '../../lib/shoubyou.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (n) => '¥' + Math.floor(n).toLocaleString('ja-JP');
+
+  function show(box) { box.classList.add('visible'); }
+  function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
+
+  function render() {
+    const box = $('result-box');
+    const salary = $('monthly-salary').value;
+    const startDate = $('start-date').value;
+    const endDate = $('end-date').value;
+    const result = calcShoubyou(salary, startDate, endDate);
+    
+    if (result.premiumBase === 0) return hide(box);
+    
+    show(box);
+    $('result-total').textContent = yen(result.totalAmount);
+    $('row-salary').textContent = yen(salary);
+    $('row-base').textContent = yen(result.premiumBase);
+    $('row-daily').textContent = yen(result.dailyAmount);
+    $('row-monthly').textContent = yen(result.monthlyAmount);
+    $('row-days').textContent = result.payableDays + '日';
+
+    window.setResultShare?.(
+      '傷病手当金計算器\n月間給与：' + $('row-salary').textContent +
+      '\n標準報酬月額：' + $('row-base').textContent +
+      '\n日額：' + $('row-daily').textContent +
+      '\n月額：' + $('row-monthly').textContent +
+      '\n給付日数：' + $('row-days').textContent +
+      '\n総額：' + $('result-total').textContent
+    );
+  }
+
+  $('monthly-salary').addEventListener('input', render);
+  $('start-date').addEventListener('change', render);
+  $('end-date').addEventListener('change', render);
+</script>

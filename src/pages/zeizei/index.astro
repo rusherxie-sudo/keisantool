@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
@@ -128,6 +129,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '消費税の税込・税抜はどう計算しますか？', a: '税抜価格×1.1で税込価格、税込価格÷1.1で税抜価格になります（標準税率10%の場合）。軽減税率8%の対象品は1.08で計算します。' },

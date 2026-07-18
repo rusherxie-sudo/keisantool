@@ -1,0 +1,61 @@
+---
+const { headings } = Astro.props;
+---
+<nav class="toc" aria-label="目次">
+  <p class="toc__title">目次</p>
+  <ul class="toc__list">
+    {headings.map((h) => (
+      <li class={`toc__item toc__item--${h.depth}`}>
+        <a href={`#${h.slug}`}>{h.text}</a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .toc {
+    background: var(--surface-sub);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-xl);
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+  .toc__title {
+    font-size: .8rem;
+    font-weight: var(--fw-bold);
+    color: color-mix(in srgb, var(--cat-color) 62%, #000);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+  }
+  .toc__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .toc__item a {
+    font-size: .88rem;
+    color: var(--text-3);
+    line-height: 1.5;
+    transition: color var(--ease);
+    display: block;
+    padding-left: 0;
+  }
+  .toc__item a:hover {
+    color: var(--cat-color);
+  }
+  .toc__item--2 {
+    font-weight: var(--fw-bold);
+    color: var(--text);
+  }
+  .toc__item--3 {
+    padding-left: 16px;
+  }
+  .toc__item--3 a {
+    font-size: .84rem;
+  }
+</style>

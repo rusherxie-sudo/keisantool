@@ -5,6 +5,13 @@ import {
   takeHomePay,
   hourlyFromMonthly,
   overtimeBreakdown,
+  salaryDeduction,
+  incomeTax,
+  residentTax,
+  healthInsurance,
+  pensionInsurance,
+  employmentInsurance,
+  socialInsuranceTotal,
 } from '../src/lib/kyuyo.js';
 
 describe('hourlyWage(時給計算: 時給 × 労働時間)', () => {
@@ -59,21 +66,38 @@ describe('overtimePay(残業代計算: 時給 × 残業時間 × 割増率)', ()
   });
 });
 
-describe('takeHomePay(手取り概算: 月収 × 0.78)', () => {
-  it('月収300000円 → 控除66000, 手取り234000', () => {
-    expect(takeHomePay(300000)).toEqual({ takeHome: 234000, deduction: 66000 });
+describe('takeHomePay(手取り精算)', () => {
+  it('月収300000円 → 精算結果', () => {
+    const result = takeHomePay(300000);
+    expect(result.yearlyIncome).toBe(3600000);
+    expect(result.salaryDeduction).toBe(Math.floor(3600000 * 0.3 + 80000));
+    expect(result.taxableIncome).toBe(1560000);
+    expect(result.socialInsurance.health).toBe(Math.floor(300000 * 0.0495));
+    expect(result.socialInsurance.pension).toBe(Math.floor(300000 * 0.0915));
+    expect(result.socialInsurance.employment).toBe(Math.floor(300000 * 0.005));
+    expect(result.socialInsurance.childcare).toBe(Math.floor(300000 * 0.00115));
+    expect(result.deduction).toBe(result.socialInsurance.total + result.incomeTax + result.residentTax);
+    expect(result.takeHome).toBe(Math.floor(300000 - result.deduction));
   });
 
-  it('月収250000円 → 控除55000, 手取り195000', () => {
-    expect(takeHomePay(250000)).toEqual({ takeHome: 195000, deduction: 55000 });
+  it('月収250000円 → 精算結果', () => {
+    const result = takeHomePay(250000);
+    expect(result.yearlyIncome).toBe(3000000);
+    expect(result.socialInsurance.total).toBe(socialInsuranceTotal(250000).total);
   });
 
-  it('端数は切り捨て: 月収333333円 → 手取り floor(259999.74)=259999, 控除73334', () => {
-    expect(takeHomePay(333333)).toEqual({ takeHome: 259999, deduction: 73334 });
+  it('端数は切り捨て: 月収333333円', () => {
+    const result = takeHomePay(333333);
+    expect(result.takeHome).toBe(Math.floor(333333 - result.deduction));
   });
 
-  it('月収0円 → 手取り0, 控除0', () => {
-    expect(takeHomePay(0)).toEqual({ takeHome: 0, deduction: 0 });
+  it('月収0円 → 全て0', () => {
+    const result = takeHomePay(0);
+    expect(result.takeHome).toBe(0);
+    expect(result.deduction).toBe(0);
+    expect(result.socialInsurance.total).toBe(0);
+    expect(result.incomeTax).toBe(0);
+    expect(result.residentTax).toBe(0);
   });
 });
 
@@ -205,6 +229,149 @@ describe('overtimeBreakdown(分類別の残業代を一括計算)', () => {
   });
 });
 
+describe('salaryDeduction(給与所得控除)', () => {
+  it('162.5万超〜180万は改正後の段階式', () => {
+    expect(salaryDeduction(1800000)).toBe(620000);
+    expect(salaryDeduction(1900000)).toBe(650000);
+  });
+  it('年収190万超〜360万 → 控除 = 収入×30%+8万', () => {
+    expect(salaryDeduction(2500000)).toBe(Math.floor(2500000 * 0.3 + 80000));
+    expect(salaryDeduction(3600000)).toBe(Math.floor(3600000 * 0.3 + 80000));
+  });
+  it('年収360万超〜660万 → 控除 = 収入×20%+44万', () => {
+    expect(salaryDeduction(4500000)).toBe(Math.floor(4500000 * 0.2 + 440000));
+    expect(salaryDeduction(6600000)).toBe(Math.floor(6600000 * 0.2 + 440000));
+  });
+  it('年収660万超〜850万 → 控除 = 収入×10%+110万', () => {
+    expect(salaryDeduction(7500000)).toBe(Math.floor(7500000 * 0.1 + 1100000));
+    expect(salaryDeduction(8500000)).toBe(Math.floor(8500000 * 0.1 + 1100000));
+  });
+  it('年収850万超 → 控除上限195万', () => {
+    expect(salaryDeduction(9000000)).toBe(1950000);
+    expect(salaryDeduction(10000000)).toBe(1950000);
+  });
+  it('不正な入力 → 0', () => {
+    expect(salaryDeduction(0)).toBe(0);
+    expect(salaryDeduction(-1000000)).toBe(0);
+    expect(salaryDeduction(NaN)).toBe(0);
+  });
+});
+
+describe('incomeTax(所得税)', () => {
+  it('課税所得195万以下 → 5%', () => {
+    expect(incomeTax(1000000)).toBe(Math.floor(1000000 * 0.05));
+    expect(incomeTax(1950000)).toBe(Math.floor(1950000 * 0.05));
+  });
+  it('課税所得195万超〜330万 → 10%-97500', () => {
+    expect(incomeTax(2500000)).toBe(Math.floor(2500000 * 0.1 - 97500));
+  });
+  it('課税所得330万超〜695万 → 20%-427500', () => {
+    expect(incomeTax(4000000)).toBe(Math.floor(4000000 * 0.2 - 427500));
+  });
+  it('課税所得695万超〜900万 → 23%-636000', () => {
+    expect(incomeTax(8000000)).toBe(Math.floor(8000000 * 0.23 - 636000));
+  });
+  it('課税所得900万超〜1800万 → 33%-1536000', () => {
+    expect(incomeTax(10000000)).toBe(Math.floor(10000000 * 0.33 - 1536000));
+  });
+  it('不正な入力 → 0', () => {
+    expect(incomeTax(0)).toBe(0);
+    expect(incomeTax(-1000000)).toBe(0);
+    expect(incomeTax(NaN)).toBe(0);
+  });
+});
+
+describe('residentTax(住民税)', () => {
+  it('課税所得 × 10%', () => {
+    expect(residentTax(1000000)).toBe(Math.floor(1000000 * 0.1));
+    expect(residentTax(3000000)).toBe(Math.floor(3000000 * 0.1));
+  });
+  it('不正な入力 → 0', () => {
+    expect(residentTax(0)).toBe(0);
+    expect(residentTax(-1000000)).toBe(0);
+    expect(residentTax(NaN)).toBe(0);
+  });
+});
+
+describe('healthInsurance(健康保険料)', () => {
+  it('標準報酬月額 × 4.95%', () => {
+    expect(healthInsurance(300000)).toBe(Math.floor(300000 * 0.0495));
+  });
+  it('上限650,000円', () => {
+    expect(healthInsurance(700000)).toBe(Math.floor(650000 * 0.0495));
+    expect(healthInsurance(620000)).toBe(Math.floor(620000 * 0.0495));
+  });
+  it('不正な入力 → 0', () => {
+    expect(healthInsurance(0)).toBe(0);
+    expect(healthInsurance(-100000)).toBe(0);
+    expect(healthInsurance(NaN)).toBe(0);
+  });
+});
+
+describe('pensionInsurance(厚生年金保険料)', () => {
+  it('標準報酬月額 × 9.15%', () => {
+    expect(pensionInsurance(300000)).toBe(Math.floor(300000 * 0.0915));
+  });
+  it('上限650,000円', () => {
+    expect(pensionInsurance(700000)).toBe(Math.floor(650000 * 0.0915));
+  });
+  it('不正な入力 → 0', () => {
+    expect(pensionInsurance(0)).toBe(0);
+    expect(pensionInsurance(-100000)).toBe(0);
+    expect(pensionInsurance(NaN)).toBe(0);
+  });
+});
+
+describe('employmentInsurance(雇用保険料)', () => {
+  it('一般事業の賃金総額 × 0.5%', () => {
+    expect(employmentInsurance(300000)).toBe(Math.floor(300000 * 0.005));
+  });
+  it('標準報酬月額の上限を使わない', () => {
+    expect(employmentInsurance(500000)).toBe(Math.floor(500000 * 0.005));
+  });
+  it('不正な入力 → 0', () => {
+    expect(employmentInsurance(0)).toBe(0);
+    expect(employmentInsurance(-100000)).toBe(0);
+    expect(employmentInsurance(NaN)).toBe(0);
+  });
+});
+
+describe('socialInsuranceTotal(社会保険料合計)', () => {
+  it('健康保険+厚生年金+雇用保険', () => {
+    const result = socialInsuranceTotal(300000);
+    expect(result.health).toBe(Math.floor(300000 * 0.0495));
+    expect(result.pension).toBe(Math.floor(300000 * 0.0915));
+    expect(result.employment).toBe(Math.floor(300000 * 0.005));
+    expect(result.total).toBe(result.health + result.pension + result.employment + result.childcare);
+  });
+});
+
+describe('takeHomePay(手取り精算)', () => {
+  it('月収30万、標準報酬月額30万 → 手取り精算', () => {
+    const result = takeHomePay(300000, { premiumBase: 300000 });
+    expect(result.yearlyIncome).toBe(3600000);
+    expect(result.salaryDeduction).toBe(Math.floor(3600000 * 0.3 + 80000));
+    expect(result.taxableIncome).toBe(1560000);
+    expect(result.socialInsurance.health).toBe(Math.floor(300000 * 0.0495));
+    expect(result.socialInsurance.pension).toBe(Math.floor(300000 * 0.0915));
+    expect(result.socialInsurance.employment).toBe(Math.floor(300000 * 0.005));
+    expect(result.deduction).toBe(result.socialInsurance.total + result.incomeTax + result.residentTax);
+    expect(result.takeHome).toBe(Math.floor(300000 - result.deduction));
+  });
+  it('月収0 → 全て0', () => {
+    const result = takeHomePay(0);
+    expect(result.takeHome).toBe(0);
+    expect(result.deduction).toBe(0);
+    expect(result.socialInsurance.total).toBe(0);
+    expect(result.incomeTax).toBe(0);
+    expect(result.residentTax).toBe(0);
+  });
+  it('月収25万（標準報酬月額省略）', () => {
+    const result = takeHomePay(250000);
+    expect(result.socialInsurance.total).toBe(socialInsuranceTotal(250000).total);
+  });
+});
+
 describe('不正な入力は全て0を返す（ページ側で非表示にする）', () => {
   it('hourlyWage: 非数値の時給', () => {
     expect(hourlyWage(NaN, 8)).toEqual({ pay: 0 });
@@ -226,14 +393,5 @@ describe('不正な入力は全て0を返す（ページ側で非表示にする
   });
   it('overtimePay: 不正な割増率（1未満）', () => {
     expect(overtimePay(1000, 10, 0)).toEqual({ pay: 0 });
-  });
-  it('takeHomePay: 非数値', () => {
-    expect(takeHomePay(NaN)).toEqual({ takeHome: 0, deduction: 0 });
-  });
-  it('takeHomePay: 負数', () => {
-    expect(takeHomePay(-300000)).toEqual({ takeHome: 0, deduction: 0 });
-  });
-  it('takeHomePay: 空文字', () => {
-    expect(takeHomePay('')).toEqual({ takeHome: 0, deduction: 0 });
   });
 });

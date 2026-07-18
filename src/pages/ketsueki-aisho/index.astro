@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { TYPES, ketsuekiAisho, allCombos } from '../../lib/ketsueki-aisho.js';
@@ -132,6 +133,8 @@ const combos = allCombos().map(({ t1, t2 }) => ({
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '血液型で本当に相性がわかりますか？', a: '血液型と性格・相性の関連に科学的根拠はありません。日本で広く親しまれている血液型占い（娯楽・文化的慣習）の通説を、わかりやすく点数化したものです。話のタネとしてお楽しみください。' },

@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import ToolLayout from '../../../layouts/ToolLayout.astro';
+import BlogCard from '../../../components/BlogCard.astro';
+import { blogCategories, getBlogCategory, getBlogCategoryColor } from '../../../data/blog.js';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return blogCategories.map((cat) => {
+    const catPosts = posts
+      .filter((p) => p.data.category === cat.slug)
+      .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+    return {
+      params: { slug: cat.slug },
+      props: { cat, posts: catPosts },
+    };
+  });
+}
+
+const { cat, posts } = Astro.props;
+const themeColor = getBlogCategoryColor(cat.slug);
+const slug = `blog/category/${cat.slug}`;
+const title = `${cat.name}コラム一覧 | 計算ツール`;
+const description = cat.description;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: `${cat.name}コラム一覧`,
+  description,
+  url: `https://keisantool.com/blog/category/${cat.slug}/`,
+};
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ホーム', item: 'https://keisantool.com/' },
+    { '@type': 'ListItem', position: 2, name: 'ブログ', item: 'https://keisantool.com/blog/' },
+    { '@type': 'ListItem', position: 3, name: cat.name, item: `https://keisantool.com/blog/category/${cat.slug}/` },
+  ],
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={cat.slug} jsonld={jsonld} breadcrumb={breadcrumb} wide={true}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/blog/">ブログ</a> ／ {cat.name}</div>
+    <h1>{cat.icon} {cat.name}コラム</h1>
+    <p>{cat.description}</p>
+  </div>
+
+  <div class="blog-cats">
+    <span class="blog-cats__label">カテゴリ:</span>
+    <div class="blog-cats__list">
+      <a href="/blog/" class="blog-cats__item">すべて</a>
+      {blogCategories.map((c) => (
+        <a href={`/blog/category/${c.slug}/`} class={`blog-cats__item ${c.slug === cat.slug ? 'is-active' : ''}`}>
+          <span aria-hidden="true">{c.icon}</span>{c.name}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <div class="blog-grid">
+    {posts.map((p) => (
+      <BlogCard post={p} />
+    ))}
+  </div>
+
+  {posts.length === 0 && (
+    <div class="blog-empty">
+      <p>このカテゴリの記事はまだありません。随時追加していきます。</p>
+    </div>
+  )}
+</ToolLayout>
+
+<style>
+  .blog-cats {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .blog-cats__label {
+    font-size: .82rem;
+    font-weight: var(--fw-bold);
+    color: var(--text-muted);
+    padding-top: 8px;
+    flex: none;
+  }
+  .blog-cats__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .blog-cats__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1.5px solid var(--border-2);
+    border-radius: var(--r-pill);
+    font-size: .84rem;
+    font-weight: var(--fw-bold);
+    color: var(--text-3);
+    background: var(--surface);
+    transition: all var(--ease);
+  }
+  .blog-cats__item:hover {
+    border-color: var(--cat-color);
+    color: var(--text);
+    background: var(--cat-tint);
+  }
+  .blog-cats__item.is-active {
+    background: var(--cat-color);
+    color: #fff;
+    border-color: var(--cat-color);
+  }
+  .blog-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 681px) {
+    .blog-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .blog-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .blog-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+</style>

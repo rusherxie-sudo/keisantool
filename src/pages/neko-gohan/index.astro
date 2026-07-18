@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
@@ -130,6 +131,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '猫の1日のごはんの量はどうやって決めますか？', a: 'まずBCS（体型）から理想体重を求め、その理想体重で安静時エネルギー要求量（RER＝70×体重^0.75）を計算します。これに避妊去勢の状態などに応じた活動係数をかけて1日に必要なカロリー（DER）を出し、フードのカロリーで割ってグラム数に換算します。本ツールが自動で計算します。' },

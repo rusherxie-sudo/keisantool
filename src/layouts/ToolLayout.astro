@@ -93,6 +93,16 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   />
   {jsonldFinal && <script type="application/ld+json" set:html={JSON.stringify(jsonldFinal)} />}
   {breadcrumbJsonld && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonld)} />}
+  <!-- 百度统计代码 -->
+  <script is:inline>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?d84361ca34153f1c434c38b9cb0e0bb5";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
 </head>
 <body>
   <SiteHeader current={current} />

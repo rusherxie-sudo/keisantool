@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { UNITS } from '../../lib/tani.js';
@@ -76,6 +77,8 @@ const categories = [
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: 'どんな単位を変換できますか？', a: '長さ・重さ・面積・体積・温度・速さなどに対応しています。変換元と変換先を選ぶだけで自動換算します。' },

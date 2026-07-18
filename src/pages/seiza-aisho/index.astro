@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { SIGNS, seizaAisho } from '../../lib/seiza-aisho.js';
@@ -158,6 +159,8 @@ const matrix = SIGNS.map((a) =>
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '星座の相性はどうやって決まりますか？', a: '本ツールでは、西洋占星術で通行の「エレメント（火・地・風・水）」と「アスペクト（2つの星座の角度）」で判定します。同じエレメント（120度）が最も調和しやすく、90度（スクエア）は刺激し合う関係とされます。判定表はページ内で公開しています。' },

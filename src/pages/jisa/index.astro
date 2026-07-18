@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { TIMEZONES } from '../../lib/jisa.js';
@@ -178,6 +179,8 @@ const defaultTz2 = 'America/New_York';
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '時差はどう計算しますか？', a: '2つの都市のタイムゾーンの差から計算します。本ツールは現在時刻と時差をリアルタイムで表示し、サマータイム（夏時間）も自動反映します。' },

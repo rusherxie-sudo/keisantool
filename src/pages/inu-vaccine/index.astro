@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
@@ -89,6 +90,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '子犬の混合ワクチンはいつから何回打ちますか？', a: '一般的な目安として、生後6〜8週ごろに始め、3〜4週ごとに、最後が16週齢以降になるよう複数回（本ツールでは8週・12週・16週ごろの3回）接種する考え方が知られています。実際の時期・回数は獣医師にご相談ください。' },

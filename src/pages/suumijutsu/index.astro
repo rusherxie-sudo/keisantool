@@ -1,0 +1,105 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'suumijutsu';
+const title = '数秘術計算器 - 生年月日から誕生数と性格を判定 | 計算ツール';
+const description =
+  '生年月日を入力するだけで数秘術の誕生数を算出し、性格の特徴を判定します。数字の神秘的な力を知りましょう。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '数秘術計算器',
+  description,
+  applicationCategory: 'EntertainmentApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 数秘術計算</div>
+    <h1>数秘術計算器</h1>
+    <p>生年月日を入力するだけで、数秘術の「誕生数」を算出し、性格の特徴を判定します。数字が秘める神秘的な力を知りましょう。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="year">生年月日</label>
+      <input type="date" id="birthday" />
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-label">あなたの誕生数</div>
+      <div class="result-main" id="birthNumber">-</div>
+      <div class="result-sub" id="birthNumberName"></div>
+      <div class="result-rows" id="details"></div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>生年月日を選択するだけで、あなたの誕生数と性格の特徴が自動で判定されます。ボタンを押す必要はありません。</p>
+    <ul>
+      <li><strong>生年月日</strong>：カレンダーからあなたの生年月日を選択します。</li>
+    </ul>
+    <p>数秘術では、生年月日の数字をすべて足し合わせ、1桁になるまで繰り返すことで「誕生数」を算出します。その数字が持つ意味から性格の特徴が読み取れるとされています。</p>
+    <div class="disclaimer">※ 判定結果は文化的な慣習に基づくものであり、科学的根拠を保証するものではありません。娯楽としてお楽しみください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '数秘術とは何ですか？', a: '数秘術（Numerology）は、数字が持つ神秘的な意味や力を研究する学問です。生年月日の数字から個人の性格や運命を読み取る方法の一つです。' },
+    { q: '誕生数はどうやって計算しますか？', a: '生年月日の年・月・日の数字をすべて足し合わせ、合計が10以上の場合はさらに足し合わせて1桁にしたものが誕生数です。例えば1990年1月1日は 1+9+9+0+1+1=21 → 2+1=3 で誕生数3になります。' },
+    { q: '誕生数はどんな意味を持ちますか？', a: '1から9までの各数字が異なる意味を持ちます。例えば1は独立とリーダーシップ、2は調和と協調性、3は創造性と表現力などです。本ツールでは各数字の性格特徴を詳しく表示します。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calcSuumijutsu } from '../../lib/suumijutsu.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function show(box) { box.classList.add('visible'); }
+  function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
+
+  function render() {
+    const box = $('result');
+    const birthday = $('birthday').value;
+    if (!birthday) return hide(box);
+
+    const [year, month, day] = birthday.split('-').map(Number);
+    const r = calcSuumijutsu(year, month, day);
+
+    if (!r.valid) return hide(box);
+
+    show(box);
+    $('birthNumber').textContent = r.birthNumber;
+    $('birthNumberName').textContent = r.birthNumberName;
+
+    const details = $('details');
+    if (r.traits) {
+      details.innerHTML = `
+        <div class="result-row"><span class="label">性格の特徴</span><span class="value">${r.traits.description}</span></div>
+        <div class="result-row"><span class="label">強み</span><span class="value">${r.traits.positive.join(' / ')}</span></div>
+        <div class="result-row"><span class="label">注意点</span><span class="value">${r.traits.negative.join(' / ')}</span></div>
+      `;
+    }
+
+    window.setResultShare?.('数秘術計算器\n誕生数：' + r.birthNumber + ' (' + r.birthNumberName + ')');
+  }
+
+  $('birthday').addEventListener('change', render);
+</script>

@@ -1,0 +1,134 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'juminzei';
+const title = '住民税計算器 - 都道府県民税・市町村民税 | 計算ツール';
+const description =
+  '年収から住民税を簡単に計算。給与所得控除、基礎控除、配偶者控除、扶養控除などを考慮し、都道府県民税（6%）と市町村民税（4%）の合計を精算できる無料ツールです。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '住民税計算器',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 住民税</div>
+    <h1>住民税計算器</h1>
+    <p>年収から住民税を精算します。給与所得控除、基礎控除、配偶者控除、扶養控除などを考慮し、都道府県民税（6%）と市町村民税（4%）の合計を計算できます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="yearly-salary">年間給与所得（円）</label>
+      <input type="number" id="yearly-salary" inputmode="numeric" placeholder="例：3600000" />
+    </div>
+
+    <div class="form-group">
+      <label for="spouse-income">配偶者の年間所得（円）</label>
+      <input type="number" id="spouse-income" inputmode="numeric" placeholder="配偶者がいない場合は0" />
+    </div>
+
+    <div class="result-box" id="result-box">
+      <div class="result-label">住民税（年額）</div>
+      <div class="result-main" id="result-tax">¥0</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">年間給与所得</span><span class="value" id="row-salary">¥0</span></div>
+        <div class="result-row"><span class="label">給与所得控除</span><span class="value" id="row-salary-deduct">¥0</span></div>
+        <div class="result-row"><span class="label">基礎控除</span><span class="value" id="row-basic">¥0</span></div>
+        <div class="result-row"><span class="label">配偶者控除</span><span class="value" id="row-spouse">¥0</span></div>
+        <div class="result-row"><span class="label">配偶者特別控除</span><span class="value" id="row-spouse-special">¥0</span></div>
+        <div class="result-row"><span class="label">課税所得</span><span class="value" id="row-taxable">¥0</span></div>
+        <div class="result-row"><span class="label">都道府県民税（6%）</span><span class="value" id="row-prefectural">¥0</span></div>
+        <div class="result-row"><span class="label">市町村民税（4%）</span><span class="value" id="row-municipal">¥0</span></div>
+        <div class="result-row"><span class="label">住民税（月額）</span><span class="value" id="row-monthly">¥0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>使い方</h2>
+    <p>年間給与所得と配偶者の年間所得を入力するだけで、住民税が自動計算されます。都道府県民税（6%）と市町村民税（4%）の合計10%を基に計算します。</p>
+    <h3>住民税の構成</h3>
+    <ul>
+      <li>都道府県民税：課税所得の6%</li>
+      <li>市町村民税：課税所得の4%</li>
+      <li>合計：課税所得の10%</li>
+    </ul>
+    <h3>控除の種類</h3>
+    <ul>
+      <li>給与所得控除：年収に応じて差し引かれる額</li>
+      <li>基礎控除：全員一律43万円</li>
+      <li>配偶者控除：配偶者の所得が低い場合に適用</li>
+      <li>配偶者特別控除：配偶者の所得が極めて低い場合に追加適用</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の税額は市町村から送られてくる納税通知書で確認してください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '住民税はどう計算されますか？', a: '住民税は「給与所得 − 各種控除 = 課税所得」を計算し、課税所得の10%（都道府県民税6%＋市町村民税4%）で計算されます。' },
+    { q: '基礎控除とは何ですか？', a: '基礎控除は、すべての住民が受けられる一律の控除額で、2025年度現在は43万円です。' },
+    { q: '配偶者控除と配偶者特別控除の違いは？', a: '配偶者控除は配偶者の年収が98万円以下の場合に適用され、配偶者特別控除は年収が45万円以下の場合に追加で適用されます。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calcJuminzei } from '../../lib/juminzei.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (n) => '¥' + Math.floor(n).toLocaleString('ja-JP');
+
+  function show(box) { box.classList.add('visible'); }
+  function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
+
+  function render() {
+    const box = $('result-box');
+    const salary = $('yearly-salary').value;
+    const spouseIncome = $('spouse-income').value || 0;
+    const result = calcJuminzei(salary, { spouseIncome });
+    
+    if (result.yearlySalary === 0) return hide(box);
+    
+    show(box);
+    $('result-tax').textContent = yen(result.residentTax);
+    $('row-salary').textContent = yen(result.yearlySalary);
+    $('row-salary-deduct').textContent = yen(result.salaryDeduction);
+    $('row-basic').textContent = yen(result.basicDeduction);
+    $('row-spouse').textContent = yen(result.spouseDeduction);
+    $('row-spouse-special').textContent = yen(result.spouseSpecialDeduction);
+    $('row-taxable').textContent = yen(result.taxableIncome);
+    $('row-prefectural').textContent = yen(result.prefecturalTax);
+    $('row-municipal').textContent = yen(result.municipalTax);
+    $('row-monthly').textContent = yen(result.monthlyTax);
+
+    window.setResultShare?.(
+      '住民税計算器\n年間給与所得：' + $('row-salary').textContent +
+      '\n課税所得：' + $('row-taxable').textContent +
+      '\n都道府県民税：' + $('row-prefectural').textContent +
+      '\n市町村民税：' + $('row-municipal').textContent +
+      '\n住民税：' + $('result-tax').textContent +
+      '\n月額換算：' + $('row-monthly').textContent
+    );
+  }
+
+  $('yearly-salary').addEventListener('input', render);
+  $('spouse-income').addEventListener('input', render);
+</script>

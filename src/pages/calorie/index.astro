@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
@@ -138,6 +139,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '基礎代謝はどう計算しますか？', a: '本ツールは国立健康・栄養研究所の式（Ganpule式）を標準に、ハリス・ベネディクト式にも切り替えできます。年齢・性別・身長・体重から計算します。' },

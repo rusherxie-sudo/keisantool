@@ -1,6 +1,8 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
 import Icon from '../components/Icon.astro';
+import BlogCard from '../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
 import { tools, categories, categoryMeta, categoryColors, getTool } from '../data/tools.js';
 
 const catSlug = (name) => categoryMeta.find((c) => c.name === name)?.slug;
@@ -39,6 +41,10 @@ const featured = FEATURED.map(getTool).filter(Boolean);
 const byCategory = categories
   .map((c) => ({ name: c, items: tools.filter((t) => t.category === c && t.live !== false) }))
   .filter((c) => c.items.length > 0);
+
+const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+  .slice(0, 6);
 ---
 <ToolLayout title={title} description={description} slug="" current="" jsonld={jsonld} wide={true}>
   <script type="application/ld+json" set:html={JSON.stringify(organizationJsonld)} />
@@ -103,6 +109,19 @@ const byCategory = categories
       ))}
     </div>
   </div>
+
+  <!-- 最新ブログ記事 -->
+  <section class="home-blog">
+    <div class="home-h2-row">
+      <h2 class="home-h2">最新コラム</h2>
+      <a href="/blog/" class="cat-block__all">一覧を見る<Icon name="arrow" size={15} /></a>
+    </div>
+    <div class="blog-grid">
+      {recentPosts.map((p) => (
+        <BlogCard post={p} />
+      ))}
+    </div>
+  </section>
 </ToolLayout>
 
 <script>

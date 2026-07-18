@@ -1,0 +1,116 @@
+---
+import Icon from './Icon.astro';
+import { getTool } from '../data/tools.js';
+
+const { slugs = [] } = Astro.props;
+const tools = slugs.map((s) => getTool(s)).filter(Boolean).slice(0, 4);
+---
+{tools.length > 0 && (
+  <section class="related-tools-article">
+    <h3 class="related-tools-article__title">関連ツール</h3>
+    <p class="related-tools-article__desc">この記事で解説している内容を、実際にシミュレーションできるツールです。</p>
+    <div class="related-tools-article__grid">
+      {tools.map((t) => (
+        <a href={`/${t.slug}/`} class="related-tools-article__card">
+          <span class="related-tools-article__ic" aria-hidden="true">{t.icon}</span>
+          <span class="related-tools-article__body">
+            <span class="related-tools-article__name">{t.name}</span>
+            <span class="related-tools-article__short">{t.short}</span>
+          </span>
+          <span class="related-tools-article__chev"><Icon name="chevron" size={18} /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .related-tools-article {
+    margin-top: 40px;
+    padding: 24px;
+    background: var(--cat-tint);
+    border-radius: var(--r-2xl);
+    border: 1.5px solid color-mix(in srgb, var(--cat-color) 20%, transparent);
+  }
+  .related-tools-article__title {
+    font-size: .85rem;
+    font-weight: var(--fw-bold);
+    color: color-mix(in srgb, var(--cat-color) 62%, #000);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-family: var(--font-mono);
+  }
+  .related-tools-article__desc {
+    font-size: .88rem;
+    color: var(--text-3);
+    margin-bottom: 16px;
+  }
+  .related-tools-article__grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 600px) {
+    .related-tools-article__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .related-tools-article__card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1.5px solid var(--border-2);
+    border-radius: var(--r-xl);
+    color: var(--text);
+    transition: all var(--ease);
+  }
+  .related-tools-article__card:hover {
+    border-color: var(--cat-color);
+    box-shadow: 0 8px 20px -12px color-mix(in srgb, var(--cat-color) 50%, transparent);
+    transform: translateY(-2px);
+  }
+  .related-tools-article__ic {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-lg);
+    background: var(--cat-tint);
+    display: grid;
+    place-items: center;
+    font-size: 1.25rem;
+    flex: none;
+  }
+  .related-tools-article__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+  }
+  .related-tools-article__name {
+    font-size: .9rem;
+    font-weight: var(--fw-bold);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .related-tools-article__short {
+    font-size: .76rem;
+    color: var(--text-muted);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .related-tools-article__chev {
+    color: var(--text-faint);
+    flex: none;
+    transition: transform var(--ease), color var(--ease);
+  }
+  .related-tools-article__card:hover .related-tools-article__chev {
+    transform: translateX(2px);
+    color: var(--cat-color);
+  }
+</style>

@@ -39,6 +39,10 @@ export function sourceFileForUrl(pagesDir, urlPath) {
   if (path === '') return join(pagesDir, 'index.astro');
   // カテゴリハブは動的ルート（全ハブが同一ファイル＝ハブのテンプレ／内容が変わった日になる）
   if (path.startsWith('category/')) return join(pagesDir, 'category/[slug].astro');
+  // ブログ記事・ブログカテゴリも動的ルート。記事本文の更新日を sitemap に反映する。
+  if (path.startsWith('blog/category/')) return join(pagesDir, 'blog/category/[slug].astro');
+  if (path === 'blog') return join(pagesDir, 'blog/index.astro');
+  if (path.startsWith('blog/')) return join(pagesDir, 'blog/[slug].astro');
   // 生まれ年ページも動的ルート（全年が同一テンプレ）
   if (path.startsWith('umaredoshi/')) return join(pagesDir, 'umaredoshi/[year].astro');
   // 星座相性の144組み合わせページも動的ルート（テンプレの最終更新日を lastmod にする）

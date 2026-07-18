@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { suuhiAisho } from '../../lib/tanjobi-aisho.js';
@@ -141,6 +142,8 @@ const matrix = NUMS.map((a) => NUMS.map((b) => suuhiAisho(a, b).rank));
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '誕生数（ライフパスナンバー）とは何ですか？', a: '数秘術で使う、生年月日の数字をすべて足して1桁（または11・22・33）まで還元した数です。例えば1990年8月15日生まれなら1+9+9+0+0+8+1+5=33で、誕生数は33になります。' },

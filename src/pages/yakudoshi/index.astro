@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { yakudoshiTable } from '../../lib/yakudoshi.js';
@@ -145,6 +146,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '厄年は何歳ですか？', a: '数え年で、男性は25・42・61歳、女性は19・33・37・61歳が本厄とされます（特に男性42・女性33は大厄）。その前後の年が前厄・後厄です。' },

@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
@@ -133,6 +134,8 @@ const jsonld = {
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: '複利と単利の違いは？', a: '単利は元本にのみ利息がつくのに対し、複利は「元本＋これまでの利息」に対して利息がつきます。期間が長いほど複利のほうが大きく増えます。本ツールは複利で計算します。' },

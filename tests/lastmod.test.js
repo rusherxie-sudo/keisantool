@@ -35,6 +35,11 @@ describe('sourceFileForUrl', () => {
     expect(sourceFileForUrl(pagesDir, 'category/zeikin')).toBe(join(pagesDir, 'category/[slug].astro'));
   });
 
+  it('resolves blog article and category URLs to their dynamic routes', () => {
+    expect(sourceFileForUrl(pagesDir, 'blog/example-post')).toBe(join(pagesDir, 'blog/[slug].astro'));
+    expect(sourceFileForUrl(pagesDir, 'blog/category/zeikin-kiso')).toBe(join(pagesDir, 'blog/category/[slug].astro'));
+  });
+
   it('resolves umaredoshi year URLs to the dynamic [year].astro route', () => {
     expect(sourceFileForUrl(pagesDir, 'umaredoshi/1990')).toBe(join(pagesDir, 'umaredoshi/[year].astro'));
   });

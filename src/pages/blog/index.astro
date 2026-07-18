@@ -1,0 +1,121 @@
+---
+import { getCollection } from 'astro:content';
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { blogCategories } from '../../data/blog.js';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+
+const slug = 'blog';
+const title = 'ブログ - 税金・社会保険・生活のお役立ちコラム | 計算ツール';
+const description =
+  '確定申告・年末調整・社会保険料・税金の基礎知識など、暮らしに役立つ情報をわかりやすく解説するコラムです。無料の計算ツールと合わせてご活用ください。';
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: '計算ツール ブログ',
+  description,
+  url: 'https://keisantool.com/blog/',
+  blogPost: posts.slice(0, 10).map((p) => ({
+    '@type': 'BlogPosting',
+    headline: p.data.title,
+    description: p.data.description,
+    datePublished: new Date(p.data.pubDate).toISOString(),
+    url: `https://keisantool.com/blog/${p.id}/`,
+  })),
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current="blog" jsonld={jsonld} wide={true}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ ブログ</div>
+    <h1>ブログ</h1>
+    <p>確定申告・年末調整・社会保険料など、税金や暮らしにまつわるお役立ち情報をわかりやすく解説します。各記事から対応する計算ツールでシミュレーションもできます。</p>
+  </div>
+
+  <div class="blog-cats">
+    <span class="blog-cats__label">カテゴリ:</span>
+    <div class="blog-cats__list">
+      <a href="/blog/" class="blog-cats__item is-active">すべて</a>
+      {blogCategories.map((c) => (
+        <a href={`/blog/category/${c.slug}/`} class="blog-cats__item">
+          <span aria-hidden="true">{c.icon}</span>{c.name}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <div class="blog-grid">
+    {posts.map((p) => (
+      <BlogCard post={p} />
+    ))}
+  </div>
+
+  {posts.length === 0 && (
+    <div class="blog-empty">
+      <p>記事はまだありません。随時追加していきます。</p>
+    </div>
+  )}
+</ToolLayout>
+
+<style>
+  .blog-cats {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .blog-cats__label {
+    font-size: .82rem;
+    font-weight: var(--fw-bold);
+    color: var(--text-muted);
+    padding-top: 8px;
+    flex: none;
+  }
+  .blog-cats__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .blog-cats__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1.5px solid var(--border-2);
+    border-radius: var(--r-pill);
+    font-size: .84rem;
+    font-weight: var(--fw-bold);
+    color: var(--text-3);
+    background: var(--surface);
+    transition: all var(--ease);
+  }
+  .blog-cats__item:hover {
+    border-color: var(--cat-color);
+    color: var(--text);
+    background: var(--cat-tint);
+  }
+  .blog-cats__item.is-active {
+    background: var(--cat-color);
+    color: #fff;
+    border-color: var(--cat-color);
+  }
+  .blog-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 681px) {
+    .blog-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .blog-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .blog-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+</style>

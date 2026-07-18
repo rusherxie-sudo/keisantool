@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
@@ -243,6 +244,8 @@ const toleranceColors = resistorColors.filter((c) =>
   </section>
 
   <RelatedTools current={slug} />
+
+  <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
     { q: 'HEXとRGBの違いは？', a: 'HEXは #1e3a5f のように16進数で色を表す表記、RGBは赤・緑・青を0〜255で表す表記です。本ツールで相互に変換できます。' },
