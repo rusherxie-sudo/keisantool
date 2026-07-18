@@ -7,9 +7,9 @@ import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'rokusei';
 const title =
-  '六星占術・大殺界計算器 - 生年月日から自動で星・大殺界を計算 | 計算ツール';
+  '六星占術・大殺界 自動計算器｜早見表で運命星・大殺界を無料診断';
 const description =
-  '六星占術の運命星（土星人・金星人・火星人・天王星人・木星人・水星人）と陽陰、今年の運勢ゾーン（大殺界・小殺界・好調期）を生年月日から自動計算。今後数年の大殺界カレンダーも無料で診断できる占いツールです。';
+  '生年月日から六星占術の運命星・陽陰と今年の大殺界を無料で自動計算。大殺界の早見表で今後9年の運勢ゾーンも確認できる、登録不要の診断ツールです。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -79,8 +79,8 @@ const STAR_PROFILES: StarProfile[] = [
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 六星占術</div>
-    <h1>六星占術・大殺界計算器</h1>
-    <p>生年月日を入力するだけで、運命星（6星）と陽陰、今年の運勢ゾーン（大殺界など）を自動で判定します。</p>
+    <h1>六星占術・大殺界 自動計算器</h1>
+    <p>生年月日を入力するだけで、運命星（6星）と陽陰、今年の大殺界を自動判定。今後9年の早見表も無料で確認できます。</p>
   </div>
 
   <div class="calc-card">
@@ -123,7 +123,7 @@ const STAR_PROFILES: StarProfile[] = [
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>六星占術とは・使い方</h2>
+    <h2>六星占術・大殺界の調べ方</h2>
     <p>
       六星占術は、占術研究家の細木数子氏が考案し、現在は細木かおり氏に受け継がれている運命学です。生年月日をもとに、土星人・金星人・火星人・天王星人・木星人・水星人という6つの「運命星」と、生まれ年の干支による陽（プラス）／陰（マイナス）を組み合わせた12タイプで運命の流れを読み解きます。
     </p>
@@ -141,6 +141,16 @@ const STAR_PROFILES: StarProfile[] = [
     <div class="disclaimer">
       ※ 六星占術は娯楽・参考を目的とした占いであり、科学的根拠はありません。表示される結果はあくまで目安です。健康・お金・人生の重要な判断は、結果に頼らずご自身の責任でお決めください。
     </div>
+  </section>
+
+  <section class="rk-guide">
+    <h2>六星占術を調べたあとに役立つ計算</h2>
+    <p>六星占術の大殺界と、厄年・干支・星座は別の考え方です。生まれ年や年齢をあわせて確認したいときは、次の無料ツールもご利用ください。</p>
+    <ul>
+      <li><a href="/yakudoshi/">厄年計算器</a>：男女別の前厄・本厄・後厄を数え年で確認</li>
+      <li><a href="/nenrei-hayami/">年齢早見表</a>：西暦・和暦から現在の年齢を確認</li>
+      <li><a href="/seiza/">星座早見表</a>：誕生日から12星座を確認</li>
+    </ul>
   </section>
 
   <section class="rk-types">
@@ -235,6 +245,10 @@ const STAR_PROFILES: StarProfile[] = [
   .rk-pm-minus .rk-pm-label { color: var(--text-3); }
   .rk-pm p { font-size: .84rem; line-height: 1.75; margin: 0; color: var(--text); }
   .rk-types-note { font-size: .78rem; color: var(--text-muted); margin-top: 14px; line-height: 1.7; }
+  .rk-guide { margin-top: 28px; padding: 20px; border-radius: var(--r-md); background: var(--cat-tint); }
+  .rk-guide h2 { margin-top: 0; }
+  .rk-guide p, .rk-guide li { font-size: .9rem; line-height: 1.8; }
+  .rk-guide ul { margin-bottom: 0; }
 </style>
 
 <script>
@@ -242,6 +256,7 @@ const STAR_PROFILES: StarProfile[] = [
 
   const $ = (id) => document.getElementById(id);
   const CAT_CLASS = { 大殺界: 'daisakkai', 中殺界: 'chusakkai', 小殺界: 'shosakkai', 好調: 'kouchou' };
+  let hasTrackedResult = false;
 
   function badge(category) {
     return `<span class="rk-badge ${CAT_CLASS[category] || 'kouchou'}">${category}</span>`;
@@ -255,6 +270,10 @@ const STAR_PROFILES: StarProfile[] = [
     const r = rokusei(y, m, d);
     if (!r) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
+    if (!hasTrackedResult) {
+      window.trackCalculatorResult?.('fortune');
+      hasTrackedResult = true;
+    }
 
     $('rk-type').textContent = r.type;
     $('rk-star').textContent = r.star;

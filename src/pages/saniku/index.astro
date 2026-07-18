@@ -8,7 +8,7 @@ import ResultShare from '../../components/ResultShare.astro';
 const slug = 'saniku';
 const title = '産休・育休計算器 — 休業期間・出産手当金・育児休業給付金を自動計算 | 計算ツール';
 const description =
-  '出産予定日を入力するだけで、産前・産後休業の開始日と終了日、育休終了日を自動計算。さらに月給から出産手当金・育児休業給付金の概算額も計算できる無料ツール。';
+  '出産予定日から産前・産後休業と育休終了日を自動計算。月給から出産手当金・育児休業給付金・2025年新設の出生後休業支援給付金の概算も確認できる無料ツール。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -233,6 +233,8 @@ const jsonld = {
   const $ = (id) => document.getElementById(id);
   const yen = (n) => '¥' + n.toLocaleString('ja-JP');
   const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+  let hasTrackedSchedule = false;
+  let hasTrackedBenefit = false;
 
   function fmtDate(iso) {
     if (!iso) return '—';
@@ -254,6 +256,10 @@ const jsonld = {
     const box = $('schedule-result');
     if (!sanzenStart) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
+    if (!hasTrackedSchedule) {
+      window.trackCalculatorResult?.('leave_schedule');
+      hasTrackedSchedule = true;
+    }
 
     $('sanzen-start').textContent = fmtDate(sanzenStart);
     $('due-disp').textContent     = fmtDate(dueDate);
@@ -292,6 +298,10 @@ const jsonld = {
     const grandTotal = (kyuufu?.total ?? 0) + (shien?.amount ?? 0);
 
     box.classList.add('visible');
+    if (!hasTrackedBenefit) {
+      window.trackCalculatorResult?.('benefit_estimate');
+      hasTrackedBenefit = true;
+    }
     $('daily-amount').textContent = yen(dailyAmount);
     $('shussan-teate').textContent = yen(teate ?? 0);
     $('ikukyu-first').textContent  = yen(kyuufu?.first ?? 0);

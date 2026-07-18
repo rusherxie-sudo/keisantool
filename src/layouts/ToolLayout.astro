@@ -104,7 +104,7 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
     })();
   </script>
 </head>
-<body>
+<body data-tool-slug={current ?? ''}>
   <SiteHeader current={current} />
   <slot name="hero" />
   <main class={wide ? 'page-wrapper wide' : 'page-wrapper'} style={themeStyle}>
@@ -112,5 +112,25 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   </main>
   <SiteFooter />
   <FloatingShare title={title} url={canonical} />
+  <script is:inline>
+    // 計算器の「結果表示」と関連ツール遷移を、入力値を送らずに計測する。
+    // 自動計算は入力のたびに再描画されるため、各ページ側で初回表示だけを送信する。
+    window.trackCalculatorResult = function(resultType) {
+      if (typeof window.gtag !== 'function') return;
+      window.gtag('event', 'calculator_result_view', {
+        tool_slug: document.body.dataset.toolSlug || 'unknown',
+        result_type: resultType || 'default',
+      });
+    };
+
+    document.addEventListener('click', function(event) {
+      var link = event.target.closest('.related-link, .related-articles__item');
+      if (!link || typeof window.gtag !== 'function') return;
+      window.gtag('event', 'related_content_click', {
+        tool_slug: document.body.dataset.toolSlug || 'unknown',
+        destination: link.getAttribute('href') || '',
+      });
+    });
+  </script>
 </body>
 </html>

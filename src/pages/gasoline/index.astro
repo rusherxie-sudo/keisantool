@@ -6,9 +6,9 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'gasoline';
-const title = 'ガソリン代計算器 — 走行距離・燃費から交通費を計算 | 計算ツール';
+const title = 'ガソリン代計算器｜距離・燃費・単価から片道・往復・月額を計算';
 const description =
-  '走行距離・燃費・ガソリン単価を入力するだけで、片道・往復のガソリン代と月額交通費を自動計算する無料ツール。通勤・旅行・ドライブの交通費計算に。';
+  '走行距離・燃費・ガソリン単価から、片道・往復・月額のガソリン代を無料で自動計算。高速料金を含む割り勘にも対応し、通勤・旅行・ドライブの交通費をすぐ確認できます。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -24,7 +24,7 @@ const jsonld = {
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ ガソリン代計算</div>
     <h1>ガソリン代計算器</h1>
-    <p>走行距離・燃費・ガソリン価格を入力すると、片道・往復・月額の交通費を自動計算します。</p>
+    <p>走行距離・燃費・ガソリン価格を入力すると、片道・往復・月額のガソリン代と割り勘額を自動計算します。</p>
   </div>
 
   <div class="calc-card">
@@ -181,6 +181,7 @@ const jsonld = {
 
   const $ = (id) => document.getElementById(id);
   const yen = (n) => '¥' + n.toLocaleString('ja-JP');
+  let hasTrackedResult = false;
 
   function render() {
     const distance = parseFloat($('distance').value);
@@ -200,6 +201,10 @@ const jsonld = {
       return;
     }
     result.classList.add('visible');
+    if (!hasTrackedResult) {
+      window.trackCalculatorResult?.('fuel_cost');
+      hasTrackedResult = true;
+    }
 
     // 往復・月額は floor 済みの片道を累乗せず、原始量から精確に再計算する。
     const roundTrip = calcRoundTripCost({ distance, fuelEfficiency: fuelEff, gasPrice });
