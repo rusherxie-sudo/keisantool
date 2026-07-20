@@ -17,6 +17,19 @@ const jsonldWithUrl =
     ? { ...jsonld, url: canonical }
     : jsonld;
 
+// 無料・ブラウザ完結のツールであることを明示する。レビュー数や評価は実在しないため
+// 付与しない（構造化データに架空の aggregateRating を追加しない）。
+const jsonldWithAppDetails =
+  jsonldWithUrl && jsonldWithUrl['@type'] === 'WebApplication'
+    ? {
+        ...jsonldWithUrl,
+        '@id': jsonldWithUrl['@id'] || `${canonical}#webapplication`,
+        isAccessibleForFree: jsonldWithUrl.isAccessibleForFree ?? true,
+        browserRequirements: jsonldWithUrl.browserRequirements || 'JavaScript対応の最新ブラウザ',
+        featureList: jsonldWithUrl.featureList || ['無料で利用可能', '登録不要', 'ブラウザ上で計算'],
+      }
+    : jsonldWithUrl;
+
 // dateModified を一括注入：sitemap の lastmod（astro.config.mjs）と同じ git コミット日時ロジックを共有。
 // AIクローラーがページ本体からも鮮度を読み取れるようにする（GEO監査 2026-07-04 指摘）。
 // Astro のビルドは .astro を dist/.prerender/chunks/ にバンドルするため import.meta.url は使えない
@@ -25,9 +38,28 @@ const pagesDir = join(process.cwd(), 'src/pages');
 const sourceFile = sourceFileForUrl(pagesDir, slug ?? '');
 const dateModified = sourceFile ? lastModifiedISO(sourceFile) : null;
 const jsonldFinal =
-  jsonldWithUrl && dateModified && !jsonldWithUrl.dateModified
-    ? { ...jsonldWithUrl, dateModified }
-    : jsonldWithUrl;
+  jsonldWithAppDetails && dateModified && !jsonldWithAppDetails.dateModified
+    ? { ...jsonldWithAppDetails, dateModified }
+    : jsonldWithAppDetails;
+
+// 各ページの主題（アプリ・記事・カテゴリ）とは別に、ページ自体の正規 URL と言語を
+// WebPage として公開する。検索エンジンが canonical と構造化データを突き合わせやすくなる。
+const webPageJsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': `${canonical}#webpage`,
+  url: canonical,
+  name: title,
+  description,
+  inLanguage: 'ja',
+  isPartOf: {
+    '@type': 'WebSite',
+    '@id': `${new URL('/', Astro.site).href}#website`,
+    name: '計算ツール',
+    url: new URL('/', Astro.site).href,
+  },
+  ...(dateModified ? { dateModified } : {}),
+};
 
 // ツールページには BreadcrumbList を一括注入（ホーム ／ カテゴリ ／ ツール名）。
 // カテゴリページは自前で BreadcrumbList を持つため getTool が undefined → 注入しない。
@@ -92,6 +124,7 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
     rel="stylesheet"
   />
   {jsonldFinal && <script type="application/ld+json" set:html={JSON.stringify(jsonldFinal)} />}
+  <script type="application/ld+json" set:html={JSON.stringify(webPageJsonld)} />
   {breadcrumbJsonld && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonld)} />}
   <!-- 百度统计代码 -->
   <script is:inline>

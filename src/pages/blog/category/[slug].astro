@@ -23,6 +23,55 @@ const slug = `blog/category/${cat.slug}`;
 const title = `${cat.name}コラム一覧 | 計算ツール`;
 const description = cat.description;
 
+const categoryGuides = {
+  'kakutei-shinkoku': {
+    title: '確定申告の記事を読む前に',
+    text: '申告が必要かどうかは、所得の種類や控除の有無で変わります。まずは源泉徴収票・控除証明書・寄付金の受領証など、手元にある書類を確認し、期限に余裕をもって準備しましょう。',
+    links: [{ href: '/zeizei/', label: '税金計算器' }, { href: '/shotokuzei/', label: '所得税計算器' }, { href: '/juminzei/', label: '住民税計算器' }],
+  },
+  'nematsu-chosei': {
+    title: '年末調整を確認するときのポイント',
+    text: '扶養控除・保険料控除・住宅ローン控除など、提出する書類によって反映される内容が異なります。勤務先からの案内と証明書を照らし合わせ、不明な点は提出前に確認してください。',
+    links: [{ href: '/nematsu/', label: '年末調整計算器' }, { href: '/kyuyo/', label: '給与計算器' }, { href: '/shakaihoken/', label: '社会保険料計算器' }],
+  },
+  'shakai-hoken': {
+    title: '社会保険・年金の確認ポイント',
+    text: '加入条件や保険料は、勤務時間・賃金・勤務先の規模・居住地などで変わります。計算結果は目安として使い、最終的には勤務先や年金事務所、自治体の案内で確認しましょう。',
+    links: [{ href: '/shakaihoken/', label: '社会保険料計算器' }, { href: '/kokuho/', label: '国民健康保険料計算器' }, { href: '/kyuyo/', label: '給与計算器' }],
+  },
+  'zeikin-kiso': {
+    title: '税金の仕組みを調べる順番',
+    text: '税金は所得・控除・家族構成・自治体など複数の条件で変わります。基礎となる所得を整理してから、所得税・住民税・手取りの順に確認すると、制度の違いを把握しやすくなります。',
+    links: [{ href: '/zeizei/', label: '税金計算器' }, { href: '/shotokuzei/', label: '所得税計算器' }, { href: '/juminzei/', label: '住民税計算器' }],
+  },
+  'life-event': {
+    title: 'ライフイベントの手続きに備える',
+    text: '結婚・出産・住宅購入などでは、時期によって必要な申請や控除が変わります。予定が決まったら、利用できる制度と提出期限を早めに確認し、必要書類を整理しておくと安心です。',
+    links: [{ href: '/saniku/', label: '産休・育休給付金計算器' }, { href: '/loan/', label: 'ローン返済計算器' }, { href: '/yakudoshi/', label: '厄年計算器' }],
+  },
+  life: {
+    title: '暮らしの数字を比べるときに',
+    text: '給与、日数、費用の比較では、前提条件をそろえることが大切です。勤務日数や手数料、端数処理を確認し、計算結果だけでなく入力条件も記録しておくと判断しやすくなります。',
+    links: [{ href: '/gasoline/', label: 'ガソリン代計算器' }, { href: '/nissu/', label: '日数計算器' }, { href: '/warikai/', label: '割り勘計算器' }],
+  },
+  health: {
+    title: '健康指標を使う際の注意点',
+    text: 'BMIや消費カロリーは、日々の状態を見直すための目安です。年齢、体格、活動量、体調によって個人差があるため、数値だけで自己判断せず、必要に応じて医療専門職に相談してください。',
+    links: [{ href: '/bmi/', label: 'BMI計算器' }, { href: '/calorie/', label: 'カロリー計算器' }, { href: '/suisui/', label: '水分摂取量計算器' }],
+  },
+  pet: {
+    title: 'ペットの年齢・健康管理の目安',
+    text: '犬や猫の年齢換算や食事量は、品種、体格、生活環境、健康状態によって差があります。日常の変化を観察しながら利用し、食事や治療に関する判断は獣医師へ相談してください。',
+    links: [{ href: '/inu-nenrei/', label: '犬の年齢計算器' }, { href: '/neko-nenrei/', label: '猫の年齢計算器' }, { href: '/inu-gohan/', label: '犬のごはん量計算器' }],
+  },
+  tools: {
+    title: 'ツールを正しく使うために',
+    text: '入力内容と単位を確認し、結果は目安としてお使いください。文章・コード・色などを扱うツールは、公開前にプレビューやコピー後の内容を確認すると、入力ミスを防ぎやすくなります。',
+    links: [{ href: '/markdown/', label: 'Markdownエディタ' }, { href: '/json/', label: 'JSON整形ツール' }, { href: '/color-code/', label: 'カラーコード変換器' }],
+  },
+};
+const guide = categoryGuides[cat.slug];
+
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -58,6 +107,16 @@ const breadcrumb = {
       ))}
     </div>
   </div>
+
+  {guide && (
+    <section class="category-guide" aria-labelledby="category-guide-title">
+      <h2 id="category-guide-title">{guide.title}</h2>
+      <p>{guide.text}</p>
+      <div class="category-guide__links" aria-label="関連する計算ツール">
+        {guide.links.map((link) => <a href={link.href}>{link.label}</a>)}
+      </div>
+    </section>
+  )}
 
   <div class="blog-grid">
     {posts.map((p) => (
@@ -120,6 +179,40 @@ const breadcrumb = {
     gap: 16px;
     grid-template-columns: 1fr;
   }
+  .category-guide {
+    margin: 0 0 28px;
+    padding: 22px 24px;
+    background: var(--cat-tint);
+    border: 1px solid color-mix(in srgb, var(--cat-color) 24%, var(--border));
+    border-radius: var(--r-2xl);
+  }
+  .category-guide h2 {
+    margin: 0 0 10px;
+    font-size: 1.05rem;
+    color: var(--text);
+  }
+  .category-guide p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: .9rem;
+    line-height: 1.8;
+  }
+  .category-guide__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .category-guide__links a {
+    padding: 6px 10px;
+    border-radius: var(--r-pill);
+    background: var(--surface);
+    color: var(--cat-color);
+    font-size: .8rem;
+    font-weight: var(--fw-bold);
+    text-decoration: none;
+  }
+  .category-guide__links a:hover { text-decoration: underline; }
   @media (min-width: 681px) {
     .blog-grid { grid-template-columns: repeat(2, 1fr); }
   }
