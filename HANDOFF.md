@@ -114,7 +114,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 | 生活・日常 | gakunen-hayami | 学年早見表（生まれ年度→学年、hayami.js の gakunenTable） |
 | 生活・日常 | rokuyo | 六曜カレンダー hub + **48スポーク** `/rokuyo/<year>-<month>/`（lunar-javascript 依存） |
 | 生活・日常 | shukujitsu | 祝日・連休カレンダー hub + **5スポーク** `/shukujitsu/<year>/`（振替休日・国民の休日自前実装） |
-| 生活・日常 | hinodeiri | 日の出・日の入り時刻計算器（全国15都市、NOAA太陽位置式） |
+| 生活・日常 | hinodeiri | 日の出・日の入り時刻計算器 hub + **15城市スポーク** `/hinodeiri/<city>/`（NOAA太陽位置式、年間早見表） |
 
 分类（`tools.js` 的 `categories`）：税金・お金 / 健康・身体 / 生活・日常 / 占い・文化 / 文字ツール / 変換・ツール / 開発者ツール / ペット・動物。注意：**hensachi（偏差値）在「生活・日常」**（2026-07 从健康・身体移出）。
 
@@ -151,6 +151,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 
 ## 8. 重要历史决策 & 已踩的坑
 
+- **日出日落城市页的单一计算源（2026-08-01）**：`/hinodeiri/<city>/` 的年度表必须由 `cityYearTable` 调用 `hinodeIri` 生成，不能另写静态时刻；当前每月1日／15日共24行，代表性与页面体积平衡。NOAA 近似式与国立天文台公布值允许约±1分钟差异。新增城市时只改 `CITIES`，静态路由、汇总页入口和城市内链都会由 `listCities()` 派生；动态路由的 `lastmod` 映射在 `src/lib/lastmod.js`。
 - **割合计算的三种未知量（2026-08-01）**：`wariai.js` 分别用 `percentOf` 求“部分占整体几%”、`valueFromPercent` 求“整体的○%数值”、`baseFromPercent` 从“部分＋百分比”逆算整体；第三种在百分比为0时必须返回 `null`，不能与“整体的0%=0”混为一谈。页面模式数量会继续变化，title／说明不得再硬编码“○種類”。
 - **ガソリン代的行程与实燃费口径（2026-08-01）**：`calcTripSummary` 统一用“1回距离×往返倍率×次数”计算通勤与旅行，燃料费保持未取整到加完附加费用后再 `Math.floor`，不能用已切捨て的单次金额累乘。`calcFuelEconomy` 用满坦法“给油间距离÷本次给油量”反算 km/L；页面固定价格只作演算示例，实际输入不得冒充当前全国油价。
 - **出生年份页的年度答案（2026-08-01）**：`/umaredoshi/1900..2010/` 的 title、H1 与 11 年早见表由构建时 `BASE_YEAR` 和 `ageYearTable` 统一生成；每年 1 月必须重新构建部署，避免搜索摘要仍显示上一年。出生当年的诞生日前年龄必须夹紧为 0，静态路由范围必须复用 `UMAREDOSHI_FROM`／`UMAREDOSHI_TO`，不能再写独立硬编码。
