@@ -4,12 +4,16 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
-import { fortuneTable } from '../../lib/rokusei.js';
+import { fortuneTable, fortuneTypes } from '../../lib/rokusei.js';
 
 const slug = 'rokusei';
 const CURRENT_YEAR = new Date().getFullYear();
 const yearlyFortunes = fortuneTable(CURRENT_YEAR);
 const daisakkaiTypes = yearlyFortunes.filter((item) => item.category === '大殺界');
+const typePages = fortuneTypes().map((item) => ({
+  ...item,
+  ...yearlyFortunes.find((fortune) => fortune.type === item.type),
+}));
 const title =
   `六星占術 自動計算【${CURRENT_YEAR}年】｜大殺界・運命星の早見表`;
 const description =
@@ -177,6 +181,19 @@ const STAR_PROFILES: StarProfile[] = [
     </p>
   </section>
 
+  <nav class="rk-type-pages" aria-label="六星占術12タイプ別の運勢">
+    <h2>{CURRENT_YEAR}年の運勢をタイプ別に見る</h2>
+    <p>自分の運命星がわかっている方は、タイプ別ページで{CURRENT_YEAR}年の結論と12年分の大殺界早見表を確認できます。</p>
+    <div class="rk-type-link-grid">
+      {typePages.map((item) => (
+        <a href={`/rokusei/${item.slug}/`}>
+          <strong>{item.type}</strong>
+          <span>{CURRENT_YEAR}年：{item.zone}（{item.category}）</span>
+        </a>
+      ))}
+    </div>
+  </nav>
+
   <section class="rk-guide">
     <h2>六星占術を調べたあとに役立つ計算</h2>
     <p>六星占術の大殺界と、厄年・干支・星座は別の考え方です。生まれ年や年齢をあわせて確認したいときは、次の無料ツールもご利用ください。</p>
@@ -290,10 +307,18 @@ const STAR_PROFILES: StarProfile[] = [
   .rk-year-中殺界, .rk-year-小殺界 { color: var(--warning-text); background: var(--warning-bg); }
   .rk-year-好調 { color: color-mix(in srgb, var(--cat-color) 62%, #000); background: var(--cat-tint); }
   .rk-year-note { margin-top: 10px; font-size: .78rem; line-height: 1.7; color: var(--text-muted); }
+  .rk-type-pages { margin-top: 28px; }
+  .rk-type-link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+  .rk-type-link-grid a { display: flex; flex-direction: column; gap: 3px; padding: 12px; border: 1px solid var(--border-2); border-radius: var(--r-sm); color: var(--text); background: var(--surface-sub); }
+  .rk-type-link-grid a:hover { border-color: var(--cat-color); background: var(--cat-tint); }
+  .rk-type-link-grid strong { color: var(--cat-color); font-size: .86rem; }
+  .rk-type-link-grid span { font-size: .74rem; color: var(--text-muted); }
   .rk-guide { margin-top: 28px; padding: 20px; border-radius: var(--r-md); background: var(--cat-tint); }
   .rk-guide h2 { margin-top: 0; }
   .rk-guide p, .rk-guide li { font-size: .9rem; line-height: 1.8; }
   .rk-guide ul { margin-bottom: 0; }
+  @media (max-width: 700px) { .rk-type-link-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 430px) { .rk-type-link-grid { grid-template-columns: 1fr; } }
 </style>
 
 <script>

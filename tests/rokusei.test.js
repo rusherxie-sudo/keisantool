@@ -7,6 +7,7 @@ import {
   fortuneZone,
   forecast,
   fortuneTable,
+  fortuneTypes,
 } from '../src/lib/rokusei.js';
 
 // 検証の根拠となる公開例:
@@ -137,5 +138,36 @@ describe('fortuneTable（指定年の12タイプ早見表）', () => {
 
   it('不正な年は空配列を返す', () => {
     expect(fortuneTable(NaN)).toEqual([]);
+  });
+});
+
+describe('fortuneTypes（12タイプの静的ページ定義）', () => {
+  it('6運命星×プラス・マイナスの12タイプを一意なslugで返す', () => {
+    const types = fortuneTypes();
+    expect(types).toHaveLength(12);
+    expect(new Set(types.map((item) => item.slug)).size).toBe(12);
+    expect(types.map((item) => item.type)).toEqual([
+      '土星人プラス', '土星人マイナス',
+      '金星人プラス', '金星人マイナス',
+      '火星人プラス', '火星人マイナス',
+      '天王星人プラス', '天王星人マイナス',
+      '木星人プラス', '木星人マイナス',
+      '水星人プラス', '水星人マイナス',
+    ]);
+  });
+
+  it('URL向けslugと表示用の星・陽陰を返す', () => {
+    expect(fortuneTypes()).toContainEqual({
+      slug: 'kaseijin-plus',
+      type: '火星人プラス',
+      star: '火星人',
+      polarity: 'プラス',
+    });
+  });
+
+  it('呼び出し側で変更しても内部定義を汚染しない', () => {
+    const types = fortuneTypes();
+    types[0].type = '変更';
+    expect(fortuneTypes()[0].type).toBe('土星人プラス');
   });
 });

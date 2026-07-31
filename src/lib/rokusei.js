@@ -154,6 +154,27 @@ const FORTUNE_TYPES = STARS.flatMap((star) => [
   `${star}マイナス`,
 ]);
 
+// タイプ別静的ページのURL契約。表示順は FORTUNE_TYPES と一致させる。
+const FORTUNE_TYPE_PAGES = [
+  { slug: 'doseijin-plus', type: '土星人プラス', star: '土星人', polarity: 'プラス' },
+  { slug: 'doseijin-minus', type: '土星人マイナス', star: '土星人', polarity: 'マイナス' },
+  { slug: 'kinseijin-plus', type: '金星人プラス', star: '金星人', polarity: 'プラス' },
+  { slug: 'kinseijin-minus', type: '金星人マイナス', star: '金星人', polarity: 'マイナス' },
+  { slug: 'kaseijin-plus', type: '火星人プラス', star: '火星人', polarity: 'プラス' },
+  { slug: 'kaseijin-minus', type: '火星人マイナス', star: '火星人', polarity: 'マイナス' },
+  { slug: 'tenouseijin-plus', type: '天王星人プラス', star: '天王星人', polarity: 'プラス' },
+  { slug: 'tenouseijin-minus', type: '天王星人マイナス', star: '天王星人', polarity: 'マイナス' },
+  { slug: 'mokuseijin-plus', type: '木星人プラス', star: '木星人', polarity: 'プラス' },
+  { slug: 'mokuseijin-minus', type: '木星人マイナス', star: '木星人', polarity: 'マイナス' },
+  { slug: 'suiseijin-plus', type: '水星人プラス', star: '水星人', polarity: 'プラス' },
+  { slug: 'suiseijin-minus', type: '水星人マイナス', star: '水星人', polarity: 'マイナス' },
+];
+
+// 呼び出し側が静的定義を変更できないよう、各要素もコピーして返す。
+export function fortuneTypes() {
+  return FORTUNE_TYPE_PAGES.map((item) => ({ ...item }));
+}
+
 // 指定タイプ・指定西暦年のゾーンを返す。{ zone, category, desc } または null。
 export function fortuneZone(type, year) {
   const seed = SEED_BRANCH[type];

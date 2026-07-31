@@ -1,0 +1,178 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import { fortuneTypes, fortuneZone, forecast } from '../../lib/rokusei.js';
+
+export function getStaticPaths() {
+  return fortuneTypes().map((typeInfo) => ({ params: { type: typeInfo.slug }, props: { typeInfo } }));
+}
+
+const { typeInfo } = Astro.props;
+const CURRENT_YEAR = new Date().getFullYear();
+const current = fortuneZone(typeInfo.type, CURRENT_YEAR);
+const next = fortuneZone(typeInfo.type, CURRENT_YEAR + 1);
+const cycleRows = forecast(typeInfo.type, CURRENT_YEAR - 2, 12);
+const daisakkaiRows = cycleRows.filter((row) => row.category === '大殺界');
+const otherTypes = fortuneTypes().filter((item) => item.slug !== typeInfo.slug);
+const slug = `rokusei/${typeInfo.slug}`;
+const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
+const statusText = current.category === '大殺界'
+  ? `${CURRENT_YEAR}年は「${current.zone}」で、大殺界にあたります`
+  : `${CURRENT_YEAR}年は「${current.zone}」で、${current.category}にあたります`;
+const daisakkaiYears = daisakkaiRows.map((row) => `${row.year}年（${row.zone}）`).join('・');
+const title = `${typeInfo.type}の${CURRENT_YEAR}年運勢は${current.zone}｜大殺界はいつ？早見表 | 計算ツール`;
+const description = `${typeInfo.type}の${CURRENT_YEAR}年は${current.zone}（${current.category}）です。${CURRENT_YEAR - 2}〜${CURRENT_YEAR + 9}年の運勢と大殺界を12年早見表で確認。生年月日の無料自動計算も案内します。`;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: `${typeInfo.type}の${CURRENT_YEAR}年運勢と大殺界早見表`,
+  description,
+  url: canonicalUrl,
+};
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: '六星占術 自動計算', item: new URL('/rokusei/', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: typeInfo.type, item: canonicalUrl },
+  ],
+};
+
+const faqItems = [
+  {
+    q: `${typeInfo.type}の${CURRENT_YEAR}年の運勢は？`,
+    a: `${statusText}。六星占術の年運は12年周期で巡り、翌${CURRENT_YEAR + 1}年は「${next.zone}」（${next.category}）です。`,
+  },
+  {
+    q: `${typeInfo.type}の大殺界はいつですか？`,
+    a: `この12年早見表では、${daisakkaiYears}が大殺界です。陰影・停止・減退の3年間が順に巡ります。`,
+  },
+  {
+    q: `自分が${typeInfo.type}かどうか調べるには？`,
+    a: '六星占術のタイプは生年月日から運命星を求め、生まれ年の干支でプラス・マイナスを判定します。六星占術自動計算器に生年月日を入力すると確認できます。',
+  },
+  {
+    q: '大殺界と宿命大殺界は同じですか？',
+    a: '異なります。このページは12年周期の年運を扱います。人生の特定期間を扱う宿命大殺界の計算ではありません。',
+  },
+];
+---
+
+<ToolLayout title={title} description={description} slug={slug} current="rokusei" jsonld={jsonld} breadcrumb={breadcrumb} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/rokusei/">六星占術</a> ／ {typeInfo.type}</div>
+    <h1>{typeInfo.type}の{CURRENT_YEAR}年運勢・大殺界早見表</h1>
+    <p>{statusText}。今年の結論と、前後12年の運勢ゾーンを一覧で確認できます。</p>
+  </div>
+
+  <div class="calc-card type-summary">
+    <div class:list={['type-answer', current.category === '大殺界' && 'is-daisakkai']}>
+      <span>{CURRENT_YEAR}年の{typeInfo.type}</span>
+      <strong>{current.zone}</strong>
+      <b>{current.category}</b>
+      <p>{current.desc}</p>
+    </div>
+    <dl class="next-year">
+      <div><dt>{CURRENT_YEAR + 1}年</dt><dd>{next.zone}（{next.category}）</dd></div>
+      <div><dt>この表の大殺界</dt><dd>{daisakkaiRows[0].year}〜{daisakkaiRows.at(-1).year}年</dd></div>
+    </dl>
+    <a class="calculator-link" href="/rokusei/">生年月日から自分の運命星を無料計算する →</a>
+  </div>
+
+  <div class="ad-slot"></div>
+
+  <section class="howto cycle-section">
+    <h2>{typeInfo.type}の大殺界はいつ？12年早見表</h2>
+    <p>{typeInfo.type}の年運を{CURRENT_YEAR - 2}年から{CURRENT_YEAR + 9}年まで掲載しています。大殺界は<strong>陰影・停止・減退</strong>の3年間です。</p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table cycle-table">
+          <thead><tr><th>西暦</th><th>運勢ゾーン</th><th>区分</th></tr></thead>
+          <tbody>
+            {cycleRows.map((row) => (
+              <tr class:list={[row.year === CURRENT_YEAR && 'is-current', row.category === '大殺界' && 'is-daisakkai']}>
+                <th scope="row" class="num">{row.year}年{row.year === CURRENT_YEAR && <span class="year-badge">今年</span>}</th>
+                <td>{row.zone}</td>
+                <td><span class={`category-badge category-${row.category}`}>{row.category}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="table-note">この範囲の大殺界：<strong>{daisakkaiYears}</strong></p>
+  </section>
+
+  <section class="howto">
+    <h2>{CURRENT_YEAR}年「{current.zone}」の見方</h2>
+    <p>{typeInfo.type}の{CURRENT_YEAR}年は<strong>{current.zone}（{current.category}）</strong>です。六星占術では12の運勢ゾーンが年ごとに一つずつ進み、12年で同じゾーンに戻るとされます。</p>
+    <p>{current.desc} ただし、これは占い上の一般的な解釈です。仕事、健康、お金、結婚などの重要な判断を運勢だけで決めず、現実の情報とご自身の状況を優先してください。</p>
+    <h3>大殺界3年間の順番</h3>
+    <ol>
+      <li><strong>陰影</strong>：大殺界の始まりとされる年</li>
+      <li><strong>停止</strong>：大殺界の中央にあたる年</li>
+      <li><strong>減退</strong>：大殺界の終わりとされる年</li>
+    </ol>
+    <div class="disclaimer">※ 六星占術は文化的な慣習・娯楽としての占いであり、科学的根拠や将来の出来事を保証するものではありません。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <section class="howto sources">
+    <h2>計算方法と参考情報</h2>
+    <p>年運は、運命星とプラス／マイナスごとに決まる12年周期から計算しています。自分のタイプが不明な場合は、<a href="/rokusei/">六星占術 自動計算器</a>で生年月日から確認してください。</p>
+    <ul>
+      <li><a href="https://www.senjutsu.jp/labo_6sei" target="_blank" rel="nofollow noopener">大久保占い研究室「六星占術 大殺界の調べ方」</a></li>
+      <li><a href="https://daisakkai.net/nenun" target="_blank" rel="nofollow noopener">大殺界早見表「年運」</a></li>
+    </ul>
+  </section>
+
+  <nav class="howto type-links" aria-label="ほかの六星占術タイプ">
+    <h2>ほかの星人タイプの{CURRENT_YEAR}年運勢</h2>
+    <div class="type-link-grid">
+      {otherTypes.map((item) => <a href={`/rokusei/${item.slug}/`}>{item.type}の運勢</a>)}
+    </div>
+    <p><a class="hub-link" href="/rokusei/">生年月日から運命星・大殺界を自動計算 →</a></p>
+  </nav>
+
+  <RelatedTools current="rokusei" />
+  <Faq items={faqItems} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .type-summary { max-width: 680px; padding: 24px; }
+  .type-answer { display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; padding: 20px; border: 1.5px solid var(--cat-color); border-radius: var(--r-md); background: var(--cat-tint); }
+  .type-answer > span { grid-column: 1 / -1; font-size: .78rem; font-weight: var(--fw-bold); color: var(--text-muted); }
+  .type-answer > strong { font-size: 2rem; color: var(--cat-color); }
+  .type-answer > b { align-self: center; padding: 4px 10px; border-radius: var(--r-pill); color: var(--cat-color); background: var(--surface); font-size: .78rem; }
+  .type-answer > p { grid-column: 1 / -1; margin: 4px 0 0; line-height: 1.75; }
+  .type-answer.is-daisakkai { border-color: var(--danger); background: var(--danger-bg); }
+  .type-answer.is-daisakkai > strong, .type-answer.is-daisakkai > b { color: var(--danger); }
+  .next-year { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  .next-year div { padding: 12px; border-radius: var(--r-sm); background: var(--surface-sub); }
+  .next-year dt { font-size: .72rem; color: var(--text-muted); }
+  .next-year dd { margin: 4px 0 0; font-weight: var(--fw-bold); }
+  .calculator-link, .sources a, .hub-link { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
+  .cycle-table { min-width: 500px; }
+  .cycle-table th[scope="row"] { text-align: left; white-space: nowrap; }
+  .cycle-table tr.is-daisakkai { background: var(--danger-bg); }
+  .cycle-table tr.is-current { box-shadow: inset 4px 0 var(--cat-color); }
+  .year-badge { margin-left: 7px; padding: 2px 7px; border-radius: var(--r-pill); color: #fff; background: var(--cat-color); font: var(--fw-bold) .68rem/1.4 var(--font-sans); }
+  .category-badge { display: inline-block; padding: 3px 9px; border-radius: var(--r-pill); white-space: nowrap; font-size: .72rem; font-weight: var(--fw-bold); }
+  .category-大殺界 { color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, #fff); }
+  .category-中殺界, .category-小殺界 { color: var(--warning-text); background: var(--warning-bg); }
+  .category-好調 { color: color-mix(in srgb, var(--cat-color) 62%, #000); background: var(--cat-tint); }
+  .table-note { margin-top: 12px; font-size: .8rem; color: var(--text-muted); }
+  .sources ul { padding-left: 1.2em; }
+  .type-link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .type-link-grid a { padding: 10px 12px; border: 1px solid var(--border-2); border-radius: var(--r-sm); color: var(--cat-color); background: var(--surface-sub); font-size: .82rem; font-weight: var(--fw-bold); }
+  .type-link-grid a:hover { background: var(--cat-tint); }
+  @media (max-width: 640px) {
+    .type-summary { padding: 18px; }
+    .next-year, .type-link-grid { grid-template-columns: 1fr; }
+    .type-answer > strong { font-size: 1.7rem; }
+  }
+</style>
