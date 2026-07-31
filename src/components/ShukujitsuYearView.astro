@@ -1,6 +1,6 @@
 ---
 // 祝日・連休の年間ビュー（/shukujitsu/ ハブと /shukujitsu/<year>/ スポークで共有）。
-const { year, holidays, renkyu } = Astro.props;
+const { year, holidays, renkyu, months } = Astro.props;
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
 const KIND_LABEL = { holiday: '祝日', furikae: '振替休日', kokumin: '国民の休日' };
 
@@ -13,6 +13,49 @@ function md(dateStr) {
   return `${m}/${d}`;
 }
 ---
+<section class="sk-calendar-section" aria-labelledby={`calendar-${year}`}>
+  <div class="sk-calendar-head">
+    <div>
+      <p class="sk-calendar-kicker">年間カレンダー</p>
+      <h2 id={`calendar-${year}`}>{year}年1月〜12月</h2>
+    </div>
+    <button type="button" class="sk-print no-print" data-print-calendar>カレンダーを印刷</button>
+  </div>
+
+  <div class="sk-summary" aria-label={`${year}年の祝日と連休の概要`}>
+    <div><span>祝日・休日</span><strong>{holidays.length}日</strong></div>
+    <div><span>3連休以上</span><strong>{renkyu.length}回</strong></div>
+    <div><span>最長</span><strong>{Math.max(0, ...renkyu.map((item) => item.length))}連休</strong></div>
+  </div>
+
+  <div class="sk-calendar-grid">
+    {months.map((month) => (
+      <article class="sk-month">
+        <h3>{month.month}月</h3>
+        <div class="sk-weekdays" aria-hidden="true">
+          {WEEKDAYS.map((weekday, index) => <span class:list={{ sun: index === 0, sat: index === 6 }}>{weekday}</span>)}
+        </div>
+        <div class="sk-days">
+          {month.weeks.flat().map((cell) => cell ? (
+            <div
+              class:list={{
+                'sk-day': true,
+                sun: cell.weekday === 0,
+                sat: cell.weekday === 6,
+                holiday: Boolean(cell.holidayName),
+              }}
+              title={cell.holidayName || undefined}
+            >
+              <span>{cell.day}</span>
+              {cell.holidayName && <small>{cell.holidayName}</small>}
+            </div>
+          ) : <div class="sk-day empty" aria-hidden="true"></div>)}
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
 {renkyu.length > 0 && (
   <div class="sk-renkyu">
     <div class="sk-renkyu-label">{year}年の連休</div>
@@ -49,6 +92,38 @@ function md(dateStr) {
 </div>
 
 <style>
+  .sk-calendar-section { padding: 24px; }
+  .sk-calendar-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+  .sk-calendar-kicker { margin: 0 0 3px; color: var(--text-muted); font-size: .76rem; font-weight: var(--fw-bold); }
+  .sk-calendar-head h2 { margin: 0; font-size: 1.22rem; }
+  .sk-print {
+    border: 1.5px solid var(--border-2);
+    border-radius: var(--r-pill);
+    background: var(--surface);
+    color: var(--text);
+    padding: 8px 14px;
+    font: inherit;
+    font-size: .78rem;
+    font-weight: var(--fw-bold);
+    cursor: pointer;
+  }
+  .sk-print:hover { border-color: var(--cat-color); color: var(--cat-color); }
+  .sk-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+  .sk-summary > div { background: var(--surface-sub); border: 1px solid var(--border-2); border-radius: var(--r-md); padding: 10px 12px; }
+  .sk-summary span { display: block; color: var(--text-muted); font-size: .7rem; }
+  .sk-summary strong { display: block; margin-top: 2px; color: var(--text); font-size: 1.05rem; }
+  .sk-calendar-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .sk-month { min-width: 0; border: 1.5px solid var(--border-2); border-radius: var(--r-md); padding: 12px; background: var(--surface); break-inside: avoid; }
+  .sk-month h3 { margin: 0 0 8px; text-align: center; font-size: .98rem; }
+  .sk-weekdays, .sk-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .sk-weekdays span { text-align: center; color: var(--text-muted); font-size: .64rem; font-weight: var(--fw-bold); padding-bottom: 5px; }
+  .sk-weekdays .sun, .sk-day.sun { color: var(--danger); }
+  .sk-weekdays .sat, .sk-day.sat { color: var(--cat-color); }
+  .sk-day { min-width: 0; min-height: 35px; padding: 4px 2px; border-top: 1px solid var(--border); text-align: center; font-size: .72rem; }
+  .sk-day span { display: block; }
+  .sk-day small { display: block; overflow: hidden; color: var(--danger); font-size: .5rem; line-height: 1.15; white-space: nowrap; text-overflow: ellipsis; }
+  .sk-day.holiday { background: color-mix(in srgb, var(--danger) 7%, transparent); font-weight: var(--fw-bold); }
+  .sk-day.empty { color: transparent; }
   .sk-renkyu {
     background: var(--surface-sub);
     border: 1.5px solid var(--border-2);
@@ -72,4 +147,31 @@ function md(dateStr) {
   .sk-table { min-width: 420px; }
   .sk-table th, .sk-table td { padding: 9px 14px; }
   .sk-table tr.is-sun td { color: var(--danger); }
+
+  @media (max-width: 900px) {
+    .sk-calendar-section { padding: 18px 14px; }
+    .sk-calendar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .sk-month { padding: 9px 7px; }
+    .sk-day { min-height: 31px; font-size: .68rem; }
+  }
+
+  @media (max-width: 430px) {
+    .sk-calendar-head { align-items: flex-start; flex-direction: column; }
+    .sk-calendar-grid { grid-template-columns: 1fr; }
+    .sk-summary { gap: 6px; }
+    .sk-summary > div { padding: 8px; }
+  }
+
+  @media print {
+    .no-print, .sk-renkyu, .data-table-wrap { display: none !important; }
+    .sk-calendar-section { padding: 0; }
+    .sk-calendar-grid { grid-template-columns: repeat(3, 1fr); gap: 7mm; }
+    .sk-month { box-shadow: none; }
+  }
 </style>
+
+<script>
+  document.querySelectorAll('[data-print-calendar]').forEach((button) => {
+    button.addEventListener('click', () => window.print());
+  });
+</script>

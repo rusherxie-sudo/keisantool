@@ -3,7 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import ShukujitsuYearView from '../../components/ShukujitsuYearView.astro';
-import { holidays, renkyuList } from '../../lib/shukujitsu.js';
+import { holidays, renkyuList, calendarMonths } from '../../lib/shukujitsu.js';
 
 const slug = 'shukujitsu';
 
@@ -14,13 +14,15 @@ const RANGE_YEARS_FORWARD = 3;
 const YEAR = new Date().getFullYear();
 const hols = holidays(YEAR);
 const renkyu = renkyuList(YEAR);
+const months = calendarMonths(YEAR);
 const longestRenkyu = renkyu.reduce((max, r) => (r.length > (max?.length ?? 0) ? r : max), null);
 
 const hasPrev = YEAR - 1 >= YEAR - RANGE_YEARS_BACK;
 const hasNext = YEAR + 1 <= YEAR + RANGE_YEARS_FORWARD;
 
-const title = `${YEAR}年の祝日・連休カレンダー一覧【最新版】 | 計算ツール`;
-const description = `${YEAR}年の国民の祝日・振替休日・国民の休日を一覧できるカレンダーです。3連休以上の連休もまとめて表示。旅行や帰省、仕事のスケジュール調整の参考にどうぞ。無料・登録不要。`;
+const eraLabel = `令和${YEAR - 2018}年`;
+const title = `${YEAR}年（${eraLabel}）カレンダー｜祝日一覧・連休 | 計算ツール`;
+const description = `${YEAR}年（${eraLabel}）の年間カレンダー。国民の祝日・振替休日・国民の休日を月別に表示し、祝日一覧、3連休、最長連休もまとめて確認できます。無料印刷対応。`;
 
 const jsonld = {
   '@context': 'https://schema.org',
@@ -32,10 +34,10 @@ const jsonld = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
 ---
-<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 祝日・連休カレンダー</div>
-    <h1>{YEAR}年の祝日・連休カレンダー</h1>
+    <h1>{YEAR}年（{eraLabel}）の祝日カレンダー</h1>
     <p>
       {YEAR}年の国民の祝日・振替休日・国民の休日を一覧できます。3連休以上の連休もまとめて表示しているので、旅行や帰省、仕事のスケジュール調整の参考にどうぞ。
       {longestRenkyu && <>今年最長の連休は<strong>{longestRenkyu.length}連休</strong>（{longestRenkyu.holidayNames.join('・')}）です。</>}
@@ -43,7 +45,7 @@ const jsonld = {
   </div>
 
   <div class="calc-card">
-    <ShukujitsuYearView year={YEAR} holidays={hols} renkyu={renkyu} />
+    <ShukujitsuYearView year={YEAR} holidays={hols} renkyu={renkyu} months={months} />
     <nav class="sk-nav">
       {hasPrev ? <a href={`/shukujitsu/${YEAR - 1}/`}>← {YEAR - 1}年</a> : <span />}
       {hasNext ? <a href={`/shukujitsu/${YEAR + 1}/`}>{YEAR + 1}年 →</a> : <span />}

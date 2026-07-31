@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { shunbunDay, shubunDay, baseHolidays, holidays, renkyuList } from '../src/lib/shukujitsu.js';
+import {
+  shunbunDay,
+  shubunDay,
+  baseHolidays,
+  holidays,
+  renkyuList,
+  calendarMonths,
+  officialHolidayYearLimit,
+} from '../src/lib/shukujitsu.js';
 
 // アンカーデータ出典：内閣府「国民の祝日について」(cao.go.jp/chosei/shukujitsu/gaiyou.html)、
 // 国立天文台暦計算室の暦要項。2024〜2027年の実際の祝日・振替休日・国民の休日を
@@ -169,5 +177,54 @@ describe('renkyuList（3連休以上の抽出）', () => {
 
   it('不正な年は空配列', () => {
     expect(renkyuList('x')).toEqual([]);
+  });
+});
+
+describe('calendarMonths（年間カレンダー表示用データ）', () => {
+  it('2028年の12か月を日曜始まり・各6週で返す', () => {
+    const months = calendarMonths(2028);
+    expect(months).toHaveLength(12);
+    expect(months.map((month) => month.month)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    for (const month of months) {
+      expect(month.weeks).toHaveLength(6);
+      for (const week of month.weeks) expect(week).toHaveLength(7);
+    }
+  });
+
+  it('月外セルをnullにし、祝日名と区分を同じセルに載せる', () => {
+    const january = calendarMonths(2028)[0];
+    expect(january.weeks[0].slice(0, 6)).toEqual([null, null, null, null, null, null]);
+    expect(january.weeks[0][6]).toMatchObject({
+      date: '2028-01-01',
+      day: 1,
+      weekday: 6,
+      holidayName: '元日',
+      holidayKind: 'holiday',
+    });
+
+    const may3 = calendarMonths(2028)[4].weeks.flat().find((cell) => cell?.day === 3);
+    expect(may3).toMatchObject({ date: '2028-05-03', holidayName: '憲法記念日' });
+  });
+
+  it('返却値を変更しても次の呼び出しへ影響しない', () => {
+    const first = calendarMonths(2028);
+    first[0].weeks[0][6].holidayName = '変更';
+    expect(calendarMonths(2028)[0].weeks[0][6].holidayName).toBe('元日');
+  });
+
+  it('不正な年は空配列', () => {
+    expect(calendarMonths('x')).toEqual([]);
+  });
+});
+
+describe('officialHolidayYearLimit（正式発表済みの最終年）', () => {
+  it('2月1日より前は当年まで、2月1日以降は翌年まで', () => {
+    expect(officialHolidayYearLimit('2026-01-31')).toBe(2026);
+    expect(officialHolidayYearLimit('2026-02-01')).toBe(2027);
+    expect(officialHolidayYearLimit('2026-12-31')).toBe(2027);
+  });
+
+  it('不正な日付はnull', () => {
+    expect(officialHolidayYearLimit('invalid')).toBeNull();
   });
 });

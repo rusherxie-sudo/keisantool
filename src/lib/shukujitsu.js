@@ -190,3 +190,58 @@ function buildStreak(days) {
     holidayNames: [...new Set(days.map((d) => d.holidayName).filter(Boolean))],
   };
 }
+
+/**
+ * 年間カレンダー表示用の12か月データを返す。
+ * 各月は日曜始まり・6週固定で、月外セルは null。
+ */
+export function calendarMonths(year) {
+  const y = toInt(year);
+  if (Number.isNaN(y)) return [];
+
+  const holidayMap = new Map(holidays(y).map((holiday) => [holiday.date, holiday]));
+  const months = [];
+
+  for (let month = 1; month <= 12; month++) {
+    const firstWeekday = weekdayOf(y, month, 1);
+    const daysInMonth = new Date(Date.UTC(y, month, 0)).getUTCDate();
+    const cells = Array.from({ length: 42 }, (_, index) => {
+      const day = index - firstWeekday + 1;
+      if (day < 1 || day > daysInMonth) return null;
+      const date = dateKey(y, month, day);
+      const holiday = holidayMap.get(date);
+      return {
+        date,
+        day,
+        weekday: index % 7,
+        holidayName: holiday?.name ?? null,
+        holidayKind: holiday?.kind ?? null,
+      };
+    });
+
+    months.push({
+      year: y,
+      month,
+      weeks: Array.from({ length: 6 }, (_, week) => cells.slice(week * 7, week * 7 + 7)),
+    });
+  }
+
+  return months;
+}
+
+/**
+ * 指定日時点で内閣府・暦要項による正式発表が済んでいる最終年。
+ * 翌年分は毎年2月に掲載されるため、1月中は当年、2月以降は翌年まで。
+ */
+export function officialHolidayYearLimit(referenceDate = new Date()) {
+  let date;
+  if (referenceDate instanceof Date) {
+    date = new Date(referenceDate.getTime());
+  } else if (/^\d{4}-\d{2}-\d{2}$/.test(String(referenceDate))) {
+    date = new Date(`${referenceDate}T12:00:00Z`);
+  } else {
+    return null;
+  }
+  if (Number.isNaN(date.getTime())) return null;
+  return date.getUTCFullYear() + (date.getUTCMonth() >= 1 ? 1 : 0);
+}
