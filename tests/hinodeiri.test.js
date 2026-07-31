@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { hinodeIri, listCities } from '../src/lib/hinodeiri.js';
+import { hinodeIri, listCities, cityYearTable } from '../src/lib/hinodeiri.js';
 
 // アンカーデータ出典：国立天文台暦計算室「日の出入り＠東京」
 // https://eco.mtk.nao.ac.jp/koyomi/dni/2026/s1301.html （1月）
@@ -55,5 +55,26 @@ describe('listCities（都市一覧）', () => {
     for (const c of listCities()) {
       expect(Object.keys(c).sort()).toEqual(['id', 'name']);
     }
+  });
+});
+
+describe('cityYearTable（都市別の年間早見表）', () => {
+  it('1日・15日の2代表日を12か月分返す', () => {
+    const rows = cityYearTable(2026, 'tokyo');
+    expect(rows).toHaveLength(24);
+    expect(rows[0]).toMatchObject({ month: 1, day: 1, sunrise: '06:51', sunset: '16:39' });
+    expect(rows[1]).toMatchObject({ month: 1, day: 15, sunrise: '06:50', sunset: '16:51' });
+    expect(rows.at(-1)).toMatchObject({ month: 12, day: 15 });
+  });
+
+  it('各行に昼の長さと都市名を含む', () => {
+    const july = cityYearTable(2026, 'osaka').find((row) => row.month === 7 && row.day === 1);
+    expect(july.city).toBe('大阪');
+    expect(july.dayLengthMinutes).toBeGreaterThan(14 * 60);
+  });
+
+  it('不正な年・都市は空配列を返す', () => {
+    expect(cityYearTable('x', 'tokyo')).toEqual([]);
+    expect(cityYearTable(2026, 'nowhere')).toEqual([]);
   });
 });

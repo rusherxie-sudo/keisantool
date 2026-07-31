@@ -44,6 +44,10 @@ describe('sourceFileForUrl', () => {
     expect(sourceFileForUrl(pagesDir, 'umaredoshi/1990')).toBe(join(pagesDir, 'umaredoshi/[year].astro'));
   });
 
+  it('resolves hinodeiri city URLs to the dynamic [city].astro route', () => {
+    expect(sourceFileForUrl(pagesDir, 'hinodeiri/tokyo')).toBe(join(pagesDir, 'hinodeiri/[city].astro'));
+  });
+
   it('resolves seiza-aisho pair URLs to the dynamic [pair].astro route', () => {
     expect(sourceFileForUrl(pagesDir, 'seiza-aisho/ohitsuji-oushi')).toBe(
       join(pagesDir, 'seiza-aisho/[pair].astro')

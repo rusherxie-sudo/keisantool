@@ -143,3 +143,21 @@ export function hinodeIri(year, month, day, cityId) {
 export function listCities() {
   return CITIES.map(({ id, name }) => ({ id, name }));
 }
+
+/**
+ * 都市別の年間早見表。各月1日・15日の日の出入りを返す。
+ * SEO用の静的表と画面表示の双方で hinodeIri と同じ計算結果を共有する。
+ */
+export function cityYearTable(year, cityId) {
+  const y = toInt(year);
+  if (!Number.isInteger(y) || !findCity(cityId)) return [];
+
+  const rows = [];
+  for (let month = 1; month <= 12; month++) {
+    for (const day of [1, 15]) {
+      const result = hinodeIri(y, month, day, cityId);
+      if (result) rows.push({ month, day, ...result });
+    }
+  }
+  return rows;
+}

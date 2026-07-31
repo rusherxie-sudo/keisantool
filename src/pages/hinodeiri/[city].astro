@@ -1,0 +1,199 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+import { listCities, cityYearTable } from '../../lib/hinodeiri.js';
+
+export function getStaticPaths() {
+  return listCities().map((city) => ({ params: { city: city.id }, props: { city } }));
+}
+
+const { city } = Astro.props;
+const YEAR = new Date().getFullYear();
+const cities = listCities();
+const rows = cityYearTable(YEAR, city.id);
+const otherCities = cities.filter((item) => item.id !== city.id);
+const january = rows.find((row) => row.month === 1 && row.day === 15);
+const july = rows.find((row) => row.month === 7 && row.day === 15);
+const slug = `hinodeiri/${city.id}`;
+const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
+const title = `${city.name}の日の出・日の入り時刻【${YEAR}年】指定日計算・年間早見表 | 計算ツール`;
+const description = `${city.name}の${YEAR}年の日の出・日の入り時刻を無料で確認。日付を選ぶだけで日の出、日の入り、昼の長さを計算できます。毎月1日・15日の年間早見表つき。`;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: `${city.name}の日の出・日の入り時刻計算`,
+  description,
+  url: canonicalUrl,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['指定日の日の出時刻を計算', '指定日の日の入り時刻を計算', '昼の長さを表示', `${YEAR}年の年間早見表`],
+};
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: '日の出・日の入り時刻計算', item: new URL('/hinodeiri/', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: `${city.name}の日の出・日の入り`, item: canonicalUrl },
+  ],
+};
+
+function lengthLabel(minutes) {
+  return `${Math.floor(minutes / 60)}時間${minutes % 60}分`;
+}
+
+const faqItems = [
+  {
+    q: `${city.name}の日の出・日の入り時刻は何時ですか？`,
+    a: `日付によって変わります。${YEAR}年1月15日は日の出${january.sunrise}・日の入り${january.sunset}、7月15日は日の出${july.sunrise}・日の入り${july.sunset}の目安です。上の計算器で知りたい日付を選ぶと確認できます。`,
+  },
+  {
+    q: `${city.name}で昼が長いのはいつ頃ですか？`,
+    a: '北半球にある日本では夏至の6月21日頃に昼が最も長く、冬至の12月22日頃に最も短くなります。正確な時刻は年によってわずかに変わります。',
+  },
+  {
+    q: '日の出・日の入り時刻はどのように計算していますか？',
+    a: 'NOAAが公開する太陽位置式をもとに、都市の緯度・経度と指定日から計算しています。大気差と太陽の視半径を考慮した標準的な天頂角を使用しています。',
+  },
+];
+---
+
+<ToolLayout title={title} description={description} slug={slug} current="hinodeiri" jsonld={jsonld} breadcrumb={breadcrumb} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/hinodeiri/">日の出・日の入り</a> ／ {city.name}</div>
+    <h1>{city.name}の日の出・日の入り時刻【{YEAR}年】</h1>
+    <p>{city.name}の指定日の日の出、日の入り、昼の長さを計算できます。下の年間早見表では、{YEAR}年の季節による変化も一覧で確認できます。</p>
+  </div>
+
+  <div class="calc-card city-calc" data-city-id={city.id}>
+    <div class="form-group">
+      <label for="hd-date">日付</label>
+      <input type="date" id="hd-date" />
+    </div>
+    <div class="result-box" id="hd-result" aria-live="polite">
+      <div class="result-label" id="hd-city-label">{city.name}の日の出・日の入り</div>
+      <div class="result-main" id="hd-main">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">日の出</span><span class="value" id="hd-sunrise">―</span></div>
+        <div class="result-row"><span class="label">日の入り</span><span class="value" id="hd-sunset">―</span></div>
+        <div class="result-row"><span class="label">昼の長さ</span><span class="value" id="hd-length">―</span></div>
+      </div>
+    </div>
+    <p class="switch-city"><a href="/hinodeiri/">ほかの都市・日付から計算する →</a></p>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto year-table-section">
+    <h2>{city.name}の{YEAR}年 日の出・日の入り年間早見表</h2>
+    <p>季節による変化を比較しやすいよう、各月の1日と15日を掲載しています。任意の日付は上の計算器で確認できます。</p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table sun-table">
+          <thead><tr><th>月日</th><th>日の出</th><th>日の入り</th><th>昼の長さ</th></tr></thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr>
+                <td class="num">{row.month}月{row.day}日</td>
+                <td class="num">{row.sunrise}</td>
+                <td class="num">{row.sunset}</td>
+                <td class="num">{lengthLabel(row.dayLengthMinutes)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="table-note">※ 日本標準時（JST）で表示しています。時刻は標高0mを基準とした計算値で、地形や標高、気象条件による見え方の違いは含みません。</p>
+  </section>
+
+  <section class="howto">
+    <h2>{city.name}の日の長さは季節でどう変わる？</h2>
+    <p>
+      {YEAR}年1月15日の{city.name}は、日の出が<strong>{january.sunrise}</strong>、日の入りが<strong>{january.sunset}</strong>、昼の長さは<strong>{lengthLabel(january.dayLengthMinutes)}</strong>です。
+      7月15日は、日の出が<strong>{july.sunrise}</strong>、日の入りが<strong>{july.sunset}</strong>、昼の長さは<strong>{lengthLabel(july.dayLengthMinutes)}</strong>になります。
+    </p>
+    <p>日本では夏至に近い6月ほど昼が長く、冬至に近い12月ほど短くなります。旅行、写真撮影、釣り、屋外作業などでは、日の入り後すぐに完全な暗闇になるわけではない点にもご注意ください。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の時刻と1分程度の差が生じる場合があります。正式な時刻は国立天文台の発表をご確認ください。</div>
+  </section>
+
+  <section class="howto sources">
+    <h2>計算方法と参考情報</h2>
+    <p>NOAAの太陽位置計算式をもとに、{city.name}の緯度・経度、地球の公転軌道、地軸の傾き、大気差と太陽の視半径を考慮して計算しています。</p>
+    <ul>
+      <li><a href="https://eco.mtk.nao.ac.jp/koyomi/dni/" target="_blank" rel="noopener">国立天文台 暦計算室「各地のこよみ」</a></li>
+      <li><a href="https://gml.noaa.gov/grad/solcalc/calcdetails.html" target="_blank" rel="noopener">NOAA Solar Calculator Details</a></li>
+    </ul>
+  </section>
+
+  <nav class="howto city-links" aria-label="ほかの都市の日の出・日の入り時刻">
+    <h2>ほかの都市の日の出・日の入り</h2>
+    <div class="city-link-grid">
+      {otherCities.map((item) => <a href={`/hinodeiri/${item.id}/`}>{item.name}の日の出・日の入り</a>)}
+    </div>
+    <p><a class="hub-link" href="/hinodeiri/">全国15都市から自由に選べる計算器 →</a></p>
+  </nav>
+
+  <RelatedTools current="hinodeiri" />
+  <Faq items={faqItems} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { hinodeIri } from '../../lib/hinodeiri.js';
+
+  const root = document.querySelector('[data-city-id]');
+  const cityId = root?.dataset.cityId;
+  const dateInput = document.getElementById('hd-date');
+  const get = (id) => document.getElementById(id);
+
+  function todayISO() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }
+
+  function render() {
+    if (!dateInput?.value || !cityId) return;
+    const [year, month, day] = dateInput.value.split('-').map(Number);
+    const result = hinodeIri(year, month, day, cityId);
+    if (!result) return;
+    const hours = Math.floor(result.dayLengthMinutes / 60);
+    const minutes = result.dayLengthMinutes % 60;
+    get('hd-city-label').textContent = `${result.city}の日の出・日の入り`;
+    get('hd-main').textContent = `${result.sunrise} 〜 ${result.sunset}`;
+    get('hd-sunrise').textContent = result.sunrise;
+    get('hd-sunset').textContent = result.sunset;
+    get('hd-length').textContent = `${hours}時間${minutes}分`;
+    get('hd-result').classList.add('visible');
+    window.setResultShare?.(`日の出・日の入り時刻計算\n${dateInput.value} ${result.city}\n日の出：${result.sunrise}\n日の入り：${result.sunset}\n昼の長さ：${hours}時間${minutes}分`);
+  }
+
+  if (dateInput) {
+    dateInput.value = todayISO();
+    dateInput.addEventListener('input', render);
+    render();
+  }
+</script>
+
+<style>
+  .city-calc { max-width: 620px; padding: 24px; }
+  .switch-city { margin: 14px 0 0; text-align: right; }
+  .switch-city a, .sources a, .hub-link { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
+  .sun-table { min-width: 520px; }
+  .sun-table td:not(:first-child), .sun-table th:not(:first-child) { text-align: right; }
+  .table-note { margin-top: 12px; font-size: .78rem; color: var(--text-muted); }
+  .sources ul { padding-left: 1.2em; }
+  .city-link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .city-link-grid a { padding: 10px 12px; border: 1px solid var(--border-2); border-radius: var(--r-sm); color: var(--cat-color); background: var(--surface-sub); font-size: .82rem; font-weight: var(--fw-bold); }
+  .city-link-grid a:hover { background: var(--cat-tint); }
+  @media (max-width: 640px) {
+    .city-link-grid { grid-template-columns: 1fr; }
+    .city-calc { padding: 18px; }
+  }
+</style>

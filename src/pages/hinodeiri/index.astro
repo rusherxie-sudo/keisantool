@@ -70,6 +70,14 @@ const jsonld = {
     <div class="disclaimer">※ 計算結果はあくまで参考値です（実際の時刻と1分程度の差が生じる場合があります）。標高や地形による見え方の違いは考慮していません。正式な時刻は国立天文台の発表をご確認ください。</div>
   </section>
 
+  <nav class="howto city-pages" aria-label="都市別の日の出・日の入り時刻">
+    <h2>都市別の日の出・日の入り時刻</h2>
+    <p>都市ごとの指定日計算と、今年の1日・15日をまとめた年間早見表を確認できます。</p>
+    <div class="city-link-grid">
+      {cities.map((city) => <a href={`/hinodeiri/${city.id}/`}>{city.name}の日の出・日の入り</a>)}
+    </div>
+  </nav>
+
   <RelatedTools current={slug} />
 
   <Faq items={[
@@ -118,3 +126,10 @@ const jsonld = {
   $('hd-city').addEventListener('change', render);
   render();
 </script>
+
+<style>
+  .city-link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .city-link-grid a { padding: 10px 12px; border: 1px solid var(--border-2); border-radius: var(--r-sm); color: var(--cat-color); background: var(--surface-sub); font-size: .82rem; font-weight: var(--fw-bold); }
+  .city-link-grid a:hover { background: var(--cat-tint); }
+  @media (max-width: 640px) { .city-link-grid { grid-template-columns: 1fr; } }
+</style>
