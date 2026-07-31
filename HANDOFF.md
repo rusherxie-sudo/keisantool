@@ -7,7 +7,8 @@
 - 30 天目标与每日迭代日志见 `docs/seo-growth-30d.md`；达标口径为连续 3 个完整自然日非 `openai` GA4 activeUsers ≥100。
 - `/jisa/` 已由单一泛用页扩展为 12 个城市时差主题簇：动态路由 `src/pages/jisa/[city].astro`，城市数据和时差早见表函数在 `src/lib/jisa.js`。北半球、南半球、无夏时间及 30 分钟偏移均有测试。
 - `/hinodeiri/` 已增加15个城市年度页；`/rokusei/` 已增加12个类型年度页，动态模板分别为 `src/pages/hinodeiri/[city].astro` 与 `src/pages/rokusei/[type].astro`。六星占术类型 URL 单一清单由 `fortuneTypes()` 提供，周期结果继续复用 `fortuneZone()`／`forecast()`。
-- 当前验证基线：55 个测试文件、1253 项测试；生产构建 483 页。
+- `/saitei/` 已按厚生劳动省令和7年度现行表重建，并新增47个都道府县页 `/saitei/<prefecture>/`。数据、有效日与全国加权平均的单一来源为 `src/lib/saitei.js`，页面共用 `MinimumWageCalculator.astro`；截至2026-08-01令和8年度金额仍在审议，不得写成已确定值。
+- 当前验证基线：55 个测试文件、1260 项测试；生产构建 530 页。
 - 用户文件 `src/content/blog/kokuho-ryoukin-keisan-hoho.md` 为未跟踪内容，增长迭代不得修改、删除或误提交。
 
 ## 0. 2026-07-18 最新改造
@@ -77,6 +78,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 | 税金・お金 | zeizei | 消費税・割引（含複数商品合算） |
 | 税金・お金 | kotei-shisan | 固定資産税（土地/家屋分离+新築減額） |
 | 税金・お金 | kokuho | 国民健康保険料 |
+| 税金・お金 | saitei | 最低賃金（全国一覧 + **47都道府県スポーク** `/saitei/<prefecture>/`、月給時給換算） |
 | 税金・お金 | wariai | 割合・パーセント・比率（含増減率/歩合） |
 | 健康・身体 | bmi | BMI・体脂肪率（含多档目标体重） |
 | 健康・身体 | calorie | カロリー・基礎代謝（国立健康栄養研究所式/HB式可切） |
@@ -152,6 +154,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 
 ## 8. 重要历史决策 & 已踩的坑
 
+- **最低賃金的年度状态与换算口径（2026-08-01 修复）**：`src/lib/saitei.js` 保存厚生劳动省令和7年度47都道府县现行金额和生效日，全国加权平均为1,121円；截至2026-08-01令和8年度仍在中央最低賃金審議会审议，正式答申和各地决定前不得写预测金额。月给检查必须使用“月给×12÷年间所定劳动日数÷1日所定劳动时间”，并提醒从比较工资中排除临时工资、奖金、精皆勤／通勤／家族手当及时间外等割增工资。动态路由 `lastmod` 映射在 `src/lib/lastmod.js`，新增或改 slug 时同步测试。
 - **日出日落城市页的单一计算源（2026-08-01）**：`/hinodeiri/<city>/` 的年度表必须由 `cityYearTable` 调用 `hinodeIri` 生成，不能另写静态时刻；当前每月1日／15日共24行，代表性与页面体积平衡。NOAA 近似式与国立天文台公布值允许约±1分钟差异。新增城市时只改 `CITIES`，静态路由、汇总页入口和城市内链都会由 `listCities()` 派生；动态路由的 `lastmod` 映射在 `src/lib/lastmod.js`。
 - **割合计算的三种未知量（2026-08-01）**：`wariai.js` 分别用 `percentOf` 求“部分占整体几%”、`valueFromPercent` 求“整体的○%数值”、`baseFromPercent` 从“部分＋百分比”逆算整体；第三种在百分比为0时必须返回 `null`，不能与“整体的0%=0”混为一谈。页面模式数量会继续变化，title／说明不得再硬编码“○種類”。
 - **ガソリン代的行程与实燃费口径（2026-08-01）**：`calcTripSummary` 统一用“1回距离×往返倍率×次数”计算通勤与旅行，燃料费保持未取整到加完附加费用后再 `Math.floor`，不能用已切捨て的单次金额累乘。`calcFuelEconomy` 用满坦法“给油间距离÷本次给油量”反算 km/L；页面固定价格只作演算示例，实际输入不得冒充当前全国油价。
