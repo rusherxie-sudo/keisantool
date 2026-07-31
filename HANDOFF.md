@@ -8,7 +8,8 @@
 - `/jisa/` 已由单一泛用页扩展为 12 个城市时差主题簇：动态路由 `src/pages/jisa/[city].astro`，城市数据和时差早见表函数在 `src/lib/jisa.js`。北半球、南半球、无夏时间及 30 分钟偏移均有测试。
 - `/hinodeiri/` 已增加15个城市年度页；`/rokusei/` 已增加12个类型年度页，动态模板分别为 `src/pages/hinodeiri/[city].astro` 与 `src/pages/rokusei/[type].astro`。六星占术类型 URL 单一清单由 `fortuneTypes()` 提供，周期结果继续复用 `fortuneZone()`／`forecast()`。
 - `/saitei/` 已按厚生劳动省令和7年度现行表重建，并新增47个都道府县页 `/saitei/<prefecture>/`。数据、有效日与全国加权平均的单一来源为 `src/lib/saitei.js`，页面共用 `MinimumWageCalculator.astro`；截至2026-08-01令和8年度金额仍在审议，不得写成已确定值。
-- 当前验证基线：55 个测试文件、1260 项测试；生产构建 530 页。
+- `/shukujitsu/` 与2025〜2029年度页已增加12个月全年日历、祝日／连休摘要和打印按钮；未来年度页会用 `officialHolidayYearLimit()` 自动标识正式公布与预测状态。
+- 当前验证基线：55 个测试文件、1266 项测试；生产构建 530 页。
 - 用户文件 `src/content/blog/kokuho-ryoukin-keisan-hoho.md` 为未跟踪内容，增长迭代不得修改、删除或误提交。
 
 ## 0. 2026-07-18 最新改造
@@ -154,6 +155,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 
 ## 8. 重要历史决策 & 已踩的坑
 
+- **祝日年度页的正式公布边界（2026-08-01）**：`calendarMonths(year)` 只负责把 `holidays(year)` 转成日曜始まり、每月6周固定的视图数据，页面不得另写祝日。内阁府与国立天文台在每年2月公布下一年度，`officialHolidayYearLimit(referenceDate)` 因此在1月只返回当年、2月起返回翌年；超过该范围的春分・秋分必须明确标成预测值，不能使用“最新版／正式”措辞。年度页当前覆盖今年前1年至后3年，每年构建时自动滚动。
 - **最低賃金的年度状态与换算口径（2026-08-01 修复）**：`src/lib/saitei.js` 保存厚生劳动省令和7年度47都道府县现行金额和生效日，全国加权平均为1,121円；截至2026-08-01令和8年度仍在中央最低賃金審議会审议，正式答申和各地决定前不得写预测金额。月给检查必须使用“月给×12÷年间所定劳动日数÷1日所定劳动时间”，并提醒从比较工资中排除临时工资、奖金、精皆勤／通勤／家族手当及时间外等割增工资。动态路由 `lastmod` 映射在 `src/lib/lastmod.js`，新增或改 slug 时同步测试。
 - **日出日落城市页的单一计算源（2026-08-01）**：`/hinodeiri/<city>/` 的年度表必须由 `cityYearTable` 调用 `hinodeIri` 生成，不能另写静态时刻；当前每月1日／15日共24行，代表性与页面体积平衡。NOAA 近似式与国立天文台公布值允许约±1分钟差异。新增城市时只改 `CITIES`，静态路由、汇总页入口和城市内链都会由 `listCities()` 派生；动态路由的 `lastmod` 映射在 `src/lib/lastmod.js`。
 - **割合计算的三种未知量（2026-08-01）**：`wariai.js` 分别用 `percentOf` 求“部分占整体几%”、`valueFromPercent` 求“整体的○%数值”、`baseFromPercent` 从“部分＋百分比”逆算整体；第三种在百分比为0时必须返回 `null`，不能与“整体的0%=0”混为一谈。页面模式数量会继续变化，title／说明不得再硬编码“○種類”。
