@@ -1,0 +1,252 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'kinzoku-nensuu';
+const title = '勤続年数計算ツール｜入社日から何年何ヶ月・何年目か計算';
+const description =
+  '入社日と基準日から勤続年数を何年何ヶ月何日で自動計算。現在何年目か、経過日数、次の入社周年、退職所得用の勤続年数、有給休暇の付与時期も無料で確認できます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '勤続年数計算ツール',
+  description,
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 勤続年数</div>
+    <h1>勤続年数計算ツール</h1>
+    <p>入社日から在籍期間、現在何年目か、退職所得用の勤続年数と有給休暇の目安をまとめて計算します。</p>
+    <div class="feature-chips" aria-label="計算できる項目">
+      <span>何年何ヶ月何日</span><span>現在何年目</span><span>退職所得用</span><span>有給付与の目安</span>
+    </div>
+  </div>
+
+  <div class="calc-card" id="service-tool">
+    <div class="calc-panel active">
+      <div class="service-date-grid">
+        <div class="form-group">
+          <label for="join-date">入社日</label>
+          <input id="join-date" type="date" />
+        </div>
+        <span class="date-arrow" aria-hidden="true">→</span>
+        <div class="form-group">
+          <div class="field-label">
+            <label for="reference-date">基準日・退職日</label>
+            <button type="button" id="today-button" class="today-button">今日</button>
+          </div>
+          <input id="reference-date" type="date" />
+        </div>
+      </div>
+      <p class="field-note">在職中は基準日を今日に、退職済み・退職予定なら退職日を入力してください。</p>
+      <p id="service-error" class="service-error" role="alert"></p>
+
+      <div id="service-result" class="service-result" hidden aria-live="polite">
+        <div class="result-heading">
+          <span>勤続期間</span>
+          <strong id="duration-result">—</strong>
+          <small id="date-range-result">—</small>
+        </div>
+
+        <div class="primary-metrics">
+          <div><span>現在</span><strong id="service-year-result">—</strong><small>入社年を1年目として表示</small></div>
+          <div><span>経過日数</span><strong id="total-days-result">—</strong><small>入社日を含まない日付差</small></div>
+        </div>
+
+        <div class="detail-grid">
+          <div>
+            <span>次の入社周年</span>
+            <strong id="anniversary-result">—</strong>
+            <small id="anniversary-note">—</small>
+          </div>
+          <div>
+            <span>退職所得用の勤続年数</span>
+            <strong id="tax-years-result">—</strong>
+            <small>1年未満の端数は切り上げ</small>
+          </div>
+        </div>
+
+        <section class="paid-leave-result" aria-labelledby="paid-leave-title">
+          <div>
+            <span id="paid-leave-title">年次有給休暇の法定目安</span>
+            <strong id="paid-leave-days">—</strong>
+            <small id="paid-leave-last">—</small>
+          </div>
+          <p id="paid-leave-next">—</p>
+          <p class="result-caution">週5日以上または週30時間以上の一般労働者で、全労働日の8割以上出勤した場合の目安です。残日数ではありません。</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>勤続年数の計算方法</h2>
+    <p>入社日と基準日を入力すると、実際の暦に沿って<strong>何年何ヶ月何日</strong>かを計算します。1年を365日、1ヶ月を30日として近似しないため、月末やうるう年も日付どおりに扱います。</p>
+    <p>たとえば2020年4月1日入社で2026年4月1日を基準日にすると、勤続期間は6年0ヶ月0日、現在は<strong>7年目</strong>です。2026年3月31日時点なら5年11ヶ月30日で、現在6年目となります。</p>
+
+    <h2>「勤続6年」と「7年目」の違い</h2>
+    <p>「勤続6年」は完了した期間、「7年目」は入社から数えて現在進行中の年を表します。本ツールの「現在○年目」は入社日を1年目とし、入社周年を迎えるたびに1を加えます。履歴書や社内書類で指定の数え方がある場合は、その様式を優先してください。</p>
+
+    <h2>退職所得用の勤続年数は端数を切り上げ</h2>
+    <p>退職所得控除額に使う勤続年数は、国税庁の案内により<strong>1年未満の端数を1年に切り上げ</strong>ます。たとえば勤続5年11ヶ月30日なら、退職所得用は6年です。一般の在籍期間とは数え方が違うため、本ツールでは別々に表示しています。</p>
+    <p>休職期間、役員・使用人期間の重複、前職期間の通算などがある場合は計算が変わることがあります。最終的な税務判断は勤務先や税務署、税理士にご確認ください。</p>
+
+    <h2>勤続年数と有給休暇の付与日数</h2>
+    <p>一般労働者は、雇入れの日から6ヶ月継続勤務し、その期間の全労働日の8割以上出勤すると10日の年次有給休暇が付与されます。その後も要件を満たせば、1年ごとに次の法定日数が付与されます。</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>継続勤務年数</th><th>0.5年</th><th>1.5年</th><th>2.5年</th><th>3.5年</th><th>4.5年</th><th>5.5年</th><th>6.5年以上</th></tr></thead>
+        <tbody><tr><th>付与日数</th><td>10日</td><td>11日</td><td>12日</td><td>14日</td><td>16日</td><td>18日</td><td>20日</td></tr></tbody>
+      </table>
+    </div>
+    <p>週所定労働日数が4日以下かつ週所定労働時間が30時間未満のパート・アルバイトには比例付与が適用される場合があります。また、会社が基準日を統一したり前倒しで付与したりする制度もあるため、就業規則をご確認ください。</p>
+
+    <h2>Excelで勤続年数を計算するには</h2>
+    <p>A2に入社日、B2に基準日がある場合、満年数は <code>=DATEDIF(A2,B2,"Y")</code>、残りの月数は <code>=DATEDIF(A2,B2,"YM")</code>、残りの日数は <code>=DATEDIF(A2,B2,"MD")</code> で求められます。月末を含む期間では利用環境や求めたい定義を確認し、本ツールの結果とあわせて検算してください。</p>
+
+    <h2>関連する日付・給与の計算</h2>
+    <p>任意の日付間の営業日や「何日後」を調べるなら<a href="/nissu/">日数計算・日付計算ツール</a>、勤務時間や休憩を差し引くなら<a href="/jikan/">時間計算ツール</a>、時給・残業代・手取りの概算には<a href="/kyuyo/">給与計算器</a>をご利用ください。</p>
+
+    <h2>公的な参考資料</h2>
+    <ul class="source-list">
+      <li><a href="https://www.check-roudou.mhlw.go.jp/study/roudousya_yukyu.html" target="_blank" rel="noopener noreferrer">厚生労働省「年次有給休暇」</a></li>
+      <li><a href="https://www.startup-roudou.mhlw.go.jp/qa/zigyonushi/yukyu/q1.html" target="_blank" rel="noopener noreferrer">厚生労働省「年次有給休暇の付与日数」</a></li>
+      <li><a href="https://www.nta.go.jp/publication/pamph/hotei/tebikihtml/3-2-7.htm" target="_blank" rel="noopener noreferrer">国税庁「退職所得の源泉徴収票」勤続年数の計算</a></li>
+    </ul>
+    <div class="disclaimer">※ 有給休暇の表示は一般労働者の法定付与日数の参考値であり、出勤率、比例付与、前倒し付与、休職・再雇用などは反映していません。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <RelatedArticles toolSlug={slug} />
+  <Faq items={[
+    { q: '勤続年数はどうやって計算しますか？', a: '入社日から基準日までの実際の暦を使い、完了した年・月・日を順に数えます。本ツールはうるう年と月末も自動で処理します。' },
+    { q: '勤続6年は何年目ですか？', a: '6周年を迎えた日から7年目です。完了した勤続期間が6年で、現在進行中の年が7年目となります。' },
+    { q: '退職所得控除の勤続年数はどう数えますか？', a: '1年未満の端数を1年に切り上げます。たとえば5年11ヶ月なら6年です。特殊な通算期間などがある場合は勤務先や税務署へご確認ください。' },
+    { q: '入社から6ヶ月で有給は何日もらえますか？', a: '一般労働者が6ヶ月継続勤務し、全労働日の8割以上出勤した場合は10日です。短時間労働者は比例付与になる場合があります。' },
+    { q: '2月29日入社の場合、1年後はいつですか？', a: '本ツールでは翌年に2月29日がない場合、その月の末日である2月28日を周年日として計算します。会社の制度上の基準日は就業規則をご確認ください。' },
+    { q: '退職日を含めて計算していますか？', a: '通常の勤続期間は入社日から基準日までの経過差として表示します。退職所得用年数はその期間の1年未満の端数を切り上げた参考値です。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calculateServicePeriod } from '../../lib/kinzoku-nensuu.js';
+  import { weekdayJa } from '../../lib/nissu.js';
+
+  const $ = (id) => document.getElementById(id);
+  let hasTracked = false;
+
+  function localToday() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }
+
+  function formatDate(iso) {
+    const [year, month, day] = iso.split('-').map(Number);
+    return `${year}年${month}月${day}日（${weekdayJa(iso)}）`;
+  }
+
+  function hideResult(message = '') {
+    $('service-result').hidden = true;
+    $('service-error').textContent = message;
+    window.hideResultShare?.();
+  }
+
+  function render() {
+    const joinDate = $('join-date').value;
+    const referenceDate = $('reference-date').value;
+    if (!joinDate || !referenceDate) return hideResult();
+
+    const result = calculateServicePeriod(joinDate, referenceDate);
+    if (!result) return hideResult('基準日・退職日は、入社日と同じ日か後の日付を入力してください。');
+
+    const { years, months, days } = result.duration;
+    const durationText = `${years}年 ${months}ヶ月 ${days}日`;
+    $('duration-result').textContent = durationText;
+    $('date-range-result').textContent = `${formatDate(joinDate)}から${formatDate(referenceDate)}まで`;
+    $('service-year-result').textContent = `${result.serviceYear}年目`;
+    $('total-days-result').textContent = `${result.totalDays.toLocaleString('ja-JP')}日`;
+    $('anniversary-result').textContent = formatDate(result.nextAnniversary.date);
+    $('anniversary-note').textContent = `${result.nextAnniversary.years}周年まであと${result.nextAnniversary.daysRemaining.toLocaleString('ja-JP')}日`;
+    $('tax-years-result').textContent = `${result.retirementTaxYears}年`;
+
+    const paidLeave = result.paidLeave;
+    $('paid-leave-days').textContent = paidLeave.earnedDays === 0 ? '付与前' : `${paidLeave.earnedDays}日`;
+    $('paid-leave-last').textContent = paidLeave.lastGrantDate
+      ? `${formatDate(paidLeave.lastGrantDate)}時点の法定付与日数`
+      : '入社6ヶ月到達前です';
+    $('paid-leave-next').textContent = `次の目安：${formatDate(paidLeave.nextGrantDate)}に${paidLeave.nextGrantDays}日`;
+
+    $('service-error').textContent = '';
+    $('service-result').hidden = false;
+    window.setResultShare?.(`勤続年数計算\n${formatDate(joinDate)}から${formatDate(referenceDate)}\n${durationText}（現在${result.serviceYear}年目）`);
+    if (!hasTracked) {
+      window.trackCalculatorResult?.('kinzoku-nensuu');
+      hasTracked = true;
+    }
+  }
+
+  $('reference-date').value = localToday();
+  $('join-date').addEventListener('input', render);
+  $('reference-date').addEventListener('input', render);
+  $('today-button').addEventListener('click', () => {
+    $('reference-date').value = localToday();
+    render();
+  });
+</script>
+
+<style>
+  .feature-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+  .feature-chips span { padding: 5px 10px; border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .75rem; font-weight: var(--fw-bold); }
+  #service-tool .calc-panel { padding: 24px; }
+  .service-date-grid { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); gap: 8px; align-items: end; }
+  .date-arrow { display: grid; place-items: center; min-height: 48px; color: var(--cat-color); font-weight: var(--fw-bold); }
+  .field-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+  .field-label label { margin: 0; }
+  .today-button { width: auto; min-height: 0; padding: 3px 10px; border: 1px solid var(--cat-color); border-radius: 999px; background: transparent; color: var(--cat-color); font: var(--fw-bold) .68rem/1.5 var(--font-sans); cursor: pointer; }
+  .field-note { display: block; margin: 4px 0 0; color: var(--text-muted); font-size: .72rem; line-height: 1.6; }
+  .service-error { min-height: 1.5em; margin: 8px 0 0; color: #b42318; font-size: .78rem; font-weight: var(--fw-bold); }
+  .service-result { overflow: hidden; margin-top: 10px; border: 1px solid #d7deea; border-radius: 10px; background: #fbfcff; box-shadow: 0 10px 28px rgba(44, 64, 98, .09); }
+  .service-result[hidden] { display: none; }
+  .result-heading { display: flex; flex-direction: column; gap: 7px; padding: 20px; text-align: center; }
+  .result-heading span, .result-heading small, .primary-metrics span, .primary-metrics small, .detail-grid span, .detail-grid small, .paid-leave-result span, .paid-leave-result small { color: var(--text-muted); }
+  .result-heading span { font-size: .78rem; font-weight: var(--fw-bold); }
+  .result-heading strong { color: var(--cat-color); font: var(--fw-bold) 2rem/1.15 var(--font-mono); }
+  .result-heading small { font-size: .68rem; }
+  .primary-metrics { display: grid; grid-template-columns: 1fr 1fr; border-block: 1px dashed #cbd3e0; background: var(--surface-sub); }
+  .primary-metrics div, .detail-grid div { display: flex; flex-direction: column; gap: 5px; padding: 14px; text-align: center; }
+  .primary-metrics div + div, .detail-grid div + div { border-left: 1px solid #e2e6ee; }
+  .primary-metrics span, .detail-grid span, .paid-leave-result span { font-size: .68rem; font-weight: var(--fw-bold); }
+  .primary-metrics strong { color: var(--cat-color); font: var(--fw-bold) 1.25rem/1.2 var(--font-mono); }
+  .primary-metrics small, .detail-grid small, .paid-leave-result small { font-size: .62rem; line-height: 1.45; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .detail-grid strong { font: var(--fw-bold) .92rem/1.4 var(--font-sans); }
+  .paid-leave-result { margin: 0 14px 14px; padding: 14px; border-radius: var(--r-md); background: var(--cat-tint); }
+  .paid-leave-result > div { display: grid; gap: 4px; }
+  .paid-leave-result strong { color: var(--cat-color); font: var(--fw-bold) 1.25rem/1.2 var(--font-mono); }
+  .paid-leave-result > p { margin: 9px 0 0; font-size: .72rem; line-height: 1.55; }
+  .paid-leave-result .result-caution { color: var(--text-muted); font-size: .64rem; }
+  .howto code { padding: 2px 5px; border-radius: 4px; background: var(--surface-sub); font-family: var(--font-mono); }
+  .source-list { display: grid; gap: 7px; padding-left: 1.2em; }
+  .source-list a { color: var(--cat-color); font-weight: var(--fw-bold); }
+  @media (max-width: 560px) {
+    #service-tool .calc-panel { padding: 18px; }
+    .service-date-grid { grid-template-columns: 1fr; gap: 0; }
+    .date-arrow { min-height: 24px; transform: rotate(90deg); }
+    .result-heading strong { font-size: 1.55rem; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .detail-grid div + div { border-top: 1px solid #e2e6ee; border-left: 0; }
+  }
+</style>

@@ -380,6 +380,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'kinzoku-nensuu',
+    nav: '勤続年数',
+    name: '勤続年数計算ツール',
+    icon: '💼',
+    category: '生活・日常',
+    short: '入社日から在籍期間・何年目を計算',
+    live: true,
+  },
+  {
     slug: 'jikan',
     nav: '時間計算',
     name: '時間計算ツール',
