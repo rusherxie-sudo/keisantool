@@ -29,6 +29,8 @@ const now = new Date();
 const isCurrentMonth = YEAR === now.getFullYear() && MONTH === now.getMonth() + 1;
 
 const rows = rokuyoMonthTable(YEAR, MONTH);
+const taianDays = rows.filter((r) => r.rokuyo === '大安').map((r) => `${r.day}日`);
+const butsumetsuDays = rows.filter((r) => r.rokuyo === '仏滅').map((r) => `${r.day}日`);
 
 let prevYear = YEAR, prevMonth = MONTH - 1;
 if (prevMonth < 1) { prevMonth = 12; prevYear -= 1; }
@@ -38,12 +40,20 @@ const hasPrev = prevYear >= now.getFullYear() - RANGE_YEARS_BACK;
 const hasNext = nextYear <= now.getFullYear() + RANGE_YEARS_FORWARD;
 
 const ROKUYO_ORDER = ['先勝', '友引', '先負', '仏滅', '大安', '赤口'];
+const monthLinks = Array.from({ length: 12 }, (_, index) => {
+  const month = index + 1;
+  const currentYearMonth = YEAR === now.getFullYear() && month === now.getMonth() + 1;
+  return {
+    month,
+    href: currentYearMonth ? '/rokuyo/' : `/rokuyo/${YEAR}-${String(month).padStart(2, '0')}/`,
+  };
+});
 
 // 今月は /rokuyo/ が正規URL（重複コンテンツ防止のため canonical をハブへ向ける）。
 const slug = isCurrentMonth ? 'rokuyo' : `rokuyo/${Astro.params.month}`;
 
-const title = `六曜カレンダー【${MONTH_LABEL}】大安・仏滅はいつ？ | 計算ツール`;
-const description = `${MONTH_LABEL}の六曜（先勝・友引・先負・仏滅・大安・赤口）カレンダー。${MONTH_LABEL}の大安・仏滅の日をひと目で確認できます。結婚式や引っ越し、契約など日取り選びの参考にどうぞ。無料・登録不要。`;
+const title = `${MONTH_LABEL}の六曜カレンダー｜大安・仏滅の日一覧 | 計算ツール`;
+const description = `${MONTH_LABEL}の六曜カレンダー。大安は${taianDays.join('・')}、仏滅は${butsumetsuDays.join('・')}です。先勝・友引・先負・赤口も日別に一覧でき、結婚式や入籍、引っ越しの日取り選びに無料で使えます。`;
 
 const jsonld = {
   '@context': 'https://schema.org',
@@ -58,8 +68,8 @@ const jsonld = {
 <ToolLayout title={title} description={description} slug={slug} current="rokuyo" jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/rokuyo/">六曜カレンダー</a> ／ {MONTH_LABEL}</div>
-    <h1>六曜カレンダー（{MONTH_LABEL}）</h1>
-    <p>{MONTH_LABEL}の六曜（大安・仏滅・先勝・友引・先負・赤口）を一覧できるカレンダーです。結婚式や引っ越し、契約などの日取り選びの参考にどうぞ。</p>
+    <h1>{MONTH_LABEL}の六曜カレンダー（大安・仏滅）</h1>
+    <p>{MONTH_LABEL}の大安は<strong>{taianDays.join('・')}</strong>、仏滅は<strong>{butsumetsuDays.join('・')}</strong>です。六曜を日別に一覧できます。</p>
   </div>
 
   <div class="calc-card">
@@ -68,11 +78,23 @@ const jsonld = {
       {hasPrev ? <a href={`/rokuyo/${prevYear}-${String(prevMonth).padStart(2, '0')}/`}>← {prevYear}年{prevMonth}月</a> : <span />}
       {hasNext ? <a href={`/rokuyo/${nextYear}-${String(nextMonth).padStart(2, '0')}/`}>{nextYear}年{nextMonth}月 →</a> : <span />}
     </nav>
+    <nav class="rk-month-nav" aria-label={`${YEAR}年の月別六曜カレンダー`}>
+      <span class="rk-month-nav-title">{YEAR}年の月別カレンダー</span>
+      <div class="rk-month-links">
+        {monthLinks.map((item) => (
+          item.month === MONTH
+            ? <span class="is-current" aria-current="page">{item.month}月</span>
+            : <a href={item.href}>{item.month}月</a>
+        ))}
+      </div>
+    </nav>
   </div>
 
   <div class="ad-slot"></div>
 
   <section class="howto">
+    <h2>{MONTH_LABEL}の大安・仏滅はいつ？</h2>
+    <p><strong>大安は{taianDays.join('・')}</strong>、<strong>仏滅は{butsumetsuDays.join('・')}</strong>です。大安は祝い事の日取りとして好まれ、仏滅は祝い事を避ける慣習がありますが、いずれも文化的な目安です。</p>
     <h2>六曜とは？大安・仏滅の意味</h2>
     <p>
       六曜（ろくよう）は、暦に記される吉凶の目安のひとつで、<strong>先勝・友引・先負・仏滅・大安・赤口</strong>の6種類が、旧暦の月と日をもとにおおむね6日周期で巡ります。冠婚葬祭や契約ごとの日取りを選ぶときの、文化的な慣習として使われています。
@@ -91,7 +113,8 @@ const jsonld = {
   <RelatedTools current="rokuyo" />
 
   <Faq items={[
-    { q: `${MONTH_LABEL}の大安はいつですか？`, a: rows.filter((r) => r.rokuyo === '大安').length > 0 ? `${MONTH_LABEL}の大安は${rows.filter((r) => r.rokuyo === '大安').map((r) => `${r.day}日`).join('・')}です。` : `${MONTH_LABEL}は大安がありません。` },
+    { q: `${MONTH_LABEL}の大安はいつですか？`, a: taianDays.length > 0 ? `${MONTH_LABEL}の大安は${taianDays.join('・')}です。` : `${MONTH_LABEL}は大安がありません。` },
+    { q: `${MONTH_LABEL}の仏滅はいつですか？`, a: butsumetsuDays.length > 0 ? `${MONTH_LABEL}の仏滅は${butsumetsuDays.join('・')}です。` : `${MONTH_LABEL}は仏滅がありません。` },
     { q: '大安とはどんな日ですか？', a: '六曜のなかで「万事に良い」とされる日で、結婚式や入籍、開業など祝い事の日取りに好まれます。' },
     { q: '仏滅とはどんな日ですか？なぜ避けられますか？', a: '六曜のなかで「万事に凶」とされる日です。「仏も滅するほど縁起が悪い」との語呂合わせから、結婚式など祝い事は避けられる傾向がありますが、科学的根拠はなく文化的な慣習です。' },
   ]} />
@@ -111,5 +134,13 @@ const jsonld = {
   }
   .rk-nav a { color: var(--cat-color); }
   .rk-nav a:hover { opacity: .75; }
+  .rk-month-nav { margin-top: 18px; padding-top: 16px; border-top: 1.5px solid var(--border-2); }
+  .rk-month-nav-title { display: block; margin-bottom: 10px; font-size: .78rem; font-weight: var(--fw-bold); color: var(--text-muted); }
+  .rk-month-links { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .rk-month-links a, .rk-month-links span { padding: 7px 4px; border-radius: var(--r-sm); text-align: center; font-size: .78rem; font-weight: var(--fw-bold); }
+  .rk-month-links a { color: var(--cat-color); background: var(--surface-sub); }
+  .rk-month-links a:hover { background: var(--cat-tint); }
+  .rk-month-links .is-current { color: #fff; background: var(--cat-color); }
+  @media (max-width: 420px) { .rk-month-links { grid-template-columns: repeat(4, 1fr); } }
   .howto ul { padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
 </style>

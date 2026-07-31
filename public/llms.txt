@@ -40,6 +40,10 @@
 - [年齢計算器](https://keisantool.com/nenrei/): 満年齢・数え年・学年
 - [日数計算・日付計算器](https://keisantool.com/nissu/): 日付間の日数・N日後の日付
 - [年齢早見表](https://keisantool.com/nenrei-hayami/): 西暦・和暦・満年齢・数え年・干支
+- [学年早見表](https://keisantool.com/gakunen-hayami/): 生まれ年度から小中高の学年がすぐわかる
+- [六曜カレンダー（大安・仏滅早見）](https://keisantool.com/rokuyo/): 今月の大安・仏滅がひと目でわかる
+- [祝日・連休カレンダー](https://keisantool.com/shukujitsu/): 今年の祝日一覧と連休がひと目でわかる
+- [日の出・日の入り時刻計算器](https://keisantool.com/hinodeiri/): 全国主要都市の日の出・日の入り時刻と昼の長さ
 
 ## 占い・文化
 
