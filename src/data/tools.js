@@ -389,6 +389,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'yukyu-nissu',
+    nav: '有給休暇',
+    name: '有給休暇付与日数計算ツール',
+    icon: '🏖️',
+    category: '生活・日常',
+    short: '正社員・パートの法定付与日数と次回付与日',
+    live: true,
+  },
+  {
     slug: 'jikan',
     nav: '時間計算',
     name: '時間計算ツール',

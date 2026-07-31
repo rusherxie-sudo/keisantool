@@ -1,0 +1,302 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+import { paidLeaveSchedule } from '../../lib/yukyu-nissu.js';
+
+const slug = 'yukyu-nissu';
+const title = '有給休暇付与日数計算ツール｜正社員・パートの有給はいつ何日？';
+const description =
+  '入社日、週の勤務日数、出勤率から年次有給休暇の法定付与日数と次回付与日を無料計算。正社員・パート・アルバイトの比例付与、2年の有効期限、年5日取得義務も確認できます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '有給休暇付与日数計算ツール',
+  description,
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+const serviceLabels = ['0.5年', '1.5年', '2.5年', '3.5年', '4.5年', '5.5年', '6.5年以上'];
+const scheduleRows = [
+  { key: 'regular', label: '週5日以上 または 週30時間以上', annual: '217日以上', days: paidLeaveSchedule('regular') },
+  { key: 'four-days', label: '週4日', annual: '169〜216日', days: paidLeaveSchedule('four-days') },
+  { key: 'three-days', label: '週3日', annual: '121〜168日', days: paidLeaveSchedule('three-days') },
+  { key: 'two-days', label: '週2日', annual: '73〜120日', days: paidLeaveSchedule('two-days') },
+  { key: 'one-day', label: '週1日', annual: '48〜72日', days: paidLeaveSchedule('one-day') },
+];
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 有給休暇</div>
+    <h1>有給休暇付与日数計算ツール</h1>
+    <p>入社日と勤務条件から、正社員・パート・アルバイトの法定付与日数、次回付与日と有効期限を自動計算します。</p>
+    <div class="feature-chips" aria-label="対応する計算">
+      <span>正社員</span><span>パート・アルバイト</span><span>比例付与</span><span>年5日取得義務</span>
+    </div>
+  </div>
+
+  <div class="calc-card" id="paid-leave-tool">
+    <div class="calc-panel active">
+      <div class="input-grid">
+        <div class="form-group">
+          <label for="hire-date">入社日（雇入れ日）</label>
+          <input id="hire-date" type="date" />
+        </div>
+        <div class="form-group">
+          <div class="field-label">
+            <label for="reference-date">判定基準日</label>
+            <button type="button" id="today-button" class="today-button">今日</button>
+          </div>
+          <input id="reference-date" type="date" />
+        </div>
+        <div class="form-group field-wide">
+          <label for="work-pattern">週所定労働時間・日数</label>
+          <select id="work-pattern">
+            <option value="regular">週5日以上 または 週30時間以上</option>
+            <option value="four-days">週4日（年169〜216日）・週30時間未満</option>
+            <option value="three-days">週3日（年121〜168日）・週30時間未満</option>
+            <option value="two-days">週2日（年73〜120日）・週30時間未満</option>
+            <option value="one-day">週1日（年48〜72日）・週30時間未満</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="attendance-rate">直近算定期間の出勤率</label>
+          <div class="suffix-input"><input id="attendance-rate" type="number" min="0" max="100" step="0.1" value="100" inputmode="decimal" /><span>％</span></div>
+        </div>
+      </div>
+      <p class="field-note">週30時間以上なら、週4日以下でも最上段の一般労働者の日数を選びます。出勤率は付与日前の算定期間について入力してください。</p>
+      <p id="paid-leave-error" class="form-error" role="alert"></p>
+
+      <div id="paid-leave-result" class="paid-leave-result" hidden aria-live="polite">
+        <div class="result-hero">
+          <span>判定基準日時点の法定付与日数</span>
+          <strong id="grant-days">—</strong>
+          <small id="grant-status">—</small>
+        </div>
+
+        <div class="result-grid">
+          <div><span>継続勤務期間</span><strong id="service-duration">—</strong></div>
+          <div><span>今回の付与日</span><strong id="current-grant-date">—</strong></div>
+          <div><span>有効期限の目安</span><strong id="expiration-date">—</strong></div>
+          <div><span>次回付与の目安</span><strong id="next-grant">—</strong></div>
+        </div>
+
+        <div id="obligation-box" class="obligation-box">
+          <strong id="obligation-title">—</strong>
+          <p id="obligation-text">—</p>
+        </div>
+
+        <p class="balance-warning"><strong>残日数ではありません。</strong>実際の残りは、前年からの繰越、取得済み日数、会社独自の上乗せ付与を勤怠記録・就業規則で確認してください。</p>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>有給休暇はいつ、何日もらえる？</h2>
+    <p>年次有給休暇は、原則として<strong>雇入れの日から6ヶ月継続勤務</strong>し、その期間の<strong>全労働日の8割以上出勤</strong>すると最初の権利が発生します。その後も同じ要件を満たすと、1年ごとに法定日数が付与されます。</p>
+    <p>正社員、パート、アルバイトという呼び方だけでは日数は決まりません。週所定労働時間が30時間以上、または週所定労働日数が5日以上なら一般労働者の表を使い、それ未満では週・年間の所定労働日数に応じた比例付与となります。</p>
+
+    <h2>有給休暇の法定付与日数一覧</h2>
+    <div class="table-scroll schedule-table-wrap">
+      <table class="schedule-table">
+        <thead>
+          <tr><th>勤務条件</th><th>年間所定日数</th>{serviceLabels.map((label) => <th>{label}</th>)}</tr>
+        </thead>
+        <tbody>
+          {scheduleRows.map((row) => (
+            <tr data-pattern={row.key}>
+              <th scope="row">{row.label}</th><td>{row.annual}</td>{row.days.map((item) => <td>{item.days}日</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">※ 表の年数は雇入れ日からの継続勤務期間です。週以外の期間で所定労働日数を定める場合は、年間所定労働日数で区分します。</p>
+
+    <h2>出勤率8割の計算方法</h2>
+    <p>出勤率は原則として「出勤した日 ÷ 全労働日 × 100」で確認します。業務上の負傷・疾病による休業、産前産後休業、育児・介護休業、年次有給休暇を取得した日は、法律上出勤したものとして扱われる場合があります。正確な分母・分子は勤務先の勤怠担当者へ確認してください。</p>
+    <div class="formula-box"><span>出勤率</span><strong>出勤した日数 ÷ 全労働日数 × 100</strong><small>80％以上が付与要件</small></div>
+
+    <h2>年5日の有給休暇取得義務</h2>
+    <p>その年に<strong>新たに10日以上</strong>の年次有給休暇が付与される労働者について、使用者は付与日から1年以内に5日を確実に取得させる必要があります。前年から繰り越した日数は「新たに10日以上」の判定には含めません。労働者が自ら取得した日や計画年休は5日に含まれますが、時間単位年休は含まれません。</p>
+
+    <h2>有給休暇の有効期限と繰越</h2>
+    <p>法定の年次有給休暇は、付与日から<strong>2年間</strong>行使できます。未取得分は翌年度へ繰り越せますが、2年を経過すると原則として時効になります。会社が法定より長い期限を設けている場合は、その有利な就業規則が適用されます。</p>
+    <p>本ツールの有効期限は、今回の付与日から2年後を表示します。過去の付与分を何日使ったかは入力していないため、実際の残日数は計算しません。</p>
+
+    <h2>会社の基準日が入社日と違う場合</h2>
+    <p>会社は全従業員の付与日を4月1日などに統一したり、入社時に前倒し付与したりできます。ただし法定基準を下回る扱いはできません。本ツールは入社日から6ヶ月後、その後1年ごとという原則日で計算するため、会社独自の基準日がある場合は就業規則を優先してください。</p>
+
+    <h2>関連する勤務・給与計算</h2>
+    <p>入社日から何年目かや退職所得用年数は<a href="/kinzoku-nensuu/">勤続年数計算ツール</a>、実働時間と休憩時間は<a href="/jikan/">時間計算ツール</a>、時給・残業代・手取りの概算は<a href="/kyuyo/">給与計算器</a>、病気やけがで休んだ期間の給付は<a href="/shoubyou/">傷病手当金計算</a>をご利用ください。</p>
+
+    <h2>公的な参考資料</h2>
+    <ul class="source-list">
+      <li><a href="https://work-holiday.mhlw.go.jp/kyuuka-sokushin/roudousya.html" target="_blank" rel="noopener noreferrer">厚生労働省「年次有給休暇取得促進特設サイト」</a></li>
+      <li><a href="https://www.check-roudou.mhlw.go.jp/study/roudousya_yukyu.html" target="_blank" rel="noopener noreferrer">厚生労働省「年次有給休暇」</a></li>
+      <li><a href="https://www.check-roudou.mhlw.go.jp/qa/roudousya/yukyu/q4.html" target="_blank" rel="noopener noreferrer">厚生労働省「使用者の年5日付与義務」</a></li>
+      <li><a href="https://www.check-roudou.mhlw.go.jp/qa/roudousya/yukyu/q6.html" target="_blank" rel="noopener noreferrer">厚生労働省「年次有給休暇権の時効」</a></li>
+    </ul>
+    <div class="disclaimer">※ 本ツールは労働基準法上の原則的な付与日数を確認する参考ツールです。出勤率の算定、基準日の統一、前倒し・分割付与、休職、再雇用、会社独自の上乗せ制度は反映していません。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <RelatedArticles toolSlug={slug} />
+  <Faq items={[
+    { q: '入社して何ヶ月で有給休暇がもらえますか？', a: '原則として入社から6ヶ月継続勤務し、その期間の全労働日の8割以上出勤すると最初の年次有給休暇が付与されます。' },
+    { q: '入社6ヶ月後の有給休暇は何日ですか？', a: '週5日以上または週30時間以上の一般労働者は10日です。週30時間未満かつ週4日以下の場合は、所定労働日数に応じて1〜7日の比例付与となります。' },
+    { q: 'パートやアルバイトにも有給休暇はありますか？', a: 'はい。雇用形態にかかわらず、継続勤務と出勤率の要件を満たせば権利が発生します。勤務時間・日数が少ない場合は比例付与です。' },
+    { q: '有給休暇の残日数も計算できますか？', a: '本ツールは法定の新規付与日数を計算します。残日数には前年からの繰越、取得済み日数、会社独自の付与が必要なため、勤怠記録をご確認ください。' },
+    { q: '有給休暇は何年で消滅しますか？', a: '法定の年次有給休暇は原則として付与日から2年で時効になります。会社がより長い期限を設けている場合は就業規則をご確認ください。' },
+    { q: '年5日の取得義務は誰が対象ですか？', a: 'その年に新たに10日以上の法定年休が付与される労働者が対象です。パートでも新規付与が10日以上なら対象になります。' },
+    { q: '会社の有給付与日と計算結果が違うのはなぜですか？', a: '会社が基準日を統一したり、入社時に前倒し・分割付与したりする場合があるためです。本ツールは入社6ヶ月後からの原則日で計算します。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calculatePaidLeave } from '../../lib/yukyu-nissu.js';
+  import { weekdayJa } from '../../lib/nissu.js';
+
+  const $ = (id) => document.getElementById(id);
+  let hasTracked = false;
+
+  function localToday() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '—';
+    const [year, month, day] = iso.split('-').map(Number);
+    return `${year}年${month}月${day}日（${weekdayJa(iso)}）`;
+  }
+
+  function hideResult(message = '') {
+    $('paid-leave-result').hidden = true;
+    $('paid-leave-error').textContent = message;
+    window.hideResultShare?.();
+  }
+
+  function render() {
+    const hireDate = $('hire-date').value;
+    const referenceDate = $('reference-date').value;
+    const attendanceRate = Number($('attendance-rate').value);
+    if (!hireDate || !referenceDate || $('attendance-rate').value === '') return hideResult();
+
+    const result = calculatePaidLeave({
+      hireDate,
+      referenceDate,
+      workPattern: $('work-pattern').value,
+      attendanceRate,
+    });
+    if (!result) return hideResult('入社日以前でない判定日と、0〜100％の出勤率を入力してください。');
+
+    const duration = `${result.duration.years}年 ${result.duration.months}ヶ月 ${result.duration.days}日`;
+    $('service-duration').textContent = duration;
+    $('current-grant-date').textContent = formatDate(result.currentGrantDate);
+    $('expiration-date').textContent = formatDate(result.expirationDate);
+    $('next-grant').textContent = `${formatDate(result.nextGrantDate)}／${result.nextStatutoryDays}日`;
+
+    if (result.eligibleByAttendance === null) {
+      $('grant-days').textContent = '付与前';
+      $('grant-status').textContent = `最初の付与予定日は${formatDate(result.nextGrantDate)}です`;
+    } else if (!result.eligibleByAttendance) {
+      $('grant-days').textContent = '0日';
+      $('grant-status').textContent = `出勤率${attendanceRate.toLocaleString('ja-JP')}％は8割未満のため、今回の法定付与要件を満たしません`;
+    } else {
+      $('grant-days').textContent = `${result.statutoryGrantDays}日`;
+      $('grant-status').textContent = `${formatDate(result.currentGrantDate)}に新たに付与される法定日数`;
+    }
+
+    $('obligation-box').classList.toggle('is-target', result.fiveDayObligation);
+    $('obligation-title').textContent = result.fiveDayObligation ? '年5日取得義務の対象' : '年5日取得義務の対象外';
+    $('obligation-text').textContent = result.fiveDayObligation
+      ? '今回の新規付与が10日以上のため、使用者は付与日から1年以内に5日を確実に取得させる必要があります。'
+      : '今回の新規法定付与が10日未満、付与前、または出勤率要件未達のため、この判定では対象外です。';
+
+    document.querySelectorAll('.schedule-table tbody tr').forEach((row) => {
+      row.classList.toggle('is-selected', row.dataset.pattern === result.workPattern);
+    });
+    $('paid-leave-error').textContent = '';
+    $('paid-leave-result').hidden = false;
+    window.setResultShare?.(`有給休暇付与日数\n継続勤務：${duration}\n法定付与：${$('grant-days').textContent}\n次回：${$('next-grant').textContent}`);
+    if (!hasTracked) {
+      window.trackCalculatorResult?.('yukyu-nissu');
+      hasTracked = true;
+    }
+  }
+
+  $('reference-date').value = localToday();
+  for (const id of ['hire-date', 'reference-date', 'work-pattern', 'attendance-rate']) {
+    $(id).addEventListener('input', render);
+    $(id).addEventListener('change', render);
+  }
+  $('today-button').addEventListener('click', () => {
+    $('reference-date').value = localToday();
+    render();
+  });
+</script>
+
+<style>
+  .feature-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+  .feature-chips span { padding: 5px 10px; border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .75rem; font-weight: var(--fw-bold); }
+  #paid-leave-tool .calc-panel { padding: 24px; }
+  .input-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
+  .field-wide { grid-column: 1 / -1; }
+  .field-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .field-label label { margin: 0; }
+  .today-button { width: auto; min-height: 0; padding: 3px 10px; border: 1px solid var(--cat-color); border-radius: 999px; background: transparent; color: var(--cat-color); font: var(--fw-bold) .68rem/1.5 var(--font-sans); cursor: pointer; }
+  .suffix-input { display: flex; align-items: center; overflow: hidden; border: 1.5px solid var(--border-input); border-radius: var(--r-lg); background: var(--surface-sub); }
+  .suffix-input:focus-within { border-color: var(--cat-color); box-shadow: 0 0 0 3px color-mix(in srgb,var(--cat-color) 14%,transparent); }
+  .suffix-input input { min-width: 0; border: 0; box-shadow: none; }
+  .suffix-input span { padding-right: 18px; color: var(--text-muted); font-weight: var(--fw-bold); }
+  .field-note { margin: 0; color: var(--text-muted); font-size: .72rem; line-height: 1.65; }
+  .form-error { min-height: 1.5em; margin: 8px 0 0; color: #b42318; font-size: .78rem; font-weight: var(--fw-bold); }
+  .paid-leave-result { overflow: hidden; margin-top: 10px; border: 1px solid #d7deea; border-radius: 10px; background: #fbfcff; box-shadow: 0 10px 28px rgba(44,64,98,.09); }
+  .paid-leave-result[hidden] { display: none; }
+  .result-hero { display: flex; flex-direction: column; gap: 7px; padding: 22px; text-align: center; }
+  .result-hero span { color: var(--text-muted); font-size: .76rem; font-weight: var(--fw-bold); }
+  .result-hero strong { color: var(--cat-color); font: var(--fw-bold) 2.45rem/1 var(--font-mono); }
+  .result-hero small { color: var(--text-muted); font-size: .68rem; line-height: 1.5; }
+  .result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-block: 1px dashed #cbd3e0; background: var(--surface-sub); }
+  .result-grid div { display: flex; flex-direction: column; gap: 5px; padding: 14px; text-align: center; }
+  .result-grid div:nth-child(even) { border-left: 1px solid #e2e6ee; }
+  .result-grid div:nth-child(n+3) { border-top: 1px solid #e2e6ee; }
+  .result-grid span { color: var(--text-muted); font-size: .66rem; }
+  .result-grid strong { font: var(--fw-bold) .88rem/1.45 var(--font-sans); }
+  .obligation-box { margin: 14px; padding: 13px 15px; border-radius: var(--r-md); background: #f1f3f7; color: var(--text-3); }
+  .obligation-box.is-target { background: var(--cat-tint); color: var(--text); }
+  .obligation-box strong { display: block; margin-bottom: 5px; color: inherit; font-size: .82rem; }
+  .obligation-box p, .balance-warning { margin: 0; font-size: .69rem; line-height: 1.6; }
+  .balance-warning { margin: 0 14px 14px; color: var(--text-muted); }
+  .schedule-table-wrap { max-width: 100%; margin-top: 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .schedule-table { min-width: 950px; width: 100%; border-collapse: collapse; }
+  .schedule-table th, .schedule-table td { padding: 12px 10px; border: 1px solid var(--border-2); font-size: .76rem; text-align: center; white-space: nowrap; }
+  .schedule-table thead th { background: var(--cat-tint); color: var(--cat-color); }
+  .schedule-table tbody th { text-align: left; }
+  .schedule-table tbody tr.is-selected { background: color-mix(in srgb, var(--cat-tint) 60%, #fff); box-shadow: inset 4px 0 0 var(--cat-color); }
+  .table-note { margin-top: 9px; color: var(--text-muted); font-size: .72rem !important; }
+  .formula-box { display: grid; gap: 5px; margin: 14px 0; padding: 16px; border-radius: var(--r-lg); background: var(--cat-tint); text-align: center; }
+  .formula-box span, .formula-box small { color: var(--text-muted); font-size: .72rem; }
+  .formula-box strong { color: var(--cat-color); font-family: var(--font-mono); }
+  .source-list { display: grid; gap: 7px; padding-left: 1.2em; }
+  .source-list a { color: var(--cat-color); font-weight: var(--fw-bold); }
+  @media (max-width: 600px) {
+    #paid-leave-tool .calc-panel { padding: 18px; }
+    .input-grid { grid-template-columns: 1fr; }
+    .field-wide { grid-column: auto; }
+    .result-hero strong { font-size: 2rem; }
+    .result-grid { grid-template-columns: 1fr; }
+    .result-grid div:nth-child(even) { border-left: 0; }
+    .result-grid div + div { border-top: 1px solid #e2e6ee; }
+  }
+</style>
