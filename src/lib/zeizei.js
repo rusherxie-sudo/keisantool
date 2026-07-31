@@ -9,12 +9,15 @@ export function taxIncluded(net, rate) {
   return { tax, total: n + tax };
 }
 
-// 税込 → 税抜（端数の浮動小数点誤差を避けるため微小値を加えてから切り捨て）
+// 税込 → 税抜
+// 財務省の内税式「税込価格 × 税率 / (1 + 税率)」で税額を先に求め、
+// 1円未満を切り捨ててから税抜価格を差額で出す。
 export function taxExcluded(gross, rate) {
   const g = Number(gross);
   if (!Number.isFinite(g) || g < 0) return { net: 0, tax: 0 };
-  const net = Math.floor(g / (1 + rate) + 1e-9);
-  return { net, tax: g - net };
+  const grossYen = Math.floor(g);
+  const tax = Math.floor((grossYen * rate) / (1 + rate) + 1e-9);
+  return { net: grossYen - tax, tax };
 }
 
 // 複数商品の合算（各商品ごとに税抜/税込・税率を指定し、合計を算出）
@@ -22,26 +25,37 @@ export function taxExcluded(gross, rate) {
 //   amount      … 金額（円）
 //   rate        … 0.1 または 0.08
 //   taxIncluded … その金額が税込みかどうか（true=税込, false=税抜）
-// 端数は商品ごとに切り捨てて（既存の taxIncluded/taxExcluded と同口径）から合計する。
+// 同じ税率・同じ税込区分の商品を先に合計し、区分ごとに1回だけ端数処理する。
+// 適格請求書の「一の請求書につき税率ごとに1回」の考え方に合わせ、
+// 商品ごとの切り捨てで税額が過少になるのを避ける。
 // 不正な項目（非数値・負数）はスキップ（0扱い）。空配列・非配列は全て0。
 export function sumItems(items) {
   const zero = { subtotalExcl: 0, totalTax: 0, totalIncl: 0 };
   if (!Array.isArray(items)) return zero;
 
-  return items.reduce((acc, item) => {
-    if (!item) return acc;
+  const groups = new Map();
+  for (const item of items) {
+    if (!item) continue;
     const amount = Number(item.amount);
     const rate = Number(item.rate);
     if (!Number.isFinite(amount) || amount < 0 || !Number.isFinite(rate) || rate < 0) {
-      return acc;
+      continue;
     }
 
+    const taxIncluded = Boolean(item.taxIncluded);
+    const key = `${rate}:${taxIncluded}`;
+    const group = groups.get(key) || { amount: 0, rate, taxIncluded };
+    group.amount += amount;
+    groups.set(key, group);
+  }
+
+  return [...groups.values()].reduce((acc, group) => {
     let net, tax;
-    if (item.taxIncluded) {
-      ({ net, tax } = taxExcluded(amount, rate));
+    if (group.taxIncluded) {
+      ({ net, tax } = taxExcluded(group.amount, group.rate));
     } else {
-      ({ tax } = taxIncluded(amount, rate));
-      net = amount;
+      ({ tax } = taxIncluded(group.amount, group.rate));
+      net = group.amount;
     }
 
     acc.subtotalExcl += net;

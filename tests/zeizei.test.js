@@ -28,8 +28,12 @@ describe('taxExcluded(税込 → 税抜)', () => {
     expect(taxExcluded(1080, 0.08)).toEqual({ net: 1000, tax: 80 });
   });
 
-  it('端数は切り捨て: 217円 @10% → 税抜は floor(217/1.1)=197, 税20', () => {
-    expect(taxExcluded(217, 0.1)).toEqual({ net: 197, tax: 20 });
+  it('内税を切り捨て: 217円 @10% → 税は floor(217×10/110)=19, 税抜198', () => {
+    expect(taxExcluded(217, 0.1)).toEqual({ net: 198, tax: 19 });
+  });
+
+  it('2,500円 @10% → 内税227円、税抜2,273円', () => {
+    expect(taxExcluded(2500, 0.1)).toEqual({ net: 2273, tax: 227 });
   });
 });
 
@@ -69,12 +73,30 @@ describe('sumItems(複数商品の合算)', () => {
     expect(sumItems(items)).toEqual({ subtotalExcl: 2000, totalTax: 180, totalIncl: 2180 });
   });
 
-  it('端数は商品ごとに切り捨ててから合計: 198円@10%税抜 ×2 → tax=38, incl=434', () => {
+  it('同じ税率の税抜商品は合計後に1回だけ端数処理: 198円@10% ×2 → tax=39, incl=435', () => {
     const items = [
       { amount: 198, rate: 0.1, taxIncluded: false },
       { amount: 198, rate: 0.1, taxIncluded: false },
     ];
-    expect(sumItems(items)).toEqual({ subtotalExcl: 396, totalTax: 38, totalIncl: 434 });
+    expect(sumItems(items)).toEqual({ subtotalExcl: 396, totalTax: 39, totalIncl: 435 });
+  });
+
+  it('同じ税率の税込商品も合計後に内税を1回だけ逆算する', () => {
+    const items = [
+      { amount: 111, rate: 0.1, taxIncluded: true },
+      { amount: 111, rate: 0.1, taxIncluded: true },
+    ];
+    expect(sumItems(items)).toEqual({ subtotalExcl: 202, totalTax: 20, totalIncl: 222 });
+  });
+
+  it('10%と8%は税率別に端数処理する', () => {
+    const items = [
+      { amount: 198, rate: 0.1, taxIncluded: false },
+      { amount: 198, rate: 0.1, taxIncluded: false },
+      { amount: 198, rate: 0.08, taxIncluded: false },
+      { amount: 198, rate: 0.08, taxIncluded: false },
+    ];
+    expect(sumItems(items)).toEqual({ subtotalExcl: 792, totalTax: 70, totalIncl: 862 });
   });
 
   it('空配列 → 全て0', () => {

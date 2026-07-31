@@ -31,10 +31,10 @@ export const tools = [
   {
     slug: 'zeizei',
     nav: '消費税',
-    name: '消費税・割引計算器',
+    name: '消費税計算ツール',
     icon: '🧾',
     category: '税金・お金',
-    short: '税込・税抜・割引',
+    short: '税込・税抜・10％・8％・割引',
     live: true,
   },
   {

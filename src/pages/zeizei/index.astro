@@ -6,13 +6,13 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'zeizei';
-const title = '消費税・割引計算器 - 税込・税抜・割引後の価格を瞬時に計算 | 計算ツール';
+const title = '消費税計算ツール｜税込・税抜・10％・8％・割引を自動計算';
 const description =
-  '税抜・税込・割引後の価格をその場で計算。消費税10%・軽減税率8%に対応し、税込計算・税抜の逆算・割引計算（節約額）をまとめて行える無料ツールです。';
+  '消費税10％・軽減税率8％の税込価格、税抜価格、内税、割引後価格を無料で自動計算。複数商品は税率別に合計して端数処理します。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: '消費税・割引計算器',
+  name: '消費税計算ツール',
   description,
   applicationCategory: 'UtilityApplication',
   operatingSystem: 'Web',
@@ -21,9 +21,9 @@ const jsonld = {
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
-    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 消費税・割引計算器</div>
-    <h1>消費税・割引計算器</h1>
-    <p>税抜・税込・割引後の価格を、入力するだけで瞬時に計算します。軽減税率（8%）にも対応。</p>
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 消費税計算ツール</div>
+    <h1>消費税計算ツール（税込・税抜）</h1>
+    <p>金額を入力するだけで、消費税10％・軽減税率8％の税込、税抜、内税、割引後価格を自動計算します。</p>
   </div>
 
   <div class="calc-card">
@@ -95,7 +95,7 @@ const jsonld = {
       </div>
     </div>
     <div class="calc-panel" id="panel-multi">
-      <p class="multi-intro">商品を追加して、それぞれ税率（10%／8%）と税抜・税込を選ぶと、合計を自動計算します。買い物の合計や軽減税率の混在に便利です。</p>
+      <p class="multi-intro">商品を追加して税率（10%／8%）と税抜・税込を選ぶと、税率・区分ごとに合計してから端数を処理します。</p>
       <div class="multi-rows" id="multi-rows"></div>
       <button type="button" class="multi-add" id="multi-add">＋ 商品を追加</button>
       <div class="result-box" id="multi-result">
@@ -120,10 +120,10 @@ const jsonld = {
       <li><strong>税込計算</strong>：税抜価格から消費税込みの支払額を算出します。</li>
       <li><strong>税抜計算</strong>：レシートの税込価格から、本体価格と消費税額を逆算します。</li>
       <li><strong>割引計算</strong>：定価と割引率から、割引後の価格と節約できる金額を計算します。</li>
-      <li><strong>複数商品</strong>：商品を何点でも追加し、品目ごとに税率（10%／8%）と税抜・税込を選んで、税抜・消費税・税込の合計をまとめて計算します。</li>
+      <li><strong>複数商品</strong>：品目ごとに税率と税抜・税込を選び、同じ税率・区分の金額を合計してから1回だけ端数処理します。</li>
     </ul>
     <p>
-      消費税の標準税率は10%、食料品など一部の品目には軽減税率8%が適用されます。本ツールでは端数（小数点以下）を<strong>切り捨て</strong>で計算しています。お店のレジ設定（四捨五入・切り上げなど）により、実際の支払額と数円異なる場合があります。
+      消費税の標準税率は10％、酒類・外食を除く飲食料品と一定の定期購読新聞には軽減税率8％が適用されます。本ツールは1円未満を<strong>切り捨て</strong>ます。実際の支払額は店舗の端数処理により数円異なる場合があります。対象品目は<a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6102.htm" target="_blank" rel="noopener noreferrer">国税庁「軽減税率制度」</a>、請求書の端数処理は<a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6371.htm" target="_blank" rel="noopener noreferrer">国税庁「端数計算」</a>をご確認ください。
     </p>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。正確な金額は購入先・店舗にてご確認ください。</div>
   </section>
@@ -134,8 +134,9 @@ const jsonld = {
 
   <Faq items={[
     { q: '消費税の税込・税抜はどう計算しますか？', a: '税抜価格×1.1で税込価格、税込価格÷1.1で税抜価格になります（標準税率10%の場合）。軽減税率8%の対象品は1.08で計算します。' },
-    { q: '税込価格から消費税額（内税）を出すには？', a: '税込価格−（税込価格÷1.1）＝消費税額です（10%の場合）。本ツールは端数を切り捨てで表示します。' },
-    { q: '割引後の価格も計算できますか？', a: 'はい。定価と割引率から割引後価格と割引額を計算でき、複数商品の合算にも対応しています。' },
+    { q: '税込価格から消費税額（内税）を出すには？', a: '10％なら税込価格×10÷110、8％なら税込価格×8÷108で内税を求めます。本ツールは1円未満を切り捨て、税込価格から内税を引いて税抜価格を表示します。' },
+    { q: '複数商品の消費税は商品ごとに丸めますか？', a: '本ツールは同じ税率・同じ税込区分の商品を先に合計し、区分ごとに1回だけ端数処理します。正式な適格請求書では、1枚の請求書につき税率ごとに1回だけ端数処理します。' },
+    { q: '割引後の価格も計算できますか？', a: 'はい。定価と割引率から割引後価格と割引額を計算できます。' },
   ]} />
 
   <div class="ad-slot"></div>
