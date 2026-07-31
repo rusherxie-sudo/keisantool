@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { calcGasCost, calcRoundTripCost, calcMonthlyCost, splitPerPerson } from '../src/lib/gasoline.js';
+import {
+  calcGasCost,
+  calcRoundTripCost,
+  calcMonthlyCost,
+  splitPerPerson,
+  calcTripSummary,
+  calcFuelEconomy,
+} from '../src/lib/gasoline.js';
 
 describe('calcGasCost({ distance, fuelEfficiency, gasPrice })', () => {
   it('100km / 燃費15km/L / ガソリン170円 → 1133円（切り捨て）', () => {
@@ -110,5 +117,87 @@ describe('splitPerPerson(totalCost, people)', () => {
   });
   it('totalCost が NaN → null', () => {
     expect(splitPerPerson(NaN, 3)).toBeNull();
+  });
+});
+
+describe('calcTripSummary', () => {
+  it('片道30kmを20日往復：総距離1200km・80L・13600円', () => {
+    expect(calcTripSummary({
+      distance: 30,
+      fuelEfficiency: 15,
+      gasPrice: 170,
+      trips: 20,
+      roundTrip: true,
+    })).toEqual({
+      totalDistance: 1200,
+      liters: 80,
+      fuelCost: 13600,
+      extraCost: 0,
+      totalCost: 13600,
+      costPerKm: 11,
+      perPerson: 13600,
+      people: 1,
+    });
+  });
+
+  it('旅行250km・2回・高速代4000円を3人で分ける', () => {
+    expect(calcTripSummary({
+      distance: 250,
+      fuelEfficiency: 12,
+      gasPrice: 175,
+      trips: 2,
+      roundTrip: false,
+      extraCost: 4000,
+      people: 3,
+    })).toEqual({
+      totalDistance: 500,
+      liters: 500 / 12,
+      fuelCost: 7291,
+      extraCost: 4000,
+      totalCost: 11291,
+      costPerKm: 22,
+      perPerson: 3763,
+      people: 3,
+    });
+  });
+
+  it.each([
+    { distance: 0, fuelEfficiency: 15, gasPrice: 170 },
+    { distance: 30, fuelEfficiency: 0, gasPrice: 170 },
+    { distance: 30, fuelEfficiency: 15, gasPrice: 0 },
+    { distance: 30, fuelEfficiency: 15, gasPrice: 170, trips: 1.5 },
+    { distance: 30, fuelEfficiency: 15, gasPrice: 170, extraCost: -1 },
+    { distance: 30, fuelEfficiency: 15, gasPrice: 170, people: 0 },
+  ])('不正な入力 $distance/$fuelEfficiency/$gasPrice → null', (input) => {
+    expect(calcTripSummary(input)).toBeNull();
+  });
+});
+
+describe('calcFuelEconomy', () => {
+  it('450km走行して30L給油：15km/L・6.67L/100km', () => {
+    expect(calcFuelEconomy({ distance: 450, fuelUsed: 30 })).toEqual({
+      kmPerLiter: 15,
+      litersPer100Km: 100 / 15,
+      fuelCost: null,
+      costPerKm: null,
+    });
+  });
+
+  it('単価170円を指定すると給油額5100円・1kmあたり11円', () => {
+    expect(calcFuelEconomy({ distance: 450, fuelUsed: 30, gasPrice: 170 })).toEqual({
+      kmPerLiter: 15,
+      litersPer100Km: 100 / 15,
+      fuelCost: 5100,
+      costPerKm: 11,
+    });
+  });
+
+  it.each([
+    { distance: 0, fuelUsed: 30 },
+    { distance: 450, fuelUsed: 0 },
+    { distance: -1, fuelUsed: 30 },
+    { distance: 450, fuelUsed: 30, gasPrice: 0 },
+  ])('不正な入力 → null', (input) => {
+    expect(calcFuelEconomy(input)).toBeNull();
   });
 });

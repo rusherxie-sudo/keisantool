@@ -247,10 +247,10 @@ export const tools = [
   {
     slug: 'gasoline',
     nav: 'ガソリン代',
-    name: 'ガソリン代計算器',
+    name: 'ガソリン代・燃費計算ツール',
     icon: '⛽',
     category: '生活・日常',
-    short: '走行距離・燃費から交通費を計算',
+    short: '通勤・旅行の交通費と実燃費を計算',
     live: true,
   },
   {

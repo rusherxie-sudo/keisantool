@@ -37,3 +37,60 @@ export function splitPerPerson(totalCost, people) {
   if (!Number.isInteger(people) || people < 1) return null;
   return { perPerson: Math.floor(totalCost / people), people };
 }
+
+// 1回分の距離・往復指定・回数をまとめ、通勤や旅行を同じ式で計算する。
+// 金額は未取整の燃料費に追加費用を加え、最後に一度だけ切り捨てる。
+export function calcTripSummary({
+  distance,
+  fuelEfficiency,
+  gasPrice,
+  trips = 1,
+  roundTrip = false,
+  extraCost = 0,
+  people = 1,
+}) {
+  if (![distance, fuelEfficiency, gasPrice].every(isPositiveFinite)) return null;
+  if (!Number.isInteger(trips) || trips < 1) return null;
+  if (typeof roundTrip !== 'boolean') return null;
+  if (!Number.isFinite(extraCost) || extraCost < 0) return null;
+  if (!Number.isInteger(people) || people < 1) return null;
+
+  const totalDistance = distance * trips * (roundTrip ? 2 : 1);
+  const liters = totalDistance / fuelEfficiency;
+  const exactFuelCost = liters * gasPrice;
+  const fuelCost = Math.floor(exactFuelCost);
+  const flooredExtraCost = Math.floor(extraCost);
+  const totalCost = Math.floor(exactFuelCost + flooredExtraCost);
+
+  return {
+    totalDistance,
+    liters,
+    fuelCost,
+    extraCost: flooredExtraCost,
+    totalCost,
+    costPerKm: Math.floor(totalCost / totalDistance),
+    perPerson: Math.floor(totalCost / people),
+    people,
+  };
+}
+
+// 満タン法向け：給油間の走行距離と給油量から実燃費を逆算する。
+// 単価を省略した場合は燃費だけを返し、金額関連は null にする。
+export function calcFuelEconomy({ distance, fuelUsed, gasPrice } = {}) {
+  if (![distance, fuelUsed].every(isPositiveFinite)) return null;
+  if (gasPrice !== undefined && !isPositiveFinite(gasPrice)) return null;
+
+  const kmPerLiter = distance / fuelUsed;
+  const litersPer100Km = (fuelUsed / distance) * 100;
+  if (gasPrice === undefined) {
+    return { kmPerLiter, litersPer100Km, fuelCost: null, costPerKm: null };
+  }
+
+  const fuelCost = Math.floor(fuelUsed * gasPrice);
+  return {
+    kmPerLiter,
+    litersPer100Km,
+    fuelCost,
+    costPerKm: Math.floor(fuelCost / distance),
+  };
+}

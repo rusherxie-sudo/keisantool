@@ -4,252 +4,335 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
+import { calcTripSummary, calcFuelEconomy } from '../../lib/gasoline.js';
 
 const slug = 'gasoline';
-const title = 'ガソリン代計算器｜距離・燃費・単価から片道・往復・月額を計算';
+const title = 'ガソリン代計算｜距離・燃費・単価・回数から交通費を計算 | 計算ツール';
 const description =
-  '走行距離・燃費・ガソリン単価から、片道・往復・月額のガソリン代を無料で自動計算。高速料金を含む割り勘にも対応し、通勤・旅行・ドライブの交通費をすぐ確認できます。';
+  '走行距離・燃費・ガソリン単価・往復回数からガソリン代を無料計算。総距離、必要量、1kmあたり、通勤月額、割り勘を表示し、給油量から実燃費も測れます。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'ガソリン代計算器',
+  name: 'ガソリン代・燃費計算ツール',
   description,
   applicationCategory: 'UtilityApplication',
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['距離・燃費・単価からガソリン代を計算', '往復・回数・通勤月額', '1kmあたりの費用', '高速代を含む割り勘', '満タン法の実燃費計算'],
 };
+
+const commuteExample = calcTripSummary({
+  distance: 30,
+  fuelEfficiency: 15,
+  gasPrice: 170,
+  trips: 20,
+  roundTrip: true,
+});
+const economyExample = calcFuelEconomy({ distance: 450, fuelUsed: 30, gasPrice: 170 });
 ---
 
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ ガソリン代計算</div>
-    <h1>ガソリン代計算器</h1>
-    <p>走行距離・燃費・ガソリン価格を入力すると、片道・往復・月額のガソリン代と割り勘額を自動計算します。</p>
+    <h1>ガソリン代計算｜通勤・旅行の交通費と実燃費</h1>
+    <p>距離・燃費・単価から、総距離、必要量、1kmあたり、往復・月額・割り勘まで計算。給油量から実燃費も測れます。</p>
   </div>
 
-  <div class="calc-card">
-    <div class="calc-panel active" style="padding:24px">
-      <div class="form-group">
-        <label for="distance">走行距離（km）</label>
-        <input type="number" id="distance" inputmode="decimal" placeholder="例：30" min="0" step="0.1" />
-      </div>
-      <div class="form-group">
-        <label for="fuel-eff">燃費（km/L）</label>
-        <input type="number" id="fuel-eff" inputmode="decimal" placeholder="例：15" min="0" step="0.1" />
-      </div>
-      <div class="form-group">
-        <label for="gas-price">ガソリン価格（円/L）</label>
-        <input type="number" id="gas-price" inputmode="numeric" placeholder="例：170" min="0" />
-      </div>
-      <div class="form-group">
-        <label for="workdays">月の出勤日数（日）<span class="optional-label">— 月額を計算する場合</span></label>
-        <input type="number" id="workdays" inputmode="numeric" placeholder="例：20" min="0" max="31" />
-      </div>
+  <div class="calc-card gasoline-card">
+    <div class="gasoline-tabs" role="group" aria-label="計算の種類">
+      <button type="button" class="gasoline-tab is-active" data-mode="cost" aria-pressed="true">
+        <span>ガソリン代</span><small>通勤・旅行の費用</small>
+      </button>
+      <button type="button" class="gasoline-tab" data-mode="economy" aria-pressed="false">
+        <span>実燃費</span><small>満タン法で km/L</small>
+      </button>
+    </div>
 
-      <div class="warikan-fields">
-        <div class="warikan-title">割り勘（人数で分ける）<span class="optional-label">— 任意</span></div>
+    <div class="calc-panel gasoline-panel active">
+      <section id="costPanel" class="gasoline-mode">
         <div class="form-group">
-          <label for="people">乗車人数（人）</label>
-          <input type="number" id="people" inputmode="numeric" placeholder="例：3" min="1" max="99" step="1" value="1" />
+          <label for="distance">1回の走行距離（km）</label>
+          <input type="number" id="distance" inputmode="decimal" placeholder="例：30" min="0.1" step="0.1" />
         </div>
-        <div class="form-group">
-          <label for="toll">高速料金（円・往復合計）<span class="optional-label">— 任意</span></label>
-          <input type="number" id="toll" inputmode="numeric" placeholder="例：2000" min="0" step="1" />
-        </div>
-      </div>
 
-      <div class="result-box" id="result">
-        <div class="result-label">計算結果</div>
-        <div class="result-rows">
-          <div class="result-row">
-            <span class="label">片道ガソリン代</span>
-            <span class="value" id="one-way">¥0</span>
+        <label class="roundtrip-option">
+          <input type="checkbox" id="roundTrip" checked />
+          <span><strong>往復で計算する</strong><small>入力した距離を片道として2倍します</small></span>
+        </label>
+
+        <div class="input-grid">
+          <div class="form-group">
+            <label for="trips">回数</label>
+            <input type="number" id="trips" inputmode="numeric" value="1" min="1" step="1" />
+            <small class="field-hint">通勤月額なら出勤日数</small>
           </div>
-          <div class="result-row">
-            <span class="label">往復ガソリン代</span>
-            <span class="value" id="round-trip">¥0</span>
-          </div>
-          <div class="result-row">
-            <span class="label">消費量（片道）</span>
-            <span class="value" id="liters">0 L</span>
-          </div>
-        </div>
-        <div id="monthly-section" style="display:none">
-          <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-2)">
-            <div class="result-row">
-              <span class="label">月額交通費（往復×出勤日数）</span>
-              <span class="value" id="monthly">¥0</span>
-            </div>
+          <div class="form-group">
+            <label for="fuelEff">燃費（km/L）</label>
+            <input type="number" id="fuelEff" inputmode="decimal" placeholder="例：15" min="0.1" step="0.1" />
           </div>
         </div>
-        <div id="warikan-section" style="display:none">
-          <div class="result-rows" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-2)">
-            <div class="result-row">
-              <span class="label">合計（往復ガソリン代＋高速料金）</span>
-              <span class="value" id="total-cost">¥0</span>
-            </div>
-            <div class="result-row warikan-highlight">
-              <span class="label">1人あたり（<span id="people-label">2</span>人で割り勘）</span>
-              <span class="value" id="per-person">¥0</span>
-            </div>
+
+        <div class="input-grid">
+          <div class="form-group">
+            <label for="gasPrice">ガソリン単価（円/L）</label>
+            <input type="number" id="gasPrice" inputmode="decimal" placeholder="例：170" min="0.1" step="0.1" />
+          </div>
+          <div class="form-group">
+            <label for="extraCost">高速・駐車料金（円）<span class="optional-label">任意</span></label>
+            <input type="number" id="extraCost" inputmode="numeric" value="0" min="0" step="1" />
           </div>
         </div>
-      </div>
+
+        <div class="form-group">
+          <label for="people">割り勘する人数（人）<span class="optional-label">任意</span></label>
+          <input type="number" id="people" inputmode="numeric" value="1" min="1" max="99" step="1" />
+        </div>
+
+        <div class="gas-result" id="costResult" hidden aria-live="polite">
+          <div class="gas-result__bar"><span>TRIP COST</span><span id="tripSummary">―</span></div>
+          <div class="gas-result__main"><span>合計交通費</span><strong id="totalCost">―</strong></div>
+          <div class="result-metrics">
+            <div><span>総走行距離</span><strong id="totalDistance">―</strong></div>
+            <div><span>必要な燃料</span><strong id="totalLiters">―</strong></div>
+            <div><span>ガソリン代</span><strong id="fuelCost">―</strong></div>
+            <div><span>1kmあたり</span><strong id="costPerKm">―</strong></div>
+          </div>
+          <div class="split-result" id="splitResult" hidden><span>1人あたり</span><strong id="perPerson">―</strong></div>
+        </div>
+      </section>
+
+      <section id="economyPanel" class="gasoline-mode" hidden>
+        <p class="panel-guide">満タンから次の満タンまでの走行距離と、2回目の給油量を入力してください。</p>
+        <div class="form-group">
+          <label for="actualDistance">給油間の走行距離（km）</label>
+          <input type="number" id="actualDistance" inputmode="decimal" placeholder="例：450" min="0.1" step="0.1" />
+        </div>
+        <div class="input-grid">
+          <div class="form-group">
+            <label for="fuelUsed">給油量（L）</label>
+            <input type="number" id="fuelUsed" inputmode="decimal" placeholder="例：30" min="0.01" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label for="actualPrice">ガソリン単価（円/L）<span class="optional-label">任意</span></label>
+            <input type="number" id="actualPrice" inputmode="decimal" placeholder="例：170" min="0.1" step="0.1" />
+          </div>
+        </div>
+
+        <div class="gas-result" id="economyResult" hidden aria-live="polite">
+          <div class="gas-result__bar"><span>ACTUAL ECONOMY</span><span>満タン法</span></div>
+          <div class="gas-result__main"><span>実燃費</span><strong id="kmPerLiter">―</strong></div>
+          <div class="result-metrics result-metrics--three">
+            <div><span>100kmの使用量</span><strong id="litersPer100">―</strong></div>
+            <div><span>今回の給油額</span><strong id="actualFuelCost">―</strong></div>
+            <div><span>1kmあたり</span><strong id="actualCostPerKm">―</strong></div>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 
   <ResultShare />
-
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>使い方</h2>
-    <p>上の入力欄に値を入力すると自動で計算されます。ボタンは不要です。</p>
-    <ul>
-      <li><strong>走行距離</strong>：片道の距離（km）を入力してください。往復の場合は往復ガソリン代の行をご覧ください。</li>
-      <li><strong>燃費</strong>：車のカタログ値または実燃費（km/L）を入力します。わからない場合は「15」程度が一般的なガソリン車の目安です。</li>
-      <li><strong>ガソリン価格</strong>：近くのガソリンスタンドの単価（円/L）を入力します。レギュラーは現在 160〜175 円前後が目安です。</li>
-      <li><strong>月額</strong>：出勤日数を入力すると、1ヶ月あたりの交通費（往復×日数）を計算します。</li>
-      <li><strong>割り勘</strong>：乗車人数を2人以上にすると、往復ガソリン代と高速料金（往復合計）を合算し、1人あたりの金額を計算します。ドライブや旅行の費用分担にお使いください。</li>
-    </ul>
-    <p>計算式：ガソリン代 ＝ 走行距離（km）÷ 燃費（km/L）× ガソリン価格（円/L）。金額の端数は切り捨てで計算しています。</p>
+    <h2>ガソリン代計算ツールの使い方</h2>
+    <p><strong>ガソリン代</strong>では、1回の距離・燃費・単価を入力します。片道距離を入れる場合は「往復で計算する」をオンにし、通勤月額なら回数に出勤日数を入れてください。総距離、燃料量、燃料代、1kmあたりの費用を同時に表示します。</p>
+    <p>旅行で高速道路や有料駐車場を使う場合は、その期間の合計額を「高速・駐車料金」に追加できます。2人以上を指定すると、ガソリン代と追加費用を合わせた1人あたりの負担額も表示します。</p>
+    <p><strong>実燃費</strong>では、満タン給油から次の満タン給油までの距離と給油量から、実際の km/L を逆算します。ガソリン単価は任意で、入力すると今回の給油額と1kmあたりの燃料費も分かります。</p>
+  </section>
 
-    <h3>計算式と計算例</h3>
-    <p>
-      ガソリン代は「<strong>走行距離（km）÷ 燃費（km/L）× ガソリン単価（円/L）</strong>」で求まります。「距離 ÷ 燃費」でまずガソリンの消費量（L）を出し、それに単価を掛けるという考え方です。たとえば片道500km（東京〜大阪くらいの距離）を、燃費15km/L・単価170円/Lの車で走る場合、消費量は約33.3Lで、片道のガソリン代は 500 ÷ 15 × 170 ＝ <strong>約5,666円</strong>、往復では<strong>約11,333円</strong>になります。3人で割り勘にすれば1人あたり4千円弱です。
-    </p>
-
-    <h3>車種別の実燃費の目安</h3>
-    <p>自分の車の燃費がすぐに分からないときは、次の表から近いタイプの値を入力してください。いずれも一般的な実燃費のおおよその目安で、車種・年式・運転条件によって大きく変わります。</p>
-    <div class="data-table-wrap">
-      <div class="data-table-scroll">
-        <table class="data-table">
-          <thead><tr><th>車のタイプ</th><th>実燃費の目安</th></tr></thead>
-          <tbody>
-            <tr><td>軽自動車</td><td class="num">約20〜25 km/L</td></tr>
-            <tr><td>コンパクトカー</td><td class="num">約15〜20 km/L</td></tr>
-            <tr><td>ハイブリッド車</td><td class="num">約20〜28 km/L</td></tr>
-            <tr><td>ミニバン</td><td class="num">約10〜14 km/L</td></tr>
-            <tr><td>SUV</td><td class="num">約8〜12 km/L</td></tr>
-          </tbody>
-        </table>
-      </div>
+  <section class="howto">
+    <h2>ガソリン代の計算式と通勤月額の例</h2>
+    <div class="formula-box">
+      <strong>ガソリン代 ＝ 総走行距離 ÷ 燃費 × ガソリン単価</strong>
+      <span>総走行距離 ＝ 1回の距離 × 往復なら2 × 回数</span>
     </div>
+    <p>片道30kmを月20日通勤し、燃費15km/L、単価170円/Lの場合、総走行距離は30×2×20＝{commuteExample.totalDistance.toLocaleString('ja-JP')}kmです。必要量は{commuteExample.liters.toFixed(1)}L、月のガソリン代は<strong>{commuteExample.fuelCost.toLocaleString('ja-JP')}円</strong>、1kmあたり約{commuteExample.costPerKm}円になります。</p>
+    <p>本ツールは回数を掛けた未取整の燃料費から最後に整数円へ切り捨てます。1回ごとに端数処理してから回数を掛けないため、月額で端数誤差が積み重なりません。</p>
+  </section>
 
-    <h3>カタログ燃費（WLTCモード）と実燃費の差</h3>
-    <p>
-      カタログに記載されている燃費は、市街地・郊外・高速道路の走行を組み合わせた試験条件で測ったWLTCモードの値です。実際の燃費は、渋滞・エアコンの使用・短距離走行・荷物や乗員の重さなどの影響で、<strong>カタログ値の7〜9割程度</strong>になることが多いといわれます。交通費を見積もるときは、カタログ値より実燃費に近い値を入力したほうが実態に合います。実燃費は「満タン法」（満タンにしてから次に満タンにするまでの走行距離 ÷ 給油量）でかんたんに測れます。
-    </p>
+  <section class="howto">
+    <h2>満タン法による実燃費の計算方法</h2>
+    <ol>
+      <li>ガソリンを満タンにし、トリップメーターを0にします。</li>
+      <li>次の給油まで通常どおり走行します。</li>
+      <li>再び満タンにし、トリップメーターの距離と今回の給油量を記録します。</li>
+      <li>「走行距離 ÷ 給油量」で実燃費を求めます。</li>
+    </ol>
+    <p>450km走行して30L給油した場合、実燃費は450÷30＝<strong>{economyExample.kmPerLiter.toFixed(1)}km/L</strong>です。単価170円/Lなら給油額は{economyExample.fuelCost.toLocaleString('ja-JP')}円、1kmあたり約{economyExample.costPerKm}円です。</p>
+    <p>給油機の自動停止位置、タイヤ、渋滞、エアコン、積載量などで毎回の数値は変わります。数回分を記録して合計走行距離÷合計給油量で見ると、1回だけより実態を把握しやすくなります。</p>
+  </section>
 
-    <h3>ガソリン単価の調べ方</h3>
-    <p>
-      ガソリン価格は地域や店舗によって1Lあたり数円〜十数円の差があります。全国・都道府県別の平均価格は、資源エネルギー庁の「<a href="https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl007/" target="_blank" rel="noopener">石油製品価格調査</a>」で毎週公表されているため、単価に迷ったらこの平均値を入れるのが手軽です。ふだん利用するスタンドの店頭価格や、ガソリン価格比較サイト・アプリの値を使えば、より実際に近い金額を計算できます。
-    </p>
-
-    <h3>この計算に含まれないもの</h3>
-    <p>
-      計算結果のガソリン代には、高速道路料金・駐車場代・オイルやタイヤなどの消耗品費・車検や保険といった維持費は含まれません。高速道路を使う場合は、「割り勘」欄の高速料金（往復合計）に入力すると、合計金額と1人あたりの負担額に反映できます。また、通勤交通費を勤務先に申請する場合は、会社ごとにガソリン単価や燃費のみなし値が規定されていることがあるため、勤務先のルールもあわせて確認してください。
-    </p>
-    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際のガソリン代は道路状況・エアコン使用・走行パターンなどにより異なります。</div>
+  <section class="howto source-box">
+    <h2>ガソリン単価と燃費表示の確認先</h2>
+    <p>ガソリン価格は地域・店舗・時期で変動するため、固定の「現在価格」は自動入力していません。店頭価格を使うか、資源エネルギー庁が毎週公表する都道府県別の調査をご確認ください。</p>
+    <ul>
+      <li><a href="https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl007/" target="_blank" rel="noopener">資源エネルギー庁「石油製品価格調査」</a> — 給油所小売価格の週次調査</li>
+      <li><a href="https://www.mlit.go.jp/jidosha/jidosha_fr10_000056.html" target="_blank" rel="noopener">国土交通省「自動車燃費一覧」</a> — WLTCモードなどの公表燃費</li>
+    </ul>
+    <p>カタログ燃費は定められた試験条件の比較値です。費用の実績管理には、車載表示または満タン法で把握した実燃費を使うと、走行条件を反映しやすくなります。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の燃料費は道路状況・運転方法・車両状態・価格変動などにより異なります。通勤手当は勤務先の規程をご確認ください。</div>
   </section>
 
   <RelatedTools current={slug} />
-
   <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
-    { q: 'ガソリン代はどう計算しますか？', a: '走行距離÷燃費×ガソリン単価で求めます。例えば300km・燃費15km/L・170円/Lなら約3,400円です。' },
-    { q: '1か月の交通費も出せますか？', a: '月の出勤日数を入力すると、往復・月額の概算を計算できます。' },
-    { q: '割り勘もできますか？', a: '乗車人数や高速料金を入力して、1人あたりの金額を計算できます。' },
-    { q: '実際の燃費はカタログ値より悪くなりますか？', a: '多くの場合、実燃費はカタログ燃費（WLTCモード）の7〜9割程度になります。渋滞・エアコンの使用・短距離走行などが主な要因です。正確に見積もりたいときは、満タン法で測った実燃費を入力してください。' },
-    { q: 'ハイオクとレギュラーで計算は変わりますか？', a: '計算式は同じで、入力するガソリン単価が変わるだけです。ハイオクはレギュラーより1Lあたりおおむね10円前後高いため、ハイオク指定車の場合はハイオクの単価を入力してください。' },
-    { q: '軽油（ディーゼル車）でも使えますか？', a: 'はい。計算式は燃料の種類によらず同じなので、軽油の単価と車の燃費を入力すれば、ディーゼル車の燃料代も同じように計算できます。' },
+    { q: 'ガソリン代はどう計算しますか？', a: '総走行距離÷燃費（km/L）×ガソリン単価（円/L）で求めます。片道距離を入力した場合は往復で2倍し、通勤日数や走行回数を掛けます。' },
+    { q: '通勤1か月分のガソリン代を計算できますか？', a: 'はい。片道の通勤距離を入力し、往復をオン、回数に月の出勤日数を入力すると、月の総距離とガソリン代を計算できます。' },
+    { q: 'ガソリン代を人数で割り勘できますか？', a: 'はい。人数を2人以上にすると、高速料金・駐車料金を含む合計交通費を人数で割った1人あたりの金額を表示します。' },
+    { q: '1kmあたりのガソリン代はいくらですか？', a: '1kmあたりの燃料費は「ガソリン単価÷燃費」で求められます。本ツールでは追加費用も含む合計交通費÷総走行距離を整数円で表示します。' },
+    { q: '実燃費はどうやって計算しますか？', a: '満タンにしてトリップメーターを0にし、次に満タン給油したときの走行距離を給油量で割ります。450km÷30Lなら15km/Lです。' },
+    { q: '軽油やハイオクでも使えますか？', a: 'はい。燃料の種類にかかわらず式は同じです。使用する油種の実際の単価と車の燃費を入力してください。' },
   ]} />
 
   <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
-.optional-label { font-size: .75rem; font-weight: var(--fw-normal); color: var(--text-faint); margin-left: 4px; }
-.warikan-fields { margin-top: 8px; padding-top: 16px; border-top: 1px dashed var(--border-2); }
-.warikan-title { font-size: .9rem; font-weight: var(--fw-bold); color: var(--cat-color); margin-bottom: 12px; }
-.warikan-highlight .value { color: var(--cat-color); font-weight: var(--fw-bold); }
+.gasoline-card { overflow: hidden; }
+.gasoline-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border-2); background: var(--surface-2); }
+.gasoline-tab { border: 0; border-bottom: 3px solid transparent; padding: 13px 10px 11px; background: transparent; color: var(--text-muted); cursor: pointer; }
+.gasoline-tab span, .gasoline-tab small { display: block; }
+.gasoline-tab span { font-weight: var(--fw-bold); }
+.gasoline-tab small { margin-top: 2px; font-size: .72rem; }
+.gasoline-tab.is-active { color: var(--cat-color); border-bottom-color: var(--cat-color); background: var(--surface); }
+.gasoline-panel { padding: 24px; }
+.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field-hint, .panel-guide { color: var(--text-faint); font-size: .78rem; }
+.panel-guide { margin: 0 0 16px; }
+.optional-label { font-size: .72rem; font-weight: var(--fw-normal); color: var(--text-faint); margin-left: 5px; }
+.roundtrip-option { display: flex; align-items: flex-start; gap: 10px; margin: -2px 0 18px; padding: 12px 14px; border: 1px solid var(--border-2); border-radius: var(--radius-sm); background: var(--surface-2); cursor: pointer; }
+.roundtrip-option input { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 2px; accent-color: var(--cat-color); }
+.roundtrip-option span, .roundtrip-option small { display: block; }
+.roundtrip-option small { color: var(--text-faint); font-size: .75rem; margin-top: 2px; }
+.gas-result { margin-top: 8px; border: 1px solid var(--border-2); border-radius: var(--radius-md); overflow: hidden; background: var(--surface); }
+.gas-result__bar { display: flex; justify-content: space-between; gap: 10px; padding: 8px 13px; background: var(--text); color: var(--surface); font: 600 .7rem/1.2 var(--font-mono); letter-spacing: .08em; }
+.gas-result__main { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 18px 16px; background: var(--cat-soft); }
+.gas-result__main span { font-weight: var(--fw-bold); }
+.gas-result__main strong { color: var(--cat-color); font-size: 1.8rem; }
+.result-metrics { display: grid; grid-template-columns: repeat(2, 1fr); }
+.result-metrics--three { grid-template-columns: repeat(3, 1fr); }
+.result-metrics > div { padding: 13px 10px; border-top: 1px solid var(--border-2); text-align: center; }
+.result-metrics > div:nth-child(even) { border-left: 1px solid var(--border-2); }
+.result-metrics--three > div + div { border-left: 1px solid var(--border-2); }
+.result-metrics span, .result-metrics strong { display: block; }
+.result-metrics span { color: var(--text-faint); font-size: .72rem; }
+.result-metrics strong { margin-top: 3px; font-size: .96rem; }
+.split-result { display: flex; justify-content: space-between; align-items: center; padding: 13px 16px; border-top: 1px solid var(--border-2); background: var(--surface-2); }
+.split-result strong { color: var(--cat-color); font-size: 1.25rem; }
+.formula-box { display: grid; gap: 7px; margin: 14px 0; padding: 16px; border-left: 4px solid var(--cat-color); background: var(--cat-soft); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.formula-box span { color: var(--text-muted); font-size: .88rem; }
+@media (max-width: 520px) {
+  .input-grid { grid-template-columns: 1fr; gap: 0; }
+  .result-metrics--three { grid-template-columns: 1fr; }
+  .result-metrics--three > div + div { border-left: 0; }
+  .gas-result__main strong { font-size: 1.55rem; }
+}
 </style>
 
 <script>
-  import { calcGasCost, calcRoundTripCost, calcMonthlyCost, splitPerPerson } from '../../lib/gasoline.js';
+  import { calcTripSummary, calcFuelEconomy } from '../../lib/gasoline.js';
 
   const $ = (id) => document.getElementById(id);
-  const yen = (n) => '¥' + n.toLocaleString('ja-JP');
-  let hasTrackedResult = false;
+  const yen = (n) => `${n.toLocaleString('ja-JP')}円`;
+  const number = (id) => Number.parseFloat($(id).value);
+  let activeMode = 'cost';
+  let trackedCost = false;
+  let trackedEconomy = false;
 
-  function render() {
-    const distance = parseFloat($('distance').value);
-    const fuelEff  = parseFloat($('fuel-eff').value);
-    const gasPrice = parseFloat($('gas-price').value);
-    const workdays = parseFloat($('workdays').value);
-    const people   = parseInt($('people').value, 10);
-    const tollRaw  = parseFloat($('toll').value);
-    const toll     = Number.isFinite(tollRaw) && tollRaw > 0 ? tollRaw : 0;
-
-    const oneWay = calcGasCost({ distance, fuelEfficiency: fuelEff, gasPrice });
-    const result = $('result');
-
-    if (!oneWay) {
-      result.classList.remove('visible');
-      window.hideResultShare?.();
+  function renderCost() {
+    const summary = calcTripSummary({
+      distance: number('distance'),
+      fuelEfficiency: number('fuelEff'),
+      gasPrice: number('gasPrice'),
+      trips: Number.parseInt($('trips').value, 10),
+      roundTrip: $('roundTrip').checked,
+      extraCost: number('extraCost'),
+      people: Number.parseInt($('people').value, 10),
+    });
+    const result = $('costResult');
+    result.hidden = !summary;
+    if (!summary) {
+      if (activeMode === 'cost') window.hideResultShare?.();
       return;
     }
-    result.classList.add('visible');
-    if (!hasTrackedResult) {
+
+    $('tripSummary').textContent = `${$('roundTrip').checked ? '往復' : '片道・合計距離'} × ${$('trips').value}回`;
+    $('totalCost').textContent = yen(summary.totalCost);
+    $('totalDistance').textContent = `${summary.totalDistance.toLocaleString('ja-JP', { maximumFractionDigits: 1 })} km`;
+    $('totalLiters').textContent = `${summary.liters.toLocaleString('ja-JP', { maximumFractionDigits: 2 })} L`;
+    $('fuelCost').textContent = yen(summary.fuelCost);
+    $('costPerKm').textContent = `${summary.costPerKm}円/km`;
+    $('splitResult').hidden = summary.people < 2;
+    $('perPerson').textContent = yen(summary.perPerson);
+
+    if (!trackedCost) {
       window.trackCalculatorResult?.('fuel_cost');
-      hasTrackedResult = true;
+      trackedCost = true;
     }
-
-    // 往復・月額は floor 済みの片道を累乗せず、原始量から精確に再計算する。
-    const roundTrip = calcRoundTripCost({ distance, fuelEfficiency: fuelEff, gasPrice });
-    $('one-way').textContent   = yen(oneWay.cost);
-    $('round-trip').textContent = yen(roundTrip);
-    $('liters').textContent    = oneWay.liters.toFixed(2) + ' L';
-
-    const monthly = calcMonthlyCost({ distance, fuelEfficiency: fuelEff, gasPrice, workdays });
-    const sec = $('monthly-section');
-    if (monthly) {
-      $('monthly').textContent = yen(monthly);
-      sec.style.display = 'block';
-    } else {
-      sec.style.display = 'none';
+    if (activeMode === 'cost') {
+      const lines = [
+        'ガソリン代計算',
+        `総走行距離：${$('totalDistance').textContent}`,
+        `必要な燃料：${$('totalLiters').textContent}`,
+        `合計交通費：${$('totalCost').textContent}`,
+      ];
+      if (summary.people >= 2) lines.push(`1人あたり：${$('perPerson').textContent}`);
+      window.setResultShare?.(lines.join('\n'));
     }
-
-    // 割り勘：合計 = 往復ガソリン代 + 高速料金（往復合計）。人数2人以上のときだけ表示。
-    const warikanSec = $('warikan-section');
-    const total = roundTrip + toll;
-    const split = splitPerPerson(total, people);
-    if (split && split.people >= 2) {
-      $('total-cost').textContent  = yen(total);
-      $('per-person').textContent  = yen(split.perPerson);
-      $('people-label').textContent = String(split.people);
-      warikanSec.style.display = 'block';
-    } else {
-      warikanSec.style.display = 'none';
-    }
-
-    // 結果サマリー：表示中の行だけを DOM から拾って組み立てる（再計算しない）
-    const lines = [
-      'ガソリン代計算器',
-      `片道ガソリン代：${$('one-way').textContent}`,
-      `往復ガソリン代：${$('round-trip').textContent}`,
-    ];
-    if (sec.style.display !== 'none') {
-      lines.push(`月額交通費：${$('monthly').textContent}`);
-    }
-    if (warikanSec.style.display !== 'none') {
-      lines.push(`1人あたり（${$('people-label').textContent}人）：${$('per-person').textContent}`);
-    }
-    window.setResultShare?.(lines.join('\n'));
   }
 
-  ['distance', 'fuel-eff', 'gas-price', 'workdays', 'people', 'toll'].forEach((id) =>
-    $(id).addEventListener('input', render)
-  );
+  function renderEconomy() {
+    const rawPrice = $('actualPrice').value.trim();
+    const result = calcFuelEconomy({
+      distance: number('actualDistance'),
+      fuelUsed: number('fuelUsed'),
+      gasPrice: rawPrice === '' ? undefined : Number.parseFloat(rawPrice),
+    });
+    const box = $('economyResult');
+    box.hidden = !result;
+    if (!result) {
+      if (activeMode === 'economy') window.hideResultShare?.();
+      return;
+    }
+
+    $('kmPerLiter').textContent = `${result.kmPerLiter.toFixed(2)} km/L`;
+    $('litersPer100').textContent = `${result.litersPer100Km.toFixed(2)} L`;
+    $('actualFuelCost').textContent = result.fuelCost === null ? '単価入力で表示' : yen(result.fuelCost);
+    $('actualCostPerKm').textContent = result.costPerKm === null ? '単価入力で表示' : `${result.costPerKm}円/km`;
+
+    if (!trackedEconomy) {
+      window.trackCalculatorResult?.('fuel_economy');
+      trackedEconomy = true;
+    }
+    if (activeMode === 'economy') {
+      const lines = [
+        '実燃費計算（満タン法）',
+        `実燃費：${$('kmPerLiter').textContent}`,
+        `100kmの使用量：${$('litersPer100').textContent}`,
+      ];
+      if (result.fuelCost !== null) lines.push(`今回の給油額：${$('actualFuelCost').textContent}`);
+      window.setResultShare?.(lines.join('\n'));
+    }
+  }
+
+  document.querySelectorAll('.gasoline-tab').forEach((button) => {
+    button.addEventListener('click', () => {
+      activeMode = button.dataset.mode;
+      document.querySelectorAll('.gasoline-tab').forEach((item) => {
+        const selected = item === button;
+        item.classList.toggle('is-active', selected);
+        item.setAttribute('aria-pressed', String(selected));
+      });
+      $('costPanel').hidden = activeMode !== 'cost';
+      $('economyPanel').hidden = activeMode !== 'economy';
+      if (activeMode === 'cost') renderCost();
+      else renderEconomy();
+    });
+  });
+
+  ['distance', 'trips', 'fuelEff', 'gasPrice', 'extraCost', 'people'].forEach((id) => $(id).addEventListener('input', renderCost));
+  $('roundTrip').addEventListener('change', renderCost);
+  ['actualDistance', 'fuelUsed', 'actualPrice'].forEach((id) => $(id).addEventListener('input', renderEconomy));
 </script>
