@@ -65,6 +65,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'rieki-ritsu',
+    nav: '利益率・粗利率',
+    name: '利益率・粗利率計算ツール',
+    icon: '📊',
+    category: '税金・お金',
+    short: '原価・売価から粗利率と目標売価を計算',
+    live: true,
+  },
+  {
     slug: 'loan',
     nav: 'ローン返済',
     name: '住宅ローン返済シミュレーター',

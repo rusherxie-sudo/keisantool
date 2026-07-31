@@ -1,0 +1,401 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'rieki-ritsu';
+const title = '利益率計算ツール｜粗利率・原価率・目標売価を自動計算';
+const description =
+  '原価と売価から粗利額・利益率（粗利率）・原価率・マークアップ率を自動計算。送料・固定費・販売手数料を含め、目標利益率から必要な売価の逆算や営業利益率の計算もできます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '利益率・粗利率計算ツール',
+  description,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['粗利額・粗利率', '原価率・マークアップ率', '販売手数料・追加コスト', '目標粗利率から売価を逆算', '営業利益率・経常利益率'],
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 利益率</div>
+    <h1>利益率・粗利率計算ツール</h1>
+    <p>原価・売価・手数料から利益率を計算し、目標粗利率を確保する売価も逆算できます。</p>
+    <div class="feature-chips" aria-label="対応する計算">
+      <span>粗利率</span><span>原価率</span><span>目標売価</span><span>営業利益率</span>
+    </div>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist" aria-label="利益率計算の種類">
+      <button class="calc-tab active" type="button" data-tab="margin" role="tab" aria-selected="true">原価・売価から計算</button>
+      <button class="calc-tab" type="button" data-tab="target" role="tab" aria-selected="false">目標粗利率から売価</button>
+      <button class="calc-tab" type="button" data-tab="sales" role="tab" aria-selected="false">営業利益率など</button>
+    </div>
+
+    <div class="calc-panel active" id="panel-margin" role="tabpanel">
+      <div class="input-grid two-cols">
+        <div class="form-group">
+          <label for="margin-cost">原価・仕入価格（円）</label>
+          <input type="number" id="margin-cost" min="0" step="1" inputmode="numeric" value="700" />
+        </div>
+        <div class="form-group">
+          <label for="margin-price">売価・販売価格（円）</label>
+          <input type="number" id="margin-price" min="1" step="1" inputmode="numeric" value="1000" />
+        </div>
+        <div class="form-group">
+          <label for="margin-extra">送料・包装など追加コスト（円）</label>
+          <input type="number" id="margin-extra" min="0" step="1" inputmode="numeric" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="margin-fee">売価に対する販売手数料（%）</label>
+          <input type="number" id="margin-fee" min="0" max="99.99" step="0.01" inputmode="decimal" value="0" />
+        </div>
+      </div>
+      <p class="input-error" id="margin-error" role="alert"></p>
+      <div class="result-box" id="margin-result" aria-live="polite">
+        <div class="result-label">利益率（粗利率）</div>
+        <div class="result-main" id="margin-rate">30%</div>
+        <div class="result-grid">
+          <div><span>粗利額</span><strong id="margin-profit">300円</strong></div>
+          <div><span>原価率</span><strong id="margin-cost-rate">70%</strong></div>
+          <div><span>販売手数料</span><strong id="margin-fee-amount">0円</strong></div>
+          <div><span>原価に対する加算率</span><strong id="margin-markup">42.86%</strong></div>
+          <div><span>総コスト</span><strong id="margin-total-cost">700円</strong></div>
+          <div><span>売価</span><strong id="margin-sale-price">1,000円</strong></div>
+        </div>
+        <div class="composition" id="margin-composition" aria-label="売価の内訳">
+          <div class="composition-bar"><span id="bar-cost"></span><span id="bar-fee"></span><span id="bar-profit"></span></div>
+          <div class="composition-legend"><span><i class="cost-dot"></i>原価・固定費</span><span><i class="fee-dot"></i>手数料</span><span><i class="profit-dot"></i>粗利</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-target" role="tabpanel" hidden>
+      <div class="input-grid two-cols">
+        <div class="form-group">
+          <label for="target-cost">原価・仕入価格（円）</label>
+          <input type="number" id="target-cost" min="0" step="1" inputmode="numeric" value="700" />
+        </div>
+        <div class="form-group">
+          <label for="target-rate">目標粗利率（%）</label>
+          <input type="number" id="target-rate" min="0" max="99.99" step="0.01" inputmode="decimal" value="30" />
+        </div>
+        <div class="form-group">
+          <label for="target-extra">送料・包装など追加コスト（円）</label>
+          <input type="number" id="target-extra" min="0" step="1" inputmode="numeric" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="target-fee">売価に対する販売手数料（%）</label>
+          <input type="number" id="target-fee" min="0" max="99.99" step="0.01" inputmode="decimal" value="0" />
+        </div>
+      </div>
+      <p class="input-error" id="target-error" role="alert"></p>
+      <div class="result-box" id="target-result" aria-live="polite">
+        <div class="result-label">計算上の売価（1円未満切り捨て）</div>
+        <div class="result-main" id="target-price">1,000円</div>
+        <div class="result-grid">
+          <div><span>目標粗利率</span><strong id="target-goal">30%</strong></div>
+          <div><span>切り捨て後の実際粗利率</span><strong id="target-achieved">30%</strong></div>
+          <div><span>粗利額</span><strong id="target-profit">300円</strong></div>
+          <div><span>販売手数料</span><strong id="target-fee-amount">0円</strong></div>
+          <div><span>総コスト</span><strong id="target-total-cost">700円</strong></div>
+          <div><span>計算式</span><strong id="target-formula">700 ÷ 0.7</strong></div>
+        </div>
+        <p class="target-note" id="target-note"></p>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-sales" role="tabpanel" hidden>
+      <div class="input-grid sales-grid">
+        <div class="form-group">
+          <label for="sales-kind">計算する利益率</label>
+          <select id="sales-kind">
+            <option value="営業利益率">営業利益率</option>
+            <option value="経常利益率">経常利益率</option>
+            <option value="当期純利益率">当期純利益率</option>
+            <option value="任意の利益率">任意の利益率</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sales-amount">売上高（円）</label>
+          <input type="number" id="sales-amount" min="1" step="1" inputmode="numeric" value="1000000" />
+        </div>
+        <div class="form-group">
+          <label for="sales-profit">利益額（円・赤字はマイナス）</label>
+          <input type="number" id="sales-profit" step="1" inputmode="numeric" value="100000" />
+        </div>
+      </div>
+      <p class="input-error" id="sales-error" role="alert"></p>
+      <div class="result-box" id="sales-result" aria-live="polite">
+        <div class="result-label" id="sales-label">営業利益率</div>
+        <div class="result-main" id="sales-rate">10%</div>
+        <div class="result-grid one-row">
+          <div><span>売上高</span><strong id="sales-out">1,000,000円</strong></div>
+          <div><span>利益額</span><strong id="sales-profit-out">100,000円</strong></div>
+        </div>
+        <p class="formula-line" id="sales-formula">100,000 ÷ 1,000,000 × 100 ＝ 10%</p>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>利益率・粗利率・原価率の計算式</h2>
+    <div class="formula-table-wrap">
+      <table class="formula-table">
+        <thead><tr><th>指標</th><th>計算式</th><th>原価700円・売価1000円</th></tr></thead>
+        <tbody>
+          <tr><td>粗利額</td><td>売価 − 原価 − 追加コスト − 手数料</td><td>300円</td></tr>
+          <tr><td>利益率（粗利率）</td><td>粗利額 ÷ 売価 × 100</td><td>30%</td></tr>
+          <tr><td>原価率</td><td>総コスト ÷ 売価 × 100</td><td>70%</td></tr>
+          <tr><td>原価に対する加算率</td><td>粗利額 ÷ 総コスト × 100</td><td>約42.86%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      中小企業庁の統計でも、売上高総利益率は「売上総利益÷売上高×100」で算出されます。本ツールの「利益率（粗利率）」も売価を分母にします。原価を分母にする加算率とは同じ数字になりません。
+    </p>
+
+    <h2>粗利率と原価に対する加算率の違い</h2>
+    <div class="compare-grid">
+      <div><h3>粗利率（マージン）</h3><strong>利益 ÷ 売価</strong><p>売上のうち何％が粗利として残るか。700円の商品を1000円で売ると30%。</p></div>
+      <div><h3>原価に対する加算率</h3><strong>利益 ÷ 原価</strong><p>原価に対して何％を上乗せしたか。同じ例では約42.86%。</p></div>
+    </div>
+    <p>海外サービスなどで「margin」と「markup」が並ぶ場合も、一般に分母が異なります。見積書や社内指標では、どちらの率を求めているかを先に確認してください。</p>
+
+    <h2>目標利益率から売価を逆算する方法</h2>
+    <div class="formula-box">
+      <strong>売価 ＝ 総コスト ÷（1 − 目標粗利率 − 販売手数料率）</strong>
+      <span>率は30%なら0.30として計算します。目標率と手数料率の合計は100%未満である必要があります。</span>
+    </div>
+    <p>
+      原価700円、目標粗利率30%、手数料なしなら、700÷0.70＝1000円です。1円未満が出る場合、本站の金額ルールに合わせて切り捨てるため、実際粗利率が目標をわずかに下回ることがあります。目標以上を確保したい場合は表示額を切り上げて再確認してください。
+    </p>
+
+    <h2>営業利益率・経常利益率・当期純利益率</h2>
+    <p>会社全体の利益率は、選ぶ利益額だけが変わり、基本式は「利益額÷売上高×100」です。</p>
+    <ul>
+      <li><strong>営業利益率</strong>：本業の営業利益を売上高で割った率。</li>
+      <li><strong>経常利益率</strong>：営業外損益を含む経常利益を売上高で割った率。</li>
+      <li><strong>当期純利益率</strong>：税金などを反映した当期純利益を売上高で割った率。</li>
+    </ul>
+    <p>商品1件の採算を見る粗利率とは費用範囲が異なるため、比較するときは同じ指標・同じ期間を使ってください。</p>
+
+    <h2>税込・税抜と費用の入力方法</h2>
+    <ul>
+      <li>原価と売価は、税込同士または税抜同士にそろえ、混在させないでください。</li>
+      <li>送料、梱包資材、外注費など売上に比例しない費用は「追加コスト」にまとめます。</li>
+      <li>販売プラットフォームなど売価に対する割合で決まる費用は「販売手数料」に入力します。</li>
+      <li>消費税の税込・税抜金額は<a href="/zeizei/">消費税計算ツール</a>で確認できます。</li>
+    </ul>
+
+    <h2>参考資料</h2>
+    <ul class="source-list">
+      <li><a href="https://www.chusho.meti.go.jp/koukai/chousa/kihon/170331chousa.pdf" rel="noopener">中小企業庁「中小企業実態基本調査の経営指標」</a>：売上高総利益率の算出式。</li>
+      <li><a href="https://www.meti.go.jp/shingikai/sankoshin/shin_kijiku/value_creation/pdf/006_03_00.pdf" rel="noopener">経済産業省「価値創造経営小委員会 事務局資料」</a>：売上総利益率・営業利益率等の比較資料。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。金額は1円未満を切り捨てます。実際の会計・価格設定では、費用の範囲、消費税の処理、契約条件、会計方針を税理士・会計担当者等にご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '利益率（粗利率）はどう計算しますか？', a: '売価から原価、追加コスト、販売手数料を引いて粗利額を求め、粗利額を売価で割って100を掛けます。' },
+    { q: '原価700円を1000円で売ると利益率は何％ですか？', a: '粗利は300円、利益率（粗利率）は300÷1000×100＝30%、原価率は70%です。原価に対する加算率は300÷700×100で約42.86%です。' },
+    { q: '利益率30%にする売価はいくらですか？', a: '手数料がなければ「総コスト÷0.70」で求めます。原価700円なら1000円です。1円未満は切り捨てるため、実際率も確認してください。' },
+    { q: '粗利率と原価率の関係は？', a: '販売手数料などを別に引かない単純な原価と売価だけなら、粗利率と原価率の合計は100%です。手数料を別入力した場合は、その率も売価の内訳に加わります。' },
+    { q: '赤字でも計算できますか？', a: 'はい。総コストが売価を上回る場合は、粗利額と利益率をマイナスで表示します。営業利益率なども利益額にマイナスを入力できます。' },
+    { q: '税込と税抜のどちらを入力しますか？', a: 'どちらでも計算できますが、原価と売価を同じ基準にそろえてください。会計上の消費税処理は事業者の状況によるため、重要な判断は税理士等に確認してください。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import {
+    calculateGrossMargin,
+    priceForTargetMargin,
+    calculateSalesProfitMargin,
+  } from '../../lib/rieki-ritsu.js';
+
+  const $ = (id) => document.getElementById(id);
+  const value = (id) => Number($(id).value);
+  const yen = (amount) => `${Math.abs(amount).toLocaleString('ja-JP')}${amount < 0 ? '円の赤字' : '円'}`;
+  const signedYen = (amount) => amount < 0 ? `−${Math.abs(amount).toLocaleString('ja-JP')}円` : `${amount.toLocaleString('ja-JP')}円`;
+  const rate = (number) => `${Number(number.toFixed(2))}%`;
+  const showResult = (id, visible) => $(id).classList.toggle('visible', visible);
+  const setError = (id, message = '') => { $(id).textContent = message; };
+
+  function renderMargin() {
+    const result = calculateGrossMargin(
+      value('margin-cost'), value('margin-price'), value('margin-extra'), value('margin-fee'),
+    );
+    if (!result) {
+      setError('margin-error', '売価は1円以上、原価・追加コストは0円以上、手数料は0%以上100%未満で入力してください。');
+      showResult('margin-result', false);
+      if (!$('panel-margin').hidden) window.hideResultShare?.();
+      return;
+    }
+    setError('margin-error');
+    showResult('margin-result', true);
+    $('margin-rate').textContent = rate(result.grossMarginRate);
+    $('margin-rate').classList.toggle('loss', result.grossProfit < 0);
+    $('margin-profit').textContent = signedYen(result.grossProfit);
+    $('margin-cost-rate').textContent = rate(result.costRate);
+    $('margin-fee-amount').textContent = signedYen(result.feeAmount);
+    $('margin-markup').textContent = result.markupRate == null ? '計算不可' : rate(result.markupRate);
+    $('margin-total-cost').textContent = signedYen(result.totalCost);
+    $('margin-sale-price').textContent = signedYen(result.salePrice);
+
+    const composition = $('margin-composition');
+    composition.hidden = result.grossProfit < 0;
+    if (!composition.hidden) {
+      $('bar-cost').style.width = `${Math.min(100, result.costRate)}%`;
+      $('bar-fee').style.width = `${Math.min(100, result.feeAmount / result.salePrice * 100)}%`;
+      $('bar-profit').style.width = `${Math.max(0, Math.min(100, result.grossMarginRate))}%`;
+    }
+    if (!$('panel-margin').hidden) {
+      window.setResultShare?.(`利益率計算\n売価：${yen(result.salePrice)}／総コスト：${yen(result.totalCost)}\n粗利：${signedYen(result.grossProfit)}（粗利率 ${rate(result.grossMarginRate)}）`);
+    }
+  }
+
+  function renderTarget() {
+    const result = priceForTargetMargin(
+      value('target-cost'), value('target-rate'), value('target-extra'), value('target-fee'),
+    );
+    if (!result) {
+      setError('target-error', '金額は0円以上、率は0%以上で入力し、目標粗利率と手数料率の合計を100%未満にしてください。');
+      showResult('target-result', false);
+      if (!$('panel-target').hidden) window.hideResultShare?.();
+      return;
+    }
+    setError('target-error');
+    showResult('target-result', true);
+    $('target-price').textContent = signedYen(result.salePrice);
+    $('target-goal').textContent = rate(result.targetMarginRate);
+    $('target-achieved').textContent = result.achievedMarginRate == null ? '計算不可' : rate(result.achievedMarginRate);
+    $('target-profit').textContent = signedYen(result.grossProfit);
+    $('target-fee-amount').textContent = signedYen(result.feeAmount);
+    $('target-total-cost').textContent = signedYen(result.totalCost);
+    const divisor = 1 - (result.targetMarginRate + result.feeRate) / 100;
+    $('target-formula').textContent = `${result.totalCost.toLocaleString('ja-JP')} ÷ ${Number(divisor.toFixed(4))}`;
+    const belowTarget = result.achievedMarginRate != null && result.achievedMarginRate + 1e-10 < result.targetMarginRate;
+    $('target-note').textContent = belowTarget
+      ? '1円未満の切り捨てにより実際率が目標をわずかに下回ります。目標以上にする場合は表示額に1円を足して再確認してください。'
+      : '';
+    if (!$('panel-target').hidden) {
+      window.setResultShare?.(`目標粗利率から売価を計算\n総コスト：${yen(result.totalCost)}／目標：${rate(result.targetMarginRate)}\n計算上の売価：${yen(result.salePrice)}（実際 ${result.achievedMarginRate == null ? '―' : rate(result.achievedMarginRate)}）`);
+    }
+  }
+
+  function renderSales() {
+    const result = calculateSalesProfitMargin(value('sales-amount'), value('sales-profit'));
+    const label = $('sales-kind').value;
+    if (!result) {
+      setError('sales-error', '売上高は1円以上、利益額は数値で入力してください。赤字はマイナスで入力できます。');
+      showResult('sales-result', false);
+      if (!$('panel-sales').hidden) window.hideResultShare?.();
+      return;
+    }
+    setError('sales-error');
+    showResult('sales-result', true);
+    $('sales-label').textContent = label;
+    $('sales-rate').textContent = rate(result.profitMarginRate);
+    $('sales-rate').classList.toggle('loss', result.profit < 0);
+    $('sales-out').textContent = signedYen(result.sales);
+    $('sales-profit-out').textContent = signedYen(result.profit);
+    $('sales-formula').textContent = `${result.profit.toLocaleString('ja-JP')} ÷ ${result.sales.toLocaleString('ja-JP')} × 100 ＝ ${rate(result.profitMarginRate)}`;
+    if (!$('panel-sales').hidden) {
+      window.setResultShare?.(`${label}計算\n売上高：${yen(result.sales)}／利益：${signedYen(result.profit)}\n${label}：${rate(result.profitMarginRate)}`);
+    }
+  }
+
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((item) => {
+        const active = item === tab;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll('.calc-panel').forEach((panel) => {
+        const active = panel.id === `panel-${tab.dataset.tab}`;
+        panel.classList.toggle('active', active);
+        panel.hidden = !active;
+      });
+      ({ margin: renderMargin, target: renderTarget, sales: renderSales })[tab.dataset.tab]?.();
+    });
+  });
+
+  ['margin-cost', 'margin-price', 'margin-extra', 'margin-fee'].forEach((id) => {
+    $(id).addEventListener('input', renderMargin);
+    $(id).addEventListener('change', renderMargin);
+  });
+  ['target-cost', 'target-rate', 'target-extra', 'target-fee'].forEach((id) => {
+    $(id).addEventListener('input', renderTarget);
+    $(id).addEventListener('change', renderTarget);
+  });
+  ['sales-kind', 'sales-amount', 'sales-profit'].forEach((id) => {
+    $(id).addEventListener('input', renderSales);
+    $(id).addEventListener('change', renderSales);
+  });
+
+  renderMargin();
+  renderTarget();
+  renderSales();
+</script>
+
+<style>
+  .feature-chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .feature-chips span { padding:6px 11px; border-radius:999px; background:var(--primary-light); color:var(--primary-dark); font-size:.76rem; font-weight:700; }
+  .calc-tabs { overflow-x:auto; }
+  .calc-tab { white-space:nowrap; }
+  .input-grid { display:grid; gap:16px; }
+  .two-cols { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .sales-grid { grid-template-columns:1.2fr 1fr 1fr; }
+  .input-error { min-height:1.3em; margin:0 0 8px; color:var(--danger); font-size:.82rem; font-weight:700; }
+  .result-main.loss { color:var(--danger); }
+  .result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px; overflow:hidden; margin-top:18px; border:1px solid var(--border-2); border-radius:var(--r-md); background:var(--border-2); }
+  .result-grid > div { display:flex; justify-content:space-between; gap:12px; padding:10px 12px; background:var(--surface); }
+  .result-grid span { color:var(--text-2); }
+  .result-grid strong { text-align:right; overflow-wrap:anywhere; }
+  .composition { margin-top:18px; }
+  .composition-bar { display:flex; width:100%; height:18px; overflow:hidden; border-radius:999px; background:var(--surface-sub); }
+  .composition-bar span { display:block; transition:width .2s ease; }
+  #bar-cost { background:#7fa8ed; }
+  #bar-fee { background:#f2b34a; }
+  #bar-profit { background:#29aa73; }
+  .composition-legend { display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; color:var(--text-2); font-size:.76rem; }
+  .composition-legend span { display:flex; align-items:center; gap:5px; }
+  .composition-legend i { width:9px; height:9px; border-radius:50%; }
+  .cost-dot { background:#7fa8ed; } .fee-dot { background:#f2b34a; } .profit-dot { background:#29aa73; }
+  .target-note { min-height:1.3em; margin:12px 0 0; color:#9a5a12; font-size:.8rem; font-weight:700; line-height:1.55; }
+  .formula-line { margin:14px 0 0; padding:12px; border-radius:var(--r-md); background:var(--surface-sub); text-align:center; font-weight:700; overflow-wrap:anywhere; }
+  .formula-table-wrap { overflow-x:auto; margin:14px 0 22px; }
+  .formula-table { width:100%; min-width:660px; border-collapse:collapse; }
+  .formula-table th, .formula-table td { padding:11px 12px; border:1px solid var(--border-2); text-align:left; }
+  .formula-table th { background:var(--primary-light); color:var(--primary-dark); }
+  .compare-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:16px 0; }
+  .compare-grid > div { padding:18px; border:1px solid var(--border-2); border-radius:var(--r-lg); background:var(--surface-sub); }
+  .compare-grid h3 { margin:0 0 7px; }
+  .compare-grid strong { color:var(--primary-dark); }
+  .compare-grid p { margin:8px 0 0; }
+  .formula-box { display:flex; flex-direction:column; gap:8px; padding:16px 18px; margin:16px 0; border-left:5px solid var(--primary); border-radius:var(--r-lg); background:var(--primary-light); }
+  .formula-box span { color:var(--text-2); }
+  .source-list a { overflow-wrap:anywhere; }
+  @media (max-width:760px) {
+    .sales-grid { grid-template-columns:1fr; }
+  }
+  @media (max-width:560px) {
+    .two-cols, .result-grid, .compare-grid { grid-template-columns:1fr; }
+    .result-grid > div { align-items:flex-start; }
+    .result-grid strong { max-width:54%; }
+  }
+</style>
