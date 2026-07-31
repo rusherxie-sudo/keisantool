@@ -1,6 +1,6 @@
 // 猫・犬の妊娠期間計算（純関数・DOM非依存）。
 // 出典（一次資料）:
-//   猫 = 交配日 + 65日（正常範囲 63〜67）: iCatCare / Merck Veterinary Manual
+//   猫 = 交配日 + 65日（90%が63〜67日）: Veterinary Information Network / Merck Veterinary Manual
 //   犬 = 交配日 + 63日（初回交配からの範囲 58〜72）: AKC / Merck Veterinary Manual
 // 日付は UTC 正午基準で扱い、タイムゾーン/夏時間による日付ズレを避ける（shussan.js と同方式）。
 
@@ -96,6 +96,22 @@ export function pregnancyStatus(matingDate, today, kind) {
     daysUntilDue: g.avg - current.days,
     daysUntilRangeStart: g.early - current.days,
     daysUntilRangeEnd: g.late - current.days,
+  };
+}
+
+// 猫の交配日を基準にした、妊娠確認・頭数確認・出産準備の日付目安。
+// 超音波 25〜35日・レントゲン 55日以降: Merck Veterinary Manual。
+// 7週ごろからの巣作り・準備: Cats Protection。
+export function catPregnancyMilestones(matingDate) {
+  const d = toDate(matingDate);
+  if (!d) return null;
+  return {
+    ultrasound: {
+      start: toISO(addDays(d, 25)),
+      end: toISO(addDays(d, 35)),
+    },
+    xray: toISO(addDays(d, 55)),
+    preparation: toISO(addDays(d, 49)),
   };
 }
 

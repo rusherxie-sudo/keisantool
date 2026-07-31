@@ -6,10 +6,11 @@ import {
   pregnancyStage,
   pregnancyStatus,
   dogPregnancyMilestones,
+  catPregnancyMilestones,
 } from '../src/lib/pet-pregnancy.js';
 
 // 妊娠日数の出典（一次資料）:
-//   猫 = 交配日+65日（正常範囲 63〜67）: iCatCare / Merck Veterinary Manual
+//   猫 = 交配日+65日（90%が63〜67日）: Veterinary Information Network / Merck Veterinary Manual
 //   犬 = 交配日+63日（初回交配からの範囲 58〜72）: AKC / Merck
 // 日付は UTC 正午基準（shussan.js と同方式）。
 
@@ -123,6 +124,18 @@ describe('pregnancyStage(妊娠時期区分: 経過日数と種別から)', () =
 });
 
 describe('pregnancyStatus(現在の日数・週数・予定日まで)', () => {
+  it('猫: 交配31日後は4週3日・中期・予定日まで34日', () => {
+    expect(pregnancyStatus('2026-05-01', '2026-06-01', 'neko')).toEqual({
+      days: 31,
+      weeks: 4,
+      daysInWeek: 3,
+      stage: '中期',
+      daysUntilDue: 34,
+      daysUntilRangeStart: 32,
+      daysUntilRangeEnd: 36,
+    });
+  });
+
   it('犬: 交配31日後は4週3日・中期・予定日まで32日', () => {
     expect(pregnancyStatus('2026-05-01', '2026-06-01', 'inu')).toEqual({
       days: 31,
@@ -148,6 +161,21 @@ describe('pregnancyStatus(現在の日数・週数・予定日まで)', () => {
   it('交配前・無効な種別は null', () => {
     expect(pregnancyStatus('2026-05-01', '2026-04-30', 'inu')).toBeNull();
     expect(pregnancyStatus('2026-05-01', '2026-06-01', 'usagi')).toBeNull();
+  });
+});
+
+describe('catPregnancyMilestones(交配日からの受診・準備目安)', () => {
+  it('超音波25〜35日、レントゲン55日、準備開始49日を返す', () => {
+    expect(catPregnancyMilestones('2026-05-01')).toEqual({
+      ultrasound: { start: '2026-05-26', end: '2026-06-05' },
+      xray: '2026-06-25',
+      preparation: '2026-06-19',
+    });
+  });
+
+  it('無効な日付は null', () => {
+    expect(catPregnancyMilestones('')).toBeNull();
+    expect(catPregnancyMilestones('not-a-date')).toBeNull();
   });
 });
 

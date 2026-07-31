@@ -6,13 +6,13 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'neko-ninshin';
-const title = '猫の妊娠期間計算器 - 交配日から出産予定日・妊娠日数を自動計算 | 計算ツール';
+const title = '猫の出産予定日計算｜交配日から妊娠期間65日を自動計算 | 計算ツール';
 const description =
-  '猫の交配日を入力するだけで、出産予定日（交配日＋65日）と出産可能範囲、現在の妊娠日数・週数・時期（前期/中期/後期）を自動計算する無料ツール。iCatCare・Merck 等の獣医情報に基づきます。';
+  '猫の交配日から出産予定日（65日後）、出産時期の目安（63〜67日後）、現在の妊娠週数、超音波・レントゲン・出産準備の日付を無料で自動計算します。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: '猫の妊娠期間計算器',
+  name: '猫の出産予定日・妊娠期間計算',
   description,
   applicationCategory: 'HealthApplication',
   operatingSystem: 'Web',
@@ -21,24 +21,37 @@ const jsonld = {
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
-    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/pet/">ペット・動物</a> ／ 猫の妊娠期間計算</div>
-    <h1>猫の妊娠期間計算器</h1>
-    <p>猫の交配日を入力するだけで、出産予定日・出産可能範囲・現在の妊娠日数・妊娠時期を自動で計算します。</p>
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/pet/">ペット・動物</a> ／ 猫の出産予定日</div>
+    <h1>猫の出産予定日計算（妊娠期間カレンダー）</h1>
+    <p>交配日から、65日後の出産予定日と妊娠中の受診・準備日をまとめて計算します。</p>
+    <div class="rule-chips" aria-label="計算内容">
+      <span>平均65日</span><span>時期の目安63〜67日</span><span>妊娠週数も表示</span>
+    </div>
   </div>
 
   <div class="calc-card">
-    <div class="form-group">
-      <label for="mating">交配日</label>
-      <input type="date" id="mating" />
-    </div>
+    <div class="calc-panel active">
+      <div class="form-group">
+        <label for="mating">交配日</label>
+        <input type="date" id="mating" />
+        <small class="field-note">これから交配する予定の日でも計算できます。</small>
+      </div>
 
-    <div class="result-box" id="result">
-      <div class="result-label">出産予定日（交配日＋65日）</div>
-      <div class="result-main" id="due-date">―</div>
-      <div class="result-rows">
-        <div class="result-row"><span class="label">出産可能範囲（＋63〜67日）</span><span class="value" id="due-range">―</span></div>
-        <div class="result-row"><span class="label">現在の妊娠日数</span><span class="value" id="elapsed">―</span></div>
-        <div class="result-row"><span class="label">妊娠時期</span><span class="value" id="stage">―</span></div>
+      <div class="result-box" id="result" aria-live="polite">
+        <div class="result-label">出産予定日（交配日＋65日）</div>
+        <div class="result-main" id="due-date">―</div>
+        <div class="countdown" id="countdown">―</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">出産時期の目安（＋63〜67日）</span><span class="value" id="due-range">―</span></div>
+          <div class="result-row"><span class="label">現在の妊娠日数</span><span class="value" id="elapsed">―</span></div>
+          <div class="result-row"><span class="label">妊娠時期</span><span class="value" id="stage">―</span></div>
+        </div>
+        <div class="milestone-box">
+          <h2>受診・出産準備カレンダー</h2>
+          <div class="milestone-row"><span><b>25〜35日後</b>超音波で妊娠確認の目安</span><strong id="ultrasound-date">―</strong></div>
+          <div class="milestone-row"><span><b>55日後〜</b>レントゲンで頭数確認の目安</span><strong id="xray-date">―</strong></div>
+          <div class="milestone-row"><span><b>49日後〜</b>静かな出産場所の準備</span><strong id="preparation-date">―</strong></div>
+        </div>
       </div>
     </div>
   </div>
@@ -48,24 +61,46 @@ const jsonld = {
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>使い方と計算方法</h2>
+    <h2>猫の妊娠期間は何日？</h2>
     <p>
-      猫が交配した日（交配日）を選ぶだけで、出産予定日・出産可能範囲・現在の妊娠日数と妊娠時期をその場で自動計算します。ボタンを押す必要はありません。
+      猫の妊娠期間は<strong>平均約65日</strong>です。本ツールでは、交配日に65日を加えた日を中心の出産予定日として計算します。
     </p>
+    <div class="formula-box"><strong>出産予定日 ＝ 交配日 ＋ 65日</strong><span>出産時期の目安：交配日＋63〜67日</span></div>
     <p>
-      猫の妊娠期間は<strong>平均約65日</strong>で、正常な範囲は<strong>63〜67日</strong>とされています。本ツールは交配日に65日を加えた日を出産予定日、63〜67日を加えた範囲を「出産可能範囲」として表示します。ただし猫は<strong>交尾排卵動物</strong>で、交尾の刺激によって排卵が起こるため、実際の受胎日（受精日）を正確に特定するのは困難です。複数回交配することも多く、出産予定日はあくまで±数日の幅をもった目安としてご覧ください。
+      獣医繁殖学の報告では平均65日、90％が63〜67日の範囲で出産したとされています。ただし猫は<strong>交尾排卵動物</strong>で、交配日と排卵日・受精日は同じとは限りません。複数回交配することもあるため、予定日は幅を持った目安としてご覧ください。
     </p>
-    <p>
-      現在の妊娠日数は、交配日から本日までの経過日数を「妊娠○日目（○週○日）」の形で表示します。妊娠時期のおおまかな発育の目安は次のとおりです。
-    </p>
+
+    <h2>交配日から出産までの9週間</h2>
+    <div class="timeline-table-wrap"><table class="timeline-table">
+      <thead><tr><th>交配から</th><th>主な目安</th><th>確認・準備</th></tr></thead>
+      <tbody>
+        <tr><td>1〜3週</td><td>着床までの時期</td><td>外見だけでは妊娠を判断しにくい時期</td></tr>
+        <tr><td>25〜35日後</td><td>妊娠確認</td><td>動物病院の超音波検査を相談</td></tr>
+        <tr><td>4〜6週</td><td>胎子が大きく発育</td><td>食事や運動は獣医師に確認</td></tr>
+        <tr><td>7週ごろ〜</td><td>巣作りを始めることがある</td><td>静かで暖かい出産場所を準備</td></tr>
+        <tr><td>55日後〜</td><td>頭数確認の目安</td><td>レントゲン検査を動物病院で相談</td></tr>
+        <tr><td>65日後</td><td>平均的な出産予定日</td><td>63〜67日の幅を持って備える</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>計算結果の見方</h2>
     <ul>
-      <li><strong>前期</strong>（〜3週ごろ）：受精卵が子宮に着床し、器官の形成が始まる時期。外見の変化はまだほとんどありません。</li>
-      <li><strong>中期</strong>（4〜6週ごろ）：胎子が大きく育ち、乳頭が目立ちはじめ、お腹がふくらんでくる時期です。</li>
-      <li><strong>後期</strong>（7〜9週ごろ）：胎子が完成に近づき出産の準備に入ります。<strong>妊娠55日（約8週）以降</strong>であればレントゲン検査で胎子の数を確認できるようになります。</li>
+      <li><strong>出産予定日</strong>：交配日に65日を加えた中心日です。</li>
+      <li><strong>出産時期の目安</strong>：平均的な範囲として63〜67日後を表示します。</li>
+      <li><strong>現在の妊娠日数</strong>：交配日を0日として、本日までの経過を週数と日数で表示します。</li>
+      <li><strong>受診・準備カレンダー</strong>：超音波、レントゲン、出産準備を相談する日付の目安です。</li>
     </ul>
     <p>
-      食欲や行動の変化、巣作りなど出産が近いサインが見られたら、分娩に備えましょう。正確な妊娠の確認や胎子の数・健康状態の把握、出産日の最終的な判断は、<strong>必ずかかりつけの獣医師</strong>の診察を受けてください。
+      食欲や行動の変化、巣作りなど出産が近いサインが見られたら、分娩に備えましょう。妊娠の確認、胎子の数や健康状態、検査・出産日の判断は、<strong>必ずかかりつけの獣医師</strong>に相談してください。
     </p>
+
+    <h2>参考にした獣医・動物福祉資料</h2>
+    <ul class="source-list">
+      <li><a href="https://www.merckvetmanual.com/cat-owners/reproductive-disorders-of-cats/management-of-reproduction-of-cats" rel="noopener">Merck Veterinary Manual「Management of Reproduction of Cats」</a></li>
+      <li><a href="https://www.merckvetmanual.com/management-and-nutrition/management-of-reproduction-dogs-and-cats/pregnancy-determination-in-bitches-and-queens" rel="noopener">Merck Veterinary Manual「Pregnancy Determination in Bitches and Queens」</a></li>
+      <li><a href="https://www.cats.org.uk/help-and-advice/pregnancy-and-kitten-care/caring-for-your-pregnant-cat" rel="noopener">Cats Protection「Caring for your pregnant cat」</a></li>
+      <li><a href="https://www.vin.com/apputil/content/defaultadv1.aspx?f5=1&amp;id=3859260&amp;pId=" rel="noopener">Veterinary Information Network「Advances in Feline Reproduction」</a></li>
+    </ul>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。出産予定日には個体差があり、健康・医療に関わる判断は必ずかかりつけの獣医師にご相談ください。</div>
   </section>
 
@@ -74,16 +109,17 @@ const jsonld = {
   <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
-    { q: '猫の妊娠期間は何日くらいですか？', a: '平均で約65日（正常範囲63〜67日）です。本ツールは交配日に65日を加えた日を出産予定日として自動計算します。' },
+    { q: '猫の妊娠期間は何日くらいですか？', a: '平均で約65日です。本ツールは交配日に65日を加えた日を中心の出産予定日、63〜67日後を時期の目安として表示します。' },
     { q: '出産予定日に幅があるのはなぜですか？', a: '猫は交尾の刺激で排卵する交尾排卵動物で受胎日を特定しにくく、複数回交配することも多いため、予定日は±数日の幅をもった目安になります。' },
-    { q: '生まれる子猫の数は調べられますか？', a: '妊娠55日（約8週）以降であれば、動物病院のレントゲン検査で胎子の数を確認できます。詳しくは獣医師にご相談ください。' },
+    { q: '猫の妊娠はいつ確認できますか？', a: '交配後25〜35日ごろの超音波検査が一つの目安です。早すぎる検査では確認できない場合があるため、実施日は獣医師に相談してください。' },
+    { q: '生まれる子猫の数はいつ分かりますか？', a: '妊娠55日以降のレントゲン検査が頭数確認の目安です。胎子や母猫の状態を確認しながら、実施時期は獣医師が判断します。' },
   ]} />
 
   <div class="ad-slot"></div>
 </ToolLayout>
 
 <script>
-  import { dueDate, dueRange, elapsed, pregnancyStage } from '../../lib/pet-pregnancy.js';
+  import { dueDate, dueRange, pregnancyStatus, catPregnancyMilestones } from '../../lib/pet-pregnancy.js';
 
   const $ = (id) => document.getElementById(id);
 
@@ -109,29 +145,64 @@ const jsonld = {
     const range = dueRange(mating, 'neko');
     $('due-range').textContent = range ? `${fmtJP(range.early)} 〜 ${fmtJP(range.late)}` : '―';
 
-    const el = elapsed(mating, new Date());
-    if (el) {
-      const w = Math.floor(el.days / 7);
-      const d = el.days % 7;
-      $('elapsed').textContent = `妊娠${el.days}日目（${w}週${d}日）`;
-      const stage = pregnancyStage(el.days, 'neko');
-      $('stage').textContent = stage || '―';
+    const status = pregnancyStatus(mating, new Date(), 'neko');
+    if (status) {
+      $('elapsed').textContent = `妊娠${status.days}日目（${status.weeks}週${status.daysInWeek}日）`;
+      $('stage').textContent = status.stage;
+      $('countdown').dataset.type = status.daysUntilRangeEnd < 0 ? 'warning' : 'normal';
+      $('countdown').textContent = status.daysUntilRangeEnd < 0
+        ? `出産時期の目安を${Math.abs(status.daysUntilRangeEnd)}日過ぎています。動物病院に相談してください。`
+        : status.daysUntilDue > 0
+          ? `出産予定日まであと${status.daysUntilDue}日`
+          : status.daysUntilDue === 0
+            ? '今日は平均的な出産予定日です'
+            : `平均予定日から${Math.abs(status.daysUntilDue)}日経過`;
     } else {
-      $('elapsed').textContent = '―';
+      $('elapsed').textContent = '交配予定日前';
       $('stage').textContent = '―';
+      $('countdown').dataset.type = 'normal';
+      $('countdown').textContent = '交配予定日からの日程です';
     }
+
+    const milestones = catPregnancyMilestones(mating);
+    $('ultrasound-date').textContent = `${fmtJP(milestones.ultrasound.start)} 〜 ${fmtJP(milestones.ultrasound.end)}`;
+    $('xray-date').textContent = `${fmtJP(milestones.xray)}以降`;
+    $('preparation-date').textContent = `${fmtJP(milestones.preparation)}ごろから`;
 
     // 結果サマリー：DOM の表示値から組み立て（再計算しない）。
     const lines = [
-      '猫の妊娠期間計算器',
+      '猫の出産予定日計算',
       `出産予定日：${$('due-date').textContent}`,
+      `時期の目安：${$('due-range').textContent}`,
     ];
-    if ($('elapsed').textContent !== '―') {
-      lines.push(`現在：${$('elapsed').textContent}`);
-    }
+    if (status) lines.push(`現在：${$('elapsed').textContent}`);
     window.setResultShare?.(lines.join('\n'));
   }
 
   $('mating').addEventListener('input', render);
   $('mating').addEventListener('change', render);
 </script>
+
+<style>
+  .rule-chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .rule-chips span { padding:6px 11px; border-radius:999px; background:var(--primary-light); color:var(--primary-dark); font-size:.76rem; font-weight:700; }
+  .field-note { display:block; margin-top:6px; color:var(--text-muted); font-size:.75rem; }
+  .countdown { margin:8px 0 14px; color:var(--primary-dark); font-size:.86rem; font-weight:800; }
+  .countdown[data-type='warning'] { padding:10px 12px; border-radius:var(--r-lg); background:#fff1e8; color:#9a3f12; line-height:1.55; }
+  .milestone-box { margin-top:18px; padding-top:16px; border-top:1px solid var(--border-2); }
+  .milestone-box h2 { margin:0 0 12px; font-size:.92rem; }
+  .milestone-row { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; padding:10px 0; border-top:1px solid rgba(255,255,255,.55); font-size:.77rem; line-height:1.55; }
+  .milestone-row span { display:flex; flex-direction:column; color:var(--text-2); }
+  .milestone-row strong { max-width:48%; color:var(--text); text-align:right; }
+  .formula-box { display:flex; flex-direction:column; gap:8px; padding:16px 18px; margin:18px 0; background:var(--primary-light); border-left:5px solid var(--primary); border-radius:var(--r-lg); }
+  .formula-box span { color:var(--text-2); line-height:1.65; }
+  .timeline-table-wrap { overflow-x:auto; margin:16px 0 24px; }
+  .timeline-table { width:100%; min-width:560px; border-collapse:collapse; font-size:.84rem; }
+  .timeline-table th, .timeline-table td { padding:11px 12px; border:1px solid var(--border-2); text-align:left; vertical-align:top; }
+  .timeline-table th { background:var(--primary-light); color:var(--primary-dark); }
+  .source-list a { overflow-wrap:anywhere; }
+  @media (max-width:520px) {
+    .milestone-row { flex-direction:column; gap:4px; }
+    .milestone-row strong { max-width:none; text-align:left; }
+  }
+</style>
