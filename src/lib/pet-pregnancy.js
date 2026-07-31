@@ -1,7 +1,7 @@
 // 猫・犬の妊娠期間計算（純関数・DOM非依存）。
 // 出典（一次資料）:
 //   猫 = 交配日 + 65日（正常範囲 63〜67）: iCatCare / Merck Veterinary Manual
-//   犬 = 交配日 + 63日（正常範囲 56〜72）: Cornell / AKC / Merck Veterinary Manual
+//   犬 = 交配日 + 63日（初回交配からの範囲 58〜72）: AKC / Merck Veterinary Manual
 // 日付は UTC 正午基準で扱い、タイムゾーン/夏時間による日付ズレを避ける（shussan.js と同方式）。
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -36,7 +36,7 @@ function addDays(d, days) {
 // 種別ごとの妊娠日数（平均・正常範囲）。
 const GESTATION = {
   neko: { avg: 65, early: 63, late: 67 },
-  inu: { avg: 63, early: 56, late: 72 },
+  inu: { avg: 63, early: 58, late: 72 },
 };
 
 // 妊娠時期区分の境界（日数）。前期 ≤zenki / 中期 ≤chuki / 後期 それ以降。
@@ -80,4 +80,36 @@ export function pregnancyStage(days, kind) {
   if (days <= s.zenki) return '前期';
   if (days <= s.chuki) return '中期';
   return '後期';
+}
+
+// 現在の妊娠日数・週数と平均予定日までの日数をまとめて返す。
+// 交配日より前、無効な日付・種別なら null。
+export function pregnancyStatus(matingDate, today, kind) {
+  const g = GESTATION[kind];
+  const current = elapsed(matingDate, today);
+  if (!g || !current) return null;
+  return {
+    days: current.days,
+    weeks: current.weeks,
+    daysInWeek: current.days % 7,
+    stage: pregnancyStage(current.days, kind),
+    daysUntilDue: g.avg - current.days,
+    daysUntilRangeStart: g.early - current.days,
+    daysUntilRangeEnd: g.late - current.days,
+  };
+}
+
+// 犬の交配日を基準にした、動物病院への相談・出産準備の代表的な日付目安。
+// 超音波 25〜30日: アニコム、レントゲン 55日以降・準備開始 予定日の約1週間前: 日本動物医療センター。
+export function dogPregnancyMilestones(matingDate) {
+  const d = toDate(matingDate);
+  if (!d) return null;
+  return {
+    ultrasound: {
+      start: toISO(addDays(d, 25)),
+      end: toISO(addDays(d, 30)),
+    },
+    xray: toISO(addDays(d, 55)),
+    preparation: toISO(addDays(d, 56)),
+  };
 }

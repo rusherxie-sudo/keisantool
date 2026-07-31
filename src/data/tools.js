@@ -517,10 +517,10 @@ export const tools = [
   {
     slug: 'inu-ninshin',
     nav: '犬の妊娠',
-    name: '犬の妊娠期間計算器',
+    name: '犬の出産予定日・妊娠期間計算',
     icon: '🐕',
     category: 'ペット・動物',
-    short: '交配日から出産予定日',
+    short: '交配日から63日後と受診日程',
     live: true,
   },
   {

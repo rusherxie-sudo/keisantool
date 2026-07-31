@@ -81,7 +81,7 @@
 - [猫のごはん量計算器](https://keisantool.com/neko-gohan/): 体重から1日のごはん量
 - [犬のごはん量計算器](https://keisantool.com/inu-gohan/): 体重から1日のごはん量
 - [犬のワクチン接種スケジュール計算器](https://keisantool.com/inu-vaccine/): 接種時期の目安カレンダー
-- [犬の妊娠期間計算器](https://keisantool.com/inu-ninshin/): 交配日から出産予定日
+- [犬の出産予定日・妊娠期間計算](https://keisantool.com/inu-ninshin/): 交配日から63日後と受診日程
 - [猫のワクチン接種スケジュール計算器](https://keisantool.com/neko-vaccine/): 接種時期の目安カレンダー
 
 ## コンテンツ

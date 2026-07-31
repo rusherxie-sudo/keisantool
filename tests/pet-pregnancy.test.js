@@ -4,11 +4,13 @@ import {
   dueRange,
   elapsed,
   pregnancyStage,
+  pregnancyStatus,
+  dogPregnancyMilestones,
 } from '../src/lib/pet-pregnancy.js';
 
 // 妊娠日数の出典（一次資料）:
 //   猫 = 交配日+65日（正常範囲 63〜67）: iCatCare / Merck Veterinary Manual
-//   犬 = 交配日+63日（正常範囲 56〜72）: Cornell / AKC / Merck
+//   犬 = 交配日+63日（初回交配からの範囲 58〜72）: AKC / Merck
 // 日付は UTC 正午基準（shussan.js と同方式）。
 
 describe('dueDate(出産予定日 = 交配日 + 平均日数)', () => {
@@ -49,9 +51,9 @@ describe('dueRange(出産可能範囲)', () => {
     });
   });
 
-  it('犬: 範囲 +56〜+72日 → 2026-06-26 〜 2026-07-12', () => {
+  it('犬: 初回交配からの範囲 +58〜+72日 → 2026-06-28 〜 2026-07-12', () => {
     expect(dueRange('2026-05-01', 'inu')).toEqual({
-      early: '2026-06-26',
+      early: '2026-06-28',
       late: '2026-07-12',
     });
   });
@@ -117,5 +119,49 @@ describe('pregnancyStage(妊娠時期区分: 経過日数と種別から)', () =
     expect(pregnancyStage(-1, 'neko')).toBeNull();
     expect(pregnancyStage(NaN, 'inu')).toBeNull();
     expect(pregnancyStage(10, 'x')).toBeNull();
+  });
+});
+
+describe('pregnancyStatus(現在の日数・週数・予定日まで)', () => {
+  it('犬: 交配31日後は4週3日・中期・予定日まで32日', () => {
+    expect(pregnancyStatus('2026-05-01', '2026-06-01', 'inu')).toEqual({
+      days: 31,
+      weeks: 4,
+      daysInWeek: 3,
+      stage: '中期',
+      daysUntilDue: 32,
+      daysUntilRangeStart: 27,
+      daysUntilRangeEnd: 41,
+    });
+  });
+
+  it('犬: 予定日は残り0日、翌日は-1日', () => {
+    expect(pregnancyStatus('2026-05-01', '2026-07-03', 'inu').daysUntilDue).toBe(0);
+    expect(pregnancyStatus('2026-05-01', '2026-07-04', 'inu').daysUntilDue).toBe(-1);
+  });
+
+  it('犬: 交配72日後は範囲最終日、73日後は範囲外', () => {
+    expect(pregnancyStatus('2026-05-01', '2026-07-12', 'inu').daysUntilRangeEnd).toBe(0);
+    expect(pregnancyStatus('2026-05-01', '2026-07-13', 'inu').daysUntilRangeEnd).toBe(-1);
+  });
+
+  it('交配前・無効な種別は null', () => {
+    expect(pregnancyStatus('2026-05-01', '2026-04-30', 'inu')).toBeNull();
+    expect(pregnancyStatus('2026-05-01', '2026-06-01', 'usagi')).toBeNull();
+  });
+});
+
+describe('dogPregnancyMilestones(交配日からの受診・準備目安)', () => {
+  it('超音波25〜30日、レントゲン55日、準備開始56日を返す', () => {
+    expect(dogPregnancyMilestones('2026-05-01')).toEqual({
+      ultrasound: { start: '2026-05-26', end: '2026-05-31' },
+      xray: '2026-06-25',
+      preparation: '2026-06-26',
+    });
+  });
+
+  it('無効な日付は null', () => {
+    expect(dogPregnancyMilestones('')).toBeNull();
+    expect(dogPregnancyMilestones('not-a-date')).toBeNull();
   });
 });

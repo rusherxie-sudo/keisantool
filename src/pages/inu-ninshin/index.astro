@@ -6,13 +6,13 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'inu-ninshin';
-const title = '犬の妊娠期間計算器 - 交配日から出産予定日・妊娠日数を自動計算 | 計算ツール';
+const title = '犬の出産予定日計算｜交配日から妊娠期間63日を自動計算 | 計算ツール';
 const description =
-  '犬の交配日を入力するだけで、出産予定日（交配日＋63日）と出産可能範囲、現在の妊娠日数・週数・時期を自動計算する無料ツール。Cornell・AKC・Merck 等の獣医情報に基づきます。';
+  '犬の最初の交配日から出産予定日（63日後）、出産時期の目安（58〜72日後）、現在の妊娠週数、超音波・レントゲン・出産準備の日付を無料で自動計算します。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: '犬の妊娠期間計算器',
+  name: '犬の出産予定日・妊娠期間計算',
   description,
   applicationCategory: 'HealthApplication',
   operatingSystem: 'Web',
@@ -21,24 +21,48 @@ const jsonld = {
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
-    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/pet/">ペット・動物</a> ／ 犬の妊娠期間計算</div>
-    <h1>犬の妊娠期間計算器</h1>
-    <p>犬の交配日を入力するだけで、出産予定日・出産可能範囲・現在の妊娠日数・妊娠時期を自動で計算します。</p>
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/pet/">ペット・動物</a> ／ 犬の出産予定日</div>
+    <h1>犬の出産予定日計算（妊娠期間カレンダー）</h1>
+    <p>最初の交配日から、63日後の出産予定日と妊娠中の受診・準備日をまとめて計算します。</p>
+    <div class="rule-chips" aria-label="計算内容">
+      <span>平均63日</span><span>時期の目安58〜72日</span><span>妊娠週数も表示</span>
+    </div>
   </div>
 
   <div class="calc-card">
-    <div class="form-group">
-      <label for="mating">交配日</label>
-      <input type="date" id="mating" />
-    </div>
+    <div class="calc-panel active">
+      <div class="form-group">
+        <label for="mating">最初の交配日</label>
+        <input type="date" id="mating" />
+        <small class="field-note">これから交配する予定の日でも計算できます。</small>
+      </div>
 
-    <div class="result-box" id="result">
-      <div class="result-label">出産予定日（交配日＋63日）</div>
-      <div class="result-main" id="due-date">―</div>
-      <div class="result-rows">
-        <div class="result-row"><span class="label">出産可能範囲（＋56〜72日）</span><span class="value" id="due-range">―</span></div>
-        <div class="result-row"><span class="label">現在の妊娠日数</span><span class="value" id="elapsed">―</span></div>
-        <div class="result-row"><span class="label">妊娠時期</span><span class="value" id="stage">―</span></div>
+      <div class="result-box" id="result" aria-live="polite">
+        <div class="result-label">出産予定日（交配日＋63日）</div>
+        <div class="result-main" id="due-date">―</div>
+        <div class="countdown" id="countdown">―</div>
+
+        <div class="result-rows">
+          <div class="result-row"><span class="label">出産時期の目安（＋58〜72日）</span><span class="value" id="due-range">―</span></div>
+          <div class="result-row"><span class="label">現在の妊娠日数</span><span class="value" id="elapsed">―</span></div>
+          <div class="result-row"><span class="label">妊娠時期</span><span class="value" id="stage">―</span></div>
+        </div>
+
+        <div class="milestone-box">
+          <h2>受診・出産準備カレンダー</h2>
+          <div class="milestone-row">
+            <span><b>25〜30日後</b>超音波で妊娠確認の目安</span>
+            <strong id="ultrasound-date">―</strong>
+          </div>
+          <div class="milestone-row">
+            <span><b>55日後〜</b>レントゲンで頭数確認の目安</span>
+            <strong id="xray-date">―</strong>
+          </div>
+          <div class="milestone-row">
+            <span><b>56日後〜</b>出産場所・体温確認の準備</span>
+            <strong id="preparation-date">―</strong>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -48,46 +72,68 @@ const jsonld = {
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>使い方と計算方法</h2>
+    <h2>犬の妊娠期間は何日？</h2>
     <p>
-      犬が交配した日（交配日）を選ぶだけで、出産予定日・出産可能範囲・現在の妊娠日数と妊娠時期をその場で自動計算します。ボタンを押す必要はありません。
+      犬の妊娠期間は、<strong>排卵日から数えると平均約63日</strong>です。ジャパンケネルクラブの出産日換算表も、交配日に63日を加えた日をおよその出産日として掲載しています。
     </p>
+    <div class="formula-box">
+      <strong>出産予定日 ＝ 最初の交配日 ＋ 63日</strong>
+      <span>最初の交配日を基準にした出産時期の目安：交配日＋58〜72日</span>
+    </div>
     <p>
-      犬の妊娠期間は<strong>平均約63日</strong>とされますが、<strong>交配日を基準にすると±7日ほどの幅</strong>が出やすく、出産予定日は56〜72日の範囲で前後します。これは、<strong>精子が雌の体内で7日以上生存</strong>でき、雌が排卵の前後数日にわたって交配を受け入れるため、交配日と実際の受精・着床日がずれやすいことが理由です。動物病院でホルモン検査などにより<strong>排卵日を特定できた場合は、排卵日から63日（±1〜2日）</strong>でより正確に予定日を求められます。本ツールは入力された交配日を基準に計算します。
+      ただし、交配日と排卵日・受精日は同じとは限りません。犬の精子は雌の生殖器内で数日間生存でき、交配を受け入れる時期にも幅があるため、<strong>交配日だけから求めた予定日は広い範囲を持つ概算</strong>です。動物病院で排卵日やホルモン変化を確認できている場合は、獣医師の予定日を優先してください。
     </p>
-    <p>
-      現在の妊娠日数は、交配日から本日までの経過日数を「妊娠○日目（○週○日）」の形で表示します。妊娠時期のおおまかな発育の目安は次のとおりです。
-    </p>
+
+    <h2>交配日から出産までの9週間</h2>
+    <div class="timeline-table-wrap">
+      <table class="timeline-table">
+        <thead><tr><th>交配から</th><th>主な目安</th><th>確認・準備</th></tr></thead>
+        <tbody>
+          <tr><td>1〜3週</td><td>着床までの時期</td><td>外見だけでは妊娠を判断しにくい時期</td></tr>
+          <tr><td>25〜30日後</td><td>妊娠確認</td><td>動物病院の超音波検査を相談</td></tr>
+          <tr><td>5〜7週</td><td>胎子が大きく発育</td><td>食事や運動は獣医師に確認</td></tr>
+          <tr><td>55日後〜</td><td>頭数確認の目安</td><td>レントゲン検査を動物病院で相談</td></tr>
+          <tr><td>56日後〜</td><td>出産準備</td><td>静かな場所を整え、体温や様子を確認</td></tr>
+          <tr><td>63日後</td><td>平均的な出産予定日</td><td>58〜72日の幅を持って備える</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>計算結果の見方</h2>
     <ul>
-      <li><strong>前期</strong>（〜4週ごろ）：受精・着床の時期。外見の変化はほとんどありません。</li>
-      <li><strong>中期</strong>（5〜6週ごろ）：胎子が大きく育ち、お腹のふくらみや乳腺の発達が目立ってくる時期です。</li>
-      <li><strong>後期</strong>（7週ごろ〜）：出産に向けて胎子の発育が仕上がる時期。<strong>妊娠55日以降</strong>であればレントゲン検査で胎子の数を確認できます。<strong>分娩の12〜24時間前には体温が一時的に低下</strong>するため、出産が近づいたら体温を測ると目安になります。</li>
+      <li><strong>出産予定日</strong>：最初の交配日に63日を加えた中心日です。</li>
+      <li><strong>出産時期の目安</strong>：最初に交配を受け入れた日から58〜72日という獣医資料の範囲です。</li>
+      <li><strong>現在の妊娠日数</strong>：交配日を0日として、本日までの経過を週数と日数で表示します。</li>
+      <li><strong>受診・準備カレンダー</strong>：超音波、レントゲン、出産準備を相談する日付の目安です。実際の検査日は動物病院と決めてください。</li>
     </ul>
-    <p>
-      巣作りや落ち着きのなさ、食欲の変化など出産のサインが見られたら、分娩に備えましょう。正確な妊娠の確認や胎子の数・健康状態の把握、出産日の最終的な判断は、<strong>必ずかかりつけの獣医師</strong>の診察を受けてください。
-    </p>
-    <div class="disclaimer">※ 計算結果はあくまで参考値です。出産予定日には個体差があり、健康・医療に関わる判断は必ずかかりつけの獣医師にご相談ください。</div>
+
+    <h2>参考にした獣医・公的資料</h2>
+    <ul class="source-list">
+      <li><a href="https://www.jkc.or.jp/forms/birth_table/" rel="noopener">ジャパンケネルクラブ「出産日換算表」</a></li>
+      <li><a href="https://www.anicom-sompo.co.jp/doubutsu_pedia/node/1315" rel="noopener">アニコム「発情・妊娠について＜犬＞」</a></li>
+      <li><a href="https://jamc.co.jp/dog_colum/%E7%8A%AC%E3%81%AE%E5%A6%8A%E5%A8%A0%E3%81%8B%E3%82%89%E5%87%BA%E7%94%A3%E3%81%BE%E3%81%A7/" rel="noopener">日本動物医療センター「犬の妊娠から出産まで」</a></li>
+      <li><a href="https://www.akc.org/expert-advice/dog-breeding/dog-reproductive-cycle/" rel="noopener">American Kennel Club「The Reproductive Cycle in Dogs」</a></li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。妊娠の確認、胎子の健康状態、検査時期、分娩の判断は必ずかかりつけの獣医師にご相談ください。</div>
   </section>
 
   <RelatedTools current={slug} />
-
   <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
-    { q: '犬の妊娠期間は何日くらいですか？', a: '平均で約63日です。ただし交配日を基準にすると±7日ほどの幅が出やすく、56〜72日の範囲で前後します。' },
-    { q: '出産予定日の幅が大きいのはなぜですか？', a: '精子が体内で7日以上生存し、雌が排卵前後の数日に交配を受け入れるため、交配日と受精日がずれやすいからです。排卵日が特定できれば排卵日＋63日でより正確に求められます。' },
-    { q: '出産が近いことはどうやって分かりますか？', a: '分娩の12〜24時間前には体温が一時的に低下します。妊娠55日以降ならレントゲンで胎子の数も確認でき、巣作りなどの行動も目安になります。' },
+    { q: '犬の妊娠期間は何日ですか？', a: '排卵日から数えると平均約63日です。最初の交配日を基準にすると排卵日とのずれがあるため、58〜72日ほどの広い範囲を目安にします。' },
+    { q: '犬の出産予定日はどう計算しますか？', a: '最初の交配日に63日を加えた日を中心の予定日として計算します。本ツールでは交配日を選ぶだけで、予定日と58〜72日後の範囲を表示します。' },
+    { q: '犬の妊娠はいつ確認できますか？', a: '交配後25〜30日以降の超音波検査が一つの目安です。検査時期は犬の状態や動物病院によって異なるため、かかりつけの獣医師に相談してください。' },
+    { q: '生まれる子犬の数はいつ分かりますか？', a: '妊娠55日以降のレントゲン検査が頭数確認の目安です。胎子や母犬の状態を確認しながら、実施時期は獣医師が判断します。' },
   ]} />
 
   <div class="ad-slot"></div>
 </ToolLayout>
 
 <script>
-  import { dueDate, dueRange, elapsed, pregnancyStage } from '../../lib/pet-pregnancy.js';
+  import { dueDate, dueRange, pregnancyStatus, dogPregnancyMilestones } from '../../lib/pet-pregnancy.js';
 
   const $ = (id) => document.getElementById(id);
-
-  // ISO（YYYY-MM-DD）→ 「〇年〇月〇日」
   const fmtJP = (iso) => {
     const [y, m, d] = iso.split('-');
     return `${Number(y)}年${Number(m)}月${Number(d)}日`;
@@ -96,42 +142,76 @@ const jsonld = {
   function render() {
     const mating = $('mating').value;
     const box = $('result');
-
     const due = dueDate(mating, 'inu');
     if (!due) {
       box.classList.remove('visible');
       window.hideResultShare?.();
       return;
     }
+
     box.classList.add('visible');
     $('due-date').textContent = fmtJP(due);
 
     const range = dueRange(mating, 'inu');
-    $('due-range').textContent = range ? `${fmtJP(range.early)} 〜 ${fmtJP(range.late)}` : '―';
+    $('due-range').textContent = `${fmtJP(range.early)} 〜 ${fmtJP(range.late)}`;
 
-    const el = elapsed(mating, new Date());
-    if (el) {
-      const w = Math.floor(el.days / 7);
-      const d = el.days % 7;
-      $('elapsed').textContent = `妊娠${el.days}日目（${w}週${d}日）`;
-      const stage = pregnancyStage(el.days, 'inu');
-      $('stage').textContent = stage || '―';
+    const status = pregnancyStatus(mating, new Date(), 'inu');
+    if (status) {
+      $('elapsed').textContent = `妊娠${status.days}日目（${status.weeks}週${status.daysInWeek}日）`;
+      $('stage').textContent = status.stage;
+      $('countdown').dataset.type = status.daysUntilRangeEnd < 0 ? 'warning' : 'normal';
+      $('countdown').textContent = status.daysUntilRangeEnd < 0
+        ? `出産時期の目安を${Math.abs(status.daysUntilRangeEnd)}日過ぎています。動物病院に相談してください。`
+        : status.daysUntilDue > 0
+          ? `出産予定日まであと${status.daysUntilDue}日`
+          : status.daysUntilDue === 0
+            ? '今日は平均的な出産予定日です'
+            : `平均予定日から${Math.abs(status.daysUntilDue)}日経過`;
     } else {
-      $('elapsed').textContent = '―';
+      $('elapsed').textContent = '交配予定日前';
       $('stage').textContent = '―';
+      $('countdown').dataset.type = 'normal';
+      $('countdown').textContent = '交配予定日からの日程です';
     }
 
-    // 結果サマリー：DOM の表示値から組み立て（再計算しない）。
+    const milestones = dogPregnancyMilestones(mating);
+    $('ultrasound-date').textContent = `${fmtJP(milestones.ultrasound.start)} 〜 ${fmtJP(milestones.ultrasound.end)}`;
+    $('xray-date').textContent = `${fmtJP(milestones.xray)}以降`;
+    $('preparation-date').textContent = `${fmtJP(milestones.preparation)}ごろから`;
+
     const lines = [
-      '犬の妊娠期間計算器',
+      '犬の出産予定日計算',
       `出産予定日：${$('due-date').textContent}`,
+      `時期の目安：${$('due-range').textContent}`,
     ];
-    if ($('elapsed').textContent !== '―') {
-      lines.push(`現在：${$('elapsed').textContent}`);
-    }
+    if (status) lines.push(`現在：${$('elapsed').textContent}`);
     window.setResultShare?.(lines.join('\n'));
   }
 
   $('mating').addEventListener('input', render);
   $('mating').addEventListener('change', render);
 </script>
+
+<style>
+  .rule-chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .rule-chips span { padding:6px 11px; border-radius:999px; background:var(--primary-light); color:var(--primary-dark); font-size:.76rem; font-weight:700; }
+  .field-note { display:block; margin-top:6px; color:var(--text-muted); font-size:.75rem; }
+  .countdown { margin:8px 0 14px; color:var(--primary-dark); font-size:.86rem; font-weight:800; }
+  .countdown[data-type='warning'] { padding:10px 12px; border-radius:var(--r-lg); background:#fff1e8; color:#9a3f12; line-height:1.55; }
+  .milestone-box { margin-top:18px; padding-top:16px; border-top:1px solid var(--border-2); }
+  .milestone-box h2 { margin:0 0 12px; font-size:.92rem; }
+  .milestone-row { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; padding:10px 0; border-top:1px solid rgba(255,255,255,.55); font-size:.77rem; line-height:1.55; }
+  .milestone-row span { display:flex; flex-direction:column; color:var(--text-2); }
+  .milestone-row strong { max-width:48%; color:var(--text); text-align:right; }
+  .formula-box { display:flex; flex-direction:column; gap:8px; padding:16px 18px; margin:18px 0; background:var(--primary-light); border-left:5px solid var(--primary); border-radius:var(--r-lg); }
+  .formula-box span { color:var(--text-2); line-height:1.65; }
+  .timeline-table-wrap { overflow-x:auto; margin:16px 0 24px; }
+  .timeline-table { width:100%; min-width:560px; border-collapse:collapse; font-size:.84rem; }
+  .timeline-table th, .timeline-table td { padding:11px 12px; border:1px solid var(--border-2); text-align:left; vertical-align:top; }
+  .timeline-table th { background:var(--primary-light); color:var(--primary-dark); }
+  .source-list a { overflow-wrap:anywhere; }
+  @media (max-width:520px) {
+    .milestone-row { flex-direction:column; gap:4px; }
+    .milestone-row strong { max-width:none; text-align:left; }
+  }
+</style>
