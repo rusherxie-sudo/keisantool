@@ -434,6 +434,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'tsubo-heibei',
+    nav: '坪・平米',
+    name: '坪・平米（㎡）換算ツール',
+    icon: '🏡',
+    category: '変換・ツール',
+    short: '坪・平米・畳と縦横面積を換算',
+    live: true,
+  },
+  {
     slug: 'wareki',
     nav: '和暦西暦',
     name: '和暦・西暦変換器',

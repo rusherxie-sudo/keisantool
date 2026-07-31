@@ -66,6 +66,7 @@
 
 - [カラーコード変換ツール](https://keisantool.com/color-code/): HEX・RGB・HSL・抵抗カラーコード
 - [単位変換器](https://keisantool.com/tani/): 長さ・重さ・面積・温度ほか
+- [坪・平米（㎡）換算ツール](https://keisantool.com/tsubo-heibei/): 坪・平米・畳と縦横面積を換算
 - [和暦・西暦変換器](https://keisantool.com/wareki/): 元号⇔西暦・年齢早見
 
 ## 開発者ツール

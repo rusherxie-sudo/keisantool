@@ -1,0 +1,304 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { convertArea } from '../../lib/tsubo-heibei.js';
+
+const slug = 'tsubo-heibei';
+const title = '坪・平米（㎡）換算ツール｜1坪は何m2・畳数も自動計算';
+const description =
+  '坪・平米（㎡）・畳数を無料で相互換算。1坪＝400/121㎡（約3.305785㎡）、1㎡＝0.3025坪。縦×横から坪数、総額から坪単価も自動計算できます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '坪・平米（㎡）換算ツール',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['坪・平方メートル・帖の相互換算', '縦×横から面積と坪数を計算', '土地・建物の坪単価計算', '常用面積の換算早見表'],
+};
+
+const commonRows = [1, 5, 10, 20, 30, 40, 50, 60, 100].map((tsubo) => ({
+  tsubo,
+  ...convertArea(tsubo, 'tsubo'),
+}));
+const formatStatic = (value, digits = 2) => value.toLocaleString('ja-JP', { maximumFractionDigits: digits });
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/henkan/">変換・ツール</a> ／ 坪・平米換算</div>
+    <h1>坪・平米（㎡）換算ツール</h1>
+    <p><strong>1坪＝400/121㎡（約3.305785㎡）、1㎡＝0.3025坪</strong>。坪・平米・畳の換算、縦×横の面積、坪単価を入力だけで計算します。</p>
+  </div>
+
+  <div class="calc-card tsubo-card">
+    <div class="tsubo-tabs" role="group" aria-label="面積計算の種類">
+      <button type="button" class="tsubo-tab is-active" data-mode="convert" aria-pressed="true"><span>坪・㎡・畳換算</span><small>面積を相互変換</small></button>
+      <button type="button" class="tsubo-tab" data-mode="dimensions" aria-pressed="false"><span>縦×横で計算</span><small>部屋・土地の坪数</small></button>
+      <button type="button" class="tsubo-tab" data-mode="price" aria-pressed="false"><span>坪単価計算</span><small>総額÷坪数</small></button>
+    </div>
+
+    <div class="calc-panel tsubo-panel active">
+      <section class="tsubo-mode" id="convertPanel">
+        <div class="input-grid input-grid--convert">
+          <div class="form-group">
+            <label for="areaValue">面積</label>
+            <input type="number" id="areaValue" min="0" step="any" inputmode="decimal" value="30" />
+          </div>
+          <div class="form-group">
+            <label for="areaUnit">入力単位</label>
+            <select id="areaUnit">
+              <option value="tsubo">坪</option>
+              <option value="m2">平方メートル（㎡・平米）</option>
+              <option value="jo">帖・畳（不動産表示）</option>
+            </select>
+          </div>
+        </div>
+        <p class="form-error" id="convertError" hidden>0以上の面積を入力してください。</p>
+        <div class="area-result" id="convertResult" aria-live="polite">
+          <div class="result-ticket"><span>平方メートル（㎡）</span><strong id="convertM2">―</strong><small>法定の面積単位</small></div>
+          <div class="result-ticket result-ticket--accent"><span>坪</span><strong id="convertTsubo">―</strong><small>参考換算</small></div>
+          <div class="result-ticket"><span>帖・畳</span><strong id="convertJo">―</strong><small>1帖＝1.62㎡の表示基準</small></div>
+        </div>
+        <p class="formula-line" id="convertFormula">―</p>
+      </section>
+
+      <section class="tsubo-mode" id="dimensionsPanel" hidden>
+        <div class="input-grid input-grid--dimensions">
+          <div class="form-group"><label for="lengthValue">縦</label><input type="number" id="lengthValue" min="0" step="any" inputmode="decimal" value="10" /></div>
+          <div class="dimension-mark" aria-hidden="true">×</div>
+          <div class="form-group"><label for="widthValue">横</label><input type="number" id="widthValue" min="0" step="any" inputmode="decimal" value="5" /></div>
+          <div class="form-group"><label for="dimensionUnit">長さの単位</label><select id="dimensionUnit"><option value="m">メートル（m）</option><option value="cm">センチ（cm）</option></select></div>
+        </div>
+        <p class="form-error" id="dimensionsError" hidden>縦と横に0以上の数値を入力してください。</p>
+        <div class="area-result" id="dimensionsResult" aria-live="polite">
+          <div class="result-ticket"><span>面積</span><strong id="dimensionsM2">―</strong><small>縦×横</small></div>
+          <div class="result-ticket result-ticket--accent"><span>坪数</span><strong id="dimensionsTsubo">―</strong><small>㎡×0.3025</small></div>
+          <div class="result-ticket"><span>帖数の目安</span><strong id="dimensionsJo">―</strong><small>不動産表示基準</small></div>
+        </div>
+        <p class="formula-line" id="dimensionsFormula">―</p>
+      </section>
+
+      <section class="tsubo-mode" id="pricePanel" hidden>
+        <div class="input-grid input-grid--price">
+          <div class="form-group"><label for="totalPrice">土地・建物の総額</label><div class="suffix-input"><input type="number" id="totalPrice" min="0" step="any" inputmode="decimal" value="5000" /><span>万円</span></div></div>
+          <div class="form-group"><label for="priceArea">面積</label><input type="number" id="priceArea" min="0" step="any" inputmode="decimal" value="30" /></div>
+          <div class="form-group"><label for="priceAreaUnit">面積単位</label><select id="priceAreaUnit"><option value="tsubo">坪</option><option value="m2">平方メートル（㎡）</option></select></div>
+        </div>
+        <p class="form-error" id="priceError" hidden>0より大きい総額と面積を入力してください。</p>
+        <div class="price-result" id="priceResult" aria-live="polite">
+          <span>坪単価</span>
+          <strong id="pricePerTsubo">―</strong>
+          <small id="pricePerTsuboMan">―</small>
+          <div class="price-sub"><span>1㎡あたり</span><strong id="pricePerM2">―</strong></div>
+        </div>
+        <p class="formula-line" id="priceFormula">―</p>
+      </section>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>坪・平米（㎡）の換算式</h2>
+    <div class="formula-cards">
+      <div><span>坪 → 平米</span><strong>坪数 × 400 ÷ 121</strong><small>30坪＝約99.17㎡</small></div>
+      <div><span>平米 → 坪</span><strong>㎡ × 0.3025</strong><small>100㎡＝30.25坪</small></div>
+      <div><span>平米 → 帖</span><strong>㎡ ÷ 1.62</strong><small>不動産広告の表示基準</small></div>
+    </div>
+    <p>「平米（へいべい）」は平方メートル（㎡）の呼び方です。1坪は一辺6尺の正方形に由来し、400/121㎡、約3.305785㎡です。1㎡から坪への換算は、その逆数である<strong>0.3025</strong>を掛けます。</p>
+  </section>
+
+  <section class="howto">
+    <h2>坪から平米・畳への換算早見表</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table conversion-table">
+      <thead><tr><th>坪</th><th>平米（㎡）</th><th>帖・畳の目安</th></tr></thead>
+      <tbody>{commonRows.map((row) => <tr><td class="num">{row.tsubo}坪</td><td class="num">{formatStatic(row.m2)}㎡</td><td class="num">{formatStatic(row.jo, 1)}帖</td></tr>)}</tbody>
+    </table></div></div>
+    <p>よく検索される30坪は約99.17㎡、40坪は約132.23㎡、50坪は約165.29㎡です。図面や登記の正式な面積は㎡で確認し、坪・帖は広さをつかむ参考値としてご利用ください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>坪・平米・畳の違いと注意点</h2>
+    <ul>
+      <li><strong>平方メートル（㎡・平米）</strong>：計量法で定められた面積単位です。不動産の取引・証明では㎡を使用します。</li>
+      <li><strong>坪</strong>：住宅や土地で慣用される参考単位です。経済産業省は、取引・証明では㎡と併記し、坪が参考値だと分かる表示を求めています。</li>
+      <li><strong>帖・畳</strong>：不動産広告では1帖あたり1.62㎡以上を基準に表示します。実際の畳には京間・中京間・江戸間などの地域差があります。</li>
+    </ul>
+    <p>長さ・重さ・温度など、ほかの単位もまとめて変換する場合は<a href="/tani/">単位変換器</a>をご利用ください。</p>
+  </section>
+
+  <section class="howto source-box">
+    <h2>換算基準と公式情報</h2>
+    <ul>
+      <li><a href="https://www.meti.go.jp/policy/economy/hyojun/techno_infra/51_qanda_tani.html" target="_blank" rel="noopener noreferrer">経済産業省「計量単位に関するよくある質問」</a>：坪は取引・証明に使用できず、㎡と併記する参考値として扱うこと。</li>
+      <li><a href="https://www.maff.go.jp/e/data/stat/94th/attach/pdf/index-29.pdf" target="_blank" rel="noopener noreferrer">農林水産省「計量単位換算表」</a>：歩又は坪＝3.3058㎡の換算表。</li>
+      <li><a href="https://www.rftc.jp/webkanri/kanri/wp-content/uploads/2019/02/kiyak_zenbun.pdf" target="_blank" rel="noopener noreferrer">不動産公正取引協議会連合会「不動産の表示に関する公正競争規約」</a>：1帖あたり1.62㎡以上とする表示基準。</li>
+    </ul>
+    <div class="disclaimer">※ 坪・帖は参考換算です。登記・契約・取引では平方メートル（㎡）の表示をご確認ください。帖数は実際の畳の枚数や地域別の畳寸法と一致しない場合があります。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '1坪は何平方メートル（何m2）ですか？', a: '1坪は400/121平方メートル、約3.305785㎡です。簡易計算では坪数に約3.3を掛けますが、このツールは400/121で計算します。' },
+    { q: '1平方メートルは何坪ですか？', a: '1㎡は0.3025坪です。平米数に0.3025を掛けると坪数を求められ、100㎡なら30.25坪です。' },
+    { q: '30坪・40坪・50坪は何平米ですか？', a: '30坪は約99.17㎡、40坪は約132.23㎡、50坪は約165.29㎡です。上の換算ツールでは任意の坪数を入力できます。' },
+    { q: '1坪は何畳ですか？', a: '不動産広告の1帖＝1.62㎡という基準では、1坪は約2.04帖です。実際の畳寸法には地域差があるため参考値です。' },
+    { q: '部屋の縦と横から坪数を計算できますか？', a: 'はい。「縦×横で計算」タブでメートルまたはセンチを選び、縦と横を入力すると、㎡・坪・帖を同時に表示します。' },
+    { q: '坪単価はどう計算しますか？', a: '土地や建物の総額を坪数で割ります。面積が㎡の場合は先に0.3025を掛けて坪数に変換します。金額の端数は1円未満を切り捨てます。' },
+    { q: '坪を不動産契約の面積として使えますか？', a: '取引・証明では計量法上の面積単位である㎡を使用します。坪は㎡と併記する参考値としてご確認ください。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .tsubo-card { overflow: hidden; }
+  .tsubo-tabs { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
+  .tsubo-tab { display: flex; flex-direction: column; gap: 2px; padding: 14px 8px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); }
+  .tsubo-tab span { font-size: .86rem; font-weight: var(--fw-bold); }
+  .tsubo-tab small { font-size: .65rem; }
+  .tsubo-tab.is-active { border-bottom-color: var(--cat-color); background: var(--surface); color: var(--cat-color); }
+  .tsubo-tab:focus-visible { outline: 3px solid var(--cat-tint); outline-offset: -3px; }
+  .tsubo-panel { padding: 24px; }
+  .tsubo-mode[hidden], .form-error[hidden], .area-result[hidden], .price-result[hidden] { display: none; }
+  .input-grid { display: grid; gap: 12px; align-items: end; }
+  .input-grid--convert { grid-template-columns: 1fr 1fr; }
+  .input-grid--dimensions { grid-template-columns: 1fr 24px 1fr .8fr; }
+  .input-grid--price { grid-template-columns: 1.2fr 1fr .8fr; }
+  .dimension-mark { display: grid; place-items: center; min-height: 48px; color: var(--cat-color); font-size: 1.2rem; font-weight: var(--fw-bold); }
+  .form-group select { width: 100%; min-height: 48px; padding: 8px 10px; border: 1px solid var(--border-input); border-radius: var(--r-md); background: var(--surface); color: var(--text); font-family: var(--font-sans); }
+  .suffix-input { display: flex; align-items: stretch; }
+  .suffix-input input { min-width: 0; border-radius: var(--r-md) 0 0 var(--r-md); }
+  .suffix-input span { display: grid; place-items: center; padding: 0 13px; border: 1px solid var(--border-input); border-left: 0; border-radius: 0 var(--r-md) var(--r-md) 0; background: var(--surface-sub); color: var(--text-muted); font-size: .8rem; font-weight: var(--fw-bold); }
+  .form-error { margin: 10px 0 0; color: var(--danger); font-size: .75rem; font-weight: var(--fw-bold); }
+  .area-result { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+  .result-ticket { display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 16px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .result-ticket--accent { border-color: var(--cat-color); background: var(--cat-tint); }
+  .result-ticket span, .price-result > span { color: var(--text-muted); font-size: .7rem; font-weight: var(--fw-bold); }
+  .result-ticket strong { overflow-wrap: anywhere; color: var(--text); font: var(--fw-bold) clamp(1.15rem, 3vw, 1.55rem)/1.25 var(--font-mono); }
+  .result-ticket--accent strong { color: var(--cat-color); }
+  .result-ticket small { color: var(--text-muted); font-size: .63rem; line-height: 1.4; }
+  .formula-line { margin: 12px 0 0; color: var(--text-muted); font: .72rem/1.6 var(--font-mono); text-align: center; }
+  .price-result { display: flex; flex-direction: column; align-items: center; gap: 5px; margin-top: 20px; padding: 22px; border: 1px solid var(--cat-color); border-radius: var(--r-md); background: var(--cat-tint); text-align: center; }
+  .price-result > strong { color: var(--cat-color); font: var(--fw-bold) clamp(1.7rem, 5vw, 2.4rem)/1.2 var(--font-mono); }
+  .price-result > small { color: var(--text-muted); font-size: .75rem; }
+  .price-sub { display: flex; gap: 12px; align-items: baseline; margin-top: 8px; padding-top: 10px; border-top: 1px solid color-mix(in srgb, var(--cat-color) 25%, transparent); }
+  .price-sub span { color: var(--text-muted); font-size: .7rem; }
+  .price-sub strong { font: var(--fw-bold) .9rem/1.2 var(--font-mono); }
+  .formula-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+  .formula-cards div { display: flex; flex-direction: column; gap: 5px; padding: 15px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .formula-cards span, .formula-cards small { color: var(--text-muted); font-size: .7rem; }
+  .formula-cards strong { color: var(--cat-color); font: var(--fw-bold) .9rem/1.4 var(--font-mono); }
+  .conversion-table .num { white-space: nowrap; }
+  .source-box ul { display: flex; flex-direction: column; gap: 8px; padding-left: 1.2em; }
+  .source-box a { color: var(--cat-color); font-weight: var(--fw-bold); }
+  @media (max-width: 700px) {
+    .tsubo-tab { padding: 11px 4px; }
+    .tsubo-tab span { font-size: .72rem; }
+    .tsubo-tab small { display: none; }
+    .tsubo-panel { padding: 18px; }
+    .input-grid--convert, .input-grid--price { grid-template-columns: 1fr; }
+    .input-grid--dimensions { grid-template-columns: 1fr 20px 1fr; }
+    .input-grid--dimensions .form-group:last-child { grid-column: 1 / -1; }
+    .area-result, .formula-cards { grid-template-columns: 1fr; }
+    .result-ticket { padding: 13px 15px; }
+  }
+</style>
+
+<script>
+  import { areaFromDimensions, calculateTsuboPrice, convertArea } from '../../lib/tsubo-heibei.js';
+
+  const $ = (id) => document.getElementById(id);
+  let currentMode = 'convert';
+  const trackedModes = new Set();
+
+  function fmt(value, digits = 6) {
+    return value.toLocaleString('ja-JP', { maximumFractionDigits: digits });
+  }
+
+  function trackOnce(mode) {
+    if (trackedModes.has(mode)) return;
+    window.trackCalculatorResult?.(mode);
+    trackedModes.add(mode);
+  }
+
+  function setAreaResult(prefix, result) {
+    $(`${prefix}M2`).textContent = `${fmt(result.m2)}㎡`;
+    $(`${prefix}Tsubo`).textContent = `${fmt(result.tsubo)}坪`;
+    $(`${prefix}Jo`).textContent = `${fmt(result.jo, 2)}帖`;
+  }
+
+  function renderConvert() {
+    const result = convertArea($('areaValue').value, $('areaUnit').value);
+    $('convertError').hidden = Boolean(result);
+    $('convertResult').hidden = !result;
+    $('convertFormula').hidden = !result;
+    if (!result) return updateShare();
+    setAreaResult('convert', result);
+    const labels = { tsubo: '坪', m2: '㎡', jo: '帖' };
+    $('convertFormula').textContent = `${fmt(Number($('areaValue').value))}${labels[$('areaUnit').value]} ＝ ${fmt(result.m2)}㎡ ＝ ${fmt(result.tsubo)}坪`;
+    trackOnce('convert');
+    updateShare();
+  }
+
+  function renderDimensions() {
+    const result = areaFromDimensions($('lengthValue').value, $('widthValue').value, $('dimensionUnit').value);
+    $('dimensionsError').hidden = Boolean(result);
+    $('dimensionsResult').hidden = !result;
+    $('dimensionsFormula').hidden = !result;
+    if (!result) return updateShare();
+    setAreaResult('dimensions', result);
+    const unit = $('dimensionUnit').value;
+    $('dimensionsFormula').textContent = `${fmt(Number($('lengthValue').value))}${unit} × ${fmt(Number($('widthValue').value))}${unit} ＝ ${fmt(result.m2)}㎡`;
+    trackOnce('dimensions');
+    updateShare();
+  }
+
+  function renderPrice() {
+    const totalYen = Number($('totalPrice').value) * 10000;
+    const result = calculateTsuboPrice(totalYen, $('priceArea').value, $('priceAreaUnit').value);
+    $('priceError').hidden = Boolean(result);
+    $('priceResult').hidden = !result;
+    $('priceFormula').hidden = !result;
+    if (!result) return updateShare();
+    $('pricePerTsubo').textContent = `${result.pricePerTsubo.toLocaleString('ja-JP')}円／坪`;
+    $('pricePerTsuboMan').textContent = `約${fmt(result.pricePerTsubo / 10000, 1)}万円／坪`;
+    $('pricePerM2').textContent = `${result.pricePerM2.toLocaleString('ja-JP')}円／㎡`;
+    $('priceFormula').textContent = `${fmt(Number($('totalPrice').value), 2)}万円 ÷ ${fmt(result.area.tsubo)}坪（1円未満切捨て）`;
+    trackOnce('price');
+    updateShare();
+  }
+
+  function updateShare() {
+    if (currentMode === 'convert' && !$('convertResult').hidden) {
+      window.setResultShare?.(`坪・平米換算\n${$('convertM2').textContent} ＝ ${$('convertTsubo').textContent} ＝ ${$('convertJo').textContent}`);
+    } else if (currentMode === 'dimensions' && !$('dimensionsResult').hidden) {
+      window.setResultShare?.(`縦×横の面積\n${$('dimensionsM2').textContent} ＝ ${$('dimensionsTsubo').textContent}`);
+    } else if (currentMode === 'price' && !$('priceResult').hidden) {
+      window.setResultShare?.(`坪単価\n${$('pricePerTsubo').textContent}\n${$('pricePerM2').textContent}`);
+    } else window.hideResultShare?.();
+  }
+
+  function setMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.tsubo-tab').forEach((button) => {
+      const active = button.dataset.mode === mode;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    $('convertPanel').hidden = mode !== 'convert';
+    $('dimensionsPanel').hidden = mode !== 'dimensions';
+    $('pricePanel').hidden = mode !== 'price';
+    ({ convert: renderConvert, dimensions: renderDimensions, price: renderPrice })[mode]();
+  }
+
+  document.querySelectorAll('.tsubo-tab').forEach((button) => button.addEventListener('click', () => setMode(button.dataset.mode)));
+  ['areaValue', 'areaUnit'].forEach((id) => { $(id).addEventListener('input', renderConvert); $(id).addEventListener('change', renderConvert); });
+  ['lengthValue', 'widthValue', 'dimensionUnit'].forEach((id) => { $(id).addEventListener('input', renderDimensions); $(id).addEventListener('change', renderDimensions); });
+  ['totalPrice', 'priceArea', 'priceAreaUnit'].forEach((id) => { $(id).addEventListener('input', renderPrice); $(id).addEventListener('change', renderPrice); });
+  renderConvert();
+</script>
