@@ -9,7 +9,8 @@
 - `/hinodeiri/` 已增加15个城市年度页；`/rokusei/` 已增加12个类型年度页，动态模板分别为 `src/pages/hinodeiri/[city].astro` 与 `src/pages/rokusei/[type].astro`。六星占术类型 URL 单一清单由 `fortuneTypes()` 提供，周期结果继续复用 `fortuneZone()`／`forecast()`。
 - `/saitei/` 已按厚生劳动省令和7年度现行表重建，并新增47个都道府县页 `/saitei/<prefecture>/`。数据、有效日与全国加权平均的单一来源为 `src/lib/saitei.js`，页面共用 `MinimumWageCalculator.astro`；截至2026-08-01令和8年度金额仍在审议，不得写成已确定值。
 - `/shukujitsu/` 与2025〜2029年度页已增加12个月全年日历、祝日／连休摘要和打印按钮；未来年度页会用 `officialHolidayYearLimit()` 自动标识正式公布与预测状态。
-- 当前验证基线：55 个测试文件、1266 项测试；生产构建 530 页。
+- `/neko-ninshin/` 已增加预计日倒计时、超声25〜35日／X光55日／第7周准备的个性化日历、9周时间表和权威来源；日期逻辑集中在 `pet-pregnancy.js` 的 `catPregnancyMilestones()`。
+- 当前验证基线：55 个测试文件、1269 项测试；生产构建 530 页。
 - 用户文件 `src/content/blog/kokuho-ryoukin-keisan-hoho.md` 为未跟踪内容，增长迭代不得修改、删除或误提交。
 
 ## 0. 2026-07-18 最新改造
