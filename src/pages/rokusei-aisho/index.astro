@@ -1,0 +1,255 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'rokusei-aisho';
+const CURRENT_YEAR = new Date().getFullYear();
+const title = `六星占術 相性診断｜2人の生年月日から地運を自動計算【${CURRENT_YEAR}年】`;
+const description =
+  `2人の生年月日を入力するだけで、六星占術の運命星・プラス／マイナスと地運相性を無料診断。双方向の運命周期、相性度、${CURRENT_YEAR}年の双方の運気を自動計算します。`;
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '六星占術 相性診断',
+  description,
+  applicationCategory: 'EntertainmentApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 六星占術 相性</div>
+    <h1>六星占術 相性診断（2人の生年月日で自動計算）</h1>
+    <p>ふたりの運命星と、生まれ持った相性「地運」を双方向で計算します。</p>
+    <div class="ra-chips" aria-label="診断内容">
+      <span>登録不要</span><span>地運を双方向判定</span><span>{CURRENT_YEAR}年の運気も表示</span>
+    </div>
+  </div>
+
+  <div class="calc-card">
+    <div class="ra-inputs">
+      <div class="form-group">
+        <label for="ra-date-1">あなたの生年月日</label>
+        <input type="date" id="ra-date-1" min="1900-01-01" max="2099-12-31" />
+      </div>
+      <div class="ra-cross" aria-hidden="true">×</div>
+      <div class="form-group">
+        <label for="ra-date-2">お相手の生年月日</label>
+        <input type="date" id="ra-date-2" min="1900-01-01" max="2099-12-31" />
+      </div>
+    </div>
+
+    <div class="ra-prompt" id="ra-prompt">ふたりの生年月日を入力すると、自動で相性を表示します。</div>
+
+    <div class="result-box" id="ra-result" data-year={CURRENT_YEAR} aria-live="polite">
+      <div class="result-label">六星占術の地運相性</div>
+      <div class="result-main" id="ra-score">―</div>
+      <div class="ra-rank" id="ra-rank">―</div>
+
+      <div class="ra-people">
+        <div class="ra-person">
+          <span>あなた</span>
+          <strong id="ra-type-1">―</strong>
+          <small id="ra-year-1">―</small>
+        </div>
+        <div class="ra-heart" aria-hidden="true">⇄</div>
+        <div class="ra-person">
+          <span>お相手</span>
+          <strong id="ra-type-2">―</strong>
+          <small id="ra-year-2">―</small>
+        </div>
+      </div>
+
+      <div class="ra-directions">
+        <article class="ra-direction">
+          <h2>あなたから見たお相手</h2>
+          <div><b id="ra-zone-1">―</b><span id="ra-direction-score-1">―</span></div>
+          <p id="ra-comment-1">―</p>
+        </article>
+        <article class="ra-direction">
+          <h2>お相手から見たあなた</h2>
+          <div><b id="ra-zone-2">―</b><span id="ra-direction-score-2">―</span></div>
+          <p id="ra-comment-2">―</p>
+        </article>
+      </div>
+
+      <p class="ra-result-note">
+        相性度は、ふたつの方向の地運スコアを平均し、小数点以下を切り捨てた本ツール独自の目安です。
+      </p>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>六星占術の相性（地運）とは？</h2>
+    <p>
+      六星占術では、変わらない基本的な相性を<strong>地運</strong>、年ごとに変化する相性の流れを<strong>天運（相性運）</strong>と分けて考えます。このツールは、まず生年月日から双方の運命星（土星人・金星人・火星人・天王星人・木星人・水星人）とプラス／マイナスを求め、固定的な地運を計算します。
+    </p>
+    <p>
+      地運は一方向ではありません。相手の生まれ年の十二支が、あなたの12年周期のどこに当たるかを調べ、さらに逆方向も同じように調べます。そのため「あなたから見た相手」と「相手から見たあなた」で結果が異なる場合があります。
+    </p>
+
+    <div class="ra-formula">
+      <strong>地運相性度 ＝（あなた→相手の点数 ＋ 相手→あなたの点数）÷ 2</strong>
+      <span>端数は切り捨て。点数は本ツールが12の運命周期を比較しやすくするために設定した目安です。</span>
+    </div>
+
+    <h2>12の運命周期と相性の見方</h2>
+    <div class="ra-zone-grid">
+      <div><b>種子・緑生・立花</b><span>縁が始まり、育ち、花開く流れ</span></div>
+      <div><b>健弱</b><span>無理をせず、距離感を整えたい流れ</span></div>
+      <div><b>達成</b><span>目標を後押しし合いやすい流れ</span></div>
+      <div><b>乱気</b><span>感情の揺れやすさに注意する流れ</span></div>
+      <div><b>再会・財成・安定</b><span>縁、実り、安心感につながる流れ</span></div>
+      <div><b>陰影・停止・減退</b><span>大殺界。結論を急がず慎重に向き合う流れ</span></div>
+    </div>
+
+    <h2>{CURRENT_YEAR}年の運気は相性点に含まれる？</h2>
+    <p>
+      結果欄には、ふたりそれぞれの{CURRENT_YEAR}年の年運も表示します。ただし、年運は毎年変わるため<strong>固定の相性度には加算していません</strong>。ふたりの歩調を考える補助情報としてご覧ください。自分一人の今後の大殺界を詳しく調べる場合は、<a href="/rokusei/">六星占術・大殺界 自動計算</a>をご利用ください。
+    </p>
+
+    <h2>計算方法の参考資料</h2>
+    <ul class="ra-sources">
+      <li><a href="https://www.senjutsu.jp/labo_6sei/aishou" rel="nofollow noopener">大久保占い研究室「六星占術の相性診断・調べ方」</a>：地運と天運、双方向の地運の見方</li>
+      <li><a href="https://www.senjutsu.jp/labo_6sei" rel="nofollow noopener">大久保占い研究室「六星占術 早見表」</a>：運命星と運命周期の算出方法</li>
+      <li><a href="https://fortune.netoff.co.jp/rokusei/aisho/" rel="nofollow noopener">運命星別の相性一覧</a>：六星占術における相性の一般的な解説</li>
+    </ul>
+    <div class="disclaimer">
+      ※ 六星占術は文化的な慣習・娯楽としての占いであり、科学的根拠はありません。相性の解釈や計算法には流派・書籍による違いがあります。計算結果はあくまで参考値です。恋愛・結婚・人間関係など大切な判断は、結果だけに頼らずご自身の責任でお決めください。
+    </div>
+  </section>
+
+  <section class="ra-related-guide">
+    <h2>ほかの方法でも相性を確認する</h2>
+    <p>六星占術だけの地運と、複数の考え方を組み合わせた結果は別のものです。目的に合わせて使い分けてください。</p>
+    <ul>
+      <li><a href="/tanjobi-aisho/">誕生日相性診断</a>：数秘術と六星占術を半分ずつ組み合わせる</li>
+      <li><a href="/seiza-aisho/">星座相性診断</a>：12星座のエレメントと角度から判定</li>
+      <li><a href="/ketsueki-aisho/">血液型相性診断</a>：A・B・O・AB型の組み合わせを確認</li>
+    </ul>
+  </section>
+
+  <RelatedTools current={slug} />
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '六星占術の相性はどう計算しますか？', a: '双方の生年月日から運命星を求め、相手の生まれ年の十二支が自分の12年周期のどこに当たるかを双方向で調べます。本ツールはふたつの地運スコアの平均を相性度として表示します。' },
+    { q: '同じ運命星なら相性は同じですか？', a: '必ずしも同じではありません。地運は相手の生まれ年の十二支を自分の運命周期に当てはめるため、運命星が同じでも生まれ年によって結果が変わる場合があります。' },
+    { q: 'あなたから見た相手と、相手から見たあなたが違うのはなぜ？', a: 'ふたりはそれぞれ異なる運命周期を持ちます。相手の生まれ年を自分の周期に当てはめる方向が変わるため、双方向の地運が異なることがあります。' },
+    { q: '大殺界の相性だとうまくいきませんか？', a: '結果は関係の成否を決めるものではありません。陰影・停止・減退は、焦らず時間をかけて相手を理解するための参考としてご覧ください。' },
+    { q: '霊合星人にも対応していますか？', a: '本ツールは基本となる12タイプの運命星と地運を計算します。霊合星人特有の複合的な解釈は計算対象外です。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { rokuseiCompatibility } from '../../lib/rokusei-aisho.js';
+
+  const $ = (id) => document.getElementById(id);
+  const parseDate = (value) => {
+    const parts = value.split('-').map(Number);
+    return parts.length === 3 ? { y: parts[0], m: parts[1], d: parts[2] } : null;
+  };
+  let hasTrackedResult = false;
+
+  function render() {
+    const person1 = parseDate($('ra-date-1').value);
+    const person2 = parseDate($('ra-date-2').value);
+    const resultBox = $('ra-result');
+    const year = Number(resultBox.dataset.year);
+    const result = person1 && person2 ? rokuseiCompatibility(person1, person2, year) : null;
+
+    if (!result) {
+      resultBox.classList.remove('visible');
+      $('ra-prompt').hidden = false;
+      window.hideResultShare?.();
+      return;
+    }
+
+    $('ra-prompt').hidden = true;
+    resultBox.classList.add('visible');
+    $('ra-score').textContent = `${result.total.score}点`;
+    $('ra-rank').textContent = `${result.total.rank} ${result.total.label}`;
+    $('ra-type-1').textContent = result.p1.type;
+    $('ra-type-2').textContent = result.p2.type;
+    $('ra-year-1').textContent = `${year}年：${result.p1.yearFortune.zone}（${result.p1.yearFortune.category}）`;
+    $('ra-year-2').textContent = `${year}年：${result.p2.yearFortune.zone}（${result.p2.yearFortune.category}）`;
+    $('ra-zone-1').textContent = result.p1ToP2.zone;
+    $('ra-zone-2').textContent = result.p2ToP1.zone;
+    $('ra-direction-score-1').textContent = `${result.p1ToP2.score}点`;
+    $('ra-direction-score-2').textContent = `${result.p2ToP1.score}点`;
+    $('ra-comment-1').textContent = result.p1ToP2.comment;
+    $('ra-comment-2').textContent = result.p2ToP1.comment;
+
+    window.setResultShare?.([
+      '六星占術 相性診断',
+      `相性度：${result.total.score}点（${result.total.rank} ${result.total.label}）`,
+      `あなた：${result.p1.type} ／ お相手：${result.p2.type}`,
+      `地運：${result.p1ToP2.zone} ⇄ ${result.p2ToP1.zone}`,
+    ].join('\n'));
+    if (!hasTrackedResult) {
+      window.trackCalculatorResult?.('rokusei-aisho');
+      hasTrackedResult = true;
+    }
+  }
+
+  $('ra-date-1').addEventListener('input', render);
+  $('ra-date-2').addEventListener('input', render);
+  $('ra-date-1').addEventListener('change', render);
+  $('ra-date-2').addEventListener('change', render);
+</script>
+
+<style>
+  .ra-chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .ra-chips span { padding:6px 11px; border-radius:999px; background:var(--cat-tint); color:var(--cat-color); font-size:.76rem; font-weight:700; }
+  .ra-inputs { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:end; gap:18px; padding:26px; }
+  .ra-inputs .form-group { margin:0; }
+  .ra-cross { padding-bottom:17px; color:var(--cat-color); font-size:1.4rem; font-weight:900; }
+  .ra-prompt { margin:0 26px 26px; padding:16px; border-radius:var(--r-lg); background:var(--surface-sub); color:var(--text-muted); text-align:center; font-size:.84rem; }
+  .result-box { margin:0 26px 26px; }
+  .ra-rank { margin-top:2px; color:var(--cat-color); font-size:1rem; font-weight:900; }
+  .ra-people { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:14px; margin-top:22px; padding-top:20px; border-top:1px solid rgba(255,255,255,.6); }
+  .ra-person { display:flex; flex-direction:column; gap:5px; min-width:0; }
+  .ra-person:nth-child(3) { text-align:right; }
+  .ra-person span { color:var(--text-muted); font-size:.72rem; font-weight:700; }
+  .ra-person strong { color:var(--text); font-size:1.05rem; overflow-wrap:anywhere; }
+  .ra-person small { color:var(--text-3); font-size:.72rem; line-height:1.5; }
+  .ra-heart { color:var(--cat-color); font-size:1.25rem; font-weight:900; }
+  .ra-directions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:18px; }
+  .ra-direction { padding:16px; border:1px solid rgba(139,92,246,.18); border-radius:var(--r-lg); background:rgba(255,255,255,.52); }
+  .ra-direction h2 { margin:0 0 10px; font-size:.8rem; color:var(--text-3); }
+  .ra-direction div { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+  .ra-direction b { color:var(--cat-color); font-size:1.25rem; }
+  .ra-direction div span { color:var(--text); font-family:var(--font-mono); font-weight:800; }
+  .ra-direction p { margin:9px 0 0; color:var(--text-3); font-size:.78rem; line-height:1.7; }
+  .ra-result-note { margin:14px 0 0; color:var(--text-muted); font-size:.72rem; line-height:1.65; }
+  .ra-formula { display:flex; flex-direction:column; gap:8px; margin:18px 0 24px; padding:16px 18px; border-left:5px solid var(--cat-color); border-radius:var(--r-lg); background:var(--cat-tint); }
+  .ra-formula span { color:var(--text-3); font-size:.84rem; line-height:1.7; }
+  .ra-zone-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:16px 0 26px; }
+  .ra-zone-grid div { display:flex; flex-direction:column; gap:4px; padding:13px 15px; border:1px solid var(--border-2); border-radius:var(--r-lg); background:var(--surface-sub); }
+  .ra-zone-grid b { color:var(--text); font-size:.84rem; }
+  .ra-zone-grid span { color:var(--text-3); font-size:.78rem; line-height:1.6; }
+  .ra-sources a { overflow-wrap:anywhere; }
+  .ra-related-guide { margin-top:28px; padding:22px; border-radius:var(--r-xl); background:var(--cat-tint); }
+  .ra-related-guide h2 { margin:0 0 10px; font-size:1.05rem; }
+  .ra-related-guide p, .ra-related-guide li { color:var(--text-3); font-size:.86rem; line-height:1.8; }
+  .ra-related-guide ul { margin:10px 0 0; padding-left:20px; }
+  @media (max-width:680px) {
+    .ra-inputs { grid-template-columns:1fr; gap:10px; padding:16px 14px; }
+    .ra-cross { padding:0; text-align:center; line-height:1; }
+    .ra-prompt { margin:0 14px 16px; }
+    .result-box { margin:0 14px 16px; }
+    .ra-directions, .ra-zone-grid { grid-template-columns:1fr; }
+    .ra-people { gap:8px; }
+    .ra-person strong { font-size:.9rem; }
+  }
+</style>

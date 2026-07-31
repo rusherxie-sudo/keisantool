@@ -48,6 +48,7 @@
 ## 占い・文化
 
 - [六星占術・大殺界計算器](https://keisantool.com/rokusei/): 星・大殺界の自動計算
+- [六星占術 相性診断](https://keisantool.com/rokusei-aisho/): ふたりの生年月日から地運相性を計算
 - [星座調べ（誕生日から星座）](https://keisantool.com/seiza/): 誕生日から12星座を判定
 - [誕生日相性診断（数秘術・六星占術）](https://keisantool.com/tanjobi-aisho/): ふたりの生年月日から相性を計算
 - [星座相性診断（12星座の相性表）](https://keisantool.com/seiza-aisho/): 12星座×12星座の相性を判定

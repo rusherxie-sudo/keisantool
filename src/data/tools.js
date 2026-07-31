@@ -191,6 +191,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'rokusei-aisho',
+    nav: '六星相性',
+    name: '六星占術 相性診断',
+    icon: '💜',
+    category: '占い・文化',
+    short: 'ふたりの生年月日から地運相性を計算',
+    live: true,
+  },
+  {
     slug: 'seiza',
     nav: '星座',
     name: '星座調べ（誕生日から星座）',
