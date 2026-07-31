@@ -30,7 +30,7 @@
 - [出産予定日計算器](https://keisantool.com/shussan/): 妊娠週数・予定日
 - [厄年チェッカー](https://keisantool.com/yakudoshi/): 前厄・本厄・後厄
 - [給与・時給・残業代計算器](https://keisantool.com/kyuyo/): 時給・残業代・手取り
-- [時差計算器](https://keisantool.com/jisa/): 世界の都市との時差をリアルタイム表示
+- [時差計算ツール](https://keisantool.com/jisa/): 日本と世界の現在時刻・時間変換
 - [ガソリン代計算器](https://keisantool.com/gasoline/): 走行距離・燃費から交通費を計算
 - [割り勘計算器](https://keisantool.com/warikai/): 金額と人数から一人あたりの金額を計算
 - [産休・育休計算器](https://keisantool.com/saniku/): 休業期間・出産手当金・育休給付金

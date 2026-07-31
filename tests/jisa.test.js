@@ -1,5 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { TIMEZONES, getOffsetMinutes, getDiffHours, formatDiff, convertWallClock } from '../src/lib/jisa.js';
+import {
+  TIMEZONES,
+  JAPAN_TIME_PAIRS,
+  getOffsetMinutes,
+  getDiffHours,
+  formatDiff,
+  convertWallClock,
+  getJapanTimePair,
+  getJapanTimeProfile,
+  buildJapanTimeTable,
+} from '../src/lib/jisa.js';
 
 const JAN = new Date('2026-01-15T00:00:00Z'); // 冬・DST無し基準日
 
@@ -110,5 +120,87 @@ describe('convertWallClock(srcTz, dstTz, wall) — 任意の日時を別タイ�
       year: 2026, month: 1, day: 1, hour: 3, minute: 0,
     });
     expect(r).toEqual({ year: 2026, month: 1, day: 1, hour: 12, minute: 0 });
+  });
+});
+
+describe('日本との時差・都市別ランディングページ用データ', () => {
+  it('検索需要の高い12都市を重複なしで収録する', () => {
+    expect(JAPAN_TIME_PAIRS).toHaveLength(12);
+    expect(new Set(JAPAN_TIME_PAIRS.map((pair) => pair.slug)).size).toBe(12);
+    expect(new Set(JAPAN_TIME_PAIRS.map((pair) => pair.tzId)).size).toBe(12);
+    expect(JAPAN_TIME_PAIRS.map((pair) => pair.slug)).toEqual(expect.arrayContaining([
+      'new-york', 'los-angeles', 'hawaii', 'london', 'paris', 'sydney',
+      'seoul', 'shanghai', 'taipei', 'singapore', 'bangkok', 'india',
+    ]));
+  });
+
+  it('各都市に静的ページ生成と説明に必要な項目がある', () => {
+    JAPAN_TIME_PAIRS.forEach((pair) => {
+      expect(pair.slug).toMatch(/^[a-z-]+$/);
+      expect(pair.city.length).toBeGreaterThan(0);
+      expect(pair.country.length).toBeGreaterThan(0);
+      expect(pair.tzId).toContain('/');
+      expect(['north', 'south', 'none']).toContain(pair.dstPattern);
+      expect(pair.summary.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('slugから都市データを取得し、不明なslugはundefinedを返す', () => {
+    expect(getJapanTimePair('new-york')?.tzId).toBe('America/New_York');
+    expect(getJapanTimePair('unknown')).toBeUndefined();
+  });
+});
+
+describe('getJapanTimeProfile(pair, year) — 標準時・夏時間の日本との時差', () => {
+  it('ニューヨークは標準時14時間、夏時間13時間、日本が進む', () => {
+    expect(getJapanTimeProfile(getJapanTimePair('new-york'), 2026)).toMatchObject({
+      standardDiff: 14,
+      daylightDiff: 13,
+      hasDst: true,
+    });
+  });
+
+  it('ハワイは通年19時間で夏時間なし', () => {
+    expect(getJapanTimeProfile(getJapanTimePair('hawaii'), 2026)).toEqual({
+      standardDiff: 19,
+      daylightDiff: null,
+      hasDst: false,
+    });
+  });
+
+  it('シドニーは標準時に日本より1時間、夏時間に2時間進む', () => {
+    expect(getJapanTimeProfile(getJapanTimePair('sydney'), 2026)).toMatchObject({
+      standardDiff: -1,
+      daylightDiff: -2,
+      hasDst: true,
+    });
+  });
+
+  it('ソウルは日本と同時刻、インドは日本より3時間30分遅い', () => {
+    expect(getJapanTimeProfile(getJapanTimePair('seoul'), 2026).standardDiff).toBe(0);
+    expect(getJapanTimeProfile(getJapanTimePair('india'), 2026).standardDiff).toBe(3.5);
+  });
+});
+
+describe('buildJapanTimeTable(pair, wall) — 日本時刻から現地時刻への早見表', () => {
+  it('夏の日本9時はニューヨークで前日20時', () => {
+    const row = buildJapanTimeTable(getJapanTimePair('new-york'), {
+      year: 2026, month: 7, day: 15,
+    }, [9])[0];
+    expect(row).toEqual({ japan: '09:00', local: '前日 20:00' });
+  });
+
+  it('日本9時はハワイで前日14時', () => {
+    const row = buildJapanTimeTable(getJapanTimePair('hawaii'), {
+      year: 2026, month: 1, day: 15,
+    }, [9])[0];
+    expect(row).toEqual({ japan: '09:00', local: '前日 14:00' });
+  });
+
+  it('北半球の冬、日本9時は夏時間中のシドニーで同日11時', () => {
+    const row = buildJapanTimeTable(getJapanTimePair('sydney'), {
+      year: 2026, month: 1, day: 15,
+    }, [9])[0];
+    expect(row).toEqual({ japan: '09:00', local: '同日 11:00' });
   });
 });

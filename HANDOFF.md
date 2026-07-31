@@ -1,6 +1,13 @@
 # keisantool 交接文档
 
-> 面向接手的新会话。读完这份 + `CLAUDE.md` 即可上手。最后更新：2026-07-18。
+> 面向接手的新会话。读完这份 + `CLAUDE.md` 即可上手。最后更新：2026-07-31。
+
+## 2026-07-31 流量增长执行状态
+
+- 30 天目标与每日迭代日志见 `docs/seo-growth-30d.md`；达标口径为连续 3 个完整自然日非 `openai` GA4 activeUsers ≥100。
+- `/jisa/` 已由单一泛用页扩展为 12 个城市时差主题簇：动态路由 `src/pages/jisa/[city].astro`，城市数据和时差早见表函数在 `src/lib/jisa.js`。北半球、南半球、无夏时间及 30 分钟偏移均有测试。
+- 当前验证基线：55 个测试文件、1203 项测试；生产构建 456 页。
+- 用户文件 `src/content/blog/kokuho-ryoukin-keisan-hoho.md` 为未跟踪内容，增长迭代不得修改、删除或误提交。
 
 ## 0. 2026-07-18 最新改造
 
@@ -76,7 +83,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 | 生活・日常 | shussan | 出産予定日（含逆算+妊娠月数） |
 | 生活・日常 | yakudoshi | 厄年チェッカー（含和暦早見表SSR） |
 | 生活・日常 | kyuyo | 給与・残業代（含自动时给+分类残業） |
-| 生活・日常 | jisa | 時差計算（含任意日時変換, DST正确） |
+| 生活・日常 | jisa | 時差計算（任意日時変換、DST正确、12个城市对静态落地页） |
 | 生活・日常 | gasoline | ガソリン代（含割り勘） |
 | 生活・日常 | saniku | 産休・育休（含出生後支援+13%等2025新制） |
 | 生活・日常 | nenrei | 年齢計算（満年齢/数え年/学年/干支） |
@@ -148,7 +155,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 - **住民税与共享工资所得控除（2026-07-31 修复）**：旧 `/juminzei/` 把都道府县民税／市町村民税写反为 6%／4%，遗漏均等割与森林环境税，并让配偶者控除和配偶者特别控除重复、给 16 岁以下扶养控除；已按令和 8 年度重写。另发现 `japan-tax-2026.js` 在年收 162.5万〜190万円仍沿用旧分段，导致控除低于改正后的最低 65 万；现改为 190 万以下一律最低 65 万，660 万以下按国税厅别表第五的 4,000 円单位计算。以后不要把“收入×分段百分比”的简化式重新复制回工具。
 - **国保 給与所得控除**：必须用**令和7改正表**（最低控除 65万、适用到年收190万）。旧令和6表(55万)会高估保险料——这是修过的线上真bug。`src/lib/kokuho.js`。
 - **産休育休**：已含 2025年4月新制「出生後休業支援給付金 +13%」、育休給付金賃金日額上限(16,110円，令和7年8月值，**每年8月需更新**)。`src/lib/saniku.js`。
-- **時差 DST**：`src/lib/jisa.js` 的 `getOffsetMinutes/convertWallClock` 用 `toLocaleString` 两次相减，DST 自动正确，已实测（东京vs纽约夏令时+13h等）。
+- **時差 DST**：`src/lib/jisa.js` 的 `getOffsetMinutes/convertWallClock` 用 `toLocaleString` 两次相减，DST 自动正确；`JAPAN_TIME_PAIRS` 为 12 个城市页的单一数据源，`getJapanTimeProfile` 用 1月／7月代表日区分南北半球，实际任意日期仍由 IANA/Intl 规则计算。已测试东京vs纽约夏令时+13h、悉尼反季节、夏威夷跨日前日、印度30分钟偏移。
 - **`live` flag 不过滤**：导航/首页**不按 live 过滤**（`SiteHeader.astro` 和 `index.astro` 都是全渲染）。当前 24 个全 `live:true`。若想用 live 真正隐藏，需要自己接过滤逻辑。
 - **calorie 公式**：默认用「国立健康・栄養研究所式(Ganpule)」，HB式可切换。
 - **导航**：已是分类下拉式（`SiteHeader.astro`：PC hover/点击展开，移动端汉堡+手风琴）。工具再增多也不会挤爆导航。

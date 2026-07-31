@@ -1,0 +1,329 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import {
+  JAPAN_TIME_PAIRS,
+  getJapanTimeProfile,
+  buildJapanTimeTable,
+} from '../../lib/jisa.js';
+
+export function getStaticPaths() {
+  return JAPAN_TIME_PAIRS.map((pair) => ({ params: { city: pair.slug }, props: { pair } }));
+}
+
+const { pair } = Astro.props;
+const YEAR = new Date().getFullYear();
+const profile = getJapanTimeProfile(pair, YEAR);
+
+function hoursLabel(diff) {
+  const abs = Math.abs(diff);
+  const hours = Math.floor(abs);
+  const minutes = Math.round((abs - hours) * 60);
+  if (hours === 0) return `${minutes}分`;
+  return minutes === 0 ? `${hours}時間` : `${hours}時間${minutes}分`;
+}
+
+function differenceSentence(diff) {
+  if (diff === 0) return `日本と${pair.city}に時差はなく、同じ時刻です`;
+  return diff > 0
+    ? `日本が${pair.city}より${hoursLabel(diff)}進んでいます`
+    : `${pair.city}が日本より${hoursLabel(diff)}進んでいます`;
+}
+
+const standardSentence = differenceSentence(profile.standardDiff);
+const daylightSentence = profile.hasDst ? differenceSentence(profile.daylightDiff) : null;
+const shortAnswer = profile.hasDst
+  ? `標準時は${standardSentence}。夏時間は${daylightSentence}。`
+  : `${standardSentence}。一年を通して変わりません。`;
+
+const standardMonth = pair.dstPattern === 'south' ? 7 : 1;
+const daylightMonth = pair.dstPattern === 'south' ? 1 : 7;
+const standardTable = buildJapanTimeTable(pair, { year: YEAR, month: standardMonth, day: 15 });
+const daylightTable = profile.hasDst
+  ? buildJapanTimeTable(pair, { year: YEAR, month: daylightMonth, day: 15 })
+  : null;
+
+const slug = `jisa/${pair.slug}`;
+const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
+const title = `日本と${pair.city}の時差は何時間？現在時刻・早見表 | 計算ツール`;
+const description = `日本と${pair.city}（${pair.country}）の時差を現在時刻つきで表示。${shortAnswer}日本時間から現地時間への変換、日付のずれ、夏時間を無料で確認できます。`;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: `日本と${pair.city}の時差計算`,
+  description,
+  url: canonicalUrl,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['現在時刻をリアルタイム表示', '日本時間から現地時間へ変換', '夏時間を自動反映', '時差早見表'],
+};
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: '時差計算ツール', item: new URL('/jisa/', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: `日本と${pair.city}の時差`, item: canonicalUrl },
+  ],
+};
+
+const otherPairs = JAPAN_TIME_PAIRS.filter((item) => item.slug !== pair.slug);
+const faqItems = [
+  {
+    q: `日本と${pair.city}の時差は何時間ですか？`,
+    a: shortAnswer,
+  },
+  {
+    q: `日本時間から${pair.city}時間を計算する方法は？`,
+    a: profile.standardDiff === 0
+      ? `日本と${pair.city}は同じ時刻です。日本時間をそのまま読めます。`
+      : profile.standardDiff > 0
+        ? `日本時間から${hoursLabel(profile.standardDiff)}を引くと${pair.city}の標準時になります。夏時間中は時差が変わるため、上の変換ツールなら日付に応じて自動計算できます。`
+        : `日本時間に${hoursLabel(profile.standardDiff)}を足すと${pair.city}の標準時になります。夏時間中は時差が変わるため、上の変換ツールなら日付に応じて自動計算できます。`,
+  },
+  {
+    q: `${pair.city}はサマータイム（夏時間）を実施していますか？`,
+    a: profile.hasDst
+      ? `はい。${pair.city}では夏時間に切り替わる期間があり、日本との時差が標準時から1時間変わります。本ページは指定した日時の夏時間を自動反映します。`
+      : `いいえ。${pair.city}では現在サマータイムを実施していないため、日本との時差は一年を通して変わりません。`,
+  },
+  {
+    q: `日本の朝9時は${pair.city}で何時ですか？`,
+    a: `標準時の代表日では${standardTable.find((row) => row.japan === '09:00').local}です。${profile.hasDst ? `夏時間の代表日では${daylightTable.find((row) => row.japan === '09:00').local}です。` : ''}上の日時変換を使うと、知りたい日付で正確に確認できます。`,
+  },
+];
+---
+
+<ToolLayout title={title} description={description} slug={slug} current="jisa" jsonld={jsonld} breadcrumb={breadcrumb} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/jisa/">時差計算</a> ／ {pair.city}</div>
+    <h1>日本と{pair.city}の時差は何時間？</h1>
+    <p>{pair.summary}</p>
+  </div>
+
+  <div class="calc-card pair-card" data-jisa-pair data-destination-tz={pair.tzId} data-destination-city={pair.city}>
+    <div class="answer-box">
+      <span class="answer-label">結論</span>
+      <p>{shortAnswer}</p>
+    </div>
+
+    <div class="clock-grid" aria-live="polite">
+      <div class="clock-box">
+        <span>日本（東京）の現在時刻</span>
+        <strong id="japanTime">--:--:--</strong>
+        <small id="japanDate">----/--/--</small>
+      </div>
+      <div class="clock-box">
+        <span>{pair.city}の現在時刻</span>
+        <strong id="localTime">--:--:--</strong>
+        <small id="localDate">----/--/--</small>
+      </div>
+    </div>
+
+    <div class="current-diff">
+      現在の時差：<strong id="currentDiff">計算中…</strong>
+    </div>
+
+    <div class="converter">
+      <h2>日本時間を{pair.city}時間に変換</h2>
+      <label for="japanDatetime">日本の日時</label>
+      <input id="japanDatetime" type="datetime-local" />
+      <div class="convert-arrow" aria-hidden="true">↓</div>
+      <div class="converted-result">
+        <span>{pair.city}では</span>
+        <strong id="convertedTime">日時を入力してください</strong>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>日本と{pair.city}の時差早見表</h2>
+    <p>
+      日本時間を基準にした{YEAR}年の早見表です。<strong>「前日」「翌日」まで含めて確認</strong>できるため、海外への電話やオンライン会議の予定調整に使えます。
+      {profile.hasDst
+        ? '夏時間を実施するため、標準時と夏時間を分けて掲載しています。'
+        : '夏時間を実施していないため、一年を通して同じ換算です。'}
+    </p>
+    <div class:list={['table-pair', !profile.hasDst && 'table-pair--single']}>
+      <div>
+        <h3>標準時の早見表</h3>
+        <div class="data-table-wrap">
+          <div class="data-table-scroll">
+            <table class="data-table">
+              <thead><tr><th>日本時間</th><th>{pair.city}</th></tr></thead>
+              <tbody>{standardTable.map((row) => <tr><td class="num">{row.japan}</td><td class="num">{row.local}</td></tr>)}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {profile.hasDst && (
+        <div>
+          <h3>夏時間の早見表</h3>
+          <div class="data-table-wrap">
+            <div class="data-table-scroll">
+              <table class="data-table">
+                <thead><tr><th>日本時間</th><th>{pair.city}</th></tr></thead>
+                <tbody>{daylightTable.map((row) => <tr><td class="num">{row.japan}</td><td class="num">{row.local}</td></tr>)}</tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+    <p class="table-note">※ 標準時は{YEAR}年{standardMonth}月15日、{profile.hasDst ? `夏時間は${YEAR}年${daylightMonth}月15日` : ''}を代表日として計算しています。制度変更や切替日の前後は上の日時変換をご利用ください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>時差の計算方法と日付のずれ</h2>
+    <p>
+      日本標準時（JST）は<strong>UTC+9</strong>です。時差は「日本のUTCオフセット − {pair.city}のUTCオフセット」で求めます。
+      {standardSentence}。{profile.hasDst ? `夏時間中は時計が1時間切り替わり、${daylightSentence}。` : '夏時間による季節変動はありません。'}
+    </p>
+    <p>
+      時刻を引き算・足し算した結果が0時をまたぐ場合は、日付も前日または翌日に変わります。とくに旅行の到着日、予約開始、ライブ配信、オンライン会議では「何時」だけでなく<strong>現地の日付</strong>も確認してください。
+    </p>
+    <div class="disclaimer">※ タイムゾーン制度は各国・地域の決定で変更される場合があります。本ページはブラウザのIANAタイムゾーン情報を使って計算します。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <section class="howto sources">
+    <h2>計算の根拠・参考情報</h2>
+    <ul>
+      <li><a href="https://www.nao.ac.jp/faq/a0402.html" target="_blank" rel="noopener">国立天文台「時差はどうやって計算するの？」</a></li>
+      <li><a href="https://www.iana.org/time-zones" target="_blank" rel="noopener">IANA Time Zone Database</a></li>
+      {(pair.slug === 'new-york' || pair.slug === 'los-angeles' || pair.slug === 'hawaii') && (
+        <li><a href="https://www.nist.gov/pml/time-and-frequency-division/local-time-faqs" target="_blank" rel="noopener">NIST Local Time FAQs（米国の標準時・夏時間）</a></li>
+      )}
+      {pair.slug === 'london' && (
+        <li><a href="https://www.gov.uk/when-do-the-clocks-change" target="_blank" rel="noopener">GOV.UK「When do the clocks change?」</a></li>
+      )}
+      {pair.slug === 'hawaii' && (
+        <li><a href="https://www.allhawaii.jp/travelinfo/faq/" target="_blank" rel="noopener">ハワイ州観光局 FAQ</a></li>
+      )}
+    </ul>
+  </section>
+
+  <nav class="howto city-links" aria-label="日本と主要都市の時差">
+    <h2>日本とほかの都市の時差</h2>
+    <div class="city-link-grid">
+      {otherPairs.map((item) => <a href={`/jisa/${item.slug}/`}>日本と{item.city}の時差</a>)}
+    </div>
+    <p><a class="hub-link" href="/jisa/">世界25都市を自由に選べる時差計算ツール →</a></p>
+  </nav>
+
+  <RelatedTools current="jisa" />
+  <Faq items={faqItems} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .pair-card { max-width: 620px; padding: 24px; }
+  .answer-box { padding: 18px 20px; border: 1.5px solid var(--cat-color); border-radius: var(--r-md); background: var(--cat-tint); }
+  .answer-label { display: inline-block; margin-bottom: 6px; font-size: .72rem; font-weight: var(--fw-bold); color: var(--cat-color); }
+  .answer-box p { margin: 0; font-size: 1.02rem; font-weight: var(--fw-bold); line-height: 1.7; }
+  .clock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+  .clock-box { display: flex; flex-direction: column; gap: 5px; padding: 16px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .clock-box span { font-size: .75rem; font-weight: var(--fw-bold); color: var(--text-muted); }
+  .clock-box strong { font: var(--fw-bold) 1.65rem/1 var(--font-mono); }
+  .clock-box small { color: var(--text-muted); }
+  .current-diff { margin: 14px 0 0; text-align: center; color: var(--text-muted); }
+  .current-diff strong { color: var(--cat-color); }
+  .converter { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--border-2); }
+  .converter h2 { margin: 0 0 14px; font-size: 1.05rem; }
+  .converter label { display: block; margin-bottom: 6px; font-size: .78rem; font-weight: var(--fw-bold); color: var(--text-muted); }
+  .converter input { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: var(--r-md); font: .95rem var(--font-mono); color: var(--text); background: var(--surface); }
+  .converter input:focus { outline: none; border-color: var(--cat-color); }
+  .convert-arrow { padding: 7px 0; text-align: center; color: var(--cat-color); }
+  .converted-result { display: flex; flex-direction: column; gap: 5px; padding: 14px; border-radius: var(--r-md); background: var(--surface-sub); text-align: center; }
+  .converted-result span { font-size: .76rem; color: var(--text-muted); }
+  .converted-result strong { font: var(--fw-bold) 1.05rem/1.5 var(--font-mono); }
+  .table-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
+  .table-pair--single { grid-template-columns: minmax(260px, 440px); }
+  .table-pair h3 { margin: 0 0 8px; font-size: .92rem; }
+  .table-note { margin-top: 12px; font-size: .78rem; color: var(--text-muted); }
+  .sources ul { padding-left: 1.2em; }
+  .sources a, .hub-link { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
+  .city-link-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .city-link-grid a { padding: 10px 12px; border: 1px solid var(--border-2); border-radius: var(--r-sm); color: var(--cat-color); background: var(--surface-sub); font-size: .82rem; font-weight: var(--fw-bold); }
+  .city-link-grid a:hover { background: var(--cat-tint); }
+  @media (max-width: 560px) {
+    .clock-grid, .table-pair, .city-link-grid { grid-template-columns: 1fr; }
+    .clock-box strong { font-size: 1.45rem; }
+  }
+</style>
+
+<script>
+  import { getDiffHours, formatDiff, convertWallClock } from '../../lib/jisa.js';
+
+  const $ = (id) => document.getElementById(id);
+  const pairRoot = document.querySelector('[data-jisa-pair]');
+  const destinationTz = pairRoot.dataset.destinationTz;
+  const destinationCity = pairRoot.dataset.destinationCity;
+  const pad = (value) => String(value).padStart(2, '0');
+  const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+
+  function formatTime(timeZone, now) {
+    return new Intl.DateTimeFormat('ja-JP', {
+      timeZone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+    }).format(now);
+  }
+
+  function formatDate(timeZone, now) {
+    return new Intl.DateTimeFormat('ja-JP', {
+      timeZone, year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short',
+    }).format(now);
+  }
+
+  function updateClocks() {
+    const now = new Date();
+    $('japanTime').textContent = formatTime('Asia/Tokyo', now);
+    $('japanDate').textContent = formatDate('Asia/Tokyo', now);
+    $('localTime').textContent = formatTime(destinationTz, now);
+    $('localDate').textContent = formatDate(destinationTz, now);
+    const diff = getDiffHours('Asia/Tokyo', destinationTz, now);
+    $('currentDiff').textContent = diff === 0
+      ? '日本と同じ時刻'
+      : diff > 0
+        ? `日本が${formatDiff(diff)}`
+        : `${destinationCity}が${formatDiff(-diff)}`;
+    window.setResultShare?.(`日本と${destinationCity}の時差\n日本：${$('japanTime').textContent}\n${destinationCity}：${$('localTime').textContent}\n${$('currentDiff').textContent}`);
+  }
+
+  function setDefaultDatetime() {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hour12: false,
+    }).formatToParts(new Date());
+    const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    const hour = values.hour === '24' ? '00' : values.hour;
+    $('japanDatetime').value = `${values.year}-${values.month}-${values.day}T${hour}:${values.minute}`;
+  }
+
+  function updateConversion() {
+    const value = $('japanDatetime').value;
+    if (!value) {
+      $('convertedTime').textContent = '日時を入力してください';
+      return;
+    }
+    const [datePart, timePart] = value.split('T');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hour, minute] = timePart.split(':').map(Number);
+    const converted = convertWallClock('Asia/Tokyo', destinationTz, { year, month, day, hour, minute });
+    const weekday = WEEKDAYS[new Date(Date.UTC(converted.year, converted.month - 1, converted.day)).getUTCDay()];
+    $('convertedTime').textContent = `${converted.year}/${pad(converted.month)}/${pad(converted.day)}（${weekday}） ${pad(converted.hour)}:${pad(converted.minute)}`;
+    window.trackCalculatorResult?.('japan-to-city');
+  }
+
+  $('japanDatetime').addEventListener('input', updateConversion);
+  setDefaultDatetime();
+  updateClocks();
+  updateConversion();
+  setInterval(updateClocks, 1000);
+</script>

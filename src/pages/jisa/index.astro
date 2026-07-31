@@ -4,12 +4,12 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
-import { TIMEZONES } from '../../lib/jisa.js';
+import { TIMEZONES, JAPAN_TIME_PAIRS } from '../../lib/jisa.js';
 
 const slug = 'jisa';
-const title = '時差計算器 — 世界の都市との時差をリアルタイム表示 | 計算ツール';
+const title = '時差計算ツール｜日本と世界の現在時刻・時間変換 | 計算ツール';
 const description =
-  '東京と世界25都市の時差を、現在時刻とともにリアルタイムで表示する無料ツール。ニューヨーク・ロンドン・ハワイ・バンコクなど主要都市に対応。夏時間（サマータイム）も自動反映。';
+  '日本と世界25都市の時差を現在時刻つきで計算。ニューヨーク・ハワイ・ロンドン・シドニーなどの時間を変換でき、夏時間と日付のずれも自動反映する無料ツールです。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -27,8 +27,8 @@ const defaultTz2 = 'America/New_York';
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 時差計算</div>
-    <h1>時差計算器</h1>
-    <p>2つの都市を選ぶと、現在時刻と時差をリアルタイムで表示します。夏時間（サマータイム）も自動で反映されます。</p>
+    <h1>時差計算ツール｜日本と世界の現在時刻</h1>
+    <p>2つの都市を選ぶと、現在時刻と時差をリアルタイムで表示します。日本と主要都市の専用早見表も利用できます。</p>
   </div>
 
   <div class="calc-card jisa-card">
@@ -102,6 +102,19 @@ const defaultTz2 = 'America/New_York';
   <ResultShare />
 
   <div class="ad-slot"></div>
+
+  <section class="howto jisa-city-pages">
+    <h2>日本と主要都市の時差・現在時刻</h2>
+    <p>よく検索される都市は、標準時・夏時間別の早見表と日本時間からの専用変換ページを用意しています。</p>
+    <div class="jisa-city-grid">
+      {JAPAN_TIME_PAIRS.map((pair) => (
+        <a href={`/jisa/${pair.slug}/`}>
+          <strong>日本と{pair.city}の時差</strong>
+          <span>{pair.country}の現在時刻・早見表 →</span>
+        </a>
+      ))}
+    </div>
+  </section>
 
   <section class="howto">
     <h2>時差計算器の使い方</h2>
@@ -280,6 +293,13 @@ const defaultTz2 = 'America/New_York';
 .jisa-info { margin-top: 28px; }
 .jisa-info .data-table-wrap { margin-top: 16px; }
 .jisa-info-note { font-size: .8rem; color: var(--text-muted); margin-top: 12px; line-height: 1.7; }
+.jisa-city-pages { margin-top: 28px; }
+.jisa-city-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; margin-top: 16px; }
+.jisa-city-grid a { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); color: var(--text); }
+.jisa-city-grid a:hover { border-color: var(--cat-color); background: var(--cat-tint); }
+.jisa-city-grid strong { font-size: .85rem; color: var(--cat-color); }
+.jisa-city-grid span { font-size: .72rem; color: var(--text-muted); }
+@media (max-width: 520px) { .jisa-city-grid { grid-template-columns: 1fr; } }
 </style>
 
 <script>

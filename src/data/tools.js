@@ -238,10 +238,10 @@ export const tools = [
   {
     slug: 'jisa',
     nav: '時差計算',
-    name: '時差計算器',
+    name: '時差計算ツール',
     icon: '🌏',
     category: '生活・日常',
-    short: '世界の都市との時差をリアルタイム表示',
+    short: '日本と世界の現在時刻・時間変換',
     live: true,
   },
   {
