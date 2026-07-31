@@ -10,7 +10,8 @@
 - `/saitei/` 已按厚生劳动省令和7年度现行表重建，并新增47个都道府县页 `/saitei/<prefecture>/`。数据、有效日与全国加权平均的单一来源为 `src/lib/saitei.js`，页面共用 `MinimumWageCalculator.astro`；截至2026-08-01令和8年度金额仍在审议，不得写成已确定值。
 - `/shukujitsu/` 与2025〜2029年度页已增加12个月全年日历、祝日／连休摘要和打印按钮；未来年度页会用 `officialHolidayYearLimit()` 自动标识正式公布与预测状态。
 - `/neko-ninshin/` 已增加预计日倒计时、超声25〜35日／X光55日／第7周准备的个性化日历、9周时间表和权威来源；日期逻辑集中在 `pet-pregnancy.js` 的 `catPregnancyMilestones()`。
-- 当前验证基线：55 个测试文件、1269 项测试；生产构建 530 页。
+- `/rokusei-aisho/` 已上线六星占术双人生年月日相性诊断；固定地运分数复用 `tanjobi-aisho.js` 的 `rokuseiAisho()`，新组合层 `rokusei-aisho.js` 只负责双向汇总、等级与当年运气展示，天运不得混入固定相性分数。
+- 当前验证基线：56 个测试文件、1275 项测试；生产构建 531 页。
 - 用户文件 `src/content/blog/kokuho-ryoukin-keisan-hoho.md` 为未跟踪内容，增长迭代不得修改、删除或误提交。
 
 ## 0. 2026-07-18 最新改造
@@ -73,7 +74,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 5. **日期处理**：用 UTC 正午基准（见 `src/lib/shussan.js` 的 `toDate/toISO/addDays`），避免时区/夏令时跨日 bug。
 6. **法规/数值每年要复核**：日本税制·社保每年 4月/8月 改定。已知踩过的坑见第 8 节。
 
-## 5. 全工具清单（46个，按分类；下表部分行是犬猫成对工具合并展示，行数≠工具数）
+## 5. 全工具清单（47个，按分类；下表部分行是犬猫成对工具合并展示，行数≠工具数）
 
 | 分类 | slug | 工具 |
 |------|------|------|
@@ -93,6 +94,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 | 生活・日常 | saniku | 産休・育休（含出生後支援+13%等2025新制） |
 | 生活・日常 | nenrei | 年齢計算（満年齢/数え年/学年/干支） |
 | 占い・文化 | rokusei | 六星占術・大殺界（hub + 12类型年度页 `/rokusei/<type>/`，复用周期算法） |
+| 占い・文化 | rokusei-aisho | 六星占術 相性診断（双方生年月日、地運双向评分、当年天運分开展示） |
 | 占い・文化 | tanjobi-aisho | 誕生日相性診断（数秘術45对判定表+六星地運双向，総合=floor平均） |
 | 占い・文化 | seiza-aisho | 星座相性診断 hub + **144程序化页** `[pair].astro`（エレメント×アスペクト7档） |
 | 占い・文化 | ketsueki-aisho | 血液型相性診断（10无序对判定表+16方向性评语，单页tab型） |
