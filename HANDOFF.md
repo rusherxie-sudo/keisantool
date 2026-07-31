@@ -1,12 +1,13 @@
 # keisantool 交接文档
 
-> 面向接手的新会话。读完这份 + `CLAUDE.md` 即可上手。最后更新：2026-07-31。
+> 面向接手的新会话。读完这份 + `CLAUDE.md` 即可上手。最后更新：2026-08-01。
 
-## 2026-07-31 流量增长执行状态
+## 2026-08-01 流量增长执行状态
 
 - 30 天目标与每日迭代日志见 `docs/seo-growth-30d.md`；达标口径为连续 3 个完整自然日非 `openai` GA4 activeUsers ≥100。
 - `/jisa/` 已由单一泛用页扩展为 12 个城市时差主题簇：动态路由 `src/pages/jisa/[city].astro`，城市数据和时差早见表函数在 `src/lib/jisa.js`。北半球、南半球、无夏时间及 30 分钟偏移均有测试。
-- 当前验证基线：55 个测试文件、1203 项测试；生产构建 456 页。
+- `/hinodeiri/` 已增加15个城市年度页；`/rokusei/` 已增加12个类型年度页，动态模板分别为 `src/pages/hinodeiri/[city].astro` 与 `src/pages/rokusei/[type].astro`。六星占术类型 URL 单一清单由 `fortuneTypes()` 提供，周期结果继续复用 `fortuneZone()`／`forecast()`。
+- 当前验证基线：55 个测试文件、1253 项测试；生产构建 483 页。
 - 用户文件 `src/content/blog/kokuho-ryoukin-keisan-hoho.md` 为未跟踪内容，增长迭代不得修改、删除或误提交。
 
 ## 0. 2026-07-18 最新改造
@@ -87,7 +88,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 | 生活・日常 | gasoline | ガソリン代（含割り勘） |
 | 生活・日常 | saniku | 産休・育休（含出生後支援+13%等2025新制） |
 | 生活・日常 | nenrei | 年齢計算（満年齢/数え年/学年/干支） |
-| 占い・文化 | rokusei | 六星占術・大殺界（含12型解说SSR） |
+| 占い・文化 | rokusei | 六星占術・大殺界（hub + 12类型年度页 `/rokusei/<type>/`，复用周期算法） |
 | 占い・文化 | tanjobi-aisho | 誕生日相性診断（数秘術45对判定表+六星地運双向，総合=floor平均） |
 | 占い・文化 | seiza-aisho | 星座相性診断 hub + **144程序化页** `[pair].astro`（エレメント×アスペクト7档） |
 | 占い・文化 | ketsueki-aisho | 血液型相性診断（10无序对判定表+16方向性评语，单页tab型） |
