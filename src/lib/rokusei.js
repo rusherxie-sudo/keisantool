@@ -148,6 +148,12 @@ const SEED_BRANCH = {
   天王星人プラス: 6,
 };
 
+// 早見表で使う表示順。6運命星ごとにプラス→マイナスの順で固定する。
+const FORTUNE_TYPES = STARS.flatMap((star) => [
+  `${star}プラス`,
+  `${star}マイナス`,
+]);
+
 // 指定タイプ・指定西暦年のゾーンを返す。{ zone, category, desc } または null。
 export function fortuneZone(type, year) {
   const seed = SEED_BRANCH[type];
@@ -155,6 +161,16 @@ export function fortuneZone(type, year) {
   const idx = ((yearBranch(year) - seed) % 12 + 12) % 12;
   const zone = ZONES[idx];
   return { zone, category: ZONE_CATEGORY[zone], desc: ZONE_DESC[zone] };
+}
+
+// 指定年の12タイプ別運勢を、早見表向けの固定順で返す。
+// ページ側で12タイプや分類を重複定義しないための単一データ源。
+export function fortuneTable(year) {
+  if (!Number.isInteger(year)) return [];
+  return FORTUNE_TYPES.map((type) => {
+    const { zone, category } = fortuneZone(type, year);
+    return { type, zone, category };
+  });
 }
 
 // 基準年から count 年分の運勢ゾーンを配列で返す。

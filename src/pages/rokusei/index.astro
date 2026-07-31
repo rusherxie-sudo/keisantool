@@ -4,12 +4,16 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
+import { fortuneTable } from '../../lib/rokusei.js';
 
 const slug = 'rokusei';
+const CURRENT_YEAR = new Date().getFullYear();
+const yearlyFortunes = fortuneTable(CURRENT_YEAR);
+const daisakkaiTypes = yearlyFortunes.filter((item) => item.category === '大殺界');
 const title =
-  '六星占術・大殺界 自動計算器｜早見表で運命星・大殺界を無料診断';
+  `六星占術 自動計算【${CURRENT_YEAR}年】｜大殺界・運命星の早見表`;
 const description =
-  '生年月日から六星占術の運命星・陽陰と今年の大殺界を無料で自動計算。大殺界の早見表で今後9年の運勢ゾーンも確認できる、登録不要の診断ツールです。';
+  `生年月日から六星占術の運命星・プラス／マイナスと${CURRENT_YEAR}年の大殺界を無料で自動計算。12タイプ早見表と今後9年の運勢も確認できる登録不要の診断ツールです。`;
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -79,8 +83,8 @@ const STAR_PROFILES: StarProfile[] = [
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 六星占術</div>
-    <h1>六星占術・大殺界 自動計算器</h1>
-    <p>生年月日を入力するだけで、運命星（6星）と陽陰、今年の大殺界を自動判定。今後9年の早見表も無料で確認できます。</p>
+    <h1>六星占術 自動計算（{CURRENT_YEAR}年の大殺界・運命星）</h1>
+    <p>生年月日を入力するだけで、運命星（6星）とプラス・マイナス、{CURRENT_YEAR}年の大殺界を自動判定。今後9年の早見表も無料で確認できます。</p>
   </div>
 
   <div class="calc-card">
@@ -143,6 +147,36 @@ const STAR_PROFILES: StarProfile[] = [
     </div>
   </section>
 
+  <section class="rk-year-table">
+    <h2>{CURRENT_YEAR}年 六星占術・大殺界早見表（12タイプ）</h2>
+    <p>
+      {CURRENT_YEAR}年に大殺界なのは、
+      <strong>{daisakkaiTypes.map((item) => `${item.type}（${item.zone}）`).join('・')}</strong>
+      です。12タイプすべての年運を一覧で確認できます。
+    </p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>運命星タイプ</th><th>{CURRENT_YEAR}年の運気</th><th>区分</th></tr>
+          </thead>
+          <tbody>
+            {yearlyFortunes.map((item) => (
+              <tr class={item.category === '大殺界' ? 'is-daisakkai' : ''}>
+                <th scope="row">{item.type}</th>
+                <td>{item.zone}</td>
+                <td><span class={`rk-year-badge rk-year-${item.category}`}>{item.category}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="rk-year-note">
+      ※ この表は1年ごとに巡る「年運」の大殺界です。人生の特定期間を扱う「宿命大殺界」とは異なります。本ツールは年運の大殺界を計算します。
+    </p>
+  </section>
+
   <section class="rk-guide">
     <h2>六星占術を調べたあとに役立つ計算</h2>
     <p>六星占術の大殺界と、厄年・干支・星座は別の考え方です。生まれ年や年齢をあわせて確認したいときは、次の無料ツールもご利用ください。</p>
@@ -193,6 +227,8 @@ const STAR_PROFILES: StarProfile[] = [
 
   <Faq items={[
     { q: '自分の運命星はどう調べますか？', a: '生年月日を入力すると、土星人・金星人・火星人・天王星人・木星人・水星人の6つの運命星と、陽（＋）／陰（−）を自動判定します。' },
+    { q: `${CURRENT_YEAR}年に大殺界なのは何星人ですか？`, a: `${CURRENT_YEAR}年に大殺界なのは、${daisakkaiTypes.map((item) => `${item.type}（${item.zone}）`).join('・')}です。年運は12年周期で巡ります。` },
+    { q: '大殺界と宿命大殺界は同じですか？', a: '異なります。大殺界は12年周期の年運のうち陰影・停止・減退の3年間を指します。宿命大殺界は人生の特定期間を扱う別の考え方で、本ツールの計算対象外です。' },
     { q: '大殺界とは何ですか？', a: '六星占術で運気が低調とされる「陰影・停止・減退」の3年間のことです。本ツールで今後の運勢ゾーンの目安を表示します。' },
     { q: '結果は信頼できますか？', a: '占いは文化的な慣習・娯楽を目的としたもので、科学的根拠を保証するものではありません。' },
   ]} />
@@ -245,6 +281,15 @@ const STAR_PROFILES: StarProfile[] = [
   .rk-pm-minus .rk-pm-label { color: var(--text-3); }
   .rk-pm p { font-size: .84rem; line-height: 1.75; margin: 0; color: var(--text); }
   .rk-types-note { font-size: .78rem; color: var(--text-muted); margin-top: 14px; line-height: 1.7; }
+  .rk-year-table { margin-top: 28px; }
+  .rk-year-table .data-table-wrap { margin-top: 14px; }
+  .rk-year-table .data-table th[scope="row"] { text-align: left; white-space: nowrap; }
+  .rk-year-table tr.is-daisakkai { background: var(--danger-bg); }
+  .rk-year-badge { display: inline-block; padding: 3px 9px; border-radius: var(--r-pill); font-size: .72rem; font-weight: var(--fw-bold); white-space: nowrap; }
+  .rk-year-大殺界 { color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, #fff); }
+  .rk-year-中殺界, .rk-year-小殺界 { color: var(--warning-text); background: var(--warning-bg); }
+  .rk-year-好調 { color: color-mix(in srgb, var(--cat-color) 62%, #000); background: var(--cat-tint); }
+  .rk-year-note { margin-top: 10px; font-size: .78rem; line-height: 1.7; color: var(--text-muted); }
   .rk-guide { margin-top: 28px; padding: 20px; border-radius: var(--r-md); background: var(--cat-tint); }
   .rk-guide h2 { margin-top: 0; }
   .rk-guide p, .rk-guide li { font-size: .9rem; line-height: 1.8; }

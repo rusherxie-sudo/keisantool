@@ -6,6 +6,7 @@ import {
   kanshi,
   fortuneZone,
   forecast,
+  fortuneTable,
 } from '../src/lib/rokusei.js';
 
 // 検証の根拠となる公開例:
@@ -113,5 +114,28 @@ describe('forecast（向こう数年の運勢）', () => {
   it('12年で一周し種子に戻る', () => {
     const list = forecast('土星人プラス', 2025, 13);
     expect(list[0].zone).toBe(list[12].zone);
+  });
+});
+
+describe('fortuneTable（指定年の12タイプ早見表）', () => {
+  it('2026年の全12タイプを固定順で返す', () => {
+    expect(fortuneTable(2026)).toEqual([
+      { type: '土星人プラス', zone: '再会', category: '好調' },
+      { type: '土星人マイナス', zone: '乱気', category: '中殺界' },
+      { type: '金星人プラス', zone: '安定', category: '好調' },
+      { type: '金星人マイナス', zone: '財成', category: '好調' },
+      { type: '火星人プラス', zone: '停止', category: '大殺界' },
+      { type: '火星人マイナス', zone: '陰影', category: '大殺界' },
+      { type: '天王星人プラス', zone: '種子', category: '好調' },
+      { type: '天王星人マイナス', zone: '減退', category: '大殺界' },
+      { type: '木星人プラス', zone: '立花', category: '好調' },
+      { type: '木星人マイナス', zone: '緑生', category: '好調' },
+      { type: '水星人プラス', zone: '達成', category: '好調' },
+      { type: '水星人マイナス', zone: '健弱', category: '小殺界' },
+    ]);
+  });
+
+  it('不正な年は空配列を返す', () => {
+    expect(fortuneTable(NaN)).toEqual([]);
   });
 });
