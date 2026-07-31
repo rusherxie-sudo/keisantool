@@ -1,0 +1,328 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'heikin-chuouchi';
+const title = '平均値・中央値・最頻値計算ツール｜データを貼り付けて自動計算';
+const description =
+  '数値を貼り付けるだけで平均値、中央値、最頻値を無料で自動計算。合計、並べ替え、最小値・最大値、範囲、四分位数、四分位範囲と計算方法も確認できます。Excel列の貼り付けにも対応。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '平均値・中央値・最頻値計算ツール',
+  description,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 平均値・中央値</div>
+    <h1>平均値・中央値・最頻値計算ツール</h1>
+    <p>Excelやスプレッドシートの数値を貼り付けるだけで、3つの代表値と四分位数をまとめて計算します。</p>
+    <div class="feature-chips" aria-label="対応する計算">
+      <span>平均値</span><span>中央値</span><span>最頻値</span><span>五数要約</span><span>Excel貼り付け対応</span>
+    </div>
+  </div>
+
+  <div class="calc-card" id="central-tool">
+    <div class="calc-panel active">
+      <div class="form-group">
+        <label for="central-values">数値データ</label>
+        <textarea id="central-values" rows="6" placeholder="例：2, 4, 4, 4, 5, 5, 7, 9"></textarea>
+        <small class="field-note">カンマ・空白・改行・タブ・全角読点で区切れます。Excelの列もそのまま貼り付けられます。</small>
+      </div>
+
+      <div class="central-actions">
+        <button type="button" id="central-example">例のデータを入力</button>
+        <button type="button" id="central-clear" class="secondary">クリア</button>
+        <label for="central-digits">
+          小数桁
+          <select id="central-digits">
+            <option value="2">2桁</option>
+            <option value="4" selected>4桁</option>
+            <option value="6">6桁</option>
+          </select>
+        </label>
+      </div>
+
+      <p id="central-error" class="central-error" role="alert"></p>
+
+      <div class="result-box" id="central-result" aria-live="polite">
+        <div class="central-headline">
+          <div><span>平均値</span><strong id="central-mean">—</strong><small>合計 ÷ データ数</small></div>
+          <div class="featured"><span>中央値（メジアン）</span><strong id="central-median">—</strong><small>並べたときの中央</small></div>
+          <div><span>最頻値（モード）</span><strong id="central-mode">—</strong><small id="central-mode-note">最も多い値</small></div>
+        </div>
+
+        <div class="central-summary">
+          <div><span>データ数</span><strong id="central-count">—</strong></div>
+          <div><span>合計</span><strong id="central-sum">—</strong></div>
+          <div><span>最小値</span><strong id="central-min">—</strong></div>
+          <div><span>最大値</span><strong id="central-max">—</strong></div>
+          <div><span>範囲</span><strong id="central-range">—</strong></div>
+          <div><span>四分位範囲</span><strong id="central-iqr">—</strong></div>
+        </div>
+
+        <div class="five-number">
+          <h2>五数要約</h2>
+          <div class="five-number-grid">
+            <div><span>最小値</span><strong id="five-min">—</strong></div>
+            <div><span>第1四分位数 Q1</span><strong id="five-q1">—</strong></div>
+            <div><span>中央値 Q2</span><strong id="five-q2">—</strong></div>
+            <div><span>第3四分位数 Q3</span><strong id="five-q3">—</strong></div>
+            <div><span>最大値</span><strong id="five-max">—</strong></div>
+          </div>
+          <p>四分位数は、奇数個では全体の中央値を除き、上下半分それぞれの中央値を求める方法です。</p>
+        </div>
+
+        <details class="central-detail">
+          <summary>並べ替えたデータと出現回数を見る</summary>
+          <h3>小さい順</h3>
+          <p id="central-sorted" class="sorted-values"></p>
+          <h3>値ごとの出現回数</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>値</th><th>出現回数</th><th>割合</th></tr></thead>
+              <tbody id="central-frequency"></tbody>
+            </table>
+          </div>
+          <p id="central-limit-note" class="limit-note"></p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>平均値・中央値・最頻値とは？</h2>
+    <p>データの中心的な傾向を1つの値で表すものを<strong>代表値</strong>といいます。代表値には主に平均値、中央値、最頻値があり、データの分布や目的に応じて使い分けます。</p>
+    <div class="definition-grid">
+      <div><h3>平均値（mean）</h3><p>すべての値を足し、データ数で割った値です。全データを反映しますが、極端に大きい・小さい外れ値の影響を受けやすい特徴があります。</p></div>
+      <div><h3>中央値（median）</h3><p>値を小さい順に並べたときの中央です。偶数個なら中央2つの平均を取ります。外れ値の影響を受けにくい代表値です。</p></div>
+      <div><h3>最頻値（mode）</h3><p>最も多く現れる値です。同じ回数の値が複数あれば、最頻値も複数あります。すべて1回ずつなら最頻値はありません。</p></div>
+    </div>
+
+    <h2>平均値・中央値・最頻値の求め方</h2>
+    <p><strong>2, 4, 4, 4, 5, 5, 7, 9</strong> の8個を例に計算します。</p>
+    <ol>
+      <li>平均値：合計40 ÷ 8個 ＝ <strong>5</strong></li>
+      <li>中央値：中央の4番目と5番目は4と5なので、(4＋5) ÷ 2 ＝ <strong>4.5</strong></li>
+      <li>最頻値：4が3回で最も多いため <strong>4</strong></li>
+    </ol>
+
+    <h2>どの代表値を使う？</h2>
+    <div class="table-scroll static-table">
+      <table>
+        <thead><tr><th>使いたい場面</th><th>向いている代表値</th><th>理由</th></tr></thead>
+        <tbody>
+          <tr><td>点数や身長など、極端な値が少ないデータ</td><td>平均値</td><td>すべての値を反映できる</td></tr>
+          <tr><td>年収や住宅価格など、極端な値があるデータ</td><td>中央値</td><td>外れ値に引っ張られにくい</td></tr>
+          <tr><td>サイズや回答など、最も多い値を知りたい</td><td>最頻値</td><td>頻度が最大の値を直接示す</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>四分位数・四分位範囲とは？</h2>
+    <p>データを小さい順に並べ、4つの部分に分ける境界が第1四分位数（Q1）、中央値（Q2）、第3四分位数（Q3）です。<strong>Q3−Q1</strong> を四分位範囲（IQR）といい、中央50％のデータがどれくらい散らばっているかを表します。</p>
+    <p>四分位数には複数の定義があります。本ツールは日本の学校統計で使われることが多い「奇数個では全体の中央値を除き、上下半分の中央値を求める」方法です。Excelの <code>QUARTILE.INC</code> は百分位数を補間するため、データ数によって結果が異なる場合があります。</p>
+
+    <h2>Excelで計算する場合</h2>
+    <ul>
+      <li>平均値：<code>=AVERAGE(A1:A10)</code></li>
+      <li>中央値：<code>=MEDIAN(A1:A10)</code></li>
+      <li>最頻値1つ：<code>=MODE.SNGL(A1:A10)</code></li>
+      <li>複数の最頻値：<code>=MODE.MULT(A1:A10)</code></li>
+      <li>四分位数：<code>=QUARTILE.INC(A1:A10,1)</code> または第2引数を3</li>
+    </ul>
+
+    <h2>平均だけでは分からない「ばらつき」</h2>
+    <p>代表値が同じでも、データの散らばり方は異なります。ばらつきを数値で比較したい場合は、同じ形式で貼り付けられる<a href="/hyoujun-hensa/">標準偏差計算ツール</a>をご利用ください。テスト得点の相対位置を知りたい場合は<a href="/hensachi/">偏差値計算器</a>も使えます。</p>
+
+    <h2>参考資料</h2>
+    <ul class="source-list">
+      <li><a href="https://www.stat.go.jp/naruhodo/5_tokucho/chushin.html" target="_blank" rel="noopener noreferrer">総務省統計局「中心的な傾向を捉える」</a></li>
+      <li><a href="https://support.microsoft.com/ja-jp/excel/median-function" target="_blank" rel="noopener noreferrer">Microsoft「MEDIAN 関数」</a></li>
+      <li><a href="https://support.microsoft.com/ja-JP/Excel/functions/mode-mult-function" target="_blank" rel="noopener noreferrer">Microsoft「MODE.MULT 関数」</a></li>
+      <li><a href="https://support.microsoft.com/ja-jp/excel/functions/quartile-inc-function" target="_blank" rel="noopener noreferrer">Microsoft「QUARTILE.INC 関数」</a></li>
+    </ul>
+
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。四分位数は定義によって値が異なる場合があります。学校・試験・業務で指定された計算方法がある場合は、その定義を優先してください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '中央値はどうやって計算しますか？', a: '数値を小さい順に並べ、個数が奇数なら中央の値、偶数なら中央2つの値の平均を取ります。' },
+    { q: '平均値と中央値は何が違いますか？', a: '平均値は全データの合計を個数で割るため外れ値の影響を受けやすく、中央値は並べた中央なので外れ値の影響を受けにくい特徴があります。' },
+    { q: '最頻値が2つ以上になることはありますか？', a: 'はい。同じ最大回数で現れる値が複数あれば、すべて最頻値です。本ツールは並列する最頻値をすべて表示します。' },
+    { q: 'すべて異なる値の場合、最頻値は何ですか？', a: 'すべての値が1回ずつしか現れない場合、最も多い値がないため、本ツールでは「なし」と表示します。' },
+    { q: 'Excelの列を貼り付けられますか？', a: 'はい。改行やタブ区切りに対応しているため、Excelやスプレッドシートの数値列をそのまま貼り付けられます。' },
+    { q: '四分位数がExcelと違うことがあるのはなぜですか？', a: '四分位数には複数の定義があるためです。本ツールは中央値で上下に分ける学校統計の方法を使い、ExcelのQUARTILE.INCは百分位数を補間します。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { parseNumberList, centralTendencyStatistics } from '../../lib/heikin-chuouchi.js';
+
+  const $ = (id) => document.getElementById(id);
+  const MAX_ROWS = 200;
+
+  function formatNumber(value) {
+    if (!Number.isFinite(value)) return '計算不可';
+    const digits = Number($('central-digits').value);
+    if (value !== 0 && Math.abs(value) < 10 ** -digits) return value.toExponential(digits);
+    return value.toLocaleString('ja-JP', { maximumFractionDigits: digits });
+  }
+
+  function hideResult(message = '') {
+    $('central-result').classList.remove('visible');
+    $('central-error').textContent = message;
+    $('central-frequency').replaceChildren();
+    window.hideResultShare?.();
+  }
+
+  function appendFrequencyRows(stats) {
+    const body = $('central-frequency');
+    body.replaceChildren();
+    for (const row of stats.frequencyRows.slice(0, MAX_ROWS)) {
+      const tr = document.createElement('tr');
+      for (const text of [
+        formatNumber(row.value),
+        `${row.count}回`,
+        `${formatNumber(row.count / stats.count * 100)}％`,
+      ]) {
+        const td = document.createElement('td');
+        td.textContent = text;
+        tr.append(td);
+      }
+      body.append(tr);
+    }
+    $('central-limit-note').textContent = stats.frequencyRows.length > MAX_ROWS
+      ? `異なる値が多いため、先頭${MAX_ROWS}件まで表示しています。`
+      : '';
+  }
+
+  function render() {
+    const raw = $('central-values').value;
+    if (raw.trim() === '') return hideResult();
+    const values = parseNumberList(raw);
+    if (values === null) {
+      return hideResult('数値ではない値が含まれています。数値だけをカンマ・空白・改行で区切って入力してください。');
+    }
+    const stats = centralTendencyStatistics(values);
+    if (stats === null) return hideResult('データを確認してください。');
+
+    const modeText = stats.modes.length === 0 ? 'なし' : stats.modes.map(formatNumber).join('、');
+    $('central-mean').textContent = formatNumber(stats.mean);
+    $('central-median').textContent = formatNumber(stats.median);
+    $('central-mode').textContent = modeText;
+    $('central-mode-note').textContent = stats.modes.length === 0 ? 'すべて1回ずつ' : `${stats.modeFrequency}回出現`;
+    $('central-count').textContent = `${stats.count.toLocaleString('ja-JP')}個`;
+    $('central-sum').textContent = formatNumber(stats.sum);
+    $('central-min').textContent = formatNumber(stats.min);
+    $('central-max').textContent = formatNumber(stats.max);
+    $('central-range').textContent = formatNumber(stats.range);
+    $('central-iqr').textContent = formatNumber(stats.interquartileRange);
+    $('five-min').textContent = formatNumber(stats.min);
+    $('five-q1').textContent = formatNumber(stats.firstQuartile);
+    $('five-q2').textContent = formatNumber(stats.median);
+    $('five-q3').textContent = formatNumber(stats.thirdQuartile);
+    $('five-max').textContent = formatNumber(stats.max);
+    $('central-sorted').textContent = stats.sorted.slice(0, MAX_ROWS).map(formatNumber).join('、')
+      + (stats.sorted.length > MAX_ROWS ? ` …（先頭${MAX_ROWS}件）` : '');
+    appendFrequencyRows(stats);
+
+    $('central-error').textContent = '';
+    $('central-result').classList.add('visible');
+    window.setResultShare?.(`平均値・中央値・最頻値\n平均値：${formatNumber(stats.mean)}\n中央値：${formatNumber(stats.median)}\n最頻値：${modeText}`);
+  }
+
+  $('central-values').addEventListener('input', render);
+  $('central-digits').addEventListener('change', render);
+  $('central-example').addEventListener('click', () => {
+    $('central-values').value = '2, 4, 4, 4, 5, 5, 7, 9';
+    render();
+  });
+  $('central-clear').addEventListener('click', () => {
+    $('central-values').value = '';
+    hideResult();
+    $('central-values').focus();
+  });
+</script>
+
+<style is:global>
+  #central-tool .calc-panel { padding: 24px; }
+  #central-tool textarea { width: 100%; resize: vertical; min-height: 132px; font: inherit; line-height: 1.65; }
+  #central-tool .field-note { display: block; margin-top: 7px; color: var(--muted); line-height: 1.55; }
+  #central-tool .central-actions { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  #central-tool .central-actions button { width: auto; min-height: 42px; }
+  #central-tool .central-actions .secondary { background: #fff; color: var(--text); border: 1px solid var(--border); }
+  #central-tool .central-actions label { display: grid; gap: 5px; margin-left: auto; font-size: .82rem; color: var(--muted); font-weight: 700; }
+  #central-tool .central-actions select { min-width: 106px; padding: 9px 34px 9px 10px; }
+  #central-tool .central-error { min-height: 1.4em; margin: 10px 0 0; color: var(--danger); font-weight: 700; }
+  #central-tool .result-box { display: none; margin-top: 12px; }
+  #central-tool .result-box.visible { display: block; }
+  #central-tool .central-headline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  #central-tool .central-headline > div { padding: 19px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); text-align: center; }
+  #central-tool .central-headline .featured { border-color: var(--cat-color); background: var(--cat-tint); }
+  #central-tool .central-headline span { display: block; color: var(--muted); font-size: .83rem; font-weight: 700; }
+  #central-tool .central-headline strong { display: block; margin: 7px 0 5px; color: var(--cat-color); font-size: clamp(1.45rem, 3vw, 2.15rem); line-height: 1.15; overflow-wrap: anywhere; }
+  #central-tool .central-headline small { color: var(--muted); }
+  #central-tool .central-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+  #central-tool .central-summary > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px; border-radius: 11px; background: #fff; border: 1px solid var(--border); }
+  #central-tool .central-summary span { color: var(--muted); font-size: .83rem; }
+  #central-tool .central-summary strong { overflow-wrap: anywhere; text-align: right; }
+  #central-tool .five-number { margin-top: 18px; padding: 18px; border-radius: 14px; background: #fff; border: 1px solid var(--border); }
+  #central-tool .five-number h2 { margin: 0 0 13px; font-size: 1.05rem; }
+  #central-tool .five-number-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+  #central-tool .five-number-grid > div { padding: 12px 7px; border-radius: 10px; background: var(--cat-tint); text-align: center; }
+  #central-tool .five-number-grid span { display: block; min-height: 2.6em; color: var(--muted); font-size: .74rem; line-height: 1.3; }
+  #central-tool .five-number-grid strong { display: block; margin-top: 5px; color: var(--cat-color); overflow-wrap: anywhere; }
+  #central-tool .five-number p { margin: 11px 0 0; color: var(--muted); font-size: .8rem; }
+  #central-tool .central-detail { margin-top: 14px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+  #central-tool .central-detail summary { cursor: pointer; font-weight: 800; }
+  #central-tool .central-detail h3 { margin: 17px 0 8px; font-size: .96rem; }
+  #central-tool .sorted-values { max-height: 8em; overflow: auto; padding: 11px; border-radius: 9px; background: var(--surface); line-height: 1.7; overflow-wrap: anywhere; }
+  #central-tool .table-scroll { overflow-x: auto; }
+  #central-tool table { width: 100%; border-collapse: collapse; min-width: 430px; }
+  #central-tool th, #central-tool td { padding: 9px 12px; border-bottom: 1px solid var(--border); text-align: right; }
+  #central-tool th { background: var(--surface); font-size: .82rem; }
+  #central-tool .limit-note { color: var(--muted); font-size: .8rem; }
+  @media (max-width: 640px) {
+    #central-tool .calc-panel { padding: 18px 14px; }
+    #central-tool .central-actions label { width: 100%; margin-left: 0; }
+    #central-tool .central-actions select { width: 100%; }
+    #central-tool .central-headline { grid-template-columns: 1fr; }
+    #central-tool .central-summary { grid-template-columns: repeat(2, 1fr); }
+    #central-tool .central-summary > div { display: grid; gap: 4px; }
+    #central-tool .central-summary strong { text-align: left; }
+    #central-tool .five-number-grid { grid-template-columns: repeat(2, 1fr); }
+    #central-tool .five-number-grid > div:nth-child(3) { grid-column: 1 / -1; }
+  }
+</style>
+
+<style>
+  .feature-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+  .feature-chips span { padding: 5px 10px; border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .78rem; font-weight: 800; }
+  .definition-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin: 17px 0; }
+  .definition-grid > div { padding: 18px; border: 1px solid var(--border); border-radius: 13px; background: #fff; }
+  .definition-grid h3 { margin: 0 0 8px; color: var(--cat-color); font-size: 1rem; }
+  .definition-grid p { margin: 0; }
+  .table-scroll { overflow-x: auto; }
+  .static-table table { width: 100%; min-width: 620px; border-collapse: collapse; }
+  .static-table th, .static-table td { padding: 11px 12px; border: 1px solid var(--border); text-align: left; }
+  .static-table th { background: var(--cat-tint); }
+  code { padding: 2px 6px; border-radius: 5px; background: var(--surface); }
+  @media (max-width: 700px) { .definition-grid { grid-template-columns: 1fr; } }
+</style>

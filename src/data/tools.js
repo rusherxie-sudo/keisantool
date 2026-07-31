@@ -164,6 +164,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'heikin-chuouchi',
+    nav: '平均・中央値',
+    name: '平均値・中央値・最頻値計算ツール',
+    icon: '📊',
+    category: '生活・日常',
+    short: '代表値・四分位数をまとめて計算',
+    live: true,
+  },
+  {
     slug: 'heihoukon',
     nav: '平方根・ルート',
     name: '平方根・ルート計算機',
