@@ -353,6 +353,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'jikan',
+    nav: '時間計算',
+    name: '時間計算ツール',
+    icon: '⏱️',
+    category: '生活・日常',
+    short: '時間差・勤務時間・足し算を自動計算',
+    live: true,
+  },
+  {
     slug: 'nenrei-hayami',
     nav: '年齢早見表',
     name: '年齢早見表',

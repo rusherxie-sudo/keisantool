@@ -1,0 +1,459 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'jikan';
+const title = '時間計算ツール｜勤務時間・時間差・足し算・小数変換';
+const description =
+  '開始・終了時刻と休憩から勤務時間を計算。日またぎの時間差、時刻の足し算・引き算、時間の合計、7時間30分と7.5時間の相互変換にも無料で対応します。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '時間計算ツール',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['勤務時間・時間差', '時刻の足し算・引き算', '時間の合計・差', '時間と小数の相互変換'],
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 時間計算</div>
+    <h1>時間計算ツール</h1>
+    <p>勤務時間・時刻の差・時間の足し算と引き算・小数時間への変換を、ひとつの画面で計算できます。</p>
+    <div class="feature-chips" aria-label="対応する計算">
+      <span>日またぎ対応</span><span>休憩を差し引く</span><span>時間を合計</span><span>小数時間に変換</span>
+    </div>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-tabs" role="tablist" aria-label="時間計算の種類">
+      <button class="calc-tab active" type="button" data-tab="work" role="tab" aria-selected="true">勤務時間・時間差</button>
+      <button class="calc-tab" type="button" data-tab="clock" role="tab" aria-selected="false">時刻の前後</button>
+      <button class="calc-tab" type="button" data-tab="duration" role="tab" aria-selected="false">時間の足し引き</button>
+      <button class="calc-tab" type="button" data-tab="decimal" role="tab" aria-selected="false">時間⇔小数</button>
+    </div>
+
+    <div class="calc-panel active" id="panel-work" role="tabpanel">
+      <div class="input-grid two-cols">
+        <div class="form-group">
+          <label for="work-start">開始時刻</label>
+          <input type="time" id="work-start" value="09:00" />
+        </div>
+        <div class="form-group">
+          <label for="work-end">終了時刻</label>
+          <input type="time" id="work-end" value="17:30" />
+        </div>
+      </div>
+      <div class="input-grid two-cols compact-grid">
+        <div class="form-group">
+          <label for="work-break">休憩時間（分）</label>
+          <input type="number" id="work-break" min="0" step="1" inputmode="numeric" value="60" />
+        </div>
+        <label class="check-row" for="work-next-day">
+          <input type="checkbox" id="work-next-day" />
+          <span>終了時刻は翌日</span>
+        </label>
+      </div>
+      <p class="input-error" id="work-error" role="alert"></p>
+      <div class="result-box" id="work-result" aria-live="polite">
+        <div class="result-label">休憩を除いた勤務時間</div>
+        <div class="result-main" id="work-net">7時間30分</div>
+        <div class="result-grid">
+          <div><span>開始〜終了</span><strong id="work-gross">8時間30分</strong></div>
+          <div><span>休憩</span><strong id="work-break-out">1時間</strong></div>
+          <div><span>合計分数</span><strong id="work-minutes">450分</strong></div>
+          <div><span>小数時間</span><strong id="work-decimal">7.5時間</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-clock" role="tabpanel" hidden>
+      <div class="input-grid clock-grid">
+        <div class="form-group">
+          <label for="clock-base">基準の時刻</label>
+          <input type="time" id="clock-base" value="21:50" />
+        </div>
+        <div class="form-group">
+          <label for="clock-operation">計算</label>
+          <select id="clock-operation">
+            <option value="add">後の時刻（足す）</option>
+            <option value="subtract">前の時刻（引く）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="clock-hours">時間</label>
+          <input type="number" id="clock-hours" min="0" step="1" inputmode="numeric" value="2" />
+        </div>
+        <div class="form-group">
+          <label for="clock-minutes">分</label>
+          <input type="number" id="clock-minutes" min="0" step="1" inputmode="numeric" value="30" />
+        </div>
+      </div>
+      <p class="input-error" id="clock-error" role="alert"></p>
+      <div class="result-box" id="clock-result" aria-live="polite">
+        <div class="result-label" id="clock-result-label">2時間30分後</div>
+        <div class="result-main" id="clock-out">翌日 00:20</div>
+        <div class="result-grid one-row">
+          <div><span>計算式</span><strong id="clock-formula">21:50 ＋ 2時間30分</strong></div>
+          <div><span>経過分数</span><strong id="clock-total-minutes">150分</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-duration" role="tabpanel" hidden>
+      <div class="duration-expression">
+        <fieldset>
+          <legend>時間 A</legend>
+          <div class="unit-inputs">
+            <label><input type="number" id="duration-a-hours" min="0" step="1" inputmode="numeric" value="1" /><span>時間</span></label>
+            <label><input type="number" id="duration-a-minutes" min="0" step="1" inputmode="numeric" value="45" /><span>分</span></label>
+          </div>
+        </fieldset>
+        <div class="operator-field">
+          <label for="duration-operation">計算</label>
+          <select id="duration-operation"><option value="add">＋</option><option value="subtract">−</option></select>
+        </div>
+        <fieldset>
+          <legend>時間 B</legend>
+          <div class="unit-inputs">
+            <label><input type="number" id="duration-b-hours" min="0" step="1" inputmode="numeric" value="2" /><span>時間</span></label>
+            <label><input type="number" id="duration-b-minutes" min="0" step="1" inputmode="numeric" value="30" /><span>分</span></label>
+          </div>
+        </fieldset>
+      </div>
+      <p class="input-error" id="duration-error" role="alert"></p>
+      <div class="result-box" id="duration-result" aria-live="polite">
+        <div class="result-label">時間 A ＋ 時間 B</div>
+        <div class="result-main" id="duration-out">4時間15分</div>
+        <div class="result-grid one-row">
+          <div><span>合計分数</span><strong id="duration-minutes-out">255分</strong></div>
+          <div><span>小数時間</span><strong id="duration-decimal-out">4.25時間</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-decimal" role="tabpanel" hidden>
+      <div class="conversion-grid">
+        <section class="conversion-card">
+          <h2>時間・分 → 小数時間</h2>
+          <div class="unit-inputs">
+            <label><input type="number" id="convert-hours" min="0" step="1" inputmode="numeric" value="7" /><span>時間</span></label>
+            <label><input type="number" id="convert-minutes" min="0" step="1" inputmode="numeric" value="30" /><span>分</span></label>
+          </div>
+          <p class="input-error" id="to-decimal-error" role="alert"></p>
+          <div class="mini-result"><span>小数で表すと</span><strong id="to-decimal-out">7.5時間</strong></div>
+        </section>
+        <section class="conversion-card">
+          <h2>小数時間 → 時間・分</h2>
+          <div class="form-group">
+            <label for="decimal-hours">小数時間</label>
+            <input type="number" id="decimal-hours" min="0" step="0.01" inputmode="decimal" value="7.5" />
+          </div>
+          <p class="input-error" id="from-decimal-error" role="alert"></p>
+          <div class="mini-result"><span>時間・分で表すと</span><strong id="from-decimal-out">7時間30分</strong></div>
+        </section>
+      </div>
+      <p class="rounding-note">小数時間から分への変換は、最も近い1分に四捨五入します。</p>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>この時間計算ツールでできること</h2>
+    <div class="task-table-wrap">
+      <table class="task-table">
+        <thead><tr><th>知りたいこと</th><th>入力例</th><th>結果例</th></tr></thead>
+        <tbody>
+          <tr><td>勤務時間・2時刻の差</td><td>9:00〜17:30、休憩60分</td><td>7時間30分</td></tr>
+          <tr><td>何時間後・何時間前</td><td>21:50の2時間30分後</td><td>翌日0:20</td></tr>
+          <tr><td>時間の足し算・引き算</td><td>1時間45分＋2時間30分</td><td>4時間15分</td></tr>
+          <tr><td>小数時間への換算</td><td>7時間30分</td><td>7.5時間</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>勤務時間・時間差の計算方法</h2>
+    <div class="formula-box">
+      <strong>実働時間 ＝ 終了時刻 − 開始時刻 − 休憩時間</strong>
+      <span>終了が深夜0時をまたぐ場合は「終了時刻は翌日」を選びます。</span>
+    </div>
+    <p>
+      例として9:00から17:30までは8時間30分です。休憩60分を差し引くと、実働時間は7時間30分（450分、7.5時間）になります。結果の小数時間は、勤怠表や<a href="/kyuyo/">給与・時給計算</a>に入力するときにも使えます。
+    </p>
+    <p>
+      厚生労働省は、労働時間を始業から終業までのうち休憩を除いた実際の労働時間として説明しています。ただし、待機や電話対応など労働から離れることが保障されていない時間は、名称が「休憩」でも労働時間に当たる場合があります。
+    </p>
+
+    <h2>時間の足し算・引き算は「分」に直す</h2>
+    <ol>
+      <li>時間を60倍し、分を加えて合計分数にします。</li>
+      <li>合計分数どうしを足し算または引き算します。</li>
+      <li>結果を60で割り、時間と分に戻します。</li>
+    </ol>
+    <p>1時間45分＋2時間30分なら、105分＋150分＝255分、つまり4時間15分です。24時間を超える結果は日・時間・分に整理し、負の差は「−」を付けて表示します。</p>
+
+    <h2>7時間30分と7.5時間は同じ</h2>
+    <p>
+      時刻は60進法なので、30分は1時間の半分、つまり0.5時間です。分を小数時間に直すときは「分÷60」、小数部分を分に戻すときは「小数部分×60」で計算します。
+    </p>
+    <div class="example-grid">
+      <div><strong>15分</strong><span>0.25時間</span></div>
+      <div><strong>30分</strong><span>0.5時間</span></div>
+      <div><strong>45分</strong><span>0.75時間</span></div>
+      <div><strong>90分</strong><span>1.5時間</span></div>
+    </div>
+
+    <h2>関連する計算</h2>
+    <p>日付単位の「何日間・何日後」は<a href="/nissu/">日数計算ツール</a>、日本と海外の時刻変換は<a href="/jisa/">時差計算ツール</a>をご利用ください。</p>
+
+    <h2>参考資料</h2>
+    <ul class="source-list">
+      <li><a href="https://www.mhlw.go.jp/bunya/roudoukijun/roudoujouken02/jikan.html" rel="noopener">厚生労働省「労働時間・休憩・休日関係」</a></li>
+      <li><a href="https://www.mhlw.go.jp/toukei/kaisetu/index-hw.html" rel="noopener">厚生労働省「厚生労働統計に用いる主な比率及び用語の解説」</a></li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。給与計算や勤怠管理では、勤務先の就業規則、実際の休憩・待機状況、法令上の取扱いをご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '勤務時間はどう計算しますか？', a: '終了時刻から開始時刻を引き、さらに実際の休憩時間を差し引きます。9:00〜17:30で休憩60分なら、実働時間は7時間30分です。' },
+    { q: '深夜0時をまたぐ時間差も計算できますか？', a: 'はい。「終了時刻は翌日」を選ぶと、22:00〜翌6:00のような日またぎも計算できます。' },
+    { q: '7時間30分は小数で何時間ですか？', a: '30分÷60＝0.5なので、7時間30分は7.5時間です。本ツールでは時間・分と小数時間を相互変換できます。' },
+    { q: '1.5時間は何時間何分ですか？', a: '小数部分の0.5に60を掛けると30分になるため、1.5時間は1時間30分です。' },
+    { q: '終了時刻が開始時刻より早い場合は？', a: '深夜0時をまたぐ勤務や予定なら「終了時刻は翌日」を選びます。同日内の入力間違いと区別するため、自動では翌日扱いにしません。' },
+    { q: '24時間を超える足し算もできますか？', a: 'はい。時刻の前後計算では何日後・何日前かを表示し、時間の足し引きでは日・時間・分に整理して表示します。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import {
+    formatDuration,
+    workDuration,
+    shiftClock,
+    durationArithmetic,
+    durationToDecimal,
+    decimalToDuration,
+  } from '../../lib/jikan.js';
+
+  const $ = (id) => document.getElementById(id);
+  const intValue = (id) => {
+    const value = Number($(id).value);
+    return Number.isInteger(value) ? value : Number.NaN;
+  };
+  const decimalText = (value) => Number(value.toFixed(4)).toString();
+  const signedDecimalText = (value) => value < 0 ? `−${decimalText(Math.abs(value))}` : decimalText(value);
+  const setError = (id, message = '') => { $(id).textContent = message; };
+  const showResult = (id, visible) => $(id).classList.toggle('visible', visible);
+
+  function renderWork() {
+    const start = $('work-start').value;
+    const end = $('work-end').value;
+    const breakMinutes = intValue('work-break');
+    const nextDay = $('work-next-day').checked;
+    const result = workDuration(start, end, breakMinutes, nextDay);
+    if (!result) {
+      setError('work-error', '時刻、翌日の指定、休憩時間を確認してください。休憩は開始〜終了の時間を超えないように入力します。');
+      showResult('work-result', false);
+      window.hideResultShare?.();
+      return;
+    }
+    setError('work-error');
+    showResult('work-result', true);
+    $('work-net').textContent = formatDuration(result.netMinutes);
+    $('work-gross').textContent = formatDuration(result.grossMinutes);
+    $('work-break-out').textContent = formatDuration(result.breakMinutes);
+    $('work-minutes').textContent = `${result.netMinutes}分`;
+    $('work-decimal').textContent = `${decimalText(result.decimalHours)}時間`;
+    window.setResultShare?.([
+      '時間計算ツール',
+      `${start}〜${nextDay ? '翌日' : ''}${end}（休憩${formatDuration(result.breakMinutes)}）`,
+      `勤務時間：${formatDuration(result.netMinutes)}（${decimalText(result.decimalHours)}時間）`,
+    ].join('\n'));
+  }
+
+  function renderClock() {
+    const base = $('clock-base').value;
+    const hours = intValue('clock-hours');
+    const minutes = intValue('clock-minutes');
+    const operation = $('clock-operation').value;
+    const result = shiftClock(base, hours, minutes, operation);
+    if (!result) {
+      setError('clock-error', '時刻と、0以上の整数の時間・分を入力してください。');
+      showResult('clock-result', false);
+      if (!$('panel-clock').hidden) window.hideResultShare?.();
+      return;
+    }
+    setError('clock-error');
+    showResult('clock-result', true);
+    const duration = formatDuration(Math.abs(result.offsetMinutes));
+    const operationWord = operation === 'add' ? '後' : '前';
+    const symbol = operation === 'add' ? '＋' : '−';
+    const dayLabel = result.dayOffset === 0 ? '当日'
+      : result.dayOffset === 1 ? '翌日'
+        : result.dayOffset === -1 ? '前日'
+          : result.dayOffset > 1 ? `${result.dayOffset}日後`
+            : `${Math.abs(result.dayOffset)}日前`;
+    $('clock-result-label').textContent = `${duration}${operationWord}`;
+    $('clock-out').textContent = `${dayLabel} ${result.clock}`;
+    $('clock-formula').textContent = `${base} ${symbol} ${duration}`;
+    $('clock-total-minutes').textContent = `${Math.abs(result.offsetMinutes)}分`;
+    if (!$('panel-clock').hidden) {
+      window.setResultShare?.(`時間計算ツール\n${base} ${symbol} ${duration}\n結果：${dayLabel} ${result.clock}`);
+    }
+  }
+
+  function renderDuration() {
+    const operation = $('duration-operation').value;
+    const result = durationArithmetic(
+      intValue('duration-a-hours'), intValue('duration-a-minutes'), operation,
+      intValue('duration-b-hours'), intValue('duration-b-minutes'),
+    );
+    if (!result) {
+      setError('duration-error', '時間と分は0以上の整数で入力してください。');
+      showResult('duration-result', false);
+      if (!$('panel-duration').hidden) window.hideResultShare?.();
+      return;
+    }
+    setError('duration-error');
+    showResult('duration-result', true);
+    const symbol = operation === 'add' ? '＋' : '−';
+    $('duration-result').querySelector('.result-label').textContent = `時間 A ${symbol} 時間 B`;
+    $('duration-out').textContent = formatDuration(result.totalMinutes);
+    $('duration-minutes-out').textContent = `${result.totalMinutes < 0 ? '−' : ''}${Math.abs(result.totalMinutes)}分`;
+    $('duration-decimal-out').textContent = `${signedDecimalText(result.decimalHours)}時間`;
+    if (!$('panel-duration').hidden) {
+      window.setResultShare?.(`時間計算ツール\n時間 A ${symbol} 時間 B\n結果：${formatDuration(result.totalMinutes)}`);
+    }
+  }
+
+  function renderConversions() {
+    const toDecimal = durationToDecimal(intValue('convert-hours'), intValue('convert-minutes'));
+    if (toDecimal) {
+      setError('to-decimal-error');
+      $('to-decimal-out').textContent = `${decimalText(toDecimal.decimalHours)}時間`;
+    } else {
+      setError('to-decimal-error', '0以上の整数で入力してください。');
+      $('to-decimal-out').textContent = '―';
+    }
+
+    const fromDecimal = decimalToDuration(Number($('decimal-hours').value));
+    if (fromDecimal) {
+      setError('from-decimal-error');
+      $('from-decimal-out').textContent = formatDuration(fromDecimal.totalMinutes);
+    } else {
+      setError('from-decimal-error', '0以上の数値を入力してください。');
+      $('from-decimal-out').textContent = '―';
+    }
+    if (!$('panel-decimal').hidden && toDecimal && fromDecimal) {
+      window.setResultShare?.(`時間計算ツール\n時間・分：${formatDuration(toDecimal.totalMinutes)} ＝ ${decimalText(toDecimal.decimalHours)}時間\n小数時間：${$('decimal-hours').value}時間 ＝ ${formatDuration(fromDecimal.totalMinutes)}`);
+    }
+  }
+
+  document.querySelectorAll('.calc-tab').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.calc-tab').forEach((item) => {
+        const active = item === tab;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll('.calc-panel').forEach((panel) => {
+        const active = panel.id === `panel-${tab.dataset.tab}`;
+        panel.classList.toggle('active', active);
+        panel.hidden = !active;
+      });
+      const renderers = { work: renderWork, clock: renderClock, duration: renderDuration, decimal: renderConversions };
+      renderers[tab.dataset.tab]?.();
+    });
+  });
+
+  ['work-start', 'work-end', 'work-break', 'work-next-day'].forEach((id) => {
+    $(id).addEventListener('input', renderWork);
+    $(id).addEventListener('change', renderWork);
+  });
+  ['clock-base', 'clock-operation', 'clock-hours', 'clock-minutes'].forEach((id) => {
+    $(id).addEventListener('input', renderClock);
+    $(id).addEventListener('change', renderClock);
+  });
+  ['duration-a-hours', 'duration-a-minutes', 'duration-operation', 'duration-b-hours', 'duration-b-minutes'].forEach((id) => {
+    $(id).addEventListener('input', renderDuration);
+    $(id).addEventListener('change', renderDuration);
+  });
+  ['convert-hours', 'convert-minutes', 'decimal-hours'].forEach((id) => {
+    $(id).addEventListener('input', renderConversions);
+    $(id).addEventListener('change', renderConversions);
+  });
+
+  renderWork();
+  renderClock();
+  renderDuration();
+  renderConversions();
+</script>
+
+<style>
+  .feature-chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .feature-chips span { padding:6px 11px; border-radius:999px; background:var(--primary-light); color:var(--primary-dark); font-size:.76rem; font-weight:700; }
+  .calc-tabs { overflow-x:auto; }
+  .calc-tab { white-space:nowrap; }
+  .input-grid { display:grid; gap:16px; }
+  .two-cols { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .compact-grid { align-items:end; }
+  .clock-grid { grid-template-columns:1.4fr 1.4fr 1fr 1fr; }
+  .check-row { display:flex; align-items:center; gap:10px; min-height:48px; padding:0 14px; margin-bottom:18px; border:1px solid var(--border-input); border-radius:var(--r-md); background:var(--surface-sub); cursor:pointer; font-weight:700; }
+  .check-row input { width:18px; height:18px; margin:0; flex:0 0 auto; accent-color:var(--cat-color); }
+  .input-error { min-height:1.3em; margin:0 0 8px; color:var(--danger); font-size:.82rem; font-weight:700; }
+  .result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px; overflow:hidden; margin-top:18px; border:1px solid var(--border-2); border-radius:var(--r-md); background:var(--border-2); }
+  .result-grid > div { display:flex; justify-content:space-between; gap:12px; padding:10px 12px; background:var(--surface); }
+  .result-grid span { color:var(--text-2); }
+  .result-grid strong { text-align:right; overflow-wrap:anywhere; }
+  .duration-expression { display:grid; grid-template-columns:minmax(0,1fr) 92px minmax(0,1fr); align-items:end; gap:16px; }
+  .duration-expression fieldset { min-width:0; margin:0; padding:16px; border:1px solid var(--border-2); border-radius:var(--r-lg); }
+  .duration-expression legend { padding:0 6px; color:var(--text-2); font-weight:800; }
+  .operator-field label { display:block; margin-bottom:7px; font-size:.78rem; font-weight:700; color:var(--text-2); }
+  .unit-inputs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .unit-inputs label { display:flex; align-items:center; gap:7px; }
+  .unit-inputs input { min-width:0; margin:0; }
+  .unit-inputs span { flex:0 0 auto; color:var(--text-2); }
+  .conversion-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+  .conversion-card { padding:18px; border:1px solid var(--border-2); border-radius:var(--r-lg); background:var(--surface-sub); }
+  .conversion-card h2 { margin:0 0 16px; font-size:1rem; }
+  .conversion-card .input-error { margin-top:8px; }
+  .mini-result { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 14px; border-radius:var(--r-md); background:var(--surface); }
+  .mini-result span { color:var(--text-2); }
+  .mini-result strong { color:var(--cat-color); font-size:1.2rem; text-align:right; }
+  .rounding-note { margin:12px 0 0; color:var(--text-muted); font-size:.8rem; }
+  .task-table-wrap { overflow-x:auto; margin:14px 0 24px; }
+  .task-table { width:100%; min-width:620px; border-collapse:collapse; }
+  .task-table th, .task-table td { padding:11px 12px; border:1px solid var(--border-2); text-align:left; }
+  .task-table th { background:var(--primary-light); color:var(--primary-dark); }
+  .formula-box { display:flex; flex-direction:column; gap:8px; padding:16px 18px; margin:16px 0; border-left:5px solid var(--primary); border-radius:var(--r-lg); background:var(--primary-light); }
+  .formula-box span { color:var(--text-2); }
+  .example-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:16px 0 24px; }
+  .example-grid div { display:flex; flex-direction:column; align-items:center; gap:4px; padding:14px 10px; border:1px solid var(--border-2); border-radius:var(--r-md); background:var(--surface-sub); }
+  .example-grid strong { color:var(--primary-dark); }
+  .example-grid span { color:var(--text-2); }
+  .source-list a { overflow-wrap:anywhere; }
+  @media (max-width:760px) {
+    .clock-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .duration-expression { grid-template-columns:1fr; }
+    .operator-field { max-width:180px; }
+    .conversion-grid { grid-template-columns:1fr; }
+  }
+  @media (max-width:520px) {
+    .two-cols, .clock-grid, .result-grid, .example-grid { grid-template-columns:1fr; }
+    .check-row { margin-bottom:18px; }
+    .unit-inputs { grid-template-columns:1fr; }
+    .result-grid > div, .mini-result { align-items:flex-start; }
+    .result-grid strong, .mini-result strong { max-width:54%; }
+  }
+</style>

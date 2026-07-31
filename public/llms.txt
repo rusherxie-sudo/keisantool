@@ -40,6 +40,7 @@
 - [最低賃金計算器](https://keisantool.com/saitei/): 47都道府県別最低賃金
 - [年齢計算器](https://keisantool.com/nenrei/): 満年齢・数え年・学年
 - [日数計算・日付計算ツール](https://keisantool.com/nissu/): 何日間・何日後・営業日を無料計算
+- [時間計算ツール](https://keisantool.com/jikan/): 時間差・勤務時間・足し算を自動計算
 - [年齢早見表](https://keisantool.com/nenrei-hayami/): 西暦・和暦・満年齢・数え年・干支
 - [学年早見表](https://keisantool.com/gakunen-hayami/): 生まれ年度から小中高の学年がすぐわかる
 - [六曜カレンダー（大安・仏滅早見）](https://keisantool.com/rokuyo/): 今月の大安・仏滅がひと目でわかる
