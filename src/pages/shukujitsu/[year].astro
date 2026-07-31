@@ -1,0 +1,103 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ShukujitsuYearView from '../../components/ShukujitsuYearView.astro';
+import { holidays, renkyuList } from '../../lib/shukujitsu.js';
+
+// ハブ（/shukujitsu/、今年）と合わせた生成範囲。
+const RANGE_YEARS_BACK = 1;
+const RANGE_YEARS_FORWARD = 3;
+
+export function getStaticPaths() {
+  const nowYear = new Date().getFullYear();
+  const paths = [];
+  for (let y = nowYear - 1; y <= nowYear + 3; y++) {
+    paths.push({ params: { year: String(y) } });
+  }
+  return paths;
+}
+
+const YEAR = Number(Astro.params.year);
+const now = new Date();
+const isCurrentYear = YEAR === now.getFullYear();
+
+const hols = holidays(YEAR);
+const renkyu = renkyuList(YEAR);
+const longestRenkyu = renkyu.reduce((max, r) => (r.length > (max?.length ?? 0) ? r : max), null);
+
+const hasPrev = YEAR - 1 >= now.getFullYear() - RANGE_YEARS_BACK;
+const hasNext = YEAR + 1 <= now.getFullYear() + RANGE_YEARS_FORWARD;
+
+// 今年は /shukujitsu/ が正規URL（重複コンテンツ防止のため canonical をハブへ向ける）。
+const slug = isCurrentYear ? 'shukujitsu' : `shukujitsu/${YEAR}`;
+
+const title = `${YEAR}年の祝日・連休カレンダー一覧【最新版】 | 計算ツール`;
+const description = `${YEAR}年の国民の祝日・振替休日・国民の休日を一覧できるカレンダーです。3連休以上の連休もまとめて表示。旅行や帰省、仕事のスケジュール調整の参考にどうぞ。無料・登録不要。`;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '祝日・連休カレンダー',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current="shukujitsu" jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/shukujitsu/">祝日・連休カレンダー</a> ／ {YEAR}年</div>
+    <h1>{YEAR}年の祝日・連休カレンダー</h1>
+    <p>
+      {YEAR}年の国民の祝日・振替休日・国民の休日を一覧できます。3連休以上の連休もまとめて表示しているので、旅行や帰省、仕事のスケジュール調整の参考にどうぞ。
+      {longestRenkyu && <>{YEAR}年最長の連休は<strong>{longestRenkyu.length}連休</strong>（{longestRenkyu.holidayNames.join('・')}）です。</>}
+    </p>
+  </div>
+
+  <div class="calc-card">
+    <ShukujitsuYearView year={YEAR} holidays={hols} renkyu={renkyu} />
+    <nav class="sk-nav">
+      {hasPrev ? <a href={`/shukujitsu/${YEAR - 1}/`}>← {YEAR - 1}年</a> : <span />}
+      {hasNext ? <a href={`/shukujitsu/${YEAR + 1}/`}>{YEAR + 1}年 →</a> : <span />}
+    </nav>
+  </div>
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>祝日・振替休日・国民の休日の決まり方</h2>
+    <p>
+      日本の祝日は「国民の祝日に関する法律」で定められています。元日・憲法記念日など<strong>固定された日付の祝日</strong>のほか、成人の日・海の日・敬老の日・スポーツの日は<strong>「第◯月曜日」（ハッピーマンデー制度）</strong>で決まります。春分の日・秋分の日は天文学上の春分点・秋分点にもとづき、国立天文台が前年2月に正式発表しますが、本ツールは広く使われている近似計算で表示しています。
+    </p>
+    <ul>
+      <li><strong>振替休日</strong>：祝日が日曜日にあたる場合、その後最初の「祝日でない平日」が休日になります。祝日が続く場合は、祝日でない日まで順にずれていきます。</li>
+      <li><strong>国民の休日</strong>：前後を祝日にはさまれた平日（祝日ではない日）は、休日になります。</li>
+    </ul>
+    <div class="disclaimer">※ 春分の日・秋分の日は近似計算のため、国立天文台の正式発表と異なる場合があります。計算結果はあくまで参考値です。正式な祝日は内閣府の発表をご確認ください。</div>
+  </section>
+
+  <RelatedTools current="shukujitsu" />
+
+  <Faq items={[
+    { q: `${YEAR}年の連休はいつですか？`, a: longestRenkyu ? `${YEAR}年で最長の連休は${longestRenkyu.length}連休（${longestRenkyu.holidayNames.join('・')}）です。他の3連休以上の期間は上の一覧でご確認いただけます。` : `${YEAR}年に3連休以上の連休はありません。` },
+    { q: '振替休日とはどんな制度ですか？', a: '祝日が日曜日にあたる場合に、その直後の「祝日でない平日」を休日とする制度です。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .sk-nav {
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    font-size: .85rem;
+    font-weight: var(--fw-bold);
+  }
+  .sk-nav a { color: var(--cat-color); }
+  .sk-nav a:hover { opacity: .75; }
+  .howto ul { padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+</style>

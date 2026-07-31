@@ -28,6 +28,7 @@ npm run build && npx wrangler pages deploy dist --project-name=keisantool --bran
 
 - ⚠️ **`--branch=main` 不能省**：wrangler 按当前 git 分支决定通道，在 worktree（`claude/*` 分支）上省略会部署成 **preview 别名**，生产域名拿不到新内容、新页 404（2026-07-03 已踩）。
 - ⚠️ 本地 git **没有 remote**（`origin` 不存在），`git push` 会失败。部署走 wrangler，`git commit` 只是本地留痕。
+- 部署后顺手跑 `python3 scripts/indexnow-submit.py` 催 Bing/Yandex 等收录（IndexNow，key 文件在 `public/`，别删）。新增页多时最有必要，见 `HANDOFF.md` §2。
 
 ## 架构大图（需读多个文件才懂的部分）
 

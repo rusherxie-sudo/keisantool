@@ -1,0 +1,101 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import RokuyoCalendarGrid from '../../components/RokuyoCalendarGrid.astro';
+import { rokuyoMonthTable, rokuyoDesc } from '../../lib/rokuyo.js';
+
+const slug = 'rokuyo';
+
+// スポークページ（/rokuyo/<year>-<month>/）の生成範囲と合わせる（前後月リンクの整合用）。
+const RANGE_YEARS_BACK = 1;
+const RANGE_YEARS_FORWARD = 2;
+
+const now = new Date();
+const YEAR = now.getFullYear();
+const MONTH = now.getMonth() + 1;
+const MONTH_LABEL = `${YEAR}年${MONTH}月`;
+
+const rows = rokuyoMonthTable(YEAR, MONTH);
+
+let prevYear = YEAR, prevMonth = MONTH - 1;
+if (prevMonth < 1) { prevMonth = 12; prevYear -= 1; }
+let nextYear = YEAR, nextMonth = MONTH + 1;
+if (nextMonth > 12) { nextMonth = 1; nextYear += 1; }
+const hasPrev = prevYear >= YEAR - RANGE_YEARS_BACK;
+const hasNext = nextYear <= YEAR + RANGE_YEARS_FORWARD;
+
+const ROKUYO_ORDER = ['先勝', '友引', '先負', '仏滅', '大安', '赤口'];
+
+const title = `六曜カレンダー【${MONTH_LABEL}】大安・仏滅はいつ？ | 計算ツール`;
+const description = `${MONTH_LABEL}の六曜（先勝・友引・先負・仏滅・大安・赤口）カレンダー。今月の大安・仏滅の日をひと目で確認できます。結婚式や引っ越し、契約など日取り選びの参考にどうぞ。無料・登録不要。`;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '六曜カレンダー',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 六曜カレンダー</div>
+    <h1>六曜カレンダー（{MONTH_LABEL}）</h1>
+    <p>{MONTH_LABEL}の六曜（大安・仏滅・先勝・友引・先負・赤口）を一覧できるカレンダーです。結婚式や引っ越し、契約などの日取り選びの参考にどうぞ。</p>
+  </div>
+
+  <div class="calc-card">
+    <RokuyoCalendarGrid year={YEAR} month={MONTH} rows={rows} />
+    <nav class="rk-nav">
+      {hasPrev ? <a href={`/rokuyo/${prevYear}-${String(prevMonth).padStart(2, '0')}/`}>← {prevYear}年{prevMonth}月</a> : <span />}
+      {hasNext ? <a href={`/rokuyo/${nextYear}-${String(nextMonth).padStart(2, '0')}/`}>{nextYear}年{nextMonth}月 →</a> : <span />}
+    </nav>
+  </div>
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>六曜とは？大安・仏滅の意味</h2>
+    <p>
+      六曜（ろくよう）は、暦に記される吉凶の目安のひとつで、<strong>先勝・友引・先負・仏滅・大安・赤口</strong>の6種類が、旧暦の月と日をもとにおおむね6日周期で巡ります。冠婚葬祭や契約ごとの日取りを選ぶときの、文化的な慣習として使われています。
+    </p>
+    <ul>
+      {ROKUYO_ORDER.map((name) => (
+        <li><strong>{name}</strong>：{rokuyoDesc(name)}</li>
+      ))}
+    </ul>
+    <p>
+      なかでも<strong>大安</strong>は「万事に良い」とされ結婚式などの祝い事に好まれ、逆に<strong>仏滅</strong>は「万事に凶」とされ祝い事は避けられる傾向があります。ただし六曜は江戸時代以降に広まった暦注であり、地域や宗派、時代によって解釈が異なることもあります。
+    </p>
+    <div class="disclaimer">※ 六曜は文化的な慣習・参考情報であり、科学的根拠を保証するものではありません。重要な日取りは、ご家族やご親族、式場・寺社などともご相談のうえお決めください。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+
+  <Faq items={[
+    { q: '大安とはどんな日ですか？', a: '六曜のなかで「万事に良い」とされる日で、結婚式や入籍、開業など祝い事の日取りに好まれます。' },
+    { q: '仏滅とはどんな日ですか？なぜ避けられますか？', a: '六曜のなかで「万事に凶」とされる日です。「仏も滅するほど縁起が悪い」との語呂合わせから、結婚式など祝い事は避けられる傾向がありますが、科学的根拠はなく文化的な慣習です。' },
+    { q: '六曜はどうやって決まりますか？', a: '旧暦（太陰太陽暦）の月と日の数字を足して6で割った余りで決まる、とされる暦注です。旧暦の月が変わるタイミングで周期が一部不規則になります。' },
+    { q: '友引に葬儀をしないのはなぜですか？', a: '「友を引く」という語呂合わせから、友引の日は葬儀を避ける慣習が広く残っています。一方、慶事には友引を好む地域もあります。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .rk-nav {
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    font-size: .85rem;
+    font-weight: var(--fw-bold);
+  }
+  .rk-nav a { color: var(--cat-color); }
+  .rk-nav a:hover { opacity: .75; }
+  .howto ul { padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+</style>

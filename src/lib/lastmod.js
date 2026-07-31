@@ -47,6 +47,10 @@ export function sourceFileForUrl(pagesDir, urlPath) {
   if (path.startsWith('umaredoshi/')) return join(pagesDir, 'umaredoshi/[year].astro');
   // 星座相性の144組み合わせページも動的ルート（テンプレの最終更新日を lastmod にする）
   if (/^seiza-aisho\/.+/.test(path)) return join(pagesDir, 'seiza-aisho/[pair].astro');
+  // 六曜カレンダーの月別スポークページも動的ルート
+  if (/^rokuyo\/\d{4}-\d{2}$/.test(path)) return join(pagesDir, 'rokuyo/[month].astro');
+  // 祝日・連休カレンダーの年別スポークページも動的ルート
+  if (/^shukujitsu\/\d{4}$/.test(path)) return join(pagesDir, 'shukujitsu/[year].astro');
   const nested = join(pagesDir, path, 'index.astro'); // <slug>/index.astro
   if (existsSync(nested)) return nested;
   const flat = join(pagesDir, `${path}.astro`); // <slug>.astro

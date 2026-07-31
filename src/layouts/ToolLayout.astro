@@ -119,10 +119,26 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   <meta name="twitter:image" content={ogImage} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- 非同期読み込み（PageSpeed「渲染阻塞请求」対策）：print媒体で読み込ませてから
+       onloadでallに切り替えることで、初期レンダリングをこのCSSでブロックしない。
+       noscriptはJS無効環境向けのフォールバック。 -->
+  <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap"
+  />
   <link
     href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap"
     rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
   />
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </noscript>
   {jsonldFinal && <script type="application/ld+json" set:html={JSON.stringify(jsonldFinal)} />}
   <script type="application/ld+json" set:html={JSON.stringify(webPageJsonld)} />
   {breadcrumbJsonld && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonld)} />}

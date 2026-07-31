@@ -6,7 +6,9 @@ import {
   rokuseiSegments,
   seizaRanges,
   yakudoshiSeirekiYears,
+  gakunenTable,
 } from '../src/lib/hayami.js';
+import { schoolGrade } from '../src/lib/nenrei.js';
 
 describe('warekiLabels（和暦表記・改元年は併記）', () => {
   it('通常年は単一表記', () => {
@@ -189,5 +191,54 @@ describe('yakudoshiSeirekiYears（生まれ年→厄年の西暦）', () => {
   it('不正入力は空配列', () => {
     expect(yakudoshiSeirekiYears('x', 'male')).toEqual([]);
     expect(yakudoshiSeirekiYears(1990, 'unknown')).toEqual([]);
+  });
+});
+
+describe('gakunenTable（学年早見表：学年度→生まれ年度ごとの学年）', () => {
+  it('2026年度（令和8年度）：15行、高3(13歳上限)〜未就学(下限)まで昇順に並ぶ', () => {
+    const rows = gakunenTable(2026);
+    expect(rows).toHaveLength(15);
+    expect(rows[0].grade).toBe(13);
+    expect(rows[0].label).toBe('高校卒業後');
+    expect(rows[rows.length - 1].grade).toBe(-1);
+    expect(rows[rows.length - 1].label).toBe('未就学');
+    for (let i = 1; i < rows.length; i++) {
+      expect(rows[i].grade).toBeLessThan(rows[i - 1].grade);
+    }
+  });
+
+  it('小1(grade=1)の行は生まれ年度2019年（2019-04-02〜2020-04-01）', () => {
+    const rows = gakunenTable(2026);
+    const g1 = rows.find((r) => r.grade === 1);
+    expect(g1.cohortYear).toBe(2019);
+    expect(g1.label).toBe('小学1年生');
+    expect(g1.cohortLabel).toBe('2019年4月2日〜2020年4月1日');
+  });
+
+  it('高3(grade=12)の行は生まれ年度2008年', () => {
+    const rows = gakunenTable(2026);
+    const g12 = rows.find((r) => r.grade === 12);
+    expect(g12.cohortYear).toBe(2008);
+    expect(g12.label).toBe('高校3年生');
+  });
+
+  it('各行の grade/label は schoolGrade(cohortYear-04-02, baseSchoolYear-04-02) と一致する（二重実装を防ぐ整合性チェック）', () => {
+    const rows = gakunenTable(2026);
+    for (const r of rows) {
+      const expected = schoolGrade(`${r.cohortYear}-04-02`, '2026-04-02');
+      expect(r.grade).toBe(expected.grade);
+      expect(r.label).toBe(expected.label);
+    }
+  });
+
+  it('age は基準年度4/2時点の満年齢', () => {
+    const rows = gakunenTable(2026);
+    const g1 = rows.find((r) => r.grade === 1);
+    expect(g1.age).toBe(7);
+  });
+
+  it('不正入力は空配列', () => {
+    expect(gakunenTable('x')).toEqual([]);
+    expect(gakunenTable(null)).toEqual([]);
   });
 });
