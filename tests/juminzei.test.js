@@ -1,117 +1,126 @@
-import { describe, it, expect } from 'vitest';
-import { salaryDeduction, basicDeduction, spouseDeduction, spouseSpecialDeduction, dependentDeduction, disabilityDeduction, widowDeduction, workingStudentDeduction, residentTax, prefecturalTax, municipalTax, calcJuminzei } from '../src/lib/juminzei.js';
+import { describe, expect, it } from 'vitest';
+import {
+  calcJuminzei,
+  dependentDeduction,
+  equalLevyExemptLimit,
+  incomeLevyExemptLimit,
+  residentBasicDeduction,
+  spouseIncomeDeduction,
+  spouseSpecialIncomeDeduction,
+} from '../src/lib/juminzei.js';
 
-describe('basicDeduction(基礎控除)', () => {
-  it('常に43万円', () => {
-    expect(basicDeduction()).toBe(430000);
+describe('令和8年度の住民税所得控除', () => {
+  it('基礎控除は合計所得2,400万円以下で43万円', () => {
+    expect(residentBasicDeduction(24000000)).toBe(430000);
+    expect(residentBasicDeduction(24000001)).toBe(290000);
+    expect(residentBasicDeduction(24500001)).toBe(150000);
+    expect(residentBasicDeduction(25000001)).toBe(0);
+  });
+
+  it('配偶者控除は配偶者所得58万円以下で本人所得に応じて逓減する', () => {
+    expect(spouseIncomeDeduction(9000000, 580000)).toBe(330000);
+    expect(spouseIncomeDeduction(9500000, 580000)).toBe(220000);
+    expect(spouseIncomeDeduction(10000000, 580000)).toBe(110000);
+    expect(spouseIncomeDeduction(10000001, 0)).toBe(0);
+    expect(spouseIncomeDeduction(5000000, 580001)).toBe(0);
+  });
+
+  it('配偶者特別控除は58万円超133万円以下だけに適用する', () => {
+    expect(spouseSpecialIncomeDeduction(5000000, 580000)).toBe(0);
+    expect(spouseSpecialIncomeDeduction(5000000, 580001)).toBe(330000);
+    expect(spouseSpecialIncomeDeduction(5000000, 1000000)).toBe(330000);
+    expect(spouseSpecialIncomeDeduction(5000000, 1000001)).toBe(310000);
+    expect(spouseSpecialIncomeDeduction(5000000, 1330000)).toBe(30000);
+    expect(spouseSpecialIncomeDeduction(5000000, 1330001)).toBe(0);
+  });
+
+  it('扶養控除は16歳未満0円、一般33万円、特定45万円、老人38万円', () => {
+    expect(dependentDeduction(15)).toBe(0);
+    expect(dependentDeduction(16)).toBe(330000);
+    expect(dependentDeduction(19)).toBe(450000);
+    expect(dependentDeduction(23)).toBe(330000);
+    expect(dependentDeduction(70)).toBe(380000);
   });
 });
 
-describe('spouseDeduction(配偶者控除)', () => {
-  it('配偶者収入38万以下 → 38万', () => {
-    expect(spouseDeduction(0)).toBe(380000);
-    expect(spouseDeduction(380000)).toBe(380000);
+describe('令和8年度の非課税限度額（標準的な自治体）', () => {
+  it('扶養なしは所得45万円以下で均等割・所得割とも非課税', () => {
+    expect(equalLevyExemptLimit(0)).toBe(450000);
+    expect(incomeLevyExemptLimit(0)).toBe(450000);
   });
-  it('配偶者収入38万超〜98万 → 76万-収入', () => {
-    expect(spouseDeduction(500000)).toBe(260000);
-  });
-  it('配偶者収入98万超 → 0', () => {
-    expect(spouseDeduction(1000000)).toBe(0);
+
+  it('扶養等1人は均等割101万円、所得割112万円以下が非課税', () => {
+    expect(equalLevyExemptLimit(1)).toBe(1010000);
+    expect(incomeLevyExemptLimit(1)).toBe(1120000);
   });
 });
 
-describe('spouseSpecialDeduction(配偶者特別控除)', () => {
-  it('配偶者収入15万以下 → 25万', () => {
-    expect(spouseSpecialDeduction(0)).toBe(250000);
-    expect(spouseSpecialDeduction(150000)).toBe(250000);
-  });
-  it('配偶者収入15万超〜45万 → 40万-収入', () => {
-    expect(spouseSpecialDeduction(200000)).toBe(200000);
-  });
-  it('配偶者収入45万超 → 0', () => {
-    expect(spouseSpecialDeduction(500000)).toBe(0);
-  });
-});
-
-describe('dependentDeduction(扶養控除)', () => {
-  it('70歳以上 → 48万', () => {
-    expect(dependentDeduction(0, 70)).toBe(480000);
-    expect(dependentDeduction(0, 80)).toBe(480000);
-  });
-  it('16歳以上69歳以下 → 38万', () => {
-    expect(dependentDeduction(0, 16)).toBe(380000);
-    expect(dependentDeduction(0, 69)).toBe(380000);
-  });
-  it('15歳以下 → 33万', () => {
-    expect(dependentDeduction(0, 15)).toBe(330000);
-    expect(dependentDeduction(0, 10)).toBe(330000);
-  });
-  it('扶養収入98万超 → 0', () => {
-    expect(dependentDeduction(1000000, 30)).toBe(0);
-  });
-});
-
-describe('disabilityDeduction(障害者控除)', () => {
-  it('1級障害 → 27万', () => {
-    expect(disabilityDeduction(1)).toBe(270000);
-  });
-  it('2級障害 → 13万', () => {
-    expect(disabilityDeduction(2)).toBe(130000);
-  });
-  it('該当なし → 0', () => {
-    expect(disabilityDeduction(0)).toBe(0);
-  });
-});
-
-describe('residentTax(住民税)', () => {
-  it('課税所得 × 10%', () => {
-    expect(residentTax(1000000)).toBe(100000);
-    expect(residentTax(3000000)).toBe(300000);
-  });
-  it('課税所得0 → 0', () => {
-    expect(residentTax(0)).toBe(0);
-  });
-});
-
-describe('prefecturalTax(都道府県民税)', () => {
-  it('課税所得 × 6%', () => {
-    expect(prefecturalTax(1000000)).toBe(60000);
-  });
-});
-
-describe('municipalTax(市町村民税)', () => {
-  it('課税所得 × 4%', () => {
-    expect(municipalTax(1000000)).toBe(40000);
-  });
-});
-
-describe('calcJuminzei(住民税精算)', () => {
-  it('基本ケース: 年収360万、単身', () => {
+describe('calcJuminzei（令和8年度・給与所得者向け概算）', () => {
+  it('年収360万円・単身・社会保険料15%推計は年額149,500円', () => {
     const result = calcJuminzei(3600000);
-    expect(result.yearlySalary).toBe(3600000);
-    expect(result.basicDeduction).toBe(430000);
-    expect(result.prefecturalTax + result.municipalTax).toBe(result.residentTax);
-    expect(result.monthlyTax).toBe(Math.floor(result.residentTax / 12));
+    expect(result.salaryIncome).toBe(2440000);
+    expect(result.socialInsuranceDeduction).toBe(540000);
+    expect(result.taxableIncome).toBe(1470000);
+    expect(result.prefecturalIncomeLevy).toBe(57800);
+    expect(result.municipalIncomeLevy).toBe(86700);
+    expect(result.adjustmentCredit).toBe(2500);
+    expect(result.equalLevy).toBe(4000);
+    expect(result.forestEnvironmentTax).toBe(1000);
+    expect(result.residentTax).toBe(149500);
+    expect(result.monthlyEstimate).toBe(12458);
+    expect(result.socialInsuranceEstimated).toBe(true);
   });
-  it('扶養家族あり', () => {
-    const result = calcJuminzei(3600000, {
-      dependents: [{ income: 0, age: 30 }, { income: 0, age: 10 }],
-    });
+
+  it('社会保険料を入力した場合は推計値ではなく入力値を使う', () => {
+    const result = calcJuminzei(3600000, { socialInsurance: 600000 });
+    expect(result.socialInsuranceDeduction).toBe(600000);
+    expect(result.socialInsuranceEstimated).toBe(false);
     expect(result.residentTax).toBeLessThan(calcJuminzei(3600000).residentTax);
   });
-  it('配偶者控除適用', () => {
-    const result = calcJuminzei(3600000, { spouseIncome: 200000 });
-    expect(result.spouseDeduction).toBe(380000);
-    expect(result.spouseSpecialDeduction).toBe(200000);
+
+  it('配偶者控除と配偶者特別控除を同時に加算しない', () => {
+    const ordinary = calcJuminzei(5000000, { hasSpouse: true, spouseIncome: 580000 });
+    const special = calcJuminzei(5000000, { hasSpouse: true, spouseIncome: 580001 });
+    expect(ordinary.spouseDeduction).toBe(330000);
+    expect(ordinary.spouseSpecialDeduction).toBe(0);
+    expect(special.spouseDeduction).toBe(0);
+    expect(special.spouseSpecialDeduction).toBe(330000);
   });
-  it('年収0 → 全て0', () => {
-    const result = calcJuminzei(0);
-    expect(result.yearlySalary).toBe(0);
+
+  it('年収110万円の単身者は標準非課税限度額内で0円', () => {
+    const result = calcJuminzei(1100000);
+    expect(result.salaryIncome).toBe(450000);
+    expect(result.isEqualLevyExempt).toBe(true);
+    expect(result.isIncomeLevyExempt).toBe(true);
     expect(result.residentTax).toBe(0);
-    expect(result.monthlyTax).toBe(0);
   });
-  it('不正な入力 → 全て0', () => {
-    const result = calcJuminzei('');
-    expect(result.residentTax).toBe(0);
+
+  it('扶養1人・給与収入166万円は全額非課税、1円超では均等割等のみ', () => {
+    const exempt = calcJuminzei(1660000, { under16Dependents: 1 });
+    const equalOnly = calcJuminzei(1660001, { under16Dependents: 1 });
+    expect(exempt.salaryIncome).toBe(1010000);
+    expect(exempt.residentTax).toBe(0);
+    expect(equalOnly.salaryIncome).toBe(1010001);
+    expect(equalOnly.isEqualLevyExempt).toBe(false);
+    expect(equalOnly.isIncomeLevyExempt).toBe(true);
+    expect(equalOnly.residentTax).toBe(5000);
+  });
+
+  it('扶養控除の年齢区分を税額計算に反映する', () => {
+    const noDependent = calcJuminzei(5000000);
+    const general = calcJuminzei(5000000, { generalDependents: 1 });
+    const special = calcJuminzei(5000000, { specialDependents: 1 });
+    const elderly = calcJuminzei(5000000, { elderlyDependents: 1 });
+    expect(general.dependentDeduction).toBe(330000);
+    expect(special.dependentDeduction).toBe(450000);
+    expect(elderly.dependentDeduction).toBe(380000);
+    expect(special.residentTax).toBeLessThan(general.residentTax);
+    expect(general.residentTax).toBeLessThan(noDependent.residentTax);
+  });
+
+  it('不正な入力は0円の空結果を返す', () => {
+    expect(calcJuminzei('').residentTax).toBe(0);
+    expect(calcJuminzei(-1).residentTax).toBe(0);
+    expect(calcJuminzei(Number.NaN).residentTax).toBe(0);
   });
 });

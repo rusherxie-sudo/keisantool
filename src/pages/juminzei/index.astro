@@ -6,50 +6,138 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'juminzei';
-const title = '住民税計算器 - 都道府県民税・市町村民税 | 計算ツール';
+const title = '住民税計算シミュレーション【令和8年度・2026年】年収から自動計算 | 計算ツール';
 const description =
-  '年収から住民税を簡単に計算。給与所得控除、基礎控除、配偶者控除、扶養控除などを考慮し、都道府県民税（6%）と市町村民税（4%）の合計を精算できる無料ツールです。';
+  '2026年（令和8年度）の住民税を年収から自動計算。給与所得控除、社会保険料、配偶者・扶養控除、所得割、均等割、森林環境税を反映し、年額と月額の目安を無料でシミュレーションできます。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: '住民税計算器',
+  name: '住民税計算シミュレーション【令和8年度】',
   description,
-  applicationCategory: 'UtilityApplication',
+  applicationCategory: 'FinanceApplication',
   operatingSystem: 'Web',
+  softwareVersion: '令和8年度（2026年度）',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: [
+    '給与収入から給与所得を計算',
+    '所得割・均等割・森林環境税を内訳表示',
+    '配偶者控除・扶養控除を反映',
+    '年額と12分割月額の目安を表示',
+  ],
 };
 ---
-<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 住民税</div>
-    <h1>住民税計算器</h1>
-    <p>年収から住民税を精算します。給与所得控除、基礎控除、配偶者控除、扶養控除などを考慮し、都道府県民税（6%）と市町村民税（4%）の合計を計算できます。</p>
+    <h1>住民税計算シミュレーション【令和8年度】</h1>
+    <p>2025年1月〜12月の給与収入から、2026年6月以降に納める住民税の年額・月額目安を計算します。</p>
+    <div class="rule-chips" aria-label="計算条件">
+      <span>令和8年度対応</span>
+      <span>所得割10%</span>
+      <span>森林環境税込み</span>
+    </div>
   </div>
 
   <div class="calc-card">
-    <div class="form-group">
-      <label for="yearly-salary">年間給与所得（円）</label>
-      <input type="number" id="yearly-salary" inputmode="numeric" placeholder="例：3600000" />
-    </div>
+    <div class="calc-panel active">
+      <div class="input-section">
+        <div class="input-section__head">
+          <span class="step-mark">1</span>
+          <div>
+            <h2>給与と控除を入力</h2>
+            <p>金額は源泉徴収票の「支払金額」「社会保険料等の金額」が最も確実です。</p>
+          </div>
+        </div>
 
-    <div class="form-group">
-      <label for="spouse-income">配偶者の年間所得（円）</label>
-      <input type="number" id="spouse-income" inputmode="numeric" placeholder="配偶者がいない場合は0" />
-    </div>
+        <div class="input-grid">
+          <div class="form-group">
+            <label for="yearly-salary">年間給与収入（額面・円）</label>
+            <input type="number" id="yearly-salary" inputmode="numeric" min="0" step="1000" placeholder="例：3600000" />
+            <span class="field-note">源泉徴収票の「支払金額」</span>
+          </div>
 
-    <div class="result-box" id="result-box">
-      <div class="result-label">住民税（年額）</div>
-      <div class="result-main" id="result-tax">¥0</div>
-      <div class="result-rows">
-        <div class="result-row"><span class="label">年間給与所得</span><span class="value" id="row-salary">¥0</span></div>
-        <div class="result-row"><span class="label">給与所得控除</span><span class="value" id="row-salary-deduct">¥0</span></div>
-        <div class="result-row"><span class="label">基礎控除</span><span class="value" id="row-basic">¥0</span></div>
-        <div class="result-row"><span class="label">配偶者控除</span><span class="value" id="row-spouse">¥0</span></div>
-        <div class="result-row"><span class="label">配偶者特別控除</span><span class="value" id="row-spouse-special">¥0</span></div>
-        <div class="result-row"><span class="label">課税所得</span><span class="value" id="row-taxable">¥0</span></div>
-        <div class="result-row"><span class="label">都道府県民税（6%）</span><span class="value" id="row-prefectural">¥0</span></div>
-        <div class="result-row"><span class="label">市町村民税（4%）</span><span class="value" id="row-municipal">¥0</span></div>
-        <div class="result-row"><span class="label">住民税（月額）</span><span class="value" id="row-monthly">¥0</span></div>
+          <div class="form-group">
+            <label for="social-insurance">年間社会保険料（円・任意）</label>
+            <input type="number" id="social-insurance" inputmode="numeric" min="0" step="1000" placeholder="空欄なら年収の15%で概算" />
+            <span class="field-note">源泉徴収票の「社会保険料等の金額」</span>
+          </div>
+
+          <div class="form-group">
+            <label for="other-deductions">その他の所得控除（円・任意）</label>
+            <input type="number" id="other-deductions" inputmode="numeric" min="0" step="1000" placeholder="例：120000" />
+            <span class="field-note">生命保険料・医療費・iDeCoなどの住民税控除額</span>
+          </div>
+        </div>
+
+        <details class="advanced-options">
+          <summary>配偶者・扶養家族を設定する</summary>
+          <div class="advanced-options__body">
+            <label class="checkbox-row" for="has-spouse">
+              <input type="checkbox" id="has-spouse" />
+              <span>控除対象となる可能性がある配偶者がいる</span>
+            </label>
+
+            <div class="form-group spouse-field" id="spouse-field" hidden>
+              <label for="spouse-income">配偶者の年間合計所得（円）</label>
+              <input type="number" id="spouse-income" inputmode="numeric" min="0" step="1000" placeholder="給与収入ではなく所得を入力" />
+              <span class="field-note">給与のみなら「給与収入 − 給与所得控除」。123万円の給与収入は所得58万円です。</span>
+            </div>
+
+            <div class="dependent-grid">
+              <div class="form-group">
+                <label for="under16-dependents">16歳未満</label>
+                <input type="number" id="under16-dependents" inputmode="numeric" min="0" max="20" value="0" />
+                <span class="field-note">控除0円・非課税判定には反映</span>
+              </div>
+              <div class="form-group">
+                <label for="general-dependents">一般扶養</label>
+                <input type="number" id="general-dependents" inputmode="numeric" min="0" max="20" value="0" />
+                <span class="field-note">16〜18歳、23〜69歳</span>
+              </div>
+              <div class="form-group">
+                <label for="special-dependents">特定扶養</label>
+                <input type="number" id="special-dependents" inputmode="numeric" min="0" max="20" value="0" />
+                <span class="field-note">19〜22歳</span>
+              </div>
+              <div class="form-group">
+                <label for="elderly-dependents">老人扶養</label>
+                <input type="number" id="elderly-dependents" inputmode="numeric" min="0" max="20" value="0" />
+                <span class="field-note">70歳以上（同居老親等を除く）</span>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="result-box" id="result-box" aria-live="polite">
+        <div class="result-head">
+          <div>
+            <div class="result-label">住民税の年額目安</div>
+            <div class="result-main" id="result-tax">¥0</div>
+          </div>
+          <div class="tax-status" id="tax-status">概算</div>
+        </div>
+        <div class="monthly-result">
+          <span>12分割した月額目安</span>
+          <strong id="row-monthly">¥0</strong>
+        </div>
+        <p class="estimate-note" id="estimate-note"></p>
+
+        <div class="result-rows">
+          <div class="result-row"><span class="label">給与収入</span><span class="value" id="row-salary">¥0</span></div>
+          <div class="result-row"><span class="label">給与所得控除</span><span class="value" id="row-salary-deduct">¥0</span></div>
+          <div class="result-row"><span class="label">給与所得</span><span class="value" id="row-salary-income">¥0</span></div>
+          <div class="result-row"><span class="label" id="social-label">社会保険料控除</span><span class="value" id="row-social">¥0</span></div>
+          <div class="result-row"><span class="label">基礎控除</span><span class="value" id="row-basic">¥0</span></div>
+          <div class="result-row"><span class="label">配偶者控除等</span><span class="value" id="row-spouse">¥0</span></div>
+          <div class="result-row"><span class="label">扶養控除</span><span class="value" id="row-dependent">¥0</span></div>
+          <div class="result-row"><span class="label">その他の所得控除</span><span class="value" id="row-other">¥0</span></div>
+          <div class="result-row result-row--strong"><span class="label">課税所得</span><span class="value" id="row-taxable">¥0</span></div>
+          <div class="result-row"><span class="label">所得割（4%＋6%）</span><span class="value" id="row-income-levy">¥0</span></div>
+          <div class="result-row"><span class="label">調整控除</span><span class="value" id="row-adjustment">−¥0</span></div>
+          <div class="result-row"><span class="label">均等割</span><span class="value" id="row-equal">¥0</span></div>
+          <div class="result-row"><span class="label">森林環境税</span><span class="value" id="row-forest">¥0</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -59,32 +147,46 @@ const jsonld = {
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>使い方</h2>
-    <p>年間給与所得と配偶者の年間所得を入力するだけで、住民税が自動計算されます。都道府県民税（6%）と市町村民税（4%）の合計10%を基に計算します。</p>
-    <h3>住民税の構成</h3>
+    <h2>令和8年度の住民税はどう計算する？</h2>
+    <p>令和8年度（2026年度）の住民税は、原則として2025年中の所得を基に計算します。給与収入から給与所得控除を引き、さらに社会保険料控除・基礎控除・配偶者控除などを引いた課税所得が所得割の基礎です。</p>
+    <div class="formula-box">
+      <strong>住民税の概算</strong>
+      <span>（給与所得 − 所得控除）× 10% − 調整控除 ＋ 均等割4,000円 ＋ 森林環境税1,000円</span>
+    </div>
+
+    <h3>2026年・令和8年度に反映している項目</h3>
     <ul>
-      <li>都道府県民税：課税所得の6%</li>
-      <li>市町村民税：課税所得の4%</li>
-      <li>合計：課税所得の10%</li>
+      <li>給与所得控除：給与収入190万円以下は最低65万円</li>
+      <li>基礎控除：合計所得2,400万円以下は43万円</li>
+      <li>所得割：標準税率は都道府県民税4%＋市町村民税6%</li>
+      <li>均等割：標準年額4,000円、森林環境税：年額1,000円</li>
+      <li>配偶者控除・配偶者特別控除は重複せず、所得に応じて判定</li>
+      <li>16歳未満は扶養控除0円ですが、非課税限度額の人数には反映</li>
     </ul>
-    <h3>控除の種類</h3>
+
+    <h3>年収110万円以下なら住民税は0円？</h3>
+    <p>扶養親族がいない給与所得者は、給与収入110万円以下（給与所得45万円以下）が均等割・所得割とも非課税となる一般的な目安です。ただし、非課税限度額や独自の上乗せ税額は自治体によって異なる場合があります。</p>
+
+    <h3>このシミュレーションに含まれないもの</h3>
+    <p>自治体独自の超過課税、住宅ローン・寄附金・配当などの税額控除、所得金額調整控除、同居老親等、障害者・ひとり親・寡婦の非課税措置、退職・譲渡などの分離課税は含めていません。社会保険料を空欄にした場合は年収の15%で概算します。</p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の税額は、1月1日時点の住所地から届く住民税決定通知書・納税通知書で確認してください。</div>
+
+    <h3>公的資料</h3>
     <ul>
-      <li>給与所得控除：年収に応じて差し引かれる額</li>
-      <li>基礎控除：全員一律43万円</li>
-      <li>配偶者控除：配偶者の所得が低い場合に適用</li>
-      <li>配偶者特別控除：配偶者の所得が極めて低い場合に追加適用</li>
+      <li><a href="https://www.tax.metro.tokyo.lg.jp/kazei/kojin_ju.html" target="_blank" rel="noopener">東京都主税局「個人住民税」</a></li>
+      <li><a href="https://www.city.yokohama.lg.jp/kurashi/koseki-zei-hoken/zeikin/y-shizei/kojin-shiminzei-kenminzei/kojin-shiminzei-shosai/shotokukoujoR8.html" target="_blank" rel="noopener">横浜市「所得控除（令和8年度課税以降）」</a></li>
+      <li><a href="https://www.city.osaka.lg.jp/zaisei/page/0000384084.html" target="_blank" rel="noopener">大阪市「住民税等が課税されない方」</a></li>
     </ul>
-    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の税額は市町村から送られてくる納税通知書で確認してください。</div>
   </section>
 
   <RelatedTools current={slug} />
-
   <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
-    { q: '住民税はどう計算されますか？', a: '住民税は「給与所得 − 各種控除 = 課税所得」を計算し、課税所得の10%（都道府県民税6%＋市町村民税4%）で計算されます。' },
-    { q: '基礎控除とは何ですか？', a: '基礎控除は、すべての住民が受けられる一律の控除額で、2025年度現在は43万円です。' },
-    { q: '配偶者控除と配偶者特別控除の違いは？', a: '配偶者控除は配偶者の年収が98万円以下の場合に適用され、配偶者特別控除は年収が45万円以下の場合に追加で適用されます。' },
+    { q: '住民税はいくらからかかりますか？', a: '扶養親族がいない給与所得者では、令和8年度は給与収入110万円以下が均等割・所得割とも非課税となる一般的な目安です。自治体や扶養人数、障害者・ひとり親などの条件で限度額は変わります。' },
+    { q: '住民税は年収の何パーセントですか？', a: '所得割の標準税率は課税所得の10%（都道府県民税4%＋市町村民税6%）です。年収そのものに10%を掛けるのではなく、給与所得控除や所得控除を引いた後に計算し、均等割と森林環境税を加えます。' },
+    { q: '令和8年度の住民税はいつの収入で決まりますか？', a: '令和8年度（2026年度）の住民税は、原則として2025年1月から12月までの所得で決まり、給与所得者は2026年6月から2027年5月まで給与から特別徴収されます。' },
+    { q: '配偶者の年収はどこに入力しますか？', a: 'このツールの配偶者欄は給与収入ではなく合計所得を入力します。給与のみの場合、令和8年度は給与収入123万円から給与所得控除65万円を引いた58万円が配偶者控除の主な境界です。' },
   ]} />
 
   <div class="ad-slot"></div>
@@ -95,40 +197,120 @@ const jsonld = {
 
   const $ = (id) => document.getElementById(id);
   const yen = (n) => '¥' + Math.floor(n).toLocaleString('ja-JP');
+  const numberValue = (id) => Math.max(0, Number($(id).value) || 0);
 
   function show(box) { box.classList.add('visible'); }
   function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
 
+  function toggleSpouse() {
+    $('spouse-field').hidden = !$('has-spouse').checked;
+    render();
+  }
+
   function render() {
     const box = $('result-box');
-    const salary = $('yearly-salary').value;
-    const spouseIncome = $('spouse-income').value || 0;
-    const result = calcJuminzei(salary, { spouseIncome });
-    
-    if (result.yearlySalary === 0) return hide(box);
-    
+    const salary = numberValue('yearly-salary');
+    if (salary <= 0) return hide(box);
+
+    const socialRaw = $('social-insurance').value.trim();
+    const result = calcJuminzei(salary, {
+      socialInsurance: socialRaw === '' ? undefined : numberValue('social-insurance'),
+      otherDeductions: numberValue('other-deductions'),
+      hasSpouse: $('has-spouse').checked,
+      spouseIncome: numberValue('spouse-income'),
+      under16Dependents: numberValue('under16-dependents'),
+      generalDependents: numberValue('general-dependents'),
+      specialDependents: numberValue('special-dependents'),
+      elderlyDependents: numberValue('elderly-dependents'),
+    });
+
     show(box);
     $('result-tax').textContent = yen(result.residentTax);
+    $('row-monthly').textContent = yen(result.monthlyEstimate);
     $('row-salary').textContent = yen(result.yearlySalary);
-    $('row-salary-deduct').textContent = yen(result.salaryDeduction);
-    $('row-basic').textContent = yen(result.basicDeduction);
-    $('row-spouse').textContent = yen(result.spouseDeduction);
-    $('row-spouse-special').textContent = yen(result.spouseSpecialDeduction);
+    $('row-salary-deduct').textContent = '−' + yen(result.salaryDeduction);
+    $('row-salary-income').textContent = yen(result.salaryIncome);
+    $('row-social').textContent = '−' + yen(result.socialInsuranceDeduction);
+    $('row-basic').textContent = '−' + yen(result.basicDeduction);
+    $('row-spouse').textContent = '−' + yen(result.spouseDeduction + result.spouseSpecialDeduction);
+    $('row-dependent').textContent = '−' + yen(result.dependentDeduction);
+    $('row-other').textContent = '−' + yen(result.otherDeductions);
     $('row-taxable').textContent = yen(result.taxableIncome);
-    $('row-prefectural').textContent = yen(result.prefecturalTax);
-    $('row-municipal').textContent = yen(result.municipalTax);
-    $('row-monthly').textContent = yen(result.monthlyTax);
+    $('row-income-levy').textContent = yen(result.incomeLevy);
+    $('row-adjustment').textContent = '−' + yen(result.adjustmentCredit);
+    $('row-equal').textContent = yen(result.equalLevy);
+    $('row-forest').textContent = yen(result.forestEnvironmentTax);
+    $('social-label').textContent = result.socialInsuranceEstimated
+      ? '社会保険料控除（15%推計）'
+      : '社会保険料控除（入力値）';
+    $('estimate-note').textContent = result.socialInsuranceEstimated
+      ? '社会保険料は入力がないため、給与収入の15%で概算しています。'
+      : '入力した社会保険料を控除して計算しています。';
+
+    const status = $('tax-status');
+    if (result.residentTax === 0) {
+      status.textContent = '非課税目安';
+      status.dataset.type = 'exempt';
+    } else if (result.isIncomeLevyExempt) {
+      status.textContent = '所得割非課税';
+      status.dataset.type = 'partial';
+    } else {
+      status.textContent = '概算';
+      status.dataset.type = 'normal';
+    }
 
     window.setResultShare?.(
-      '住民税計算器\n年間給与所得：' + $('row-salary').textContent +
-      '\n課税所得：' + $('row-taxable').textContent +
-      '\n都道府県民税：' + $('row-prefectural').textContent +
-      '\n市町村民税：' + $('row-municipal').textContent +
-      '\n住民税：' + $('result-tax').textContent +
-      '\n月額換算：' + $('row-monthly').textContent
+      '令和8年度 住民税シミュレーション\n給与収入：' + yen(result.yearlySalary) +
+      '\n給与所得：' + yen(result.salaryIncome) +
+      '\n課税所得：' + yen(result.taxableIncome) +
+      '\n所得割：' + yen(result.incomeLevy) +
+      '\n均等割・森林環境税：' + yen(result.equalLevy + result.forestEnvironmentTax) +
+      '\n住民税年額：' + yen(result.residentTax) +
+      '\n月額目安：' + yen(result.monthlyEstimate)
     );
   }
 
-  $('yearly-salary').addEventListener('input', render);
-  $('spouse-income').addEventListener('input', render);
+  const inputIds = [
+    'yearly-salary', 'social-insurance', 'other-deductions', 'spouse-income',
+    'under16-dependents', 'general-dependents', 'special-dependents', 'elderly-dependents',
+  ];
+  inputIds.forEach((id) => $(id).addEventListener('input', render));
+  $('has-spouse').addEventListener('change', toggleSpouse);
 </script>
+
+<style>
+  .rule-chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .rule-chips span { padding:6px 11px; border-radius:999px; background:var(--primary-light); color:var(--primary-dark); font-size:.76rem; font-weight:700; }
+  .input-section__head { display:flex; gap:12px; align-items:flex-start; margin-bottom:22px; }
+  .input-section__head h2 { font-size:1.12rem; margin:0 0 4px; }
+  .input-section__head p { color:var(--text-3); font-size:.83rem; margin:0; line-height:1.6; }
+  .step-mark { width:30px; height:30px; flex:none; display:grid; place-items:center; border-radius:50%; background:var(--primary); color:white; font-weight:800; }
+  .input-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+  .input-grid .form-group:first-child { grid-column:1 / -1; }
+  .field-note { display:block; color:var(--text-muted); font-size:.74rem; line-height:1.5; margin-top:6px; }
+  .advanced-options { margin-top:18px; border:1.5px solid var(--border-2); border-radius:var(--r-xl); overflow:hidden; }
+  .advanced-options summary { cursor:pointer; list-style:none; padding:15px 18px; font-size:.88rem; font-weight:700; color:var(--text); background:var(--bg); }
+  .advanced-options summary::-webkit-details-marker { display:none; }
+  .advanced-options summary::after { content:'＋'; float:right; color:var(--primary); }
+  .advanced-options[open] summary::after { content:'−'; }
+  .advanced-options__body { padding:18px; border-top:1px solid var(--border-2); }
+  .checkbox-row { display:flex; align-items:center; gap:10px; font-size:.88rem; font-weight:700; cursor:pointer; }
+  .checkbox-row input[type='checkbox'] { width:18px; height:18px; flex:none; accent-color:var(--primary); }
+  .spouse-field { margin-top:18px; max-width:430px; }
+  .dependent-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:18px; }
+  .result-box { margin-top:24px; }
+  .result-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+  .tax-status { padding:6px 11px; border-radius:999px; background:var(--primary-light); color:var(--primary-dark); font-size:.75rem; font-weight:800; }
+  .tax-status[data-type='exempt'] { background:#e8f7ee; color:#18713b; }
+  .tax-status[data-type='partial'] { background:#fff3d9; color:#8a5b00; }
+  .monthly-result { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:12px 14px; margin:12px 0 6px; background:rgba(255,255,255,.65); border-radius:var(--r-lg); font-size:.86rem; }
+  .monthly-result strong { font-size:1.05rem; }
+  .estimate-note { font-size:.75rem; color:var(--text-3); line-height:1.6; margin:8px 0 16px; }
+  .result-row--strong { border-top:1.5px solid var(--border-2); padding-top:12px; margin-top:4px; font-weight:800; }
+  .formula-box { display:flex; flex-direction:column; gap:8px; padding:16px 18px; margin:18px 0 24px; background:var(--primary-light); border-left:5px solid var(--primary); border-radius:var(--r-lg); }
+  .formula-box span { color:var(--text-2); line-height:1.7; }
+  @media (max-width:720px) {
+    .input-grid, .dependent-grid { grid-template-columns:1fr; }
+    .input-grid .form-group:first-child { grid-column:auto; }
+  }
+</style>

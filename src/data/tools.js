@@ -112,10 +112,10 @@ export const tools = [
   {
     slug: 'juminzei',
     nav: '住民税',
-    name: '住民税計算器',
+    name: '住民税計算シミュレーション',
     icon: '🏠',
     category: '税金・お金',
-    short: '都道府県民税・市町村民税',
+    short: '令和8年度・年収から年額と月額を概算',
     live: true,
   },
   {

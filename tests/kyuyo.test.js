@@ -231,7 +231,7 @@ describe('overtimeBreakdown(分類別の残業代を一括計算)', () => {
 
 describe('salaryDeduction(給与所得控除)', () => {
   it('162.5万超〜180万は改正後の段階式', () => {
-    expect(salaryDeduction(1800000)).toBe(620000);
+    expect(salaryDeduction(1800000)).toBe(650000);
     expect(salaryDeduction(1900000)).toBe(650000);
   });
   it('年収190万超〜360万 → 控除 = 収入×30%+8万', () => {

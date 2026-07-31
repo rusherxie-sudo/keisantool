@@ -7,17 +7,18 @@ import {
 } from '../src/lib/japan-tax-2026.js';
 
 describe('令和7年度税制改正後の給与所得控除', () => {
-  it('162.5万円以下は最低保障65万円', () => {
+  it('190万円以下は最低保障65万円', () => {
+    expect(salaryDeduction(650000)).toBe(650000);
     expect(salaryDeduction(1625000)).toBe(650000);
-  });
-
-  it('162.5万円超〜180万円は収入×40%−10万円', () => {
-    expect(salaryDeduction(1700000)).toBe(580000);
-    expect(salaryDeduction(1800000)).toBe(620000);
-  });
-
-  it('180万円超〜190万円は収入×30%+8万円', () => {
+    expect(salaryDeduction(1700000)).toBe(650000);
+    expect(salaryDeduction(1800000)).toBe(650000);
     expect(salaryDeduction(1900000)).toBe(650000);
+  });
+
+  it('190万円超660万円未満は4,000円単位の給与所得表に合わせる', () => {
+    expect(salaryDeduction(1900001)).toBe(650001);
+    expect(salaryDeduction(3600123)).toBe(1160123);
+    expect(salaryDeduction(5000123)).toBe(1440123);
   });
 });
 
