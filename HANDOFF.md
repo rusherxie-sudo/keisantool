@@ -11,7 +11,8 @@
 - `/shukujitsu/` 与2025〜2029年度页已增加12个月全年日历、祝日／连休摘要和打印按钮；未来年度页会用 `officialHolidayYearLimit()` 自动标识正式公布与预测状态。
 - `/neko-ninshin/` 已增加预计日倒计时、超声25〜35日／X光55日／第7周准备的个性化日历、9周时间表和权威来源；日期逻辑集中在 `pet-pregnancy.js` 的 `catPregnancyMilestones()`。
 - `/rokusei-aisho/` 已上线六星占术双人生年月日相性诊断；固定地运分数复用 `tanjobi-aisho.js` 的 `rokuseiAisho()`，新组合层 `rokusei-aisho.js` 只负责双向汇总、等级与当年运气展示，天运不得混入固定相性分数。
-- 当前验证基线：56 个测试文件、1275 项测试；生产构建 531 页。
+- `/seiza-aisho/<pair>/` 的144个组合页已补全恋爱／友情／工作关系说明；关系文案由 `seiza-aisho.js` 的7种相位模型生成，同星座页标题与H1使用“○○座同士”直接匹配查询。
+- 当前验证基线：56 个测试文件、1279 项测试；生产构建 531 页。
 - 用户文件 `src/content/blog/kokuho-ryoukin-keisan-hoho.md` 为未跟踪内容，增长迭代不得修改、删除或误提交。
 
 ## 0. 2026-07-18 最新改造
