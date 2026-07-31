@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { daysBetween, shiftDate, weekdayJa } from '../src/lib/nissu.js';
+import {
+  dateRangeBreakdown,
+  daysBetween,
+  shiftDate,
+  shiftDateBy,
+  weekdayJa,
+} from '../src/lib/nissu.js';
 
 describe('daysBetween — 二つの日付の間の日数', () => {
   it('片端（初日を含まない）が既定：1/1→1/2 は 1 日', () => {
@@ -34,6 +40,7 @@ describe('daysBetween — 二つの日付の間の日数', () => {
   it('無効な入力は null', () => {
     expect(daysBetween('', '2026-01-01')).toBeNull();
     expect(daysBetween('2026-01-01', 'abc')).toBeNull();
+    expect(daysBetween('2026-02-30', '2026-03-01')).toBeNull();
   });
 });
 
@@ -57,6 +64,68 @@ describe('shiftDate — N日後・N日前の日付', () => {
   it('無効な入力は null', () => {
     expect(shiftDate('abc', 10)).toBeNull();
     expect(shiftDate('2026-01-01', NaN)).toBeNull();
+    expect(shiftDate('2026-01-01', 1.5)).toBeNull();
+  });
+});
+
+describe('shiftDateBy — 日・週・月・年単位の日付計算', () => {
+  it('2週間後を計算する', () => {
+    expect(shiftDateBy('2026-08-01', 2, 'week')).toBe('2026-08-15');
+  });
+
+  it('月末を超える月加算は移動先の月末に丸める', () => {
+    expect(shiftDateBy('2026-01-31', 1, 'month')).toBe('2026-02-28');
+    expect(shiftDateBy('2024-01-31', 1, 'month')).toBe('2024-02-29');
+  });
+
+  it('うるう日の1年後は翌年2月末', () => {
+    expect(shiftDateBy('2024-02-29', 1, 'year')).toBe('2025-02-28');
+  });
+
+  it('負数と不正な単位を扱う', () => {
+    expect(shiftDateBy('2026-01-01', -1, 'month')).toBe('2025-12-01');
+    expect(shiftDateBy('2026-01-01', 1, 'hour')).toBeNull();
+  });
+});
+
+describe('dateRangeBreakdown — 暦日・土日・祝日・営業日', () => {
+  it('2026年の山の日を含む期間を正しく分解する', () => {
+    const result = dateRangeBreakdown('2026-08-03', '2026-08-11', { includeBoth: true });
+    expect(result).toMatchObject({
+      calendarDays: 9,
+      weeks: 1,
+      remainingDays: 2,
+      weekdays: 7,
+      weekendDays: 2,
+      holidayWeekdays: 1,
+      businessDays: 6,
+    });
+    expect(result.holidays).toEqual([{ date: '2026-08-11', name: '山の日' }]);
+  });
+
+  it('初日を含めない場合は期間の先頭を数えない', () => {
+    const result = dateRangeBreakdown('2026-08-03', '2026-08-11');
+    expect(result).toMatchObject({ calendarDays: 8, weekdays: 6, weekendDays: 2, holidayWeekdays: 1, businessDays: 5 });
+  });
+
+  it('2026年9月の5連休は土日2日・平日祝日3日・営業日0日', () => {
+    const result = dateRangeBreakdown('2026-09-19', '2026-09-23', { includeBoth: true });
+    expect(result).toMatchObject({ calendarDays: 5, weekendDays: 2, holidayWeekdays: 3, businessDays: 0 });
+  });
+
+  it('逆順でも同じ内訳を返す', () => {
+    expect(dateRangeBreakdown('2026-08-11', '2026-08-03', { includeBoth: true }))
+      .toEqual(dateRangeBreakdown('2026-08-03', '2026-08-11', { includeBoth: true }));
+  });
+
+  it('同じ日は初日を含む場合だけ1日として数える', () => {
+    expect(dateRangeBreakdown('2026-08-03', '2026-08-03').calendarDays).toBe(0);
+    expect(dateRangeBreakdown('2026-08-03', '2026-08-03', { includeBoth: true }))
+      .toMatchObject({ calendarDays: 1, weekdays: 1, businessDays: 1 });
+  });
+
+  it('無効な日付は null', () => {
+    expect(dateRangeBreakdown('2026-02-30', '2026-03-01')).toBeNull();
   });
 });
 

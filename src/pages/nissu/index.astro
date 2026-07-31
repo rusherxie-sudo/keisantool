@@ -4,251 +4,311 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
+import { dateRangeBreakdown } from '../../lib/nissu.js';
 
 const slug = 'nissu';
-const title = '日数計算・日付計算器 - 二つの日付の間の日数／N日後の日付を自動計算 | 計算ツール';
+const title = '日数計算｜2つの日付は何日間？何日後・営業日も無料計算 | 計算ツール';
 const description =
-  '開始日と終了日を入れるだけで、間の日数を「初日を含む／含まない」の両方で自動計算。基準日からN日後・N日前の日付と曜日も求められます。締切・記念日・◯日目の管理に便利な無料ツールです。';
+  '開始日と終了日を選ぶだけで日数を無料計算。初日を含む・含まない、週数、土日祝を除く営業日を表示し、今日から何日後・何日前・何週間後・何ヶ月後の日付も求められます。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: '日数計算・日付計算器',
+  name: '日数計算・日付計算ツール',
   description,
   applicationCategory: 'UtilityApplication',
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['2つの日付の日数計算', '初日を含む・含まない', '土日祝を除く営業日数', 'N日・週・月・年後の日付計算'],
 };
+
+const example = dateRangeBreakdown('2026-08-03', '2026-08-11', { includeBoth: true });
 ---
+
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 日数計算</div>
-    <h1>日数計算・日付計算器</h1>
-    <p>二つの日付の間の日数や、基準日からN日後・N日前の日付をその場で自動計算します。</p>
+    <h1>日数計算｜何日間・何日後かをすぐ計算</h1>
+    <p>2つの日付の間をカウントし、週数・営業日・土日祝まで内訳表示。今日から何日後・何ヶ月後の日付も計算できます。</p>
   </div>
 
-  <div class="calc-card">
-    <section class="nissu-block">
-      <h2 class="nissu-h">二つの日付の間の日数</h2>
-      <div class="form-group">
-        <label for="from">開始日</label>
-        <input type="date" id="from" />
-      </div>
-      <div class="form-group">
-        <label for="to">終了日</label>
-        <input type="date" id="to" />
-      </div>
-      <label class="nissu-check">
-        <input type="checkbox" id="includeBoth" />
-        <span>両端を含む（初日を含めて数える）</span>
-      </label>
+  <div class="calc-card nissu-card">
+    <div class="nissu-tabs" role="group" aria-label="日付計算の種類">
+      <button type="button" class="nissu-tab is-active" data-mode="range" aria-pressed="true"><span>日数を数える</span><small>2つの日付は何日間？</small></button>
+      <button type="button" class="nissu-tab" data-mode="shift" aria-pressed="false"><span>何日後・前</span><small>日・週・月・年で移動</small></button>
+    </div>
 
-      <div class="result-box" id="result1">
-        <div class="result-label">日数</div>
-        <div class="result-main" id="days">―</div>
-        <div class="result-rows">
-          <div class="result-row"><span class="label">週数に換算</span><span class="value" id="weeks">―</span></div>
+    <div class="calc-panel nissu-panel active">
+      <section class="nissu-mode" id="rangePanel">
+        <div class="date-grid">
+          <div class="form-group">
+            <div class="field-label"><label for="from">開始日</label><button type="button" class="today-btn" data-today-target="from">今日</button></div>
+            <input type="date" id="from" />
+          </div>
+          <div class="date-arrow" aria-hidden="true">→</div>
+          <div class="form-group">
+            <div class="field-label"><label for="to">終了日</label><button type="button" class="today-btn" data-today-target="to">今日</button></div>
+            <input type="date" id="to" />
+          </div>
         </div>
-      </div>
-    </section>
 
-    <hr class="nissu-sep" />
+        <label class="nissu-check">
+          <input type="checkbox" id="includeBoth" />
+          <span><strong>開始日と終了日の両方を含める</strong><small>開催日数・滞在日数など、その日自体を1日と数える場合</small></span>
+        </label>
 
-    <section class="nissu-block">
-      <h2 class="nissu-h">N日後・N日前の日付</h2>
-      <div class="form-group">
-        <label for="base">基準日</label>
-        <input type="date" id="base" />
-      </div>
-      <div class="form-group">
-        <label for="offset">日数</label>
-        <div class="nissu-inline">
-          <input type="number" id="offset" min="0" step="1" placeholder="100" />
-          <select id="dir">
-            <option value="1">後（未来）</option>
-            <option value="-1">前（過去）</option>
-          </select>
+        <div class="calendar-result" id="rangeResult" hidden aria-live="polite">
+          <div class="calendar-result__bar"><span>DATE COUNT</span><span id="rangeDates">―</span></div>
+          <div class="calendar-result__main"><span>日数</span><strong id="days">―</strong></div>
+          <div class="result-metrics">
+            <div><span>週数</span><strong id="weeks">―</strong></div>
+            <div><span>営業日</span><strong id="businessDays">―</strong></div>
+            <div><span>土日</span><strong id="weekendDays">―</strong></div>
+            <div><span>平日の祝日</span><strong id="holidayDays">―</strong></div>
+          </div>
+          <p class="holiday-note" id="holidayNote"></p>
         </div>
-      </div>
+      </section>
 
-      <div class="result-box" id="result2">
-        <div class="result-label">計算結果の日付</div>
-        <div class="result-main" id="resultDate">―</div>
-      </div>
-    </section>
+      <section class="nissu-mode" id="shiftPanel" hidden>
+        <div class="form-group">
+          <div class="field-label"><label for="base">基準日</label><button type="button" class="today-btn" data-today-target="base">今日</button></div>
+          <input type="date" id="base" />
+        </div>
+        <div class="shift-grid">
+          <div class="form-group"><label for="offset">移動する数</label><input type="number" id="offset" min="0" step="1" inputmode="numeric" placeholder="例：100" /></div>
+          <div class="form-group"><label for="unit">単位</label><select id="unit"><option value="day">日</option><option value="week">週間</option><option value="month">ヶ月</option><option value="year">年</option></select></div>
+          <div class="form-group"><label for="dir">方向</label><select id="dir"><option value="1">後</option><option value="-1">前</option></select></div>
+        </div>
+        <div class="quick-row" aria-label="よく使う日数"><span>すぐ入力：</span><button type="button" data-offset="7">7日後</button><button type="button" data-offset="30">30日後</button><button type="button" data-offset="100">100日後</button></div>
+        <div class="calendar-result calendar-result--date" id="shiftResult" hidden aria-live="polite">
+          <div class="calendar-result__bar"><span>DATE SHIFT</span><span id="shiftSummary">―</span></div>
+          <div class="calendar-result__date"><span>計算結果</span><strong id="resultDate">―</strong></div>
+        </div>
+      </section>
+    </div>
   </div>
 
   <ResultShare />
-
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>使い方と計算方法</h2>
-    <p>
-      このツールは2つの計算ができます。上段は<strong>二つの日付の間の日数</strong>、下段は<strong>基準日からN日後・N日前の日付</strong>です。どちらも日付を選ぶと自動で計算され、ボタンを押す必要はありません。
-    </p>
-    <p>
-      <strong>間の日数</strong>は、既定では「初日を含まない（片端）」で数えます。たとえば1月1日から1月2日までは1日です。「両端を含む」にチェックを入れると初日も1日として数え、同じ例では2日になります。イベントの開催日数や「あと何日」を数えるときは、目的に合わせて切り替えてください。うるう年（2月29日）も正しく考慮します。
-    </p>
-    <p>
-      <strong>N日後・N日前</strong>は、基準日に日数を足したり引いたりして、対象の日付と<strong>曜日</strong>を求めます。「◯日目」や「◯日後が締切」といった予定管理、記念日や100日祝いの逆算などに使えます。
-    </p>
+    <h2>日数計算・日付計算ツールの使い方</h2>
+    <p><strong>日数を数える</strong>では、開始日と終了日を選ぶと「何日間か」を自動計算します。通常は開始日を含めない経過日数を表示し、「両方を含める」にすると開催日数や滞在日数のような数え方に切り替わります。</p>
+    <p>結果には暦日だけでなく、週数、土曜日・日曜日、平日に重なる日本の祝日、それらを除いた<strong>営業日数</strong>も表示します。営業日は土日と国民の祝日を除いた目安で、会社独自の休日・年末年始・お盆は含みません。</p>
+    <p><strong>何日後・前</strong>では、基準日から日・週間・ヶ月・年単位で日付を移動できます。月末に同じ日がない場合は移動先の月末になります。たとえば1月31日の1ヶ月後は2月28日（うるう年は29日）です。</p>
+  </section>
 
-    <h3>「初日を含む・含まない」の基本的な考え方</h3>
-    <p>
-      日数の数え方には「初日を含めない（片端入れ）」と「初日を含める（両端入れ）」の2通りがあります。本ツールの既定は<strong>初日を含めない</strong>方式で、「終了日 − 開始日」の経過日数を求めます。たとえば4月1日から4月10日までは9日です。「両端を含む」にチェックを入れると初日も1日目として数えるため、同じ期間が10日になります。
-    </p>
-    <p>
-      どちらで数えるかは目的で決まります。「あと何日あるか」「何日経過したか」を知りたいときは初日を含めない方式が、イベントの開催日数・宿泊を伴う滞在日数・薬の服用日数のように「その日自体を1日と数える」ときは両端を含む方式が適しています。なお、法律上の期間計算では「初日不算入」（民法第140条）が原則とされており、既定の数え方はこれに近い考え方です。
-    </p>
-
-    <h3>うるう年（2月29日）の扱い</h3>
-    <p>
-      本ツールはカレンダーに実在する日付をそのまま数えるため、うるう年の2月29日も1日として正しくカウントします。1年の日数は平年が365日、うるう年（2024年・2028年など原則4年に1度）が366日です。たとえばうるう年の2月28日から3月1日までは間に2月29日を挟むため2日ですが、平年の同じ日付間は1日になります。年をまたぐ長い期間でも、通過するうるう日の分だけ自動的に日数へ反映されます。
-    </p>
-
-    <h3>数えるのは「暦日」です（営業日ではありません）</h3>
-    <p>
-      本ツールが数えるのは、土日・祝日を含んだ<strong>暦日（カレンダー上の日数）</strong>です。「土日祝を除いた営業日ベースの日数」を求めるモードはないため、納品や振込のように営業日で数えたい場合は、計算結果からその期間の土日・祝日の日数を差し引いてください。
-    </p>
-
-    <h3>日数計算が役立つ場面</h3>
-    <ul>
-      <li><strong>契約・退職の手続き</strong>：契約期間の残り日数や、退職日・入社日までの日数の確認に。</li>
-      <li><strong>イベントまでのカウントダウン</strong>：試験・結婚式・旅行・推しのライブなど「あと何日」の把握に。</li>
-      <li><strong>賃貸の日割り計算</strong>：月の途中で入居・退去する場合の在住日数の確認に。日割り家賃は「家賃 ÷ 当月の日数 × 在住日数」で概算できます。</li>
-      <li><strong>記念日の管理</strong>：交際・結婚からの経過日数の確認や、生後100日（お食い初め）の日付の逆算に。下段の「N日後」の計算と組み合わせると便利です。</li>
-    </ul>
-
-    <h3>日数の早見表</h3>
-    <div class="data-table-wrap">
-      <div class="data-table-scroll">
-        <table class="data-table">
-          <thead><tr><th>期間</th><th>日数の目安</th></tr></thead>
-          <tbody>
-            <tr><td>1週間</td><td class="num">7日</td></tr>
-            <tr><td>2週間</td><td class="num">14日</td></tr>
-            <tr><td>1ヶ月</td><td class="num">28〜31日</td></tr>
-            <tr><td>3ヶ月</td><td class="num">約89〜92日</td></tr>
-            <tr><td>半年（6ヶ月）</td><td class="num">約181〜184日</td></tr>
-            <tr><td>1年</td><td class="num">365日（うるう年は366日）</td></tr>
-          </tbody>
-        </table>
-      </div>
+  <section class="howto">
+    <h2>初日を含む？含まない？日数の数え方</h2>
+    <p>通常の経過日数は「終了日 − 開始日」で求めます。4月1日から4月10日までは9日です。両端を含めると4月1日を1日目として数えるため10日になります。</p>
+    <div class="count-example">
+      <div><span>初日を含めない</span><strong>4/1 → 4/10 ＝ 9日</strong><small>あと何日・経過日数</small></div>
+      <div><span>両端を含める</span><strong>4/1 → 4/10 ＝ 10日</strong><small>開催日数・滞在日数</small></div>
     </div>
-    <p>1ヶ月・3ヶ月・半年の日数は、どの月を含むかによって変わります。正確な日数が必要なときは、上の計算機に実際の日付を入れて確認してください。</p>
-    <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
+    <p>民法第140条では、日・週・月・年で期間を定める場合は原則として初日を算入しないとされています。ただし午前0時から始まる場合や、個別の法令・契約に別の定めがある場合など例外があります。法的期限はこのツールだけで判断せず、該当する規定をご確認ください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>営業日の日数計算例｜2026年8月3日〜11日</h2>
+    <p>開始日・終了日の両方を含めて数えると、暦日は{example.calendarDays}日です。土日{example.weekendDays}日と、平日の祝日「{example.holidays[0].name}」を除くため、営業日は{example.businessDays}日になります。</p>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>期間</th><th>暦日</th><th>土日</th><th>平日の祝日</th><th>営業日</th></tr></thead>
+      <tbody><tr><td>2026/8/3〜8/11</td><td class="num">{example.calendarDays}日</td><td class="num">{example.weekendDays}日</td><td class="num">{example.holidayWeekdays}日</td><td class="num business-cell">{example.businessDays}日</td></tr></tbody>
+    </table></div></div>
+  </section>
+
+  <section class="howto source-box">
+    <h2>計算基準と公式情報</h2>
+    <ul>
+      <li><a href="https://laws.e-gov.go.jp/law/129AC0000000089" target="_blank" rel="noopener noreferrer">e-Gov法令検索「民法」</a>：第138条〜第143条の期間計算、初日不算入と暦による計算。</li>
+      <li><a href="https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html" target="_blank" rel="noopener noreferrer">内閣府「国民の祝日について」</a>：国民の祝日、振替休日、祝日に挟まれた休日の公式一覧と規則。</li>
+    </ul>
+    <div class="disclaimer">※ 営業日は土日と日本の国民の祝日を除いた参考値です。企業・金融機関の休業日、年末年始、お盆は個別にご確認ください。祝日計算は2024〜2027年の内閣府公表日と照合済みで、それ以外の年の春分・秋分は近似計算です。計算結果はあくまで参考値です。</div>
   </section>
 
   <RelatedTools current={slug} />
-
   <RelatedArticles toolSlug={slug} />
-
   <Faq items={[
-    { q: '「両端を含む」とは何ですか？', a: '初日も1日として数える方式です。1月1日から1月3日は、含まない場合は2日、含む場合は3日になります。契約日数や滞在日数の数え方に合わせて選べます。' },
-    { q: 'N日後の日付の曜日も分かりますか？', a: 'はい。基準日からN日後・N日前の日付と、その曜日（日〜土）を表示します。' },
-    { q: 'うるう年は考慮されますか？', a: 'はい。2月29日のあるうるう年も正しく計算します。' },
-    { q: '開始日当日は日数に含まれますか？', a: '既定では含みません（「終了日−開始日」の経過日数を表示します）。「両端を含む」にチェックを入れると、開始日当日も1日目として数えます。' },
-    { q: '期間がうるう年をまたぐ場合はどうなりますか？', a: '2月29日も実在する1日としてそのまま数えるため、特別な操作は不要です。うるう年を含む1年間は366日として計算されます。' },
-    { q: '土日・祝日を除いた営業日数は計算できますか？', a: 'いいえ。本ツールは土日・祝日を含む暦日（カレンダー上の日数）を数えます。営業日ベースの日数が必要な場合は、結果からその期間の土日・祝日分を差し引いてください。' },
+    { q: '2つの日付の間は何日ですか？', a: '開始日を含めない場合は「終了日−開始日」で計算します。たとえば4月1日から4月10日は9日です。両方の日を含めて数える場合は10日になります。' },
+    { q: '今日から何日後かを計算できますか？', a: 'はい。「何日後・前」タブで基準日に今日を設定し、日数と「後」を選ぶと、何日後の日付と曜日を表示します。7日・30日・100日はショートカットボタンでも入力できます。' },
+    { q: '土日祝を除いた営業日数も分かりますか？', a: 'はい。2つの日付を入力すると、暦日、土日、平日に重なる国民の祝日と、それらを除いた営業日数を表示します。会社独自の休日や年末年始は含みません。' },
+    { q: '開始日は日数に含まれますか？', a: '既定では含みません。「開始日と終了日の両方を含める」を選ぶと、開始日を1日目として数えます。' },
+    { q: '1ヶ月後に同じ日付がない場合は？', a: '移動先の月末になります。1月31日の1ヶ月後は2月28日、うるう年なら2月29日です。' },
+    { q: 'うるう年や日付の逆順に対応していますか？', a: 'はい。2月29日を正しく数え、終了日が開始日より前でも期間の絶対日数と内訳を表示します。' },
   ]} />
-
   <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
-  .nissu-h {
-    font-size: 1.05rem;
-    margin: 0 0 14px;
-  }
-  .nissu-sep {
-    border: none;
-    border-top: 1px solid var(--border, #e5e7eb);
-    margin: 28px 0;
-  }
-  /* チェックボックスはグローバルの input{width:100%} を継承しないよう限定 */
-  .nissu-check {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 4px 0 4px;
-    cursor: pointer;
-    font-size: 0.95rem;
-  }
-  .nissu-check input[type='checkbox'] {
-    width: auto;
-    margin: 0;
-  }
-  .nissu-inline {
-    display: flex;
-    gap: 10px;
-  }
-  .nissu-inline input {
-    flex: 1;
-  }
-  .nissu-inline select {
-    flex: 0 0 auto;
-    width: auto;
+  .nissu-card { overflow: hidden; }
+  .nissu-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
+  .nissu-tab { display: flex; flex-direction: column; gap: 2px; padding: 14px 10px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); }
+  .nissu-tab span { font-size: .9rem; font-weight: var(--fw-bold); }
+  .nissu-tab small { font-size: .68rem; }
+  .nissu-tab.is-active { border-bottom-color: var(--cat-color); background: var(--surface); color: var(--cat-color); }
+  .nissu-tab:focus-visible { outline: 3px solid var(--cat-tint); outline-offset: -3px; }
+  .nissu-panel { padding: 22px; }
+  .nissu-mode[hidden], .calendar-result[hidden] { display: none; }
+  .date-grid { display: grid; grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr); gap: 8px; align-items: end; }
+  .date-arrow { display: grid; place-items: center; min-height: 48px; color: var(--cat-color); font-weight: var(--fw-bold); }
+  .field-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+  .field-label label { margin: 0; }
+  .today-btn { padding: 3px 9px; border: 1px solid var(--cat-color); border-radius: 999px; background: transparent; color: var(--cat-color); font: var(--fw-bold) .66rem/1.4 var(--font-sans); cursor: pointer; }
+  .today-btn:hover { background: var(--cat-tint); }
+  .nissu-check { display: flex; gap: 10px; align-items: flex-start; padding: 13px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); cursor: pointer; }
+  .nissu-check input { width: auto; margin-top: 3px; }
+  .nissu-check span { display: flex; flex-direction: column; gap: 2px; }
+  .nissu-check strong { font-size: .82rem; }
+  .nissu-check small { color: var(--text-muted); font-size: .68rem; line-height: 1.5; }
+  .calendar-result { position: relative; margin-top: 20px; overflow: hidden; border: 1px solid #d7deea; border-radius: 8px 8px 3px 3px; background: #fbfcff; box-shadow: 0 10px 28px rgba(44, 64, 98, .09); }
+  .calendar-result::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 5px; background: repeating-linear-gradient(135deg, transparent 0 6px, #d7deea 6px 7px); content: ''; }
+  .calendar-result__bar { display: flex; justify-content: space-between; gap: 12px; padding: 9px 14px; background: #33466b; color: #fff; font: var(--fw-bold) .66rem/1.4 var(--font-mono); letter-spacing: .04em; }
+  .calendar-result__bar span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .calendar-result__main { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 20px 18px 16px; }
+  .calendar-result__main span, .calendar-result__date span { color: var(--text-muted); font-size: .78rem; font-weight: var(--fw-bold); }
+  .calendar-result__main strong { color: var(--cat-color); font: var(--fw-bold) 2.55rem/1 var(--font-mono); }
+  .result-metrics { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px dashed #cbd3e0; }
+  .result-metrics div { display: flex; flex-direction: column; gap: 3px; padding: 12px 8px; text-align: center; }
+  .result-metrics div + div { border-left: 1px solid #e2e6ee; }
+  .result-metrics span { color: var(--text-muted); font-size: .65rem; }
+  .result-metrics strong { font: var(--fw-bold) .9rem/1.2 var(--font-mono); }
+  .holiday-note { margin: 0 14px 14px; color: var(--text-muted); font-size: .68rem; line-height: 1.5; text-align: center; }
+  .shift-grid { display: grid; grid-template-columns: 1.2fr .8fr .7fr; gap: 10px; }
+  .shift-grid select { width: 100%; min-height: 48px; padding: 8px 10px; border: 1px solid var(--border-input); border-radius: var(--r-md); background: var(--surface); font-family: var(--font-sans); }
+  .quick-row { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 4px; color: var(--text-muted); font-size: .7rem; }
+  .quick-row button { padding: 5px 10px; border: 1px solid var(--border-2); border-radius: 999px; background: var(--surface); color: var(--text); font: var(--fw-bold) .68rem/1.4 var(--font-sans); cursor: pointer; }
+  .quick-row button:hover { border-color: var(--cat-color); color: var(--cat-color); }
+  .calendar-result__date { display: flex; flex-direction: column; gap: 8px; padding: 22px 18px 26px; text-align: center; }
+  .calendar-result__date strong { color: var(--cat-color); font: var(--fw-bold) 1.65rem/1.25 var(--font-mono); }
+  .count-example { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .count-example div { display: flex; flex-direction: column; gap: 4px; padding: 14px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .count-example span, .count-example small { color: var(--text-muted); font-size: .7rem; }
+  .count-example strong { font-family: var(--font-mono); }
+  .source-box ul { display: flex; flex-direction: column; gap: 7px; padding-left: 1.2em; }
+  .source-box a { color: var(--cat-color); font-weight: var(--fw-bold); }
+  .business-cell { color: var(--cat-color); font-weight: var(--fw-bold); }
+  @media (max-width: 560px) {
+    .nissu-panel { padding: 18px; }
+    .date-grid { grid-template-columns: 1fr; gap: 0; }
+    .date-arrow { min-height: 24px; transform: rotate(90deg); }
+    .shift-grid { grid-template-columns: 1fr 1fr; }
+    .shift-grid .form-group:first-child { grid-column: 1 / -1; }
+    .result-metrics { grid-template-columns: 1fr 1fr; }
+    .result-metrics div:nth-child(3) { border-left: 0; border-top: 1px solid #e2e6ee; }
+    .result-metrics div:nth-child(4) { border-top: 1px solid #e2e6ee; }
+    .count-example { grid-template-columns: 1fr; }
+    .calendar-result__bar span:last-child { max-width: 62%; }
+    .calendar-result__date strong { font-size: 1.3rem; }
   }
 </style>
 
 <script>
-  import { daysBetween, shiftDate, weekdayJa } from '../../lib/nissu.js';
+  import { dateRangeBreakdown, shiftDateBy, weekdayJa } from '../../lib/nissu.js';
 
   const $ = (id) => document.getElementById(id);
+  const trackedModes = new Set();
+  let currentMode = 'range';
 
-  function share() {
-    const parts = [];
-    if ($('result1').classList.contains('visible')) {
-      parts.push(`間の日数：${$('days').textContent}`);
-    }
-    if ($('result2').classList.contains('visible')) {
-      parts.push(`計算結果の日付：${$('resultDate').textContent}`);
-    }
-    if (parts.length) {
-      window.setResultShare?.(`日数計算・日付計算器\n${parts.join('\n')}`);
-    } else {
-      window.hideResultShare?.();
-    }
+  function localToday() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   }
 
-  function renderDays() {
-    const days = daysBetween($('from').value, $('to').value, {
-      includeBoth: $('includeBoth').checked,
-    });
-    const box = $('result1');
-    if (days === null) {
-      box.classList.remove('visible');
-      share();
+  function formatJa(iso) {
+    const [year, month, day] = iso.split('-').map(Number);
+    return `${year}年${month}月${day}日（${weekdayJa(iso)}）`;
+  }
+
+  function trackOnce(mode) {
+    if (trackedModes.has(mode)) return;
+    window.trackCalculatorResult?.(mode);
+    trackedModes.add(mode);
+  }
+
+  function updateShare() {
+    if (currentMode === 'range' && !$('rangeResult').hidden) {
+      window.setResultShare?.(`日数計算\n${$('rangeDates').textContent}\n${$('days').textContent}（営業日 ${$('businessDays').textContent}）`);
+    } else if (currentMode === 'shift' && !$('shiftResult').hidden) {
+      window.setResultShare?.(`日付計算\n${$('shiftSummary').textContent}\n${$('resultDate').textContent}`);
+    } else window.hideResultShare?.();
+  }
+
+  function renderRange() {
+    const from = $('from').value;
+    const to = $('to').value;
+    const result = dateRangeBreakdown(from, to, { includeBoth: $('includeBoth').checked });
+    if (!result) {
+      $('rangeResult').hidden = true;
+      updateShare();
       return;
     }
-    box.classList.add('visible');
-    $('days').textContent = `${days.toLocaleString()}日`;
-    const w = Math.floor(days / 7);
-    const d = days % 7;
-    $('weeks').textContent = d === 0 ? `${w}週間` : `${w}週間 ${d}日`;
-    share();
+    $('rangeResult').hidden = false;
+    $('rangeDates').textContent = `${from.replaceAll('-', '/')} → ${to.replaceAll('-', '/')}`;
+    $('days').textContent = `${result.calendarDays.toLocaleString('ja-JP')}日`;
+    $('weeks').textContent = result.remainingDays === 0 ? `${result.weeks}週間` : `${result.weeks}週 ${result.remainingDays}日`;
+    $('businessDays').textContent = `${result.businessDays.toLocaleString('ja-JP')}日`;
+    $('weekendDays').textContent = `${result.weekendDays.toLocaleString('ja-JP')}日`;
+    $('holidayDays').textContent = `${result.holidayWeekdays.toLocaleString('ja-JP')}日`;
+    $('holidayNote').textContent = result.holidays.length
+      ? `期間内の平日祝日：${result.holidays.map((holiday) => `${holiday.date.replaceAll('-', '/')} ${holiday.name}`).join('、')}`
+      : '期間内に平日と重なる国民の祝日はありません';
+    trackOnce('range');
+    updateShare();
   }
 
   function renderShift() {
-    const base = $('base').value;
-    const n = $('offset').value === '' ? NaN : Number($('offset').value) * Number($('dir').value);
-    const iso = shiftDate(base, n);
-    const box = $('result2');
-    if (iso === null) {
-      box.classList.remove('visible');
-      share();
+    const amount = $('offset').value === '' ? NaN : Number($('offset').value);
+    if (!Number.isInteger(amount) || amount < 0) {
+      $('shiftResult').hidden = true;
+      updateShare();
       return;
     }
-    box.classList.add('visible');
-    $('resultDate').textContent = `${iso}（${weekdayJa(iso)}）`;
-    share();
+    const direction = Number($('dir').value);
+    const unit = $('unit').value;
+    const iso = shiftDateBy($('base').value, amount * direction, unit);
+    if (!iso) {
+      $('shiftResult').hidden = true;
+      updateShare();
+      return;
+    }
+    const unitLabel = { day: '日', week: '週間', month: 'ヶ月', year: '年' }[unit];
+    $('shiftResult').hidden = false;
+    $('shiftSummary').textContent = `${amount}${unitLabel}${direction > 0 ? '後' : '前'}`;
+    $('resultDate').textContent = formatJa(iso);
+    trackOnce('shift');
+    updateShare();
   }
 
+  function setMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.nissu-tab').forEach((button) => {
+      const active = button.dataset.mode === mode;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    $('rangePanel').hidden = mode !== 'range';
+    $('shiftPanel').hidden = mode !== 'shift';
+    if (mode === 'range') renderRange(); else renderShift();
+  }
+
+  $('from').value = localToday();
+  $('base').value = localToday();
+  document.querySelectorAll('.nissu-tab').forEach((button) => button.addEventListener('click', () => setMode(button.dataset.mode)));
+  document.querySelectorAll('[data-today-target]').forEach((button) => button.addEventListener('click', () => {
+    $(button.dataset.todayTarget).value = localToday();
+    if (button.dataset.todayTarget === 'base') renderShift(); else renderRange();
+  }));
+  document.querySelectorAll('[data-offset]').forEach((button) => button.addEventListener('click', () => {
+    $('offset').value = button.dataset.offset;
+    $('unit').value = 'day';
+    $('dir').value = '1';
+    renderShift();
+  }));
   ['from', 'to', 'includeBoth'].forEach((id) => {
-    $(id).addEventListener('input', renderDays);
-    $(id).addEventListener('change', renderDays);
+    $(id).addEventListener('input', renderRange);
+    $(id).addEventListener('change', renderRange);
   });
-  ['base', 'offset', 'dir'].forEach((id) => {
+  ['base', 'offset', 'unit', 'dir'].forEach((id) => {
     $(id).addEventListener('input', renderShift);
     $(id).addEventListener('change', renderShift);
   });

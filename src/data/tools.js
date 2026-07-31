@@ -328,10 +328,10 @@ export const tools = [
   {
     slug: 'nissu',
     nav: '日数計算',
-    name: '日数計算・日付計算器',
+    name: '日数計算・日付計算ツール',
     icon: '🗓️',
     category: '生活・日常',
-    short: '日付間の日数・N日後の日付',
+    short: '何日間・何日後・営業日を無料計算',
     live: true,
   },
   {
