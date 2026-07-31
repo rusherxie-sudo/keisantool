@@ -58,10 +58,10 @@ export const tools = [
   {
     slug: 'wariai',
     nav: '割合',
-    name: '割合・パーセント・比率計算器',
+    name: '割合・パーセント計算ツール',
     icon: '％',
     category: '税金・お金',
-    short: 'パーセント・比率',
+    short: '何％・全体の逆算・増減率を計算',
     live: true,
   },
   {

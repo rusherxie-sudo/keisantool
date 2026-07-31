@@ -9,7 +9,7 @@
 - [消費税・割引計算器](https://keisantool.com/zeizei/): 税込・税抜・割引
 - [固定資産税計算器](https://keisantool.com/kotei-shisan/): 固定資産税・都市計画税
 - [国民健康保険料計算器](https://keisantool.com/kokuho/): 保険料シミュレーション
-- [割合・パーセント・比率計算器](https://keisantool.com/wariai/): パーセント・比率
+- [割合・パーセント計算ツール](https://keisantool.com/wariai/): 何％・全体の逆算・増減率を計算
 - [住宅ローン返済シミュレーター](https://keisantool.com/loan/): 毎月返済額・総返済額・総利息
 - [複利・積立シミュレーター](https://keisantool.com/fukuri/): 複利運用・毎月積立の将来額
 - [所得税計算器](https://keisantool.com/shotokuzei/): 年収から所得税を精算

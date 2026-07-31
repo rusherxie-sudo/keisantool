@@ -42,6 +42,15 @@ export function valueFromPercent(a, pct) {
   return round2((na * np) / 100);
 }
 
+// 逆算：A が全体の ○% のとき、全体はいくら？ → A / pct * 100
+// 0% から全体は逆算できないため null。
+export function baseFromPercent(a, pct) {
+  const na = toNonNegative(a);
+  const np = toNonNegative(pct);
+  if (na === null || np === null || np === 0) return null;
+  return round2((na / np) * 100);
+}
+
 // 比率計算：A:B を最大公約数で約分し、簡単な比に。
 // 片方が 0 の場合は 0:1 / 1:0 とする。両方 0 は意味がないため null。
 export function ratio(a, b) {

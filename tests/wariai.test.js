@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { percentOf, valueFromPercent, ratio, discountedPrice, changeRate, buaiToPercent, percentToBuai } from '../src/lib/wariai.js';
+import { percentOf, valueFromPercent, baseFromPercent, ratio, discountedPrice, changeRate, buaiToPercent, percentToBuai } from '../src/lib/wariai.js';
 
 describe('percentOf(A は B の何%？)', () => {
   it('50 は 200 の 25%', () => {
@@ -74,6 +74,36 @@ describe('valueFromPercent(A の ○% はいくら？)', () => {
   it('負数 → null', () => {
     expect(valueFromPercent(-200, 25)).toBeNull();
     expect(valueFromPercent(200, -25)).toBeNull();
+  });
+});
+
+describe('baseFromPercent(A が ○% なら全体はいくら？)', () => {
+  it('30 が 25% なら全体は 120', () => {
+    expect(baseFromPercent(30, 25)).toBe(120);
+  });
+
+  it('75 が 12.5% なら全体は 600', () => {
+    expect(baseFromPercent(75, 12.5)).toBe(600);
+  });
+
+  it('小数第2位で丸め: 10 が 3% なら全体は 333.33', () => {
+    expect(baseFromPercent(10, 3)).toBe(333.33);
+  });
+
+  it('部分が0なら全体は0', () => {
+    expect(baseFromPercent(0, 25)).toBe(0);
+  });
+
+  it('割合0%は逆算できない → null', () => {
+    expect(baseFromPercent(30, 0)).toBeNull();
+  });
+
+  it('空文字・負数・NaN → null', () => {
+    expect(baseFromPercent('', 25)).toBeNull();
+    expect(baseFromPercent(30, '')).toBeNull();
+    expect(baseFromPercent(-30, 25)).toBeNull();
+    expect(baseFromPercent(30, -25)).toBeNull();
+    expect(baseFromPercent(NaN, 25)).toBeNull();
   });
 });
 

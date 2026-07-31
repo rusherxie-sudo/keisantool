@@ -4,32 +4,36 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
+import { baseFromPercent } from '../../lib/wariai.js';
 
 const slug = 'wariai';
-const title = '割合・パーセント・比率計算器 - 4種類の計算を一画面で | 計算ツール';
+const title = '割合計算・パーセント計算｜何％・逆算・増減率を無料計算 | 計算ツール';
 const description =
-  'パーセント計算・割合計算・比率計算・割引後の価格を一画面でまとめて計算。「AはBの何%？」「Aの○%はいくら？」の割合計算や、12:8→3:2の比率の約分、○%OFFの価格まで瞬時に求められる無料ツールです。';
+  '割合・パーセントを無料で自動計算。「AはBの何％？」「Aの○％はいくら？」「Aが○％なら全体は？」の3公式に加え、増減率、割引、比率、歩合にも対応します。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: '割合・パーセント・比率計算器',
+  name: '割合・パーセント計算ツール',
   description,
   applicationCategory: 'UtilityApplication',
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['AはBの何％か', 'Aの○％の値', '部分と割合から全体を逆算', '増減率', '割引後価格', '比率の約分', '歩合換算'],
 };
+const inverseExample = baseFromPercent(30, 25);
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 割合計算</div>
-    <h1>割合・パーセント・比率計算器</h1>
-    <p>パーセント計算・割合計算・比率の約分・割引後の価格を、入力するだけで瞬時に計算します。</p>
+    <h1>割合・パーセント計算｜何％・全体の逆算にも対応</h1>
+    <p>「何％か」「○％の値」「○％から全体を逆算」の3公式と、増減率・割引・比率・歩合を入力だけで計算します。</p>
   </div>
 
   <div class="calc-card">
     <div class="calc-tabs" role="tablist">
-      <button class="calc-tab active" data-tab="pct" type="button">パーセント</button>
-      <button class="calc-tab" data-tab="val" type="button">割合</button>
+      <button class="calc-tab active" data-tab="pct" type="button">何％？</button>
+      <button class="calc-tab" data-tab="val" type="button">○％の値</button>
+      <button class="calc-tab" data-tab="base" type="button">全体を逆算</button>
       <button class="calc-tab" data-tab="rat" type="button">比率</button>
       <button class="calc-tab" data-tab="disc" type="button">割引後</button>
       <button class="calc-tab" data-tab="chg" type="button">増減率</button>
@@ -63,6 +67,24 @@ const jsonld = {
       <div class="result-box" id="val-result">
         <div class="result-label">A の指定%は</div>
         <div class="result-main" id="val-out">0</div>
+      </div>
+    </div>
+
+    <div class="calc-panel" id="panel-base">
+      <div class="form-group">
+        <label for="base-part">分かっている部分の値 A</label>
+        <input type="number" id="base-part" inputmode="decimal" placeholder="例：30" />
+      </div>
+      <div class="form-group">
+        <label for="base-pct">A が全体に占める割合（%）</label>
+        <input type="number" id="base-pct" inputmode="decimal" placeholder="例：25" />
+      </div>
+      <div class="result-box" id="base-result">
+        <div class="result-label">全体の値は</div>
+        <div class="result-main" id="base-out">0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">確認</span><span class="value" id="base-check">0 の 25% = 0</span></div>
+        </div>
       </div>
     </div>
 
@@ -159,11 +181,12 @@ const jsonld = {
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>使い方</h2>
-    <p>上のタブから計算したい種類を選び、数値を入力すると自動で結果が表示されます。ボタンを押す必要はありません。4種類の割合計算をこの一画面でまとめて行えます。</p>
+    <h2>割合・パーセント計算ツールの使い方</h2>
+    <p>上のタブから知りたいものを選び、数値を入力すると自動で結果が表示されます。割合の基本3公式は、どの数値が分からないかで使い分けます。</p>
     <ul>
-      <li><strong>パーセント計算</strong>：「A は B の何%か」を求めます。たとえばテストで200点中50点なら、A に50、B に200と入力すると<strong>25%</strong>と表示されます。達成率や得点率の計算に便利です。</li>
-      <li><strong>割合計算</strong>：「A の ○% はいくらか」を求めます。3000円の8%を知りたいときは、A に3000、割合に8と入力すると<strong>240</strong>と表示されます。手数料やポイント還元額の計算に使えます。</li>
+      <li><strong>何％？</strong>：「A は全体 B の何%か」を求めます。テストで200点中50点なら、50÷200×100＝<strong>25%</strong>です。</li>
+      <li><strong>○％の値</strong>：「A の ○% はいくらか」を求めます。3000円の8%なら、3000×8÷100＝<strong>240</strong>です。</li>
+      <li><strong>全体を逆算</strong>：「A が全体の○%なら、全体はいくらか」を求めます。30が25%なら、30÷25×100＝<strong>{inverseExample}</strong>です。</li>
       <li><strong>比率計算</strong>：A と B の比を、最大公約数で約分して最も簡単な整数比にします。たとえば12と8を入力すると<strong>3 : 2</strong>になります。配合比や縮尺の単純化に役立ちます。</li>
       <li><strong>割引後計算</strong>：定価と割引率から、○%OFF後の支払額と割引額を計算します。金額の端数は<strong>切り捨て</strong>で処理しています。セールやクーポンの計算にお使いください。</li>
       <li><strong>増減率（前年比・変化率）</strong>：「変化前」と「変化後」の2つの数値から、何%増えた・減ったかを求めます。たとえば売上が前年100から今年120になったら<strong>+20%</strong>、200から150に下がったら<strong>-25%</strong>と表示されます。前年比・伸び率・増減率の計算に便利です。</li>
@@ -173,6 +196,16 @@ const jsonld = {
     <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
   </section>
 
+  <section class="howto">
+    <h2>割合・パーセントの3つの計算式</h2>
+    <div class="formula-list">
+      <div><span>何％かを求める</span><strong>部分 ÷ 全体 × 100</strong><small>50は200の何％？ → 25％</small></div>
+      <div><span>○％の値を求める</span><strong>全体 × 割合 ÷ 100</strong><small>3000の8％は？ → 240</small></div>
+      <div><span>全体を逆算する</span><strong>部分 ÷ 割合 × 100</strong><small>30が25％なら全体は？ → {inverseExample}</small></div>
+    </div>
+    <p>逆算では割合が0%だと全体を一意に求められません。割合は0より大きい値を入力してください。百分率は100%を超えても計算でき、たとえば150は100の150%です。</p>
+  </section>
+
   <RelatedTools current={slug} />
 
   <RelatedArticles toolSlug={slug} />
@@ -180,6 +213,7 @@ const jsonld = {
   <Faq items={[
     { q: '割合（パーセント）はどう計算しますか？', a: '「AはBの何%か」は A÷B×100 で求めます。例えば50は200の25%です。' },
     { q: '〇%の金額はどう出しますか？', a: '全体×割合(%)÷100 で求めます。例えば3000円の8%は240円です。手数料やポイント還元の計算に使えます。' },
+    { q: '一部の値とパーセントから全体を逆算できますか？', a: 'はい。部分÷割合(%)×100で全体を求めます。30が全体の25%なら、30÷25×100＝120です。' },
     { q: '増減率（前年比）の計算方法は？', a: '(新しい値−元の値)÷元の値×100 で増減率(%)になります。本ツールは歩合の計算にも対応しています。' },
   ]} />
 
@@ -187,7 +221,7 @@ const jsonld = {
 </ToolLayout>
 
 <script>
-  import { percentOf, valueFromPercent, ratio, discountedPrice, changeRate, buaiToPercent, percentToBuai } from '../../lib/wariai.js';
+  import { percentOf, valueFromPercent, baseFromPercent, ratio, discountedPrice, changeRate, buaiToPercent, percentToBuai } from '../../lib/wariai.js';
 
   const $ = (id) => document.getElementById(id);
   const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
@@ -222,6 +256,21 @@ const jsonld = {
     show(box);
     $('val-out').textContent = num(r);
     window.setResultShare?.('割合・パーセント計算器\nA の指定%：' + $('val-out').textContent);
+  }
+
+  function renderBase() {
+    const box = $('base-result');
+    const part = $('base-part').value;
+    const pct = $('base-pct').value;
+    const r = baseFromPercent(part, pct);
+    if (r === null) return hide(box);
+    show(box);
+    $('base-out').textContent = num(r);
+    $('base-check').textContent = `${num(r)} の ${num(Number(pct))}% = ${num(Number(part))}`;
+    window.setResultShare?.(
+      '割合・パーセント計算器\n全体の値：' + $('base-out').textContent +
+      '\n確認：' + $('base-check').textContent
+    );
   }
 
   function renderRat() {
@@ -292,6 +341,7 @@ const jsonld = {
 
   ['pct-a', 'pct-b'].forEach((id) => $(id).addEventListener('input', renderPct));
   ['val-a', 'val-pct'].forEach((id) => $(id).addEventListener('input', renderVal));
+  ['base-part', 'base-pct'].forEach((id) => $(id).addEventListener('input', renderBase));
   ['rat-a', 'rat-b'].forEach((id) => $(id).addEventListener('input', renderRat));
   ['disc-price', 'disc-pct'].forEach((id) => $(id).addEventListener('input', renderDisc));
   ['chg-from', 'chg-to'].forEach((id) => $(id).addEventListener('input', renderChg));
@@ -300,6 +350,12 @@ const jsonld = {
 </script>
 
 <style>
+  .formula-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
+  .formula-list div { padding: 15px; border: 1px solid var(--border-2); border-radius: var(--r-lg); background: var(--surface-sub); }
+  .formula-list span, .formula-list strong, .formula-list small { display: block; }
+  .formula-list span { color: var(--text-muted); font-size: .76rem; }
+  .formula-list strong { margin: 6px 0; font-family: var(--font-mono); font-size: .9rem; }
+  .formula-list small { color: var(--text-3); line-height: 1.5; }
   .buai-block { margin-bottom: 1.5rem; }
   .buai-block:last-child { margin-bottom: 0; }
   .buai-head {
@@ -326,5 +382,8 @@ const jsonld = {
   .buai-field span {
     font-weight: var(--fw-bold);
     white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    .formula-list { grid-template-columns: 1fr; }
   }
 </style>
