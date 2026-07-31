@@ -6,13 +6,13 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'bmi';
-const title = 'BMI計算器（女性・男性）- 体脂肪率・標準体重も同時に計算 | 計算ツール';
+const title = 'BMI計算ツール｜女性・男性の標準体重・肥満度・体脂肪率';
 const description =
-  '身長・体重を入力するだけでBMIを自動計算。日本肥満学会の基準で肥満度を判定し、標準体重とBMI推定法による体脂肪率も同時に算出します。女性・男性の性別に対応した体脂肪率計算と、基礎代謝の目安づくりに役立つ無料ツールです。';
+  '身長・体重からBMI、肥満度、BMI22の標準体重を無料計算。年齢を入力すると、厚生労働省「日本人の食事摂取基準（2025年版）」の年齢別目標BMI・目標体重範囲と、女性・男性別の推定体脂肪率も表示します。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'BMI・体脂肪率計算器',
+  name: 'BMI計算ツール（女性・男性）',
   description,
   applicationCategory: 'HealthApplication',
   operatingSystem: 'Web',
@@ -22,8 +22,8 @@ const jsonld = {
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/kenko/">健康・身体</a> ／ BMI計算</div>
-    <h1>BMI・体脂肪率計算器</h1>
-    <p>身長・体重・年齢を入力するだけで、BMIと肥満度判定・標準体重・体脂肪率を瞬時に計算します。女性・男性の性別に対応。</p>
+    <h1>BMI計算ツール（女性・男性）</h1>
+    <p>身長・体重からBMI、肥満度、標準体重を自動計算。年齢別の目標BMI・目標体重範囲と、女性・男性別の推定体脂肪率も確認できます。</p>
   </div>
 
   <div class="calc-card">
@@ -37,8 +37,8 @@ const jsonld = {
         <input type="number" id="bmi-weight" inputmode="decimal" placeholder="例：55" />
       </div>
       <div class="form-group">
-        <label for="bmi-age">年齢（歳）</label>
-        <input type="number" id="bmi-age" inputmode="numeric" placeholder="例：30" />
+        <label for="bmi-age">年齢（歳）<span class="optional">任意</span></label>
+        <input type="number" id="bmi-age" inputmode="numeric" min="1" max="120" placeholder="例：30" />
       </div>
       <div class="radio-group">
         <input type="radio" name="bmi-gender" id="bmi-female" value="female" checked />
@@ -57,12 +57,13 @@ const jsonld = {
         </div>
 
         <div class="target-block" id="bmi-target-block">
-          <div class="target-title">目標体重の目安</div>
+          <div class="target-title">年齢別の目標BMI・体重（2025年版）</div>
           <div class="target-rows">
-            <div class="result-row"><span class="label">美容体重（BMI19）</span><span class="value" id="bmi-target-beauty">−</span></div>
+            <div class="result-row"><span class="label">目標BMI</span><span class="value" id="bmi-target-bmi">年齢を入力</span></div>
+            <div class="result-row"><span class="label">目標体重範囲</span><span class="value" id="bmi-target-range">年齢を入力</span></div>
             <div class="result-row"><span class="label">標準体重（BMI22）</span><span class="value green" id="bmi-target-standard">−</span></div>
-            <div class="result-row"><span class="label">適正範囲（BMI18.5〜25）</span><span class="value" id="bmi-target-range">−</span></div>
           </div>
+          <p class="age-note" id="bmi-age-note">18歳以上は年齢を入力すると、厚生労働省の年齢別目標を表示します。</p>
           <div class="target-diff" id="bmi-target-diff">標準体重まであと − kg</div>
         </div>
       </div>
@@ -74,13 +75,13 @@ const jsonld = {
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>BMIの見方・判定基準</h2>
+    <h2>BMIの計算方法と肥満度の基準値</h2>
     <p>
       BMI（ボディマス指数）は、体重と身長から算出する肥満度の国際的な指標です。計算式は
       <strong>BMI＝体重(kg)÷(身長(m)×身長(m))</strong>。身長はcmではなくm（メートル）に直して計算するため、本ツールでは入力されたcmを自動で100で割って算出します。
     </p>
     <p>
-      日本肥満学会の基準では、BMIの数値によって次のように判定します。BMI22 がもっとも病気になりにくい「標準体重」とされ、本ツールの標準体重もこのBMI22を基準に算出しています。
+      日本肥満学会の基準では、成人のBMIを次のように判定します。BMI22を基準にした体重は「標準体重」と呼ばれ、<strong>標準体重＝身長(m)×身長(m)×22</strong>で計算します。
     </p>
     <ul>
       <li><strong>18.5未満</strong>：低体重（やせ）</li>
@@ -90,8 +91,27 @@ const jsonld = {
       <li><strong>35〜40未満</strong>：肥満（3度）</li>
       <li><strong>40以上</strong>：肥満（4度）</li>
     </ul>
+    <h2>年齢別の目標BMI（2025年版）</h2>
     <p>
-      体脂肪率は「BMI推定法」による概算値です。<strong>体脂肪率＝1.2×BMI＋0.23×年齢−5.4−10.8×性別係数（男性=1・女性=0）</strong>で求めるため、同じBMI・年齢でも男性より女性のほうが高めに出ます。あくまで簡易推定で、体組成計の実測値とは差が出ることがあります。標準体重やBMIを把握しておくと、基礎代謝やカロリー管理など健康づくりの目安としても役立ちます。
+      厚生労働省「日本人の食事摂取基準（2025年版）」では、成人が目標とするBMIの範囲を年齢別に示しています。男女共通の範囲で、肥満度の判定区分とは目的が異なります。
+    </p>
+    <table class="bmi-table">
+      <thead><tr><th>年齢</th><th>目標BMI</th></tr></thead>
+      <tbody>
+        <tr><td>18〜49歳</td><td>18.5〜24.9</td></tr>
+        <tr><td>50〜64歳</td><td>20.0〜24.9</td></tr>
+        <tr><td>65歳以上</td><td>21.5〜24.9</td></tr>
+      </tbody>
+    </table>
+    <p>18歳未満は成長段階にあり、成人用BMIだけでは適切に判定できないため、本ツールでは年齢別目標と推定体脂肪率を表示しません。</p>
+    <h2>女性・男性の推定体脂肪率について</h2>
+    <p>
+      体脂肪率は成人向けのDeurenberg式による概算値です。<strong>体脂肪率＝1.2×BMI＋0.23×年齢−5.4−10.8×性別係数（男性=1・女性=0）</strong>で求めます。原論文では推定誤差が示されており、肥満者では高めに推定される傾向もあるため、体組成計の実測値とは差が出ます。
+    </p>
+    <p class="sources">
+      出典：<a href="https://kennet.mhlw.go.jp/information/information/dictionary/metabolic/ym-002" target="_blank" rel="noopener noreferrer">厚生労働省 e-ヘルスネット「BMI」</a>、
+      <a href="https://kennet.mhlw.go.jp/information/information/food/e-02-009.html" target="_blank" rel="noopener noreferrer">厚生労働省「適正体重を維持しよう」</a>、
+      <a href="https://pubmed.ncbi.nlm.nih.gov/2043597/" target="_blank" rel="noopener noreferrer">Deurenberg et al. (1991)</a>
     </p>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。健康状態の判断・診断は医療機関にご相談ください。</div>
   </section>
@@ -102,8 +122,11 @@ const jsonld = {
 
   <Faq items={[
     { q: 'BMIの計算式は？', a: 'BMI＝体重(kg)÷(身長(m)×身長(m))で求めます。例えば170cm・65kgなら約22.5です。' },
-    { q: '標準体重はBMIいくつですか？', a: '日本肥満学会の基準ではBMI22が標準（最も病気になりにくいとされる値）です。本ツールは身長から標準体重も表示します。' },
-    { q: '体脂肪率も計算できますか？', a: 'BMI・年齢・性別から体脂肪率の推定値を表示します（あくまで目安です）。' },
+    { q: '標準体重はBMIいくつですか？', a: '標準体重はBMI22を基準に、身長(m)×身長(m)×22で計算します。年齢別の目標BMI範囲とは意味が異なります。' },
+    { q: '女性と男性でBMIの計算方法は違いますか？', a: 'BMIの計算式と成人の肥満度判定は女性・男性で共通です。本ツールの推定体脂肪率は性別係数を使うため結果が異なります。' },
+    { q: '年齢によって目標BMIは変わりますか？', a: '厚生労働省の2025年版基準では、18〜49歳は18.5〜24.9、50〜64歳は20.0〜24.9、65歳以上は21.5〜24.9が目標範囲です。' },
+    { q: '子どものBMIも判定できますか？', a: '18歳未満は成長段階にあり、成人用BMIだけでは適切に判定できません。本ツールでは成人向けの年齢別目標と推定体脂肪率を表示しません。' },
+    { q: '体脂肪率も計算できますか？', a: '18歳以上はBMI・年齢・性別からDeurenberg式による推定値を表示します。実測値ではなく参考値です。' },
   ]} />
 
   <div class="ad-slot"></div>
@@ -121,6 +144,18 @@ const jsonld = {
     margin-bottom: 0.5rem;
     color: var(--text-3);
   }
+  .optional {
+    margin-left: 0.45rem;
+    font-size: 0.75rem;
+    font-weight: var(--fw-normal);
+    color: var(--text-3);
+  }
+  .age-note {
+    margin: 0.65rem 0 0;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--text-3);
+  }
   .target-diff {
     margin-top: 0.75rem;
     padding: 0.6rem 0.8rem;
@@ -133,10 +168,14 @@ const jsonld = {
   .target-diff.lose { background: var(--danger-bg); color: var(--danger); }
   .target-diff.gain { background: var(--cat-tint); color: color-mix(in srgb, var(--cat-color) 62%, #000); }
   .target-diff.ok   { background: color-mix(in srgb, var(--success) 12%, var(--surface)); color: var(--success); }
+  .bmi-table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1rem; }
+  .bmi-table th, .bmi-table td { padding: 0.65rem; border: 1px solid var(--border); text-align: center; }
+  .bmi-table th { background: var(--surface-sub); }
+  .sources { font-size: 0.85rem; color: var(--text-3); }
 </style>
 
 <script>
-  import { calcBmi, bmiCategory, standardWeight, bodyFatPercent, targetWeights, weightDiff } from '../../lib/bmi.js';
+  import { calcBmi, bmiCategory, standardWeight, bodyFatPercent, ageTargetBmi, ageTargetWeightRange, weightDiff } from '../../lib/bmi.js';
 
   const $ = (id) => document.getElementById(id);
   const gender = () =>
@@ -144,7 +183,7 @@ const jsonld = {
 
   function shareSummary() {
     return [
-      'BMI・体脂肪率計算器',
+      'BMI計算ツール',
       'BMI：' + $('bmi-value').textContent,
       '判定：' + $('bmi-category').textContent,
       '標準体重：' + $('bmi-standard').textContent,
@@ -164,32 +203,38 @@ const jsonld = {
     box.classList.add('visible');
 
     $('bmi-value').textContent = bmi.toFixed(1);
-    $('bmi-category').textContent = bmiCategory(bmi) ?? '−';
+    const ageValue = $('bmi-age').value;
+    const age = ageValue === '' ? null : Number(ageValue);
+    const isChild = Number.isFinite(age) && age < 18;
+    $('bmi-category').textContent = isChild ? '成人基準の対象外' : (bmiCategory(bmi) ?? '−');
 
     const std = standardWeight($('bmi-height').value);
     $('bmi-standard').textContent = std === null ? '−' : std.toFixed(1) + ' kg';
 
-    const fat = bodyFatPercent(bmi, $('bmi-age').value, gender());
-    $('bmi-bodyfat').textContent = fat === null ? '年齢を入力' : fat.toFixed(1) + ' %';
+    const fat = bodyFatPercent(bmi, ageValue, gender());
+    $('bmi-bodyfat').textContent = isChild ? '成人のみ' : (fat === null ? '年齢を入力' : fat.toFixed(1) + ' %');
 
-    // 目標体重の目安
-    const tw = targetWeights($('bmi-height').value);
+    // 厚生労働省「日本人の食事摂取基準（2025年版）」の年齢別目標
+    const target = ageTargetBmi(ageValue);
+    const range = ageTargetWeightRange($('bmi-height').value, ageValue);
     const diffEl = $('bmi-target-diff');
-    if (tw === null) {
-      $('bmi-target-beauty').textContent = '−';
-      $('bmi-target-standard').textContent = '−';
-      $('bmi-target-range').textContent = '−';
-      diffEl.textContent = '標準体重まであと − kg';
-      diffEl.className = 'target-diff';
-      window.setResultShare?.(shareSummary());
-      return;
-    }
-    $('bmi-target-beauty').textContent = tw.beauty.toFixed(1) + ' kg';
-    $('bmi-target-standard').textContent = tw.standard.toFixed(1) + ' kg';
-    $('bmi-target-range').textContent =
-      tw.healthyMin.toFixed(1) + ' 〜 ' + tw.healthyMax.toFixed(1) + ' kg';
+    $('bmi-target-standard').textContent = std === null ? '−' : std.toFixed(1) + ' kg';
 
-    const diff = weightDiff($('bmi-weight').value, tw.standard);
+    if (target && range) {
+      $('bmi-target-bmi').textContent = target.min.toFixed(1) + ' 〜 ' + target.max.toFixed(1) + '（' + target.label + '）';
+      $('bmi-target-range').textContent = range.min.toFixed(1) + ' 〜 ' + range.max.toFixed(1) + ' kg';
+      $('bmi-age-note').textContent = '厚生労働省「日本人の食事摂取基準（2025年版）」の男女共通目標です。';
+    } else if (isChild) {
+      $('bmi-target-bmi').textContent = '成人基準の対象外';
+      $('bmi-target-range').textContent = '成人基準の対象外';
+      $('bmi-age-note').textContent = '18歳未満は成長段階のため、成人用BMIだけでは適切に判定できません。';
+    } else {
+      $('bmi-target-bmi').textContent = '年齢を入力';
+      $('bmi-target-range').textContent = '年齢を入力';
+      $('bmi-age-note').textContent = '18歳以上は年齢を入力すると、厚生労働省の年齢別目標を表示します。';
+    }
+
+    const diff = weightDiff($('bmi-weight').value, std);
     if (diff === null) {
       diffEl.textContent = '標準体重まであと − kg';
       diffEl.className = 'target-diff';

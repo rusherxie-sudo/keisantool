@@ -19,7 +19,7 @@
 
 ## 健康・身体
 
-- [BMI・体脂肪率計算器](https://keisantool.com/bmi/): BMI・標準体重
+- [BMI計算ツール（女性・男性）](https://keisantool.com/bmi/): BMI・標準体重・年齢別の目標体重
 - [カロリー・基礎代謝計算器](https://keisantool.com/calorie/): TDEE・PFCバランス
 - [排卵日・生理日計算器](https://keisantool.com/seiri/): 生理周期から次回・排卵日を予測
 - [水分摂取量計算器](https://keisantool.com/suisui/): 体重から1日の推奨水分量

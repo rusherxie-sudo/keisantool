@@ -1,5 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { calcBmi, bmiCategory, standardWeight, bodyFatPercent, targetWeight, targetWeights, weightDiff } from '../src/lib/bmi.js';
+import {
+  calcBmi,
+  bmiCategory,
+  standardWeight,
+  bodyFatPercent,
+  targetWeight,
+  targetWeights,
+  weightDiff,
+  ageTargetBmi,
+  ageTargetWeightRange,
+} from '../src/lib/bmi.js';
 
 describe('calcBmi(BMI計算)', () => {
   it('身長170cm・体重65kg → BMI22.5', () => {
@@ -118,6 +128,62 @@ describe('bodyFatPercent(体脂肪率・BMI推定法)', () => {
 
   it('年齢が負数 → null', () => {
     expect(bodyFatPercent(22, -5, 'male')).toBeNull();
+  });
+
+  it('成人向け推定式のため18歳未満 → null', () => {
+    expect(bodyFatPercent(22, 17, 'male')).toBeNull();
+    expect(bodyFatPercent(22, 18, 'male')).toBe(14.3);
+  });
+});
+
+describe('ageTargetBmi(2025年版・年齢別の目標BMI)', () => {
+  it('18〜49歳 → 18.5〜24.9', () => {
+    expect(ageTargetBmi(18)).toEqual({ min: 18.5, max: 24.9, label: '18〜49歳' });
+    expect(ageTargetBmi(49)).toEqual({ min: 18.5, max: 24.9, label: '18〜49歳' });
+  });
+
+  it('50〜64歳 → 20.0〜24.9', () => {
+    expect(ageTargetBmi(50)).toEqual({ min: 20, max: 24.9, label: '50〜64歳' });
+    expect(ageTargetBmi(64)).toEqual({ min: 20, max: 24.9, label: '50〜64歳' });
+  });
+
+  it('65歳以上 → 21.5〜24.9', () => {
+    expect(ageTargetBmi(65)).toEqual({ min: 21.5, max: 24.9, label: '65歳以上' });
+    expect(ageTargetBmi(75)).toEqual({ min: 21.5, max: 24.9, label: '65歳以上' });
+  });
+
+  it('18歳未満・空・不正値 → null', () => {
+    expect(ageTargetBmi(17)).toBeNull();
+    expect(ageTargetBmi('')).toBeNull();
+    expect(ageTargetBmi(NaN)).toBeNull();
+    expect(ageTargetBmi(-1)).toBeNull();
+  });
+});
+
+describe('ageTargetWeightRange(年齢別の目標体重範囲)', () => {
+  it('身長170cm・55歳 → 57.8〜72.0kg', () => {
+    expect(ageTargetWeightRange(170, 55)).toEqual({
+      min: 57.8,
+      max: 72,
+      bmiMin: 20,
+      bmiMax: 24.9,
+      label: '50〜64歳',
+    });
+  });
+
+  it('身長170cm・70歳 → 62.1〜72.0kg', () => {
+    expect(ageTargetWeightRange(170, 70)).toEqual({
+      min: 62.1,
+      max: 72,
+      bmiMin: 21.5,
+      bmiMax: 24.9,
+      label: '65歳以上',
+    });
+  });
+
+  it('身長不正・18歳未満 → null', () => {
+    expect(ageTargetWeightRange(0, 55)).toBeNull();
+    expect(ageTargetWeightRange(170, 17)).toBeNull();
   });
 });
 

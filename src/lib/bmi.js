@@ -64,6 +64,32 @@ export function targetWeights(heightCm) {
   };
 }
 
+// 「日本人の食事摂取基準（2025年版）」の年齢別・目標BMI範囲（男女共通）
+// 18歳未満は成人向け基準の対象外なので null を返す。
+export function ageTargetBmi(age) {
+  const a = toNum(age);
+  if (!Number.isFinite(a) || a < 18) return null;
+  if (a < 50) return { min: 18.5, max: 24.9, label: '18〜49歳' };
+  if (a < 65) return { min: 20, max: 24.9, label: '50〜64歳' };
+  return { min: 21.5, max: 24.9, label: '65歳以上' };
+}
+
+// 年齢別の目標BMIから、その身長に対応する目標体重範囲を求める。
+export function ageTargetWeightRange(heightCm, age) {
+  const target = ageTargetBmi(age);
+  if (target === null) return null;
+  const min = targetWeight(heightCm, target.min);
+  const max = targetWeight(heightCm, target.max);
+  if (min === null || max === null) return null;
+  return {
+    min,
+    max,
+    bmiMin: target.min,
+    bmiMax: target.max,
+    label: target.label,
+  };
+}
+
 // 現体重と目標体重の差（正=減量が必要 / 負=増量が必要）
 export function weightDiff(currentKg, targetKg) {
   const c = toNum(currentKg);
@@ -79,7 +105,7 @@ export function bodyFatPercent(bmi, age, gender) {
   const b = toNum(bmi);
   const a = toNum(age);
   if (!Number.isFinite(b)) return null;
-  if (!Number.isFinite(a) || a <= 0) return null;
+  if (!Number.isFinite(a) || a < 18) return null;
   const sex = gender === 'male' ? 1 : 0;
   return round1(1.2 * b + 0.23 * a - 5.4 - 10.8 * sex);
 }
