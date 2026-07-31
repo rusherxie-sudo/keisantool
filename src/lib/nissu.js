@@ -88,6 +88,63 @@ export function shiftDateBy(base, amount, unit = 'day') {
   return toISO(utcNoon(targetYear, targetMonth, Math.min(originalDay, lastDay)));
 }
 
+// 二つの日付の差を、実際の暦に沿った「年・月・日」に分解する。
+// 月末は shiftDateBy と同じ規則で丸め、単純な 365日／30日換算は行わない。
+export function calendarDuration(from, to) {
+  const first = toDate(from);
+  const second = toDate(to);
+  if (!first || !second) return null;
+
+  const start = first.getTime() <= second.getTime() ? first : second;
+  const end = first.getTime() <= second.getTime() ? second : first;
+  const startIso = toISO(start);
+  let totalMonths =
+    (end.getUTCFullYear() - start.getUTCFullYear()) * 12
+    + end.getUTCMonth() - start.getUTCMonth();
+  let anchorIso = shiftDateBy(startIso, totalMonths, 'month');
+  let anchor = toDate(anchorIso);
+
+  if (anchor.getTime() > end.getTime()) {
+    totalMonths -= 1;
+    anchorIso = shiftDateBy(startIso, totalMonths, 'month');
+    anchor = toDate(anchorIso);
+  }
+
+  return {
+    years: Math.floor(totalMonths / 12),
+    months: totalMonths % 12,
+    days: Math.round((end.getTime() - anchor.getTime()) / DAY_MS),
+  };
+}
+
+// 基準日の翌日（負数なら前日）から数え、土日と日本の国民の祝日を除外する。
+export function shiftBusinessDate(base, amount) {
+  const start = toDate(base);
+  const value = Number(amount);
+  if (!start || !Number.isInteger(value) || Math.abs(value) > 100000) return null;
+  if (value === 0) return toISO(start);
+
+  const holidayCache = new Map();
+  const isBusinessDay = (date) => {
+    const weekday = date.getUTCDay();
+    if (weekday === 0 || weekday === 6) return false;
+    const year = date.getUTCFullYear();
+    if (!holidayCache.has(year)) {
+      holidayCache.set(year, new Set(nationalHolidays(year).map((holiday) => holiday.date)));
+    }
+    return !holidayCache.get(year).has(toISO(date));
+  };
+
+  const direction = Math.sign(value);
+  let remaining = Math.abs(value);
+  let current = start;
+  while (remaining > 0) {
+    current = addUtcDays(current, direction);
+    if (isBusinessDay(current)) remaining -= 1;
+  }
+  return toISO(current);
+}
+
 // 選択した期間を暦日・平日・土日・平日の祝日・営業日に分解する。
 // includeBoth=false の場合は、時系列で先頭の日を除き、末日を含める。
 export function dateRangeBreakdown(from, to, { includeBoth = false } = {}) {

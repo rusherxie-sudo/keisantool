@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import {
+  calendarDuration,
   dateRangeBreakdown,
   daysBetween,
+  shiftBusinessDate,
   shiftDate,
   shiftDateBy,
   weekdayJa,
@@ -85,6 +87,51 @@ describe('shiftDateBy — 日・週・月・年単位の日付計算', () => {
   it('負数と不正な単位を扱う', () => {
     expect(shiftDateBy('2026-01-01', -1, 'month')).toBe('2025-12-01');
     expect(shiftDateBy('2026-01-01', 1, 'hour')).toBeNull();
+  });
+});
+
+describe('calendarDuration — 年・月・日で表す期間', () => {
+  it('複数年の期間を年・月・日に分解する', () => {
+    expect(calendarDuration('2020-01-15', '2026-08-01')).toEqual({ years: 6, months: 6, days: 17 });
+  });
+
+  it('月末と閏日を暦どおりに扱う', () => {
+    expect(calendarDuration('2024-01-31', '2024-03-01')).toEqual({ years: 0, months: 1, days: 1 });
+    expect(calendarDuration('2024-02-29', '2025-02-28')).toEqual({ years: 1, months: 0, days: 0 });
+  });
+
+  it('逆順でも同じ期間を返し、同日はすべて0になる', () => {
+    expect(calendarDuration('2026-08-01', '2020-01-15')).toEqual({ years: 6, months: 6, days: 17 });
+    expect(calendarDuration('2026-08-01', '2026-08-01')).toEqual({ years: 0, months: 0, days: 0 });
+  });
+
+  it('無効な日付は null', () => {
+    expect(calendarDuration('2026-02-30', '2026-03-01')).toBeNull();
+  });
+});
+
+describe('shiftBusinessDate — 土日祝を除くN営業日後・前', () => {
+  it('金曜日の1営業日後は月曜日', () => {
+    expect(shiftBusinessDate('2026-08-07', 1)).toBe('2026-08-10');
+  });
+
+  it('祝日を除外する（2026年の山の日）', () => {
+    expect(shiftBusinessDate('2026-08-10', 1)).toBe('2026-08-12');
+  });
+
+  it('負数で営業日前を計算し、基準日は数えない', () => {
+    expect(shiftBusinessDate('2026-08-12', -1)).toBe('2026-08-10');
+    expect(shiftBusinessDate('2026-08-08', 0)).toBe('2026-08-08');
+  });
+
+  it('年末年始でも土日祝を除外する', () => {
+    expect(shiftBusinessDate('2025-12-31', 1)).toBe('2026-01-02');
+  });
+
+  it('無効日付・非整数・過大な日数は null', () => {
+    expect(shiftBusinessDate('abc', 1)).toBeNull();
+    expect(shiftBusinessDate('2026-08-01', 1.5)).toBeNull();
+    expect(shiftBusinessDate('2026-08-01', 100001)).toBeNull();
   });
 });
 
