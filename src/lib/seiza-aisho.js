@@ -133,6 +133,48 @@ const ASPECTS = {
   },
 };
 
+// アスペクト別の関係ガイド。点数だけで終わらず、検索者が知りたい
+// 「恋愛・友達・仕事」でどう付き合うかを同じ判定根拠から説明する。
+const RELATIONSHIPS = {
+  0: {
+    love: '{name1}同士の恋愛は、惹かれる速さも愛情表現も似ています。気持ちを察しやすい一方、同じ弱点まで重なるため、意地を張ったときは先に言葉で歩み寄ることが長続きの鍵です。',
+    friendship: '{name1}同士の友情は、好きなことや行動のテンポが合いやすい関係です。居心地のよさに甘えて連絡や感謝を省かず、ときどき違う仲間や体験を取り入れると刺激が続きます。',
+    work: '{name1}同士の仕事は、判断基準を共有しやすく意思決定が速い組み合わせです。ただし得意分野と見落としも重なるため、役割を明文化し、第三者の視点で確認するとうまく進みます。',
+  },
+  1: {
+    love: '{name1}と{name2}の恋愛は、近いようで大切にすることが異なる関係です。結論を急がず、相手の愛情表現を自分の基準で採点しないことが、すれ違いを魅力に変えるコツです。',
+    friendship: '{name1}と{name2}の友情は、生活のテンポや興味の向きに違いが出やすい組み合わせです。短時間でも共通の楽しみを作り、説明を一段丁寧にすると互いの新鮮さを保てます。',
+    work: '{name1}と{name2}の仕事は、同じ課題を別の角度から見る関係です。暗黙の了解に頼らず、期限・担当・完成条件を言葉にすれば、異なる視点を実務上の強みに変えられます。',
+  },
+  2: {
+    love: '{name1}と{name2}の恋愛は、違う個性が無理なくかみ合う関係です。自然な会話だけで満足せず、どちらかが具体的に誘い、気持ちを行動で示すと関係が一段深まります。',
+    friendship: '{name1}と{name2}の友情は、得意分野を持ち寄って楽しめる組み合わせです。一緒に新しい体験へ踏み出しつつ、相手の自由な時間も尊重すると気楽な信頼が長続きします。',
+    work: '{name1}と{name2}の仕事は、発想と実行を自然に補い合いやすい関係です。互いの強みを先に決めて任せ、途中で短く共有する形にすると、心地よさを確かな成果につなげられます。',
+  },
+  3: {
+    love: '{name1}と{name2}の恋愛は、強く意識し合う一方で主導権がぶつかりやすい関係です。正しさを競うより、譲れない点と任せられる点を分けると、刺激を成長する力に変えられます。',
+    friendship: '{name1}と{name2}の友情は、意見の違いがはっきり出やすい組み合わせです。勝敗を決める議論ではなく、別々の得意分野を持つ仲間として接すると、頼れる良きライバルになります。',
+    work: '{name1}と{name2}の仕事は、緊張感が高いぶん改善案が生まれやすい関係です。最終決定者と担当範囲を先に決め、相手への批判ではなく目的への提案として話すことが重要です。',
+  },
+  4: {
+    love: '{name1}と{name2}の恋愛は、価値観と感情のテンポが自然に重なりやすい関係です。分かり合える安心感を当たり前にせず、感謝や好意を言葉にすると、穏やかな親密さが長続きします。',
+    friendship: '{name1}と{name2}の友情は、無理に説明しなくても呼吸が合いやすい組み合わせです。似た世界だけで完結しないよう、新しい場所や仲間を一緒に取り入れると関係が広がります。',
+    work: '{name1}と{name2}の仕事は、判断のテンポが合い、少ない説明でも協力しやすい関係です。慣れによる確認不足を防ぐため節目だけ相互確認すれば、強い連携を安定して発揮できます。',
+  },
+  5: {
+    love: '{name1}と{name2}の恋愛は、最初は相手の考え方をつかみにくい関係です。分からないことを決めつけず質問し、共通の習慣を一つずつ作ると、違いが飽きない魅力へ変わります。',
+    friendship: '{name1}と{name2}の友情は、接点を意識して作るほど育つ組み合わせです。共通の趣味や目的を持ち、頻度よりも約束を守ることを大切にすると独特の信頼が生まれます。',
+    work: '{name1}と{name2}の仕事は、方法や優先順位が食い違いやすい関係です。完成形の見本と判断基準を共有し、途中で小さく確認することで、互いにない視点を成果へつなげられます。',
+  },
+  6: {
+    love: '{name1}と{name2}の恋愛は、自分にない魅力へ強く惹かれやすい関係です。違いを直そうとせず役割として受け入れ、二人の共通目標を持つと、補い合う強いパートナーになります。',
+    friendship: '{name1}と{name2}の友情は、正反対の視点から世界を広げ合える組み合わせです。距離感と価値観の違いを面白がり、相手の得意分野を頼ることで深い尊敬へ育ちます。',
+    work: '{name1}と{name2}の仕事は、互いの不足を補える一方、進め方で対立しやすい関係です。共通のゴールを先に合意し、担当を分けて成果を持ち寄ると大きな力を発揮できます。',
+  },
+};
+
+const RANK_LABELS = { '◎': 'とても良い相性', '○': '良い相性', '△': '工夫しだいの相性', '▲': '刺激し合う相性' };
+
 const INDEX = new Map(SIGNS.map((s, i) => [s.slug, i]));
 
 // slug から星座データを引く。無効なら null。
@@ -151,7 +193,11 @@ export function seizaAisho(slug1, slug2) {
   const diff = Math.abs(i1 - i2);
   const distance = Math.min(diff, 12 - diff);
   const a = ASPECTS[distance];
-  const fill = (t) => t.replaceAll('{el1}', s1.element).replaceAll('{el2}', s2.element);
+  const fill = (t) => t
+    .replaceAll('{el1}', s1.element)
+    .replaceAll('{el2}', s2.element)
+    .replaceAll('{name1}', s1.name)
+    .replaceAll('{name2}', s2.name);
   return {
     score: a.score,
     rank: a.rank,
@@ -160,6 +206,27 @@ export function seizaAisho(slug1, slug2) {
     element2: s2.element,
     comment: fill(a.comment),
     advice: fill(a.advice),
+    relationships: {
+      love: fill(RELATIONSHIPS[distance].love),
+      friendship: fill(RELATIONSHIPS[distance].friendship),
+      work: fill(RELATIONSHIPS[distance].work),
+    },
+  };
+}
+
+// 検索結果と見出しで結論を先に返すためのページ文言。
+export function pairPageCopy(slug1, slug2) {
+  const s1 = signBySlug(slug1);
+  const s2 = signBySlug(slug2);
+  const result = seizaAisho(slug1, slug2);
+  if (!s1 || !s2 || !result) return null;
+
+  const pairLabel = slug1 === slug2 ? `${s1.name}同士` : `${s1.name}と${s2.name}`;
+  return {
+    title: `${pairLabel}の相性は？恋愛・友達・仕事を${result.score}点で診断 | 計算ツール`,
+    h1: `${pairLabel}の相性は？`,
+    description: `${pairLabel}の相性は${result.score}点・${RANK_LABELS[result.rank]}。西洋占星術の${result.aspect.name}から、恋愛・友達・仕事での関係、長所、注意点、うまく付き合うコツを具体的に解説します。`,
+    intro: `${pairLabel}の相性を、西洋占星術のエレメントとアスペクトで診断しました。総合点に加えて、恋愛・友達・仕事での付き合い方も確認できます。`,
   };
 }
 

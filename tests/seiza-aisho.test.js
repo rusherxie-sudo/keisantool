@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SIGNS, signBySlug, seizaAisho, allPairs } from '../src/lib/seiza-aisho.js';
+import { SIGNS, signBySlug, seizaAisho, allPairs, pairPageCopy } from '../src/lib/seiza-aisho.js';
 
 // ── 検証の根拠（独立アンカー）─────────────────────────────
 // 判定は西洋占星術で通行の「エレメント×アスペクト」方式：
@@ -136,6 +136,42 @@ describe('seizaAisho（全144組の整合性）', () => {
         expect(r.advice.length, `${a}×${b}`).toBeGreaterThan(10);
       }
     }
+  });
+
+  it('全組み合わせに恋愛・友達・仕事の具体的な関係ガイドがある', () => {
+    for (const a of EXPECTED_ORDER) {
+      for (const b of EXPECTED_ORDER) {
+        const r = seizaAisho(a, b);
+        expect(Object.keys(r.relationships), `${a}×${b}`).toEqual(['love', 'friendship', 'work']);
+        for (const text of Object.values(r.relationships)) {
+          expect(text.length, `${a}×${b}`).toBeGreaterThan(35);
+          expect(text, `${a}×${b}`).not.toContain('{');
+        }
+      }
+    }
+  });
+});
+
+describe('pairPageCopy（検索意図に合わせた組み合わせページ文言）', () => {
+  it('同じ星座は「同士」を使い、恋愛・友達・仕事と点数をタイトルで回答する', () => {
+    const copy = pairPageCopy('ohitsuji', 'ohitsuji');
+    expect(copy.title).toBe('牡羊座同士の相性は？恋愛・友達・仕事を80点で診断 | 計算ツール');
+    expect(copy.h1).toBe('牡羊座同士の相性は？');
+    expect(copy.description).toContain('牡羊座同士の相性は80点');
+    expect(copy.description).toContain('恋愛・友達・仕事');
+  });
+
+  it('異なる星座は両方の名前を保ち、検索結果で結論まで示す', () => {
+    const copy = pairPageCopy('shishi', 'ite');
+    expect(copy.title).toBe('獅子座と射手座の相性は？恋愛・友達・仕事を92点で診断 | 計算ツール');
+    expect(copy.h1).toBe('獅子座と射手座の相性は？');
+    expect(copy.description).toContain('92点・とても良い相性');
+    expect(copy.description).toContain('トライン（120度）');
+  });
+
+  it('無効な slug は null', () => {
+    expect(pairPageCopy('nope', 'ohitsuji')).toBeNull();
+    expect(pairPageCopy('ohitsuji', '')).toBeNull();
   });
 });
 

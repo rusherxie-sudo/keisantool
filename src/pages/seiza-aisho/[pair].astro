@@ -2,7 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
-import { SIGNS, ELEMENTS, signBySlug, seizaAisho, allPairs } from '../../lib/seiza-aisho.js';
+import { SIGNS, ELEMENTS, signBySlug, seizaAisho, allPairs, pairPageCopy } from '../../lib/seiza-aisho.js';
 
 export function getStaticPaths() {
   return allPairs().map((p) => ({
@@ -16,19 +16,18 @@ const s1 = signBySlug(slug1);
 const s2 = signBySlug(slug2);
 const r = seizaAisho(slug1, slug2);
 const same = slug1 === slug2;
+const copy = pairPageCopy(slug1, slug2);
+const pairLabel = same ? `${s1.name}同士` : `${s1.name}と${s2.name}`;
 
 const pageSlug = `seiza-aisho/${slug1}-${slug2}`;
 const RANK_LABELS = { '◎': 'とても良い相性', '○': '良い相性', '△': '工夫しだいの相性', '▲': '刺激し合う相性' };
-const title = `${s1.name}と${s2.name}の相性 - 相性度${r.score}点（${RANK_LABELS[r.rank]}）| 計算ツール`;
-const description =
-  `${s1.name}（${s1.kana}）と${s2.name}（${s2.kana}）の相性は${r.score}点・${RANK_LABELS[r.rank]}。` +
-  `西洋占星術のエレメントとアスペクト（${r.aspect.name}）で計算した相性の特徴と、うまく付き合うコツを解説します。娯楽としてお楽しみください。`;
+const { title, description } = copy;
 
 const base = 'https://keisantool.com';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
-  name: `${s1.name}と${s2.name}の相性`,
+  name: copy.h1,
   description,
   url: `${base}/${pageSlug}/`,
   isPartOf: { '@type': 'WebApplication', name: '星座相性診断', url: `${base}/seiza-aisho/` },
@@ -55,10 +54,8 @@ const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
     <div class="crumb">
       <a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ <a href="/seiza-aisho/">星座相性</a> ／ {s1.name}×{s2.name}
     </div>
-    <h1>{s1.name}×{s2.name}の相性</h1>
-    <p>
-      あなたが{s1.name}（{s1.kana}）、相手が{s2.name}（{s2.kana}）の相性を、西洋占星術のエレメントとアスペクトで計算しました。
-    </p>
+    <h1>{copy.h1}</h1>
+    <p>{copy.intro}</p>
   </div>
 
   <div class="calc-card">
@@ -127,6 +124,23 @@ const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
       </div>
     </div>
 
+    <h2 class="sp-h2">{pairLabel}の恋愛・友達・仕事の相性</h2>
+    <p>総合点だけでは分かりにくい、関係別の長所と注意点をまとめました。</p>
+    <div class="sp-relationships">
+      <article class="sp-relationship">
+        <h3><span aria-hidden="true">♡</span> 恋愛・結婚</h3>
+        <p>{r.relationships.love}</p>
+      </article>
+      <article class="sp-relationship">
+        <h3><span aria-hidden="true">♧</span> 友達・友情</h3>
+        <p>{r.relationships.friendship}</p>
+      </article>
+      <article class="sp-relationship">
+        <h3><span aria-hidden="true">◇</span> 仕事・職場</h3>
+        <p>{r.relationships.work}</p>
+      </article>
+    </div>
+
     <h2 class="sp-h2">この相性度の根拠（計算方法）</h2>
     <p>
       本ツールの相性は、黄道十二宮で{s1.name}から{s2.name}が<strong>{r.aspect.distance}個離れた位置</strong>にあること（アスペクト：{r.aspect.name}）と、
@@ -153,6 +167,10 @@ const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
       a: same
         ? `${s1.name}同士の組み合わせのため、順番を入れ替えても同じ相性になります。`
         : `変わりません。エレメントとアスペクトの関係は対称なので、あなたが${s1.name}でも${s2.name}でも相性度は同じ${r.score}点です。`,
+    },
+    {
+      q: `${pairLabel}の恋愛相性を良くするコツは？`,
+      a: r.relationships.love,
     },
     {
       q: '星座相性の結果はどこまで信用できますか？',
@@ -206,6 +224,12 @@ const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
   .sp-trait { font-size: .72rem; font-weight: var(--fw-bold); color: color-mix(in srgb, var(--cat-color) 62%, #000); background: var(--cat-tint); border-radius: var(--r-pill); padding: 3px 10px; }
   .sp-profile p { font-size: .84rem; color: var(--text-3); line-height: 1.8; margin: 0; }
   .sp-h2 { margin-top: 24px; }
+  .sp-relationships { display: grid; gap: 10px; margin-top: 14px; }
+  .sp-relationship { border: 1.5px solid var(--border-2); border-radius: var(--r-md); background: var(--surface); padding: 14px 16px; }
+  .sp-relationship h3 { font-size: .9rem; color: var(--text); margin: 0 0 7px; }
+  .sp-relationship h3 span { color: var(--cat-color); margin-right: 4px; }
+  .sp-relationship p { font-size: .84rem; color: var(--text-3); line-height: 1.8; margin: 0; }
+  @media (min-width: 760px) { .sp-relationships { grid-template-columns: repeat(3, 1fr); } }
 
   .sp-links { max-width: 880px; width: 100%; margin: 32px auto 0; }
   .sp-links h2 { font-size: 1.05rem; font-weight: var(--fw-black); color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
