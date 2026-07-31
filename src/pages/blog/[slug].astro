@@ -87,6 +87,14 @@ const breadcrumb = {
 };
 
 const themeStyle = `--cat-color:${themeColor.accent};--cat-tint:${themeColor.tint}`;
+
+const disclaimerText = data.category === 'health'
+  ? '当サイトの計算結果と健康情報は参考値であり、診断・治療を目的とするものではありません。体調に不安がある場合や健診で指摘を受けた場合は、医師・管理栄養士などの専門職にご相談ください。'
+  : data.category === 'pet'
+    ? '当サイトの情報は一般的な目安であり、個々の動物の診断・治療を目的とするものではありません。体調や飼育について不安がある場合は、獣医師にご相談ください。'
+    : ['kakutei-shinkoku', 'nematsu-chosei', 'shakai-hoken', 'zeikin-kiso'].includes(data.category)
+      ? '当サイトの情報は参考値であり、正確性を保証するものではありません。実際の手続きや判断は、税理士・社会保険労務士などの専門家、または役所の公式情報をご確認ください。'
+      : '当サイトの情報と計算結果はあくまで参考値です。実際の判断にあたっては、目的に応じた公式情報や専門家の案内をご確認ください。';
 ---
 <ToolLayout title={`${data.title} | 計算ツール`} description={data.description} slug={pageSlug} current={data.category} jsonld={jsonld} breadcrumb={breadcrumb}>
   <article class="blog-article" style={themeStyle}>
@@ -130,7 +138,7 @@ const themeStyle = `--cat-color:${themeColor.accent};--cat-tint:${themeColor.tin
       </div>
 
       <div class="blog-article__disclaimer">
-        <strong>※</strong> 当サイトの情報は参考値であり、正確性を保証するものではありません。実際の手続きや判断は、税理士・社会保険労務士などの専門家、または役所の公式情報をご確認ください。
+        <strong>※</strong> {disclaimerText}
       </div>
 
       {data.sources.length > 0 && (
