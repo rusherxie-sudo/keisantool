@@ -6,15 +6,15 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'shoubyou';
-const title = '傷病手当金計算器 - 健康保険の傷病手当金 | 計算ツール';
+const title = '傷病手当金計算シミュレーション｜支給日額・期間・総額はいくら？';
 const description =
-  '健康保険の傷病手当金を計算。給与の約60%を支給（最長1年6ヶ月）。月収と療養期間から日額・月額・総額を一括で計算できる無料ツールです。';
+  '傷病手当金の支給日額・30日分の目安・支給総額を無料計算。直近12か月の平均標準報酬月額、連続休業期間、休業中の給与を入力すると、待期3日、2/3の法定計算、通算1年6か月を反映してシミュレーションします。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: '傷病手当金計算器',
+  name: '傷病手当金計算シミュレーション',
   description,
-  applicationCategory: 'UtilityApplication',
+  applicationCategory: 'FinanceApplication',
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
@@ -22,70 +22,141 @@ const jsonld = {
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 傷病手当金</div>
-    <h1>傷病手当金計算器</h1>
-    <p>健康保険の傷病手当金を計算します。給与の約60%を支給（最長1年6ヶ月）。月収と療養期間から日額・月額・総額を一括で計算できます。</p>
+    <h1>傷病手当金計算シミュレーション</h1>
+    <p>平均標準報酬月額と連続休業期間から、1日あたりの金額・30日分の目安・支給総額を計算します。</p>
+    <div class="rule-chips" aria-label="計算に反映する制度">
+      <span>標準報酬日額の2/3</span><span>連続3日の待期</span><span>通算1年6か月</span>
+    </div>
   </div>
 
   <div class="calc-card">
-    <div class="form-group">
-      <label for="monthly-salary">月間給与（円）</label>
-      <input type="number" id="monthly-salary" inputmode="numeric" placeholder="例：300000" />
-    </div>
+    <div class="calc-panel active">
+      <div class="form-group">
+        <label for="average-base">直近12か月の平均標準報酬月額（円）</label>
+        <input type="number" id="average-base" inputmode="numeric" min="0" placeholder="例：200000" />
+        <small class="field-note">給与月額ではなく、健康保険で決定された各月の「標準報酬月額」の平均を入力します。</small>
+      </div>
 
-    <div class="form-group">
-      <label for="start-date">療養開始日</label>
-      <input type="date" id="start-date" />
-    </div>
+      <div class="form-group">
+        <label for="insured-months">支給開始日前の被保険者期間</label>
+        <select id="insured-months">
+          <option value="12">12か月以上</option>
+          <option value="6">12か月未満</option>
+        </select>
+        <small class="field-note">12か月未満は、入力した平均額と32万円の低い方を計算に使います（2025年4月1日以降の支給開始）。</small>
+      </div>
 
-    <div class="form-group">
-      <label for="end-date">療養終了日</label>
-      <input type="date" id="end-date" />
-    </div>
+      <div class="date-grid">
+        <div class="form-group">
+          <label for="start-date">連続して休み始めた日</label>
+          <input type="date" id="start-date" />
+        </div>
+        <div class="form-group">
+          <label for="end-date">今回の休業終了日</label>
+          <input type="date" id="end-date" />
+        </div>
+      </div>
 
-    <div class="result-box" id="result-box">
-      <div class="result-label">傷病手当金（総額）</div>
-      <div class="result-main" id="result-total">¥0</div>
-      <div class="result-rows">
-        <div class="result-row"><span class="label">月間給与</span><span class="value" id="row-salary">¥0</span></div>
-        <div class="result-row"><span class="label">標準報酬月額</span><span class="value" id="row-base">¥0</span></div>
-        <div class="result-row"><span class="label">日額（60%）</span><span class="value" id="row-daily">¥0</span></div>
-        <div class="result-row"><span class="label">月額</span><span class="value" id="row-monthly">¥0</span></div>
-        <div class="result-row"><span class="label">給付日数</span><span class="value" id="row-days">0日</span></div>
+      <details class="optional-box">
+        <summary>休業中に給与・手当が支払われる場合</summary>
+        <div class="form-group optional-field">
+          <label for="paid-daily">1日あたりに支払われる給与等（円）</label>
+          <input type="number" id="paid-daily" inputmode="numeric" min="0" placeholder="例：2000（なければ空欄）" />
+          <small class="field-note">傷病手当金の日額より少ない給与等がある場合は、その差額を表示します。</small>
+        </div>
+      </details>
+
+      <div class="assumption-note">このシミュレーションは、開始日から終了日まで連続して労務不能・休業した場合の概算です。</div>
+
+      <div class="result-box" id="result-box" aria-live="polite">
+        <div class="result-label">傷病手当金の支給総額（概算）</div>
+        <div class="result-main" id="result-total">¥0</div>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">1日あたりの法定額</span><span class="value" id="row-daily">¥0</span></div>
+          <div class="result-row"><span class="label">給与調整後の日額</span><span class="value green" id="row-adjusted">¥0</span></div>
+          <div class="result-row"><span class="label">30日分の目安</span><span class="value" id="row-thirty">¥0</span></div>
+          <div class="result-row"><span class="label">今回の支給対象日数</span><span class="value" id="row-days">0日</span></div>
+        </div>
+
+        <div class="detail-box">
+          <h2>計算の内訳</h2>
+          <div class="result-row"><span class="label">計算に使う平均標準報酬月額</span><span class="value" id="row-base">¥0</span></div>
+          <div class="result-row"><span class="label">標準報酬日額（÷30）</span><span class="value" id="row-standard-daily">¥0</span></div>
+          <div class="result-row"><span class="label">待期期間（3日）</span><span class="value" id="row-waiting">―</span></div>
+          <div class="result-row"><span class="label">今回の支給対象期間</span><span class="value" id="row-period">―</span></div>
+          <div class="result-row"><span class="label">連続支給時の上限日</span><span class="value" id="row-maximum">―</span></div>
+        </div>
+        <p class="result-note" id="result-note"></p>
       </div>
     </div>
   </div>
 
   <ResultShare />
-
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>使い方</h2>
-    <p>月間給与と療養期間（開始日と終了日）を入力するだけで、傷病手当金が自動計算されます。給付日数は対象期間から待期期間3日を差し引きます。</p>
-    <h3>傷病手当金の計算方法</h3>
+    <h2>傷病手当金はいくら？計算式</h2>
+    <p>協会けんぽの傷病手当金は、原則として次の式で1日あたりの金額を計算します。</p>
+    <div class="formula-box">
+      <strong>1日あたりの支給額 ＝ 支給開始日前12か月の平均標準報酬月額 ÷ 30 × 2/3</strong>
+      <span>平均標準報酬月額÷30は10円未満四捨五入、その後の2/3は1円未満四捨五入です。</span>
+    </div>
+    <p>
+      例えば平均標準報酬月額が17万円なら、170,000円÷30＝5,670円、5,670円×2/3＝<strong>1日3,780円</strong>です。30日すべてが支給対象なら113,400円が目安になります。
+    </p>
+
+    <h2>傷病手当金の4つの支給条件</h2>
+    <ol>
+      <li><strong>業務外の病気やケガ</strong>で療養していること。業務上・通勤途中は労災保険の対象です。</li>
+      <li>医師の意見や仕事内容を踏まえ、<strong>仕事に就けない状態</strong>と判断されること。</li>
+      <li>連続する3日間の待期を含め、<strong>4日以上仕事を休んでいる</strong>こと。</li>
+      <li>休業期間に<strong>十分な給与が支払われていない</strong>こと。日額より少ない給与等がある場合は差額支給です。</li>
+    </ol>
+
+    <h2>待期3日と支給期間「通算1年6か月」</h2>
+    <p>
+      最初の連続3日間は待期で、4日目以降の労務不能日が支給対象です。待期には有給休暇、土日、祝日などの公休日も含められますが、3日間は連続している必要があります。
+    </p>
+    <p>
+      2022年1月1日から、同一の病気やケガについて支給期間は<strong>支給開始日から通算して1年6か月</strong>になりました。途中で復職するなど無支給期間がある場合、その日数は残りの支給期間を消費しません。本ツールの上限日は、入力期間がすべて連続支給された場合の日付です。
+    </p>
+
+    <h2>平均標準報酬月額とは</h2>
+    <p>
+      標準報酬月額は、基本給だけでなく各種手当などを含む報酬を等級に当てはめ、健康保険料などの計算に使う金額です。正確な値は勤務先の担当部署、標準報酬月額決定通知書、加入する健康保険で確認してください。
+    </p>
+    <p>
+      支給開始日前の被保険者期間が12か月未満の場合は、本人の継続した各月の平均額と、協会けんぽ全被保険者の平均標準報酬月額を比べて低い方を使います。2025年4月1日以降に支給開始する場合、比較額は32万円です。
+    </p>
+
+    <h2>給与・有給休暇・税金の扱い</h2>
     <ul>
-      <li>日額 = 標準報酬月額 ÷ 30 × 60%</li>
-      <li>給付日数 = 療養期間 - 待期期間3日</li>
-      <li>総額 = 日額 × 給付日数</li>
+      <li>有給休暇や公休日は待期3日の成立に含められます。</li>
+      <li>支給対象日に傷病手当金以上の給与が支払われる場合、傷病手当金は支給されません。</li>
+      <li>給与等が傷病手当金より少なければ差額が支給されます。</li>
+      <li>健康保険から受け取る傷病手当金は<strong>所得税の非課税所得</strong>です。</li>
     </ul>
-    <h3>支給条件</h3>
-    <ul>
-      <li>健康保険の被保険者であること</li>
-      <li>業務外の病気やケガで療養が必要なこと</li>
-      <li>療養のために働けない期間があること</li>
-      <li>最長支給期間：1年6ヶ月（546日）</li>
+
+    <h2>公式資料・申請書</h2>
+    <ul class="source-list">
+      <li><a href="https://www.kyoukaikenpo.or.jp/benefit/injury_and_sickness_allowance/index.html" target="_blank" rel="noopener noreferrer">全国健康保険協会「傷病手当金」</a>（条件・金額・申請書）</li>
+      <li><a href="https://www.kyoukaikenpo.or.jp/faq/benefit/002/index.html" target="_blank" rel="noopener noreferrer">協会けんぽ「病気やケガで会社を休んだとき」</a></li>
+      <li><a href="https://www.mhlw.go.jp/content/12400000/000857062.pdf" target="_blank" rel="noopener noreferrer">厚生労働省「傷病手当金の支給期間が通算化されます」</a></li>
+      <li><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1400_qa.htm" target="_blank" rel="noopener noreferrer">国税庁「傷病手当金の課税関係」</a></li>
     </ul>
-    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の支給額は健康保険組合が決定します。請求は勤務先の担当部署にお問い合わせください。</div>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。労務不能、給与との調整、過去の支給履歴、加入期間などにより実際の支給額・期間は異なります。勤務先または加入する健康保険にご確認ください。</div>
   </section>
 
   <RelatedTools current={slug} />
-
   <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
-    { q: '傷病手当金とは何ですか？', a: '傷病手当金は、健康保険の被保険者が業務外の病気やケガで療養するため働けない期間に支給される給付金です。給与の約60%が支給されます。' },
-    { q: '待期期間とは何ですか？', a: '待期期間は、傷病手当金の支給が開始されるまでの期間で、3日間です。療養期間が3日未満の場合は支給されません。' },
-    { q: '最長支給期間はどれくらいですか？', a: '傷病手当金の最長支給期間は1年6ヶ月（546日）です。ただし、再発や慢性の場合は延長される場合があります。' },
+    { q: '傷病手当金はいくらもらえますか？', a: '原則は、支給開始日前12か月の平均標準報酬月額÷30×2/3です。例えば平均標準報酬月額17万円なら1日3,780円です。' },
+    { q: '待期3日には土日や有給休暇も含まれますか？', a: 'はい。待期には有給休暇、土日・祝日などの公休日も含められます。ただし3日間は連続して休んでいる必要があります。' },
+    { q: '傷病手当金はいつから、いつまで支給されますか？', a: '連続3日の待期後、4日目以降の労務不能日が対象です。同じ病気やケガについて、支給開始日から通算1年6か月まで支給されます。' },
+    { q: '休業中に給与が支払われる場合はどうなりますか？', a: '給与等が傷病手当金の日額以上なら支給されません。日額より少ない場合は、原則としてその差額が支給されます。' },
+    { q: '退職後も傷病手当金を受け取れますか？', a: '資格喪失前日までの被保険者期間が継続1年以上あり、退職時点で受給中または受給要件を満たすなど、一定の条件で継続給付を受けられます。加入先に確認してください。' },
+    { q: '傷病手当金に所得税はかかりますか？', a: '健康保険から支給される傷病手当金は非課税所得で、所得税はかかりません。' },
   ]} />
 
   <div class="ad-slot"></div>
@@ -95,39 +166,81 @@ const jsonld = {
   import { calcShoubyou } from '../../lib/shoubyou.js';
 
   const $ = (id) => document.getElementById(id);
-  const yen = (n) => '¥' + Math.floor(n).toLocaleString('ja-JP');
+  const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
+  const fmtJP = (iso) => {
+    if (!iso) return '―';
+    const [year, month, day] = iso.split('-');
+    return `${Number(year)}年${Number(month)}月${Number(day)}日`;
+  };
 
-  function show(box) { box.classList.add('visible'); }
-  function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
-
-  function render() {
-    const box = $('result-box');
-    const salary = $('monthly-salary').value;
-    const startDate = $('start-date').value;
-    const endDate = $('end-date').value;
-    const result = calcShoubyou(salary, startDate, endDate);
-    
-    if (result.premiumBase === 0) return hide(box);
-    
-    show(box);
-    $('result-total').textContent = yen(result.totalAmount);
-    $('row-salary').textContent = yen(salary);
-    $('row-base').textContent = yen(result.premiumBase);
-    $('row-daily').textContent = yen(result.dailyAmount);
-    $('row-monthly').textContent = yen(result.monthlyAmount);
-    $('row-days').textContent = result.payableDays + '日';
-
-    window.setResultShare?.(
-      '傷病手当金計算器\n月間給与：' + $('row-salary').textContent +
-      '\n標準報酬月額：' + $('row-base').textContent +
-      '\n日額：' + $('row-daily').textContent +
-      '\n月額：' + $('row-monthly').textContent +
-      '\n給付日数：' + $('row-days').textContent +
-      '\n総額：' + $('result-total').textContent
-    );
+  function hideResult() {
+    $('result-box').classList.remove('visible');
+    window.hideResultShare?.();
   }
 
-  $('monthly-salary').addEventListener('input', render);
-  $('start-date').addEventListener('change', render);
-  $('end-date').addEventListener('change', render);
+  function render() {
+    const result = calcShoubyou({
+      averagePremiumBase: $('average-base').value,
+      insuredMonths: $('insured-months').value,
+      startDate: $('start-date').value,
+      endDate: $('end-date').value,
+      paidDaily: $('paid-daily').value,
+    });
+
+    if (!result.period || result.inputAveragePremiumBase <= 0) return hideResult();
+
+    $('result-box').classList.add('visible');
+    $('result-total').textContent = yen(result.totalAmount);
+    $('row-daily').textContent = yen(result.dailyAmount);
+    $('row-adjusted').textContent = yen(result.adjustedDailyAmount);
+    $('row-thirty').textContent = yen(result.thirtyDayEstimate);
+    $('row-days').textContent = result.payableDays + '日';
+    $('row-base').textContent = yen(result.applicablePremiumBase);
+    $('row-standard-daily').textContent = yen(result.standardDailyAmount);
+    $('row-waiting').textContent = `${fmtJP(result.period.waitingStart)} 〜 ${fmtJP(result.period.waitingEnd)}`;
+    $('row-period').textContent = result.period.payableDays > 0
+      ? `${fmtJP(result.period.paymentStart)} 〜 ${fmtJP(result.period.paymentEnd)}`
+      : '待期期間内のため支給なし';
+    $('row-maximum').textContent = fmtJP(result.period.maximumEnd);
+
+    const notes = [];
+    if (result.capApplied) notes.push('被保険者期間が12か月未満のため、32万円を計算上限に適用しました。');
+    if (result.adjustedDailyAmount < result.dailyAmount) notes.push('入力した給与等を1日あたりの法定額から差し引いています。');
+    if (result.period.isCapped) notes.push('入力した終了日が連続支給時の1年6か月を超えるため、上限日までで計算しました。');
+    if (result.payableDays === 0) notes.push('連続3日の待期期間内のため、今回の支給対象日は0日です。');
+    $('result-note').textContent = notes.join(' ');
+
+    window.setResultShare?.([
+      '傷病手当金計算シミュレーション',
+      `1日あたり：${$('row-adjusted').textContent}`,
+      `支給対象日数：${$('row-days').textContent}`,
+      `支給総額：${$('result-total').textContent}`,
+    ].join('\n'));
+  }
+
+  ['average-base', 'paid-daily'].forEach((id) => $(id).addEventListener('input', render));
+  ['insured-months', 'start-date', 'end-date'].forEach((id) => $(id).addEventListener('change', render));
 </script>
+
+<style>
+  .rule-chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .rule-chips span { padding:6px 11px; border-radius:999px; background:var(--primary-light); color:var(--primary-dark); font-size:.76rem; font-weight:700; }
+  .field-note { display:block; margin-top:6px; color:var(--text-muted); font-size:.75rem; line-height:1.55; }
+  .date-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .optional-box { margin:4px 0 16px; padding:12px 14px; border:1.5px solid var(--border-input); border-radius:var(--r-md); background:var(--surface-sub); }
+  .optional-box summary { cursor:pointer; font-weight:700; color:var(--text-2); }
+  .optional-field { margin:14px 0 0; }
+  .assumption-note { margin:0 0 16px; padding:10px 12px; border-radius:var(--r-md); background:var(--surface-sub); color:var(--text-2); font-size:.78rem; line-height:1.55; }
+  .detail-box { margin-top:18px; padding-top:16px; border-top:1px dashed color-mix(in srgb, var(--cat-color) 25%, transparent); }
+  .detail-box h2 { margin:0 0 8px; font-size:.92rem; }
+  .result-note { margin:12px 0 0; color:var(--text-2); font-size:.8rem; line-height:1.6; }
+  .result-note:empty { display:none; }
+  .formula-box { display:flex; flex-direction:column; gap:8px; padding:16px 18px; margin:18px 0; background:var(--primary-light); border-left:5px solid var(--primary); border-radius:var(--r-lg); }
+  .formula-box span { color:var(--text-2); line-height:1.65; }
+  .source-list a { overflow-wrap:anywhere; }
+  @media (max-width:560px) {
+    .date-grid { grid-template-columns:1fr; gap:0; }
+    .detail-box .result-row { align-items:flex-start; gap:10px; }
+    .detail-box .value { max-width:58%; text-align:right; }
+  }
+</style>

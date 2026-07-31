@@ -34,7 +34,7 @@
 - [ガソリン代・燃費計算ツール](https://keisantool.com/gasoline/): 通勤・旅行の交通費と実燃費を計算
 - [割り勘計算ツール](https://keisantool.com/warikai/): 端数処理・幹事調整・傾斜配分に対応
 - [産休・育休計算器](https://keisantool.com/saniku/): 休業期間・出産手当金・育休給付金
-- [傷病手当金計算器](https://keisantool.com/shoubyou/): 健康保険の傷病手当金
+- [傷病手当金計算シミュレーション](https://keisantool.com/shoubyou/): 支給日額・期間・総額を計算
 - [育児休業給付金計算器](https://keisantool.com/ikuji/): 育児休業中の給付金
 - [最低賃金計算器](https://keisantool.com/saitei/): 47都道府県別最低賃金
 - [年齢計算器](https://keisantool.com/nenrei/): 満年齢・数え年・学年

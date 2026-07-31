@@ -301,10 +301,10 @@ export const tools = [
   {
     slug: 'shoubyou',
     nav: '傷病手当金',
-    name: '傷病手当金計算器',
+    name: '傷病手当金計算シミュレーション',
     icon: '💊',
     category: '生活・日常',
-    short: '健康保険の傷病手当金',
+    short: '支給日額・期間・総額を計算',
     live: true,
   },
   {
