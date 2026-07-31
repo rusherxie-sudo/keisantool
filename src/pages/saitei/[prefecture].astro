@@ -1,0 +1,113 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import MinimumWageCalculator from '../../components/MinimumWageCalculator.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { minimumWagePrefectures, calcSaitei } from '../../lib/saitei.js';
+
+export function getStaticPaths() {
+  return minimumWagePrefectures().map((info) => ({ params: { prefecture: info.slug }, props: { info } }));
+}
+
+const { info } = Astro.props;
+const allPrefectures = minimumWagePrefectures();
+const sameRegion = allPrefectures.filter((row) => row.region === info.region && row.slug !== info.slug);
+const estimate20 = calcSaitei(info.prefecture, 8, 20);
+const estimate22 = calcSaitei(info.prefecture, 8, 22);
+const [effectiveYear, effectiveMonth, effectiveDay] = info.effectiveDate.split('-').map(Number);
+const effectiveText = `${effectiveYear}年${effectiveMonth}月${effectiveDay}日`;
+const slug = `saitei/${info.slug}`;
+const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
+const title = `${info.prefecture}の最低賃金は${info.wage.toLocaleString('ja-JP')}円【2026年現在】｜月給・時給計算`;
+const description = `${info.prefecture}の最低賃金は時給${info.wage.toLocaleString('ja-JP')}円（${effectiveText}発効）です。日給・月給の目安と、実際の月給が最低賃金以上かを無料計算。2026年度改定は審議中です。`;
+const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', name: `${info.prefecture}の最低賃金計算`, description, url: canonicalUrl, applicationCategory: 'UtilityApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } };
+const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
+  { '@type': 'ListItem', position: 2, name: '最低賃金 全国一覧', item: new URL('/saitei/', Astro.site).href },
+  { '@type': 'ListItem', position: 3, name: info.prefecture, item: canonicalUrl },
+] };
+const faqItems = [
+  { q: `${info.prefecture}の2026年の最低賃金はいくらですか？`, a: `2026年8月1日時点で適用中の${info.prefecture}の地域別最低賃金は、時間額${info.wage.toLocaleString('ja-JP')}円です。${effectiveText}から発効しています。令和8年度の新しい改定額はまだ最終決定されていません。` },
+  { q: `${info.prefecture}で1日8時間働く最低日給はいくらですか？`, a: `${info.wage.toLocaleString('ja-JP')}円×8時間で、最低日給の目安は${estimate22.dailyWage.toLocaleString('ja-JP')}円です。休憩時間は労働時間に含めません。` },
+  { q: `${info.prefecture}の最低月給はいくらですか？`, a: `1日8時間・月20日なら${estimate20.monthlyWage.toLocaleString('ja-JP')}円、月22日なら${estimate22.monthlyWage.toLocaleString('ja-JP')}円が単純計算の目安です。実際の判定は年間所定労働時間で月給を時間額換算します。` },
+];
+---
+
+<ToolLayout title={title} description={description} slug={slug} current="saitei" jsonld={jsonld} breadcrumb={breadcrumb} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/saitei/">最低賃金 全国一覧</a> ／ {info.prefecture}</div>
+    <h1>{info.prefecture}の最低賃金は{info.wage.toLocaleString('ja-JP')}円【2026年現在】</h1>
+    <p>{effectiveText}発効の地域別最低賃金です。日給・月給の目安と、実際の月給が最低賃金以上かを計算できます。</p>
+  </div>
+
+  <div class="answer-card">
+    <span>{info.prefecture}の地域別最低賃金</span>
+    <strong>{info.wage.toLocaleString('ja-JP')}<small>円／時間</small></strong>
+    <p>発効日：{effectiveText}</p>
+  </div>
+  <aside class="status-note"><strong>令和8年度（2026年度）の改定額は審議中</strong><p>2026年8月1日時点では新しい都道府県別金額は未決定です。予想値ではなく、現在適用中の確定額で計算します。</p></aside>
+
+  <div class="calc-card"><MinimumWageCalculator selectedPrefecture={info.prefecture} showPrefectureSelect={false} /></div>
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>{info.prefecture}の最低日給・月給早見表</h2>
+    <p>時給{info.wage.toLocaleString('ja-JP')}円、1日8時間で単純計算した目安です。月給制の正式な確認は、上の「月給をチェック」で年間所定労働時間を入力してください。</p>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table estimate-table">
+      <thead><tr><th>働き方</th><th>最低賃金の目安</th><th>計算式</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">1日（8時間）</th><td class="num">{estimate22.dailyWage.toLocaleString('ja-JP')}円</td><td>{info.wage.toLocaleString('ja-JP')}円×8時間</td></tr>
+        <tr><th scope="row">月20日</th><td class="num">{estimate20.monthlyWage.toLocaleString('ja-JP')}円</td><td>日給×20日</td></tr>
+        <tr><th scope="row">月22日</th><td class="num">{estimate22.monthlyWage.toLocaleString('ja-JP')}円</td><td>日給×22日</td></tr>
+        <tr><th scope="row">年額（月22日）</th><td class="num">{estimate22.yearlyWage.toLocaleString('ja-JP')}円</td><td>月額×12か月</td></tr>
+      </tbody>
+    </table></div></div>
+  </section>
+
+  <section class="howto">
+    <h2>{info.prefecture}で最低賃金を確認するときの注意</h2>
+    <ul>
+      <li>最低賃金は原則としてパート、アルバイト、高校生を含むすべての労働者に適用されます。</li>
+      <li>派遣労働者は派遣先である{info.prefecture}の最低賃金が基準です。</li>
+      <li>通勤手当、家族手当、賞与、時間外・休日・深夜の割増賃金などは比較対象から除きます。</li>
+      <li>特定の産業では、地域別最低賃金より高い「特定最低賃金」が適用される場合があります。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。個別の適用関係は都道府県労働局または労働基準監督署に確認してください。</div>
+  </section>
+
+  <section class="howto region-links">
+    <h2>{info.region}の最低賃金</h2>
+    <div>{sameRegion.map((row) => <a href={`/saitei/${row.slug}/`}>{row.prefecture} {row.wage.toLocaleString('ja-JP')}円</a>)}</div>
+    <p><a class="hub-link" href="/saitei/">全国47都道府県の最低賃金一覧を見る →</a></p>
+  </section>
+
+  <section class="howto sources">
+    <h2>公式情報</h2>
+    <ul>
+      <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html" target="_blank" rel="nofollow noopener">厚生労働省「地域別最低賃金の全国一覧」</a></li>
+      <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/chingin/newpage_43899.html" target="_blank" rel="nofollow noopener">厚生労働省「最低賃金額以上かどうかを確認する方法」</a></li>
+    </ul>
+  </section>
+
+  <RelatedTools current="saitei" />
+  <Faq items={faqItems} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .answer-card { margin-bottom: 14px; padding: 22px; border: 1.5px solid var(--cat-color); border-radius: var(--r-md); background: var(--cat-tint); }
+  .answer-card > span { display: block; color: var(--text-muted); font-size: .8rem; font-weight: var(--fw-bold); }
+  .answer-card strong { display: block; margin: 4px 0; color: var(--cat-color); font-size: 2.2rem; }
+  .answer-card small { margin-left: 5px; font-size: .9rem; }
+  .answer-card p { margin: 0; }
+  .status-note { margin-bottom: 20px; padding: 14px 16px; border-left: 4px solid var(--warning); border-radius: var(--r-sm); background: var(--warning-bg); }
+  .status-note strong { color: var(--warning-text); }
+  .status-note p { margin: 4px 0 0; font-size: .8rem; line-height: 1.65; }
+  .estimate-table { min-width: 560px; }
+  .estimate-table th[scope="row"] { text-align: left; }
+  .region-links > div { display: flex; flex-wrap: wrap; gap: 8px; }
+  .region-links a, .sources a, .hub-link { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
+  .region-links > div a { padding: 8px 10px; border: 1px solid var(--border-2); border-radius: var(--r-sm); background: var(--surface-sub); text-decoration: none; }
+</style>

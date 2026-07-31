@@ -1,0 +1,160 @@
+---
+import { minimumWagePrefectures } from '../lib/saitei.js';
+
+const { selectedPrefecture = '東京都', showPrefectureSelect = true } = Astro.props;
+const prefectures = minimumWagePrefectures();
+---
+
+<div class="saitei-calculator" data-selected-prefecture={selectedPrefecture}>
+  <div class="mode-tabs" role="tablist" aria-label="最低賃金の計算モード">
+    <button type="button" class="mode-tab active" data-mode="minimum" role="tab" aria-selected="true">最低月給を計算</button>
+    <button type="button" class="mode-tab" data-mode="check" role="tab" aria-selected="false">月給をチェック</button>
+  </div>
+
+  <div class="saitei-panel active" data-panel="minimum">
+    {showPrefectureSelect ? (
+      <div class="form-group">
+        <label for="minimum-prefecture">都道府県</label>
+        <select id="minimum-prefecture" data-role="prefecture">
+          {prefectures.map((row) => <option value={row.prefecture} selected={row.prefecture === selectedPrefecture}>{row.prefecture}</option>)}
+        </select>
+      </div>
+    ) : <input type="hidden" data-role="prefecture" value={selectedPrefecture} />}
+    <div class="input-grid">
+      <div class="form-group">
+        <label for="minimum-hours">1日の労働時間</label>
+        <div class="input-suffix"><input type="number" id="minimum-hours" data-role="hours" value="8" min="0.25" max="24" step="0.25" inputmode="decimal" /><span>時間</span></div>
+      </div>
+      <div class="form-group">
+        <label for="minimum-days">月の労働日数</label>
+        <div class="input-suffix"><input type="number" id="minimum-days" data-role="days" value="22" min="1" max="31" step="1" inputmode="numeric" /><span>日</span></div>
+      </div>
+    </div>
+    <div class="result-box visible" data-role="minimum-result">
+      <div class="result-label">地域別最低賃金（時間額）</div>
+      <div class="result-main" data-output="hourly">－</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">発効日</span><span class="value" data-output="effective">－</span></div>
+        <div class="result-row"><span class="label">最低日給</span><span class="value" data-output="daily">－</span></div>
+        <div class="result-row"><span class="label">最低月給の目安</span><span class="value" data-output="monthly">－</span></div>
+        <div class="result-row"><span class="label">年額の目安</span><span class="value" data-output="yearly">－</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="saitei-panel" data-panel="check" hidden>
+    {showPrefectureSelect ? (
+      <div class="form-group">
+        <label for="check-prefecture">都道府県</label>
+        <select id="check-prefecture" data-role="check-prefecture">
+          {prefectures.map((row) => <option value={row.prefecture} selected={row.prefecture === selectedPrefecture}>{row.prefecture}</option>)}
+        </select>
+      </div>
+    ) : <input type="hidden" data-role="check-prefecture" value={selectedPrefecture} />}
+    <div class="form-group">
+      <label for="eligible-monthly">最低賃金の対象になる月給</label>
+      <div class="input-suffix"><input type="number" id="eligible-monthly" data-role="eligible-monthly" value="220000" min="1" step="1000" inputmode="numeric" /><span>円</span></div>
+      <p class="field-note">通勤手当・家族手当・精皆勤手当・賞与・時間外／休日／深夜の割増賃金は除いて入力します。</p>
+    </div>
+    <div class="input-grid">
+      <div class="form-group">
+        <label for="annual-days">年間所定労働日数</label>
+        <div class="input-suffix"><input type="number" id="annual-days" data-role="annual-days" value="250" min="1" max="366" step="1" inputmode="numeric" /><span>日</span></div>
+      </div>
+      <div class="form-group">
+        <label for="check-hours">1日の所定労働時間</label>
+        <div class="input-suffix"><input type="number" id="check-hours" data-role="check-hours" value="8" min="0.25" max="24" step="0.25" inputmode="decimal" /><span>時間</span></div>
+      </div>
+    </div>
+    <div class="result-box visible check-result" data-role="check-result">
+      <div class="result-label">月給の時間額換算</div>
+      <div class="result-main" data-output="equivalent">－</div>
+      <div class="check-verdict" data-output="verdict">－</div>
+      <div class="result-row"><span class="label">地域別最低賃金との差</span><span class="value" data-output="difference">－</span></div>
+      <p class="result-note">換算式：（最低賃金の対象になる月給×12）÷（年間所定労働日数×1日の所定労働時間）</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .saitei-calculator { padding: 24px; }
+  .mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 20px; padding: 5px; border-radius: var(--r-sm); background: var(--surface-sub); }
+  .mode-tab { padding: 10px 8px; border: 0; border-radius: calc(var(--r-sm) - 2px); color: var(--text-muted); background: transparent; font-weight: var(--fw-bold); cursor: pointer; }
+  .mode-tab.active { color: var(--cat-color); background: var(--surface); box-shadow: var(--shadow-sm); }
+  .saitei-panel[hidden] { display: none; }
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .input-suffix { display: flex; align-items: center; gap: 8px; }
+  .input-suffix input { min-width: 0; }
+  .input-suffix span { flex: 0 0 auto; color: var(--text-muted); font-size: .82rem; }
+  .field-note, .result-note { margin: 6px 0 0; color: var(--text-muted); font-size: .75rem; line-height: 1.65; }
+  .check-verdict { margin: 12px 0; padding: 10px; border-radius: var(--r-sm); text-align: center; font-weight: var(--fw-bold); }
+  .check-verdict.ok { color: var(--success-text); background: var(--success-bg); }
+  .check-verdict.ng { color: var(--danger); background: var(--danger-bg); }
+  @media (max-width: 560px) {
+    .saitei-calculator { padding: 18px; }
+    .input-grid { grid-template-columns: 1fr; gap: 0; }
+    .mode-tab { font-size: .78rem; }
+  }
+</style>
+
+<script>
+  import { calcSaitei, checkMonthlyWage } from '../lib/saitei.js';
+
+  const root = document.querySelector('.saitei-calculator');
+  const yen = (value) => `${Math.floor(value).toLocaleString('ja-JP')}円`;
+  const decimalYen = (value) => `${value.toLocaleString('ja-JP', { maximumFractionDigits: 2 })}円`;
+  const dateJa = (iso) => {
+    const [year, month, day] = iso.split('-').map(Number);
+    return `${year}年${month}月${day}日`;
+  };
+
+  function renderMinimum() {
+    const prefecture = root.querySelector('[data-role="prefecture"]').value;
+    const hours = root.querySelector('[data-role="hours"]').value;
+    const days = root.querySelector('[data-role="days"]').value;
+    const result = calcSaitei(prefecture, hours, days);
+    if (!result) return;
+    root.querySelector('[data-output="hourly"]').textContent = yen(result.hourlyWage);
+    root.querySelector('[data-output="effective"]').textContent = dateJa(result.effectiveDate);
+    root.querySelector('[data-output="daily"]').textContent = yen(result.dailyWage);
+    root.querySelector('[data-output="monthly"]').textContent = yen(result.monthlyWage);
+    root.querySelector('[data-output="yearly"]').textContent = yen(result.yearlyWage);
+    window.setResultShare?.(`最低賃金計算\n${result.prefecture}：時給${yen(result.hourlyWage)}\n1日${hours}時間・月${days}日：月額目安${yen(result.monthlyWage)}`);
+  }
+
+  function renderCheck() {
+    const prefecture = root.querySelector('[data-role="check-prefecture"]').value;
+    const monthly = root.querySelector('[data-role="eligible-monthly"]').value;
+    const annualDays = root.querySelector('[data-role="annual-days"]').value;
+    const hours = root.querySelector('[data-role="check-hours"]').value;
+    const result = checkMonthlyWage(prefecture, monthly, annualDays, hours);
+    if (!result) return;
+    root.querySelector('[data-output="equivalent"]').textContent = decimalYen(result.hourlyEquivalent);
+    const verdict = root.querySelector('[data-output="verdict"]');
+    verdict.textContent = result.meetsMinimum ? `最低賃金${yen(result.minimumWage)}以上です` : `最低賃金${yen(result.minimumWage)}を下回ります`;
+    verdict.classList.toggle('ok', result.meetsMinimum);
+    verdict.classList.toggle('ng', !result.meetsMinimum);
+    root.querySelector('[data-output="difference"]').textContent = `${result.difference >= 0 ? '+' : ''}${decimalYen(result.difference)}`;
+  }
+
+  root.querySelectorAll('.mode-tab').forEach((button) => {
+    button.addEventListener('click', () => {
+      root.querySelectorAll('.mode-tab').forEach((tab) => {
+        const active = tab === button;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', String(active));
+      });
+      root.querySelectorAll('.saitei-panel').forEach((panel) => {
+        const active = panel.dataset.panel === button.dataset.mode;
+        panel.classList.toggle('active', active);
+        panel.hidden = !active;
+      });
+      button.dataset.mode === 'check' ? renderCheck() : renderMinimum();
+    });
+  });
+  root.querySelectorAll('select, input').forEach((input) => input.addEventListener('input', () => {
+    root.querySelector('[data-panel="check"]').hidden ? renderMinimum() : renderCheck();
+  }));
+  renderMinimum();
+  renderCheck();
+</script>

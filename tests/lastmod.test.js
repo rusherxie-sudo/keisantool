@@ -52,6 +52,10 @@ describe('sourceFileForUrl', () => {
     expect(sourceFileForUrl(pagesDir, 'rokusei/kaseijin-plus')).toBe(join(pagesDir, 'rokusei/[type].astro'));
   });
 
+  it('resolves saitei prefecture URLs to the dynamic [prefecture].astro route', () => {
+    expect(sourceFileForUrl(pagesDir, 'saitei/tokyo')).toBe(join(pagesDir, 'saitei/[prefecture].astro'));
+  });
+
   it('resolves seiza-aisho pair URLs to the dynamic [pair].astro route', () => {
     expect(sourceFileForUrl(pagesDir, 'seiza-aisho/ohitsuji-oushi')).toBe(
       join(pagesDir, 'seiza-aisho/[pair].astro')
