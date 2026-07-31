@@ -8,6 +8,7 @@ import {
   rokuseiSegments,
   seizaRanges,
   yakudoshiSeirekiYears,
+  ageYearTable,
   UMAREDOSHI_FROM,
   UMAREDOSHI_TO,
 } from '../../lib/hayami.js';
@@ -18,7 +19,7 @@ import { getColorByCategory } from '../../data/tools.js';
 export function getStaticPaths() {
   // 範囲は src/lib/hayami.js の UMAREDOSHI_FROM/TO（ハブ表のリンク範囲と共通）
   const paths = [];
-  for (let y = 1900; y <= 2010; y++) paths.push({ params: { year: String(y) } });
+  for (let y = UMAREDOSHI_FROM; y <= UMAREDOSHI_TO; y++) paths.push({ params: { year: String(y) } });
   return paths;
 }
 
@@ -32,6 +33,7 @@ const wareki = warekiLabels(year);
 const e = etoYomi(year);
 const age = BASE_YEAR - year; // 誕生日を迎えた後の満年齢
 const kazoe = kazoedoshi(year, BASE_YEAR);
+const ageRows = ageYearTable(year, BASE_YEAR - 5, BASE_YEAR + 5);
 const pol = polarity(year); // 六星占術の陽陰（年支で決まる＝同年生まれは全員同じ）
 const polMark = pol === 'プラス' ? '（＋）' : '（−）';
 const segs = rokuseiSegments(year);
@@ -51,13 +53,13 @@ const nextYear = year < UMAREDOSHI_TO ? year + 1 : null;
 const slug = `umaredoshi/${year}`;
 const canonicalUrl = new URL(`/umaredoshi/${year}/`, Astro.site).href;
 
-const title = `${year}年（${wareki}）生まれは今年何歳？年齢・干支・厄年・星座【${BASE_YEAR}年版】| 計算ツール`;
-const description = `${year}年（${wareki}）生まれの人は、${BASE_YEAR}年の誕生日で満${age}歳（誕生日前は${age - 1}歳）、数え年${kazoe}歳。干支は${e.kanji}（${e.yomi}）年です。男女の厄年に当たる年、誕生日ごとの星座、六星占術の運命星まで、${year}年生まれの「今」をまとめて確認できます。`;
+const title = `${year}年（${wareki}）生まれは何歳？${BASE_YEAR}年は${age - 1}〜${age}歳・干支は${e.kanji} | 計算ツール`;
+const description = `${year}年（${wareki}）生まれは、${BASE_YEAR}年の誕生日前は満${age - 1}歳、誕生日後は満${age}歳です。数え年${kazoe}歳、干支は${e.kanji}（${e.yomi}）年。前後11年の年齢早見表、厄年、星座も確認できます。`;
 
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
-  name: `${year}年（${wareki}）生まれの年齢・干支・厄年・星座早見`,
+  name: `${year}年（${wareki}）生まれは何歳？${BASE_YEAR}年は${age - 1}〜${age}歳`,
   description,
   url: canonicalUrl,
 };
@@ -83,9 +85,9 @@ const color = getColorByCategory('生活・日常');
 
     <div class="page-hero">
       <div class="crumb"><a href="/">ホーム</a> ／ <a href="/nenrei-hayami/">年齢早見表</a> ／ {year}年生まれ</div>
-      <h1>{year}年（{wareki}）生まれ｜年齢・干支・厄年・星座【{BASE_YEAR}年版】</h1>
+      <h1>{year}年（{wareki}）生まれは何歳？{BASE_YEAR}年は{age - 1}〜{age}歳</h1>
       <p>
-        {year}年（{wareki}）生まれの方の<strong>{BASE_YEAR}年（{BASE_WAREKI}）時点</strong>の満年齢・数え年、干支、厄年に当たる年、誕生日ごとの星座と六星占術の運命星をまとめた早見ページです。
+        {year}年（{wareki}）生まれの方は、<strong>{BASE_YEAR}年（{BASE_WAREKI}）の誕生日前は満{age - 1}歳、誕生日を迎えると満{age}歳</strong>です。数え年、干支、前後の年齢早見表、厄年、星座もまとめて確認できます。
       </p>
     </div>
 
@@ -104,6 +106,31 @@ const color = getColorByCategory('生活・日常');
         </dl>
       </div>
     </div>
+
+    <section class="howto um-section">
+      <h2>{year}年生まれの年齢早見表（{BASE_YEAR - 5}〜{BASE_YEAR + 5}年）</h2>
+      <p>
+        満年齢は誕生日を迎えると1歳増えます。{year}年生まれは今年（{BASE_YEAR}年）の<strong>誕生日前が満{age - 1}歳、誕生日後が満{age}歳</strong>です。前後5年の年齢は次の表で確認できます。
+      </p>
+      <div class="data-table-wrap">
+        <div class="data-table-scroll">
+          <table class="data-table um-table um-age-table">
+            <thead><tr><th>西暦（和暦）</th><th>誕生日前</th><th>誕生日後</th><th>数え年</th></tr></thead>
+            <tbody>
+              {ageRows.map((r) => (
+                <tr class={r.year === BASE_YEAR ? 'is-hit' : undefined}>
+                  <td>{r.year}年<br /><span class="num--sub">（{r.wareki}）</span>{r.year === BASE_YEAR && <span class="data-table__badge">今年</span>}</td>
+                  <td class="num">満{r.beforeBirthday}歳</td>
+                  <td class="num">満{r.afterBirthday}歳</td>
+                  <td class="num">{r.kazoe}歳</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="um-note">生まれた月日まで入力して今日時点の正確な年齢を求める場合は、<a href="/nenrei/">年齢計算器</a>をご利用ください。</p>
+    </section>
 
     <div class="ad-slot"></div>
 
@@ -242,7 +269,7 @@ const color = getColorByCategory('生活・日常');
     </section>
 
     <Faq items={[
-      { q: `${year}年生まれは今年（${BASE_YEAR}年）何歳ですか？`, a: `${BASE_YEAR}年の誕生日を迎えると満${age}歳、誕生日前は満${age - 1}歳です。数え年では${kazoe}歳になります。` },
+      { q: `${year}年（${wareki}）生まれは今年（${BASE_YEAR}年）何歳ですか？`, a: `${BASE_YEAR}年の誕生日を迎えると満${age}歳、誕生日前は満${age - 1}歳です。数え年では${kazoe}歳になります。` },
       { q: `${year}年生まれの厄年はいつですか？`, a: `数え年で数えて、男性の本厄は${honyakuListM.map((r) => `${r.year}年（${r.kazoe}歳${r.isTaiyaku ? '・大厄' : ''}）`).join('、')}、女性の本厄は${honyakuListF.map((r) => `${r.year}年（${r.kazoe}歳${r.isTaiyaku ? '・大厄' : ''}）`).join('、')}です。それぞれ前年が前厄、翌年が後厄になります。` },
       { q: `${year}年の干支は何ですか？`, a: `${year}年（${wareki}）の干支（十二支）は${e.kanji}（${e.yomi}）です。干支は12年周期なので、${year - 12}年や${year + 12}年生まれの方と同じ干支になります。` },
     ]} />
@@ -310,6 +337,7 @@ const color = getColorByCategory('生活・日常');
   .um-h3 { font-size: .95rem; margin: 0 0 8px; color: var(--text); }
   .um-note { font-size: .8rem; color: var(--text-muted); margin-top: 8px; line-height: 1.7; }
   .um-table { min-width: 0; }
+  .um-age-table { min-width: 520px; }
   .um-table th, .um-table td { padding: 8px 12px; }
   .um-badge--taiyaku { margin-left: 6px; background: var(--danger); color: #fff; vertical-align: middle; }
   .data-table tr.is-hit td { color: var(--cat-color); }

@@ -92,6 +92,32 @@ export function hayamiTable(fromYear, toYear, baseYear) {
 }
 
 /**
+ * 生まれ年ページ用の年齢早見表。
+ * 各暦年について、誕生日前／誕生日後の満年齢と数え年を返す。
+ * 生年より前の行は生成せず、生年中は誕生日前後とも0歳として扱う。
+ *   [{ year, wareki, beforeBirthday, afterBirthday, kazoe }]
+ */
+export function ageYearTable(birthYear, fromYear, toYear) {
+  const birth = toInt(birthYear);
+  const from = toInt(fromYear);
+  const to = toInt(toYear);
+  if ([birth, from, to].some(Number.isNaN) || from > to) return [];
+
+  const rows = [];
+  for (let year = Math.max(birth, from); year <= to; year++) {
+    const afterBirthday = year - birth;
+    rows.push({
+      year,
+      wareki: warekiLabels(year),
+      beforeBirthday: Math.max(0, afterBirthday - 1),
+      afterBirthday,
+      kazoe: kazoedoshi(birth, year),
+    });
+  }
+  return rows;
+}
+
+/**
  * 六星占術：指定した生まれ年の「誕生日の区間 → 運命星」の一覧。
  * 運命星は日の干支の旬（10日周期）で決まるため、1年を走査して
  * 同じ星が続く区間にまとめる（約36〜37区間）。

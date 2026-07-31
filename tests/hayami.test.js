@@ -7,6 +7,7 @@ import {
   seizaRanges,
   yakudoshiSeirekiYears,
   gakunenTable,
+  ageYearTable,
 } from '../src/lib/hayami.js';
 import { schoolGrade } from '../src/lib/nenrei.js';
 
@@ -97,6 +98,31 @@ describe('hayamiTable（年齢早見表の行データ）', () => {
   it('from > to や不正入力は空配列', () => {
     expect(hayamiTable(2000, 1990, 2026)).toEqual([]);
     expect(hayamiTable('a', 2000, 2026)).toEqual([]);
+  });
+});
+
+describe('ageYearTable（生まれ年ページの前後年齢表）', () => {
+  it('1988年生まれ：2024〜2028年の誕生日前後と数え年を返す', () => {
+    expect(ageYearTable(1988, 2024, 2028)).toEqual([
+      { year: 2024, wareki: '令和6年', beforeBirthday: 35, afterBirthday: 36, kazoe: 37 },
+      { year: 2025, wareki: '令和7年', beforeBirthday: 36, afterBirthday: 37, kazoe: 38 },
+      { year: 2026, wareki: '令和8年', beforeBirthday: 37, afterBirthday: 38, kazoe: 39 },
+      { year: 2027, wareki: '令和9年', beforeBirthday: 38, afterBirthday: 39, kazoe: 40 },
+      { year: 2028, wareki: '令和10年', beforeBirthday: 39, afterBirthday: 40, kazoe: 41 },
+    ]);
+  });
+
+  it('生まれ年は誕生日前を0歳として扱い、負の年齢は生成しない', () => {
+    expect(ageYearTable(2010, 2009, 2011)).toEqual([
+      { year: 2010, wareki: '平成22年', beforeBirthday: 0, afterBirthday: 0, kazoe: 1 },
+      { year: 2011, wareki: '平成23年', beforeBirthday: 0, afterBirthday: 1, kazoe: 2 },
+    ]);
+  });
+
+  it('from > to・不正入力は空配列', () => {
+    expect(ageYearTable(1988, 2028, 2024)).toEqual([]);
+    expect(ageYearTable('x', 2024, 2028)).toEqual([]);
+    expect(ageYearTable(1988, null, 2028)).toEqual([]);
   });
 });
 
