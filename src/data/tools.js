@@ -164,6 +164,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'heihoukon',
+    nav: '平方根・ルート',
+    name: '平方根・ルート計算機',
+    icon: '√',
+    category: '変換・ツール',
+    short: '平方根・根号の簡約・n乗根を計算',
+    live: true,
+  },
+  {
     slug: 'seiri',
     nav: '排卵日・生理日',
     name: '排卵日・生理日計算器',

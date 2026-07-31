@@ -64,6 +64,7 @@
 
 ## 変換・ツール
 
+- [平方根・ルート計算機](https://keisantool.com/heihoukon/): 平方根・根号の簡約・n乗根を計算
 - [カラーコード変換ツール](https://keisantool.com/color-code/): HEX・RGB・HSL・抵抗カラーコード
 - [単位変換器](https://keisantool.com/tani/): 長さ・重さ・面積・温度ほか
 - [坪・平米（㎡）換算ツール](https://keisantool.com/tsubo-heibei/): 坪・平米・畳と縦横面積を換算

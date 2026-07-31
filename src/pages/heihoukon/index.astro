@@ -1,0 +1,359 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'heihoukon';
+const title = '平方根・ルート計算機｜√の答え・簡約・n乗根を自動計算';
+const description = '数値を入力すると平方根（ルート）の小数値と最簡根号形を自動計算。√72＝6√2のような簡約、完全平方数の判定、負の数、立方根・n乗根にも対応します。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '平方根・ルート計算機',
+  description,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['平方根の小数計算', '根号を最簡形に簡約', '完全平方数の判定', '負の数の虚数表示', '2〜100乗根の計算'],
+};
+
+const squareRows = Array.from({ length: 20 }, (_, index) => {
+  const root = index + 1;
+  return { root, square: root * root };
+});
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/henkan/">変換・ツール</a> ／ 平方根・ルート計算</div>
+    <h1>平方根・ルート計算機</h1>
+    <p>数を入力するだけで、<strong>平方根の小数値、√72＝6√2のような根号の簡約、完全平方数、n乗根</strong>をまとめて確認できます。</p>
+  </div>
+
+  <div class="calc-card root-card">
+    <div class="root-tabs" role="group" aria-label="ルート計算の種類">
+      <button type="button" class="root-tab is-active" data-mode="square" aria-pressed="true"><span>平方根・√</span><small>小数と根号の簡約</small></button>
+      <button type="button" class="root-tab" data-mode="nth" aria-pressed="false"><span>n乗根</span><small>立方根・4乗根など</small></button>
+    </div>
+
+    <div class="calc-panel root-panel active">
+      <section class="root-mode" id="squarePanel">
+        <div class="root-input-row">
+          <span class="root-symbol" aria-hidden="true">√</span>
+          <div class="form-group">
+            <label for="squareValue">平方根を求める数</label>
+            <input type="number" id="squareValue" step="any" inputmode="decimal" value="72" />
+          </div>
+        </div>
+        <p class="form-error" id="squareError" hidden>有限の数値を入力してください。</p>
+        <div class="root-result" id="squareResult" aria-live="polite">
+          <div class="root-result-main">
+            <span>答え（最簡根号形）</span>
+            <strong id="squareExact">6√2</strong>
+            <small id="squareKind">これ以上簡約できません</small>
+          </div>
+          <div class="root-result-grid">
+            <div><span>小数</span><strong id="squareDecimal">8.485281374239</strong></div>
+            <div><span>x²＝入力値の解</span><strong id="squareSolutions">±6√2</strong></div>
+          </div>
+          <p id="squareFormula">√72 ＝ √(36×2) ＝ 6√2 ≈ 8.485281374239</p>
+        </div>
+        <div class="quick-values" aria-label="平方根の入力例">
+          <span>例：</span>
+          <button type="button" data-square-value="2">√2</button>
+          <button type="button" data-square-value="50">√50</button>
+          <button type="button" data-square-value="144">√144</button>
+          <button type="button" data-square-value="-9">√−9</button>
+        </div>
+      </section>
+
+      <section class="root-mode" id="nthPanel" hidden>
+        <div class="nth-input">
+          <div class="form-group">
+            <label for="rootIndex">根の次数 n（2〜100）</label>
+            <input type="number" id="rootIndex" min="2" max="100" step="1" inputmode="numeric" value="3" />
+          </div>
+          <span class="nth-symbol" aria-hidden="true">√</span>
+          <div class="form-group">
+            <label for="nthValue">n乗根を求める数</label>
+            <input type="number" id="nthValue" step="any" inputmode="decimal" value="27" />
+          </div>
+        </div>
+        <p class="form-error" id="nthError" hidden>数値と、2〜100の整数の次数を入力してください。</p>
+        <div class="root-result root-result--nth" id="nthResult" aria-live="polite">
+          <div class="root-result-main">
+            <span id="nthLabel">3乗根</span>
+            <strong id="nthAnswer">3</strong>
+            <small id="nthCheck">3³＝27</small>
+          </div>
+          <p id="nthFormula">³√27 ＝ 3</p>
+        </div>
+        <div class="quick-values" aria-label="n乗根の入力例">
+          <span>例：</span>
+          <button type="button" data-index="2" data-value="81">√81</button>
+          <button type="button" data-index="3" data-value="-8">∛−8</button>
+          <button type="button" data-index="4" data-value="16">4乗根</button>
+          <button type="button" data-index="5" data-value="32">5乗根</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>平方根（ルート）とは？</h2>
+    <p><strong>平方根</strong>は、2乗すると元の数になる値です。たとえば9の平方根は3と−3で、3²＝9、(−3)²＝9です。一方、記号<strong>√9</strong>は0以上の主平方根だけを表すため、答えは3です。</p>
+    <div class="formula-cards">
+      <div><span>主平方根</span><strong>√9＝3</strong><small>√a は0以上の値</small></div>
+      <div><span>方程式の解</span><strong>x²＝9 → x＝±3</strong><small>正と負の2つ</small></div>
+      <div><span>平方根の確認</span><strong>(√a)²＝a</strong><small>a≧0のとき</small></div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>ルートを簡約する方法</h2>
+    <p>根号の中から最大の平方数を取り出します。72＝36×2なので、<strong>√72＝√36×√2＝6√2</strong>です。小数の8.485281…は近似値ですが、6√2は丸めていない正確な値です。</p>
+    <ol class="steps-list">
+      <li>根号内の数を「平方数×残り」に分ける</li>
+      <li>平方数の平方根を根号の外に出す</li>
+      <li>根号内に平方因子が残っていないことを確認する</li>
+    </ol>
+  </section>
+
+  <section class="howto">
+    <h2>平方数・平方根の早見表（1〜20）</h2>
+    <div class="square-table">
+      {squareRows.map((row) => <div><span>{row.root}²</span><strong>{row.square}</strong><small>√{row.square}＝{row.root}</small></div>)}
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>負の数とn乗根の注意点</h2>
+    <ul>
+      <li><strong>負の数の平方根</strong>：実数には存在しません。複素数では √−9＝3i（i²＝−1）です。</li>
+      <li><strong>負の数の奇数乗根</strong>：実数として計算できます。たとえば ∛−8＝−2です。</li>
+      <li><strong>負の数の偶数乗根</strong>：実数範囲には存在しません。たとえば4乗して−16になる実数はありません。</li>
+      <li><strong>小数表示</strong>：無理数は有限小数にならないため、この計算機では表示桁で丸めます。内部計算は表示前に丸めません。</li>
+    </ul>
+    <p>分散から標準偏差を求める場合は、データをまとめて貼り付けられる<a href="/hyoujun-hensa/">標準偏差計算ツール</a>も利用できます。</p>
+  </section>
+
+  <section class="howto source-box">
+    <h2>学習・利用資料</h2>
+    <ul>
+      <li><a href="https://www.mext.go.jp/a_menu/shotou/new-cs/1387016.htm" target="_blank" rel="noopener noreferrer">文部科学省「中学校学習指導要領解説」</a>：中学校数学の学習内容を確認できます。</li>
+      <li><a href="https://www.stat.go.jp/naruhodo/13_yougo/ha-gyo.html" target="_blank" rel="noopener noreferrer">総務省統計局「統計用語辞典」</a>：標準偏差を分散の平方根として説明しています。</li>
+    </ul>
+    <div class="disclaimer">※ 小数結果は表示桁で丸めた近似値です。宿題・試験では指定された解答形式をご確認ください。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '平方根とルートは同じ意味ですか？', a: '日常的にはほぼ同じ意味で使われます。平方根は2乗して元の数になる値で、√はそのうち0以上の主平方根を表す根号です。' },
+    { q: '√72を簡単にするとどうなりますか？', a: '72＝36×2なので、√72＝√36×√2＝6√2です。小数では約8.485281です。' },
+    { q: '√2はいくつですか？', a: '√2は約1.414213562373です。整数や有限小数では正確に表せない無理数なので、正確な値は√2のまま表します。' },
+    { q: '平方根が整数になるか判定できますか？', a: 'はい。入力値が0以上の完全平方数なら平方根は整数です。たとえば144は12²なので√144＝12です。' },
+    { q: '平方根の答えに±を付けますか？', a: '√9の値は3で、±は付けません。方程式x²＝9の解を求める場合はx＝±3となります。' },
+    { q: '負の数の平方根を計算できますか？', a: '実数範囲にはありませんが、複素数では虚数単位iを使います。たとえば√−9＝3iです。' },
+    { q: '立方根や4乗根も計算できますか？', a: 'はい。n乗根タブで2〜100の次数を指定できます。負数は奇数乗根なら実数、偶数乗根なら実数範囲では計算できません。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .root-card { overflow: hidden; }
+  .root-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
+  .root-tab { display: flex; flex-direction: column; gap: 2px; padding: 14px 10px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); }
+  .root-tab span { font-size: .9rem; font-weight: var(--fw-bold); }
+  .root-tab small { font-size: .68rem; }
+  .root-tab.is-active { border-bottom-color: var(--cat-color); background: var(--surface); color: var(--cat-color); }
+  .root-tab:focus-visible { outline: 3px solid var(--cat-tint); outline-offset: -3px; }
+  .root-panel { padding: 24px; }
+  .root-mode[hidden], .form-error[hidden], .root-result[hidden] { display: none; }
+  .root-input-row, .nth-input { display: grid; align-items: end; gap: 12px; }
+  .root-input-row { grid-template-columns: auto minmax(0, 1fr); }
+  .nth-input { grid-template-columns: minmax(0, .65fr) auto minmax(0, 1fr); }
+  .root-symbol, .nth-symbol { display: grid; place-items: center; min-height: 48px; color: var(--cat-color); font: var(--fw-bold) 2.2rem/1 var(--font-mono); }
+  .form-error { margin: 10px 0 0; color: var(--danger); font-size: .76rem; font-weight: var(--fw-bold); }
+  .root-result { margin-top: 20px; overflow: hidden; border: 1px solid var(--cat-color); border-radius: var(--r-md); background: var(--surface); }
+  .root-result-main { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 22px 16px; background: var(--cat-tint); text-align: center; }
+  .root-result-main span, .root-result-main small, .root-result-grid span { color: var(--text-muted); font-size: .72rem; }
+  .root-result-main strong { overflow-wrap: anywhere; color: var(--cat-color); font: var(--fw-bold) clamp(2rem, 7vw, 3rem)/1.2 var(--font-mono); }
+  .root-result-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .root-result-grid > div { display: flex; flex-direction: column; gap: 4px; padding: 14px; text-align: center; }
+  .root-result-grid > div + div { border-left: 1px solid var(--border-2); }
+  .root-result-grid strong { overflow-wrap: anywhere; font: var(--fw-bold) .94rem/1.4 var(--font-mono); }
+  .root-result p { margin: 0; padding: 11px 14px; border-top: 1px solid var(--border-2); color: var(--text-muted); font: .72rem/1.55 var(--font-mono); text-align: center; }
+  .quick-values { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 14px; }
+  .quick-values span { color: var(--text-muted); font-size: .72rem; }
+  .quick-values button { padding: 6px 10px; border: 1px solid var(--border-2); border-radius: 999px; background: var(--surface-sub); color: var(--text); cursor: pointer; font: var(--fw-bold) .74rem/1 var(--font-mono); }
+  .quick-values button:hover { border-color: var(--cat-color); color: var(--cat-color); }
+  .formula-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+  .formula-cards div { display: flex; flex-direction: column; gap: 5px; padding: 15px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .formula-cards span, .formula-cards small { color: var(--text-muted); font-size: .7rem; }
+  .formula-cards strong { color: var(--cat-color); font: var(--fw-bold) .88rem/1.4 var(--font-mono); }
+  .steps-list { display: grid; gap: 8px; padding-left: 1.3em; }
+  .square-table { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 16px; }
+  .square-table div { display: flex; flex-direction: column; gap: 2px; padding: 10px; border: 1px solid var(--border-2); border-radius: var(--r-sm); background: var(--surface-sub); text-align: center; }
+  .square-table span, .square-table small { color: var(--text-muted); font-size: .66rem; }
+  .square-table strong { font: var(--fw-bold) 1rem/1.3 var(--font-mono); }
+  .source-box ul { display: flex; flex-direction: column; gap: 8px; padding-left: 1.2em; }
+  .source-box a { color: var(--cat-color); font-weight: var(--fw-bold); }
+  @media (max-width: 700px) {
+    .root-tab small { display: none; }
+    .root-panel { padding: 18px; }
+    .nth-input { grid-template-columns: 1fr auto 1fr; }
+    .formula-cards { grid-template-columns: 1fr; }
+    .square-table { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 430px) {
+    .nth-input { grid-template-columns: 1fr; }
+    .nth-symbol { min-height: 20px; }
+    .root-result-grid { grid-template-columns: 1fr; }
+    .root-result-grid > div + div { border-top: 1px solid var(--border-2); border-left: 0; }
+    .square-table { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+
+<script>
+  import { calculateNthRoot, calculateSquareRoot } from '../../lib/heihoukon.js';
+
+  const $ = (id) => document.getElementById(id);
+  let activeMode = 'square';
+  const trackedModes = new Set();
+
+  function formatNumber(value) {
+    return value.toLocaleString('ja-JP', { maximumFractionDigits: 12 });
+  }
+
+  function trackOnce(mode) {
+    if (trackedModes.has(mode)) return;
+    window.trackCalculatorResult?.(mode);
+    trackedModes.add(mode);
+  }
+
+  function renderSquare() {
+    const raw = $('squareValue').value.trim();
+    const value = Number(raw);
+    const result = raw === '' ? null : calculateSquareRoot(value);
+    $('squareError').hidden = result !== null;
+    $('squareResult').hidden = result === null;
+    if (!result) {
+      if (activeMode === 'square') window.hideResultShare?.();
+      return;
+    }
+
+    const input = formatNumber(value);
+    const exact = result.simplified?.expression ?? `√${input}`;
+    $('squareExact').textContent = exact;
+    if (result.real) {
+      const decimal = formatNumber(result.decimal);
+      $('squareDecimal').textContent = decimal;
+      if (value > 0) $('squareSolutions').textContent = `±${exact}`;
+      else $('squareSolutions').textContent = '0';
+
+      if (result.simplified?.perfectSquare) {
+        $('squareKind').textContent = '完全平方数です';
+        $('squareFormula').textContent = `√${input} ＝ ${exact}`;
+      } else if (result.simplified) {
+        const { coefficient, radicand } = result.simplified;
+        if (coefficient === 1) {
+          $('squareKind').textContent = '根号のままが正確な値です';
+          $('squareFormula').textContent = `√${input} ≈ ${decimal}`;
+        } else {
+          $('squareKind').textContent = 'これ以上簡約できません';
+          $('squareFormula').textContent = `√${input} ＝ √(${coefficient}²×${radicand}) ＝ ${exact} ≈ ${decimal}`;
+        }
+      } else {
+        $('squareKind').textContent = '小数の平方根';
+        $('squareFormula').textContent = `√${input} ≈ ${decimal}`;
+      }
+    } else {
+      const magnitude = formatNumber(result.imaginaryMagnitude);
+      $('squareDecimal').textContent = `${magnitude}i`;
+      $('squareSolutions').textContent = '実数解なし';
+      $('squareKind').textContent = '複素数（i²＝−1）';
+      $('squareFormula').textContent = `√(${input}) ＝ ${exact}`;
+    }
+
+    trackOnce('square_root');
+    if (activeMode === 'square') {
+      window.setResultShare?.(`平方根・ルート計算\n√${input} ＝ ${exact}\n小数：${$('squareDecimal').textContent}`);
+    }
+  }
+
+  function superscript(index) {
+    const map = { 2: '²', 3: '³' };
+    return map[index] ?? `${index}乗`;
+  }
+
+  function renderNth() {
+    const rawValue = $('nthValue').value.trim();
+    const rawIndex = $('rootIndex').value.trim();
+    const value = Number(rawValue);
+    const index = Number(rawIndex);
+    const result = rawValue === '' || rawIndex === '' ? null : calculateNthRoot(value, index);
+    $('nthError').hidden = result !== null;
+    $('nthResult').hidden = result === null;
+    if (!result) {
+      if (activeMode === 'nth') window.hideResultShare?.();
+      return;
+    }
+
+    const input = formatNumber(value);
+    $('nthLabel').textContent = `${index}乗根`;
+    if (!result.real) {
+      $('nthAnswer').textContent = '実数解なし';
+      $('nthCheck').textContent = '負数の偶数乗根';
+      $('nthFormula').textContent = `${index}乗根(${input}) は実数範囲に存在しません`;
+    } else {
+      const answer = formatNumber(result.result);
+      const powered = result.result ** index;
+      const isExact = Math.abs(powered - value) <= Number.EPSILON * Math.max(1, Math.abs(value)) * 32;
+      $('nthAnswer').textContent = answer;
+      $('nthCheck').textContent = `${answer}${superscript(index)} ${isExact ? '＝' : '≈'} ${input}`;
+      $('nthFormula').textContent = `${index}乗根(${input}) ＝ ${answer}`;
+    }
+
+    trackOnce('nth_root');
+    if (activeMode === 'nth') {
+      window.setResultShare?.(`n乗根計算\n${index}乗根(${input}) ＝ ${$('nthAnswer').textContent}`);
+    }
+  }
+
+  document.querySelectorAll('.root-tab').forEach((button) => {
+    button.addEventListener('click', () => {
+      activeMode = button.dataset.mode;
+      document.querySelectorAll('.root-tab').forEach((item) => {
+        const selected = item === button;
+        item.classList.toggle('is-active', selected);
+        item.setAttribute('aria-pressed', String(selected));
+      });
+      $('squarePanel').hidden = activeMode !== 'square';
+      $('nthPanel').hidden = activeMode !== 'nth';
+      if (activeMode === 'square') renderSquare();
+      else renderNth();
+    });
+  });
+
+  $('squareValue').addEventListener('input', renderSquare);
+  ['rootIndex', 'nthValue'].forEach((id) => $(id).addEventListener('input', renderNth));
+  document.querySelectorAll('[data-square-value]').forEach((button) => {
+    button.addEventListener('click', () => {
+      $('squareValue').value = button.dataset.squareValue;
+      renderSquare();
+    });
+  });
+  document.querySelectorAll('[data-index][data-value]').forEach((button) => {
+    button.addEventListener('click', () => {
+      $('rootIndex').value = button.dataset.index;
+      $('nthValue').value = button.dataset.value;
+      renderNth();
+    });
+  });
+
+  renderSquare();
+</script>
