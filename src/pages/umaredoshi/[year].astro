@@ -53,8 +53,8 @@ const nextYear = year < UMAREDOSHI_TO ? year + 1 : null;
 const slug = `umaredoshi/${year}`;
 const canonicalUrl = new URL(`/umaredoshi/${year}/`, Astro.site).href;
 
-const title = `${year}年（${wareki}）生まれは何歳？${BASE_YEAR}年は${age - 1}〜${age}歳・干支は${e.kanji} | 計算ツール`;
-const description = `${year}年（${wareki}）生まれは、${BASE_YEAR}年の誕生日前は満${age - 1}歳、誕生日後は満${age}歳です。数え年${kazoe}歳、干支は${e.kanji}（${e.yomi}）年。前後11年の年齢早見表、厄年、星座も確認できます。`;
+const title = `${year}年生まれは何歳？${BASE_YEAR}年は${age - 1}歳・${age}歳｜${wareki}・${e.kanji}年`;
+const description = `${year}年（${wareki}）生まれは、${BASE_YEAR}年の誕生日前なら満${age - 1}歳、誕生日を迎えると満${age}歳です。数え年は${kazoe}歳、干支は${e.kanji}（${e.yomi}）。年齢早見表、厄年、星座も確認できます。`;
 
 const jsonld = {
   '@context': 'https://schema.org',
@@ -85,7 +85,7 @@ const color = getColorByCategory('生活・日常');
 
     <div class="page-hero">
       <div class="crumb"><a href="/">ホーム</a> ／ <a href="/nenrei-hayami/">年齢早見表</a> ／ {year}年生まれ</div>
-      <h1>{year}年（{wareki}）生まれは何歳？{BASE_YEAR}年は{age - 1}〜{age}歳</h1>
+      <h1>{year}年生まれは何歳？{BASE_YEAR}年は{age - 1}歳・{age}歳</h1>
       <p>
         {year}年（{wareki}）生まれの方は、<strong>{BASE_YEAR}年（{BASE_WAREKI}）の誕生日前は満{age - 1}歳、誕生日を迎えると満{age}歳</strong>です。数え年、干支、前後の年齢早見表、厄年、星座もまとめて確認できます。
       </p>
