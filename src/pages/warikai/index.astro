@@ -4,130 +4,327 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
+import { calcWeightedWarikai } from '../../lib/warikai.js';
 
 const slug = 'warikai';
-const title = '割り勘計算器 - 金額と人数から一人あたりの金額を計算 | 計算ツール';
+const title = '割り勘計算ツール｜飲み会の端数・傾斜配分を無料計算 | 計算ツール';
 const description =
-  '飲み会や旅行の割り勘を簡単に計算。金額と人数を入力するだけで一人あたりの料金が自動で出ます。切り上げ・切り捨て・四捨五入に対応。';
+  '飲み会や食事の割り勘を無料計算。合計金額と人数から1人あたりを出し、10円・100円・500円・1000円単位の端数処理、幹事調整、上司が多め・後輩が少なめの傾斜配分にも対応します。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: '割り勘計算器',
+  name: '割り勘計算ツール',
   description,
-  applicationCategory: 'UtilityApplication',
+  applicationCategory: 'FinanceApplication',
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['均等割り勘', '10円〜1000円単位の端数処理', '幹事の端数調整', '上司・先輩・後輩の傾斜配分'],
 };
+
+const weightedExample = calcWeightedWarikai(48000, [
+  { name: '上司', people: 2, weight: 1.5 },
+  { name: '先輩', people: 3, weight: 1.2 },
+  { name: '後輩', people: 5, weight: 1 },
+], 100, 'round');
 ---
+
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 割り勘計算</div>
-    <h1>割り勘計算器</h1>
-    <p>飲み会や旅行の費用をみんなで割り勘するときに役立つ計算ツールです。金額と人数を入力するだけで、一人あたりの料金が自動で計算されます。</p>
+    <h1>割り勘計算ツール｜端数・傾斜配分にも対応</h1>
+    <p>飲み会や食事の会計を、均等または「上司は多め・後輩は少なめ」で計算。100円単位の集金と幹事の調整額まで分かります。</p>
   </div>
 
-  <div class="calc-card">
-    <div class="form-group">
-      <label for="amount">合計金額（円）</label>
-      <input type="number" id="amount" inputmode="numeric" placeholder="例：5000" />
+  <div class="calc-card warikan-card">
+    <div class="mode-switch" role="group" aria-label="割り勘方法">
+      <button type="button" class="mode-btn is-active" data-mode="equal" aria-pressed="true">
+        <span>均等割り</span><small>全員ほぼ同じ金額</small>
+      </button>
+      <button type="button" class="mode-btn" data-mode="weighted" aria-pressed="false">
+        <span>差をつける</span><small>上司・先輩は多め</small>
+      </button>
     </div>
 
-    <div class="form-group">
-      <label for="people">人数</label>
-      <input type="number" id="people" inputmode="numeric" placeholder="例：5" />
-    </div>
-
-    <div class="form-group">
-      <label>端数処理</label>
-      <div class="radio-group">
-        <label><input type="radio" name="method" value="ceil" checked /> 切り上げ（一番簡単）</label>
-        <label><input type="radio" name="method" value="floor" /> 切り捨て</label>
-        <label><input type="radio" name="method" value="round" /> 四捨五入</label>
+    <div class="calc-panel warikan-panel active">
+      <div class="form-group">
+        <label for="amount">合計金額（円）</label>
+        <input type="number" id="amount" inputmode="numeric" min="1" step="1" placeholder="例：48000" />
       </div>
-    </div>
 
-    <div class="form-group">
-      <label><input type="checkbox" id="organizer" /> 幹事が端数を負担する</label>
-    </div>
+      <div id="equalPanel">
+        <div class="form-group">
+          <label for="people">人数</label>
+          <input type="number" id="people" inputmode="numeric" min="1" step="1" placeholder="例：10" />
+        </div>
 
-    <div class="result-box" id="result">
-      <div class="result-label">一人あたり</div>
-      <div class="result-main" id="perPerson">¥0</div>
-      <div class="result-rows" id="details"></div>
+        <div class="warikan-options">
+          <div class="form-group">
+            <label for="unit">丸める単位</label>
+            <select id="unit">
+              <option value="1">1円単位</option>
+              <option value="10">10円単位</option>
+              <option value="100" selected>100円単位</option>
+              <option value="500">500円単位</option>
+              <option value="1000">1,000円単位</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="method">端数処理</label>
+            <select id="method">
+              <option value="ceil" selected>切り上げ</option>
+              <option value="floor">切り捨て</option>
+              <option value="round">四捨五入</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="organizer-option">
+          <input type="checkbox" id="organizer" />
+          <span><strong>幹事が端数を調整する</strong><small>ほかの人は選択単位で切り捨て、幹事が残額を払います</small></span>
+        </label>
+      </div>
+
+      <div id="weightedPanel" hidden>
+        <p class="panel-guide">人数と負担倍率を入力してください。倍率1.5なら、倍率1.0の人の約1.5倍を払います。</p>
+        <div class="group-list">
+          <div class="group-input group-input--more">
+            <div class="group-name"><span class="group-mark">多</span><input id="groupName0" value="上司・多め" aria-label="多めグループ名" /></div>
+            <label>人数<input type="number" id="groupPeople0" value="2" min="1" step="1" inputmode="numeric" /></label>
+            <label>倍率<input type="number" id="groupWeight0" value="1.5" min="0.1" step="0.1" inputmode="decimal" /></label>
+          </div>
+          <div class="group-input">
+            <div class="group-name"><span class="group-mark">中</span><input id="groupName1" value="先輩・普通" aria-label="普通グループ名" /></div>
+            <label>人数<input type="number" id="groupPeople1" value="3" min="1" step="1" inputmode="numeric" /></label>
+            <label>倍率<input type="number" id="groupWeight1" value="1.2" min="0.1" step="0.1" inputmode="decimal" /></label>
+          </div>
+          <div class="group-input group-input--less">
+            <div class="group-name"><span class="group-mark">少</span><input id="groupName2" value="後輩・少なめ" aria-label="少なめグループ名" /></div>
+            <label>人数<input type="number" id="groupPeople2" value="5" min="1" step="1" inputmode="numeric" /></label>
+            <label>倍率<input type="number" id="groupWeight2" value="1.0" min="0.1" step="0.1" inputmode="decimal" /></label>
+          </div>
+        </div>
+        <div class="warikan-options weighted-options">
+          <div class="form-group">
+            <label for="weightedUnit">丸める単位</label>
+            <select id="weightedUnit">
+              <option value="1">1円単位</option><option value="10">10円単位</option>
+              <option value="100" selected>100円単位</option><option value="500">500円単位</option>
+              <option value="1000">1,000円単位</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="weightedMethod">端数処理</label>
+            <select id="weightedMethod">
+              <option value="round" selected>四捨五入</option><option value="ceil">切り上げ</option><option value="floor">切り捨て</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="receipt" id="result" hidden aria-live="polite">
+        <div class="receipt-top"><span id="resultMode">均等割り</span><span id="resultPeople">0名</span></div>
+        <div class="receipt-main"><span id="mainLabel">1人あたり</span><strong id="perPerson">¥0</strong></div>
+        <div class="receipt-lines" id="warikaiDetails"></div>
+        <div class="receipt-total"><span>集める合計</span><strong id="collectedTotal">¥0</strong></div>
+        <div class="receipt-difference" id="difference"></div>
+      </div>
     </div>
   </div>
 
   <ResultShare />
-
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>使い方</h2>
-    <p>合計金額と人数を入力するだけで、一人あたりの料金が自動で計算されます。ボタンを押す必要はありません。</p>
+    <h2>割り勘計算ツールの使い方</h2>
+    <p><strong>均等割り</strong>は「合計金額 ÷ 人数」で1人分を計算します。現金で集めやすいように1円・10円・100円・500円・1,000円単位を選び、切り上げ・切り捨て・四捨五入を指定できます。</p>
+    <p><strong>差をつける</strong>は、上司・先輩・後輩などの人数と倍率から傾斜配分します。倍率は相対的な負担割合です。1.5・1.2・1.0なら、上のグループほど多めに払います。名称・人数・倍率は自由に変更できます。</p>
+    <p>丸めた後の集金合計が会計と一致しない場合は、結果に<strong>多く集める額／不足額</strong>を表示します。幹事が調整するか、お釣りとして返すかをその場で決められます。</p>
+    <div class="disclaimer">※ 傾斜の付け方に決まった正解はありません。参加者で金額を確認してから集金してください。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <section class="howto">
+    <h2>傾斜割り勘の計算例｜48,000円を10人で分ける</h2>
+    <p>会計48,000円を、上司2名（1.5倍）・先輩3名（1.2倍）・後輩5名（1.0倍）、100円単位の四捨五入で計算すると次の結果になります。</p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table">
+          <thead><tr><th>グループ</th><th>人数</th><th>倍率</th><th>1人あたり</th><th>小計</th></tr></thead>
+          <tbody>{weightedExample.groups.map((group) => (
+            <tr><td>{group.name}</td><td class="num">{group.people}名</td><td class="num">{group.weight}倍</td><td class="num">¥{group.perPerson.toLocaleString('ja-JP')}</td><td class="num">¥{group.subtotal.toLocaleString('ja-JP')}</td></tr>
+          ))}</tbody>
+        </table>
+      </div>
+    </div>
+    <p>集金合計は<strong>¥{weightedExample.collectedTotal.toLocaleString('ja-JP')}</strong>で、会計まで<strong>¥{Math.abs(weightedExample.difference).toLocaleString('ja-JP')}不足</strong>します。この差額だけ幹事が追加すれば、元の会計と一致します。</p>
+  </section>
+
+  <section class="howto">
+    <h2>100円単位の端数はどう処理する？</h2>
     <ul>
-      <li><strong>合計金額</strong>：みんなで払った合計の費用を入力します。例えば飲み会で5000円だったら「5000」と入力します。</li>
-      <li><strong>人数</strong>：割り勘する人数を入力します。5人で割り勘なら「5」と入力します。</li>
-      <li><strong>端数処理</strong>：割り切れない場合の処理方法を選びます。<strong>切り上げ</strong>が一番よく使われる方法で、例えば1001円を5人で割ると一人201円になります。</li>
-      <li><strong>幹事負担</strong>：チェックを入れると、端数分だけ幹事が多めに払う形になります。みんなが同額払えるようになります。</li>
+      <li><strong>切り上げ：</strong>集金しやすく不足しにくい方法。多く集めた分はお釣りや次回分として調整します。</li>
+      <li><strong>切り捨て：</strong>参加者の支払いは少なくなりますが、不足分を幹事などが負担します。</li>
+      <li><strong>四捨五入：</strong>元の均等額に近くなりやすく、多く集める場合と不足する場合があります。</li>
+      <li><strong>幹事が調整：</strong>ほかの人を選択単位で切り捨て、幹事が残りを正確に払うため、集金合計が会計と一致します。</li>
     </ul>
-    <p>切り上げの場合、一人あたりの金額×人数で算出される合計が元の金額よりも多くなることがあります。幹事負担を選ぶと、その端数分を幹事が負担してくれる形になります。</p>
-    <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
   </section>
 
   <RelatedTools current={slug} />
-
   <RelatedArticles toolSlug={slug} />
-
   <Faq items={[
-    { q: '割り勘はどう計算しますか？', a: '合計金額を人数で割ります。割り切れない場合は切り上げ・切り捨て・四捨五入のいずれかで処理します。本ツールでは三種類の端数処理に対応しています。' },
-    { q: '幹事負担とは何ですか？', a: '幹事が端数分を多めに払うことで、他の人が同額払えるようにする方法です。例えば1001円を5人で割ると、他の4人は200円ずつ、幹事が201円払う形になります。' },
-    { q: 'ガソリン代の割り勘はできますか？', a: 'はい、合計ガソリン代と乗車人数を入力すれば一人あたりの料金が算出されます。合計金額に高速代なども含めて入力することもできます。' },
+    { q: '割り勘はどう計算しますか？', a: '基本は合計金額を参加人数で割ります。本ツールでは、1円・10円・100円・500円・1,000円単位で切り上げ・切り捨て・四捨五入ができます。' },
+    { q: '100円単位で割り勘できますか？', a: 'はい。「丸める単位」で100円を選ぶと、1人あたりの金額を100円単位にできます。集金合計と会計の差額も自動表示します。' },
+    { q: '上司や先輩が多めに払う割り勘はできますか？', a: 'はい。「差をつける」モードでグループごとの人数と倍率を入力すると、上司・先輩は多め、後輩・新人は少なめといった傾斜割り勘を計算できます。' },
+    { q: '幹事が端数を負担する計算方法は？', a: '「幹事が端数を調整する」を選ぶと、ほかの参加者は指定単位で切り捨てた同額を払い、幹事が残額を支払います。集金合計は元の会計と一致します。' },
+    { q: '入力した金額や人数は保存されますか？', a: 'いいえ。計算はブラウザ内で行い、入力した会計金額・人数・グループ名をサーバーへ保存しません。登録も不要です。' },
   ]} />
-
   <div class="ad-slot"></div>
 </ToolLayout>
 
+<style>
+  .warikan-card { overflow: hidden; }
+  .mode-switch { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
+  .mode-btn { display: flex; flex-direction: column; gap: 2px; padding: 14px 10px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); }
+  .mode-btn span { font-size: .9rem; font-weight: var(--fw-bold); }
+  .mode-btn small { font-size: .68rem; }
+  .mode-btn.is-active { border-bottom-color: var(--cat-color); color: var(--cat-color); background: var(--surface); }
+  .mode-btn:focus-visible { outline: 3px solid var(--cat-tint); outline-offset: -3px; }
+  .warikan-panel { padding: 22px; }
+  .warikan-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group select { width: 100%; min-height: 46px; padding: 9px 11px; border: 1px solid var(--border-input); border-radius: var(--r-md); background: var(--surface); color: var(--text); font-family: var(--font-sans); }
+  .organizer-option { display: flex; gap: 10px; align-items: flex-start; padding: 13px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); cursor: pointer; }
+  .organizer-option input { width: auto; margin-top: 3px; }
+  .organizer-option span { display: flex; flex-direction: column; gap: 2px; }
+  .organizer-option strong { font-size: .84rem; }
+  .organizer-option small { font-size: .7rem; line-height: 1.5; color: var(--text-muted); }
+  .panel-guide { margin: 0 0 12px; font-size: .78rem; line-height: 1.6; color: var(--text-muted); }
+  .group-list { display: flex; flex-direction: column; gap: 9px; }
+  .group-input { display: grid; grid-template-columns: minmax(0, 1.5fr) .7fr .7fr; gap: 8px; align-items: end; padding: 11px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .group-input--more { border-left: 4px solid var(--cat-color); }
+  .group-input--less { border-left: 4px solid var(--cat-life); }
+  .group-name { display: flex; gap: 6px; align-items: center; }
+  .group-mark { display: grid; place-items: center; flex: 0 0 26px; height: 26px; border-radius: 50%; background: var(--cat-tint); color: var(--cat-color); font-size: .68rem; font-weight: var(--fw-bold); }
+  .group-input label { display: flex; flex-direction: column; gap: 3px; font-size: .65rem; font-weight: var(--fw-bold); color: var(--text-muted); }
+  .group-input input { width: 100%; min-height: 38px; padding: 7px 8px; border: 1px solid var(--border-input); border-radius: var(--r-sm); background: var(--surface); color: var(--text); font-family: var(--font-sans); }
+  .group-name input { min-width: 0; }
+  .weighted-options { margin-top: 12px; }
+  .receipt { position: relative; margin-top: 20px; padding: 18px 18px 22px; border: 1px solid #e8d7ae; border-radius: 4px; background: #fffdf7; box-shadow: 0 8px 24px rgba(71, 53, 16, .08); }
+  .receipt::after { content: ''; position: absolute; right: 0; bottom: -7px; left: 0; height: 8px; background: linear-gradient(135deg, #fffdf7 5px, transparent 0) 0 0/10px 8px repeat-x; }
+  .receipt-top, .receipt-total { display: flex; justify-content: space-between; gap: 12px; font-size: .72rem; color: var(--text-muted); }
+  .receipt-main { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 12px 0; padding: 12px 0; border-top: 1px dashed #d8c8a4; border-bottom: 1px dashed #d8c8a4; }
+  .receipt-main span { font-size: .8rem; font-weight: var(--fw-bold); }
+  .receipt-main strong { font: var(--fw-bold) 1.9rem/1 var(--font-mono); color: var(--cat-color); }
+  .receipt-total { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #d8c8a4; font-weight: var(--fw-bold); color: var(--text); }
+  .receipt-difference { margin-top: 10px; padding: 8px 10px; border-radius: var(--r-sm); font-size: .74rem; text-align: center; }
+  .receipt-difference.is-exact { background: #ecf8f0; color: #217a45; }
+  .receipt-difference.is-over { background: #fff3dc; color: #9a5b00; }
+  .receipt-difference.is-short { background: #fff0ef; color: #b33a32; }
+  @media (max-width: 480px) {
+    .warikan-panel { padding: 18px; }
+    .warikan-options, .group-input { grid-template-columns: 1fr 1fr; }
+    .group-name { grid-column: 1 / -1; }
+    .receipt-main strong { font-size: 1.65rem; }
+  }
+</style>
+
+<style is:global>
+  #warikaiDetails { display: flex; flex-direction: column; gap: 7px; }
+  #warikaiDetails .receipt-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: baseline; font-size: .76rem; }
+  #warikaiDetails .receipt-line span { min-width: 0; color: var(--text-muted); }
+  #warikaiDetails .receipt-line strong { font-family: var(--font-mono); color: var(--text); }
+</style>
+
 <script>
-  import { calcWarikai } from '../../lib/warikai.js';
+  import { calcWarikai, calcWeightedWarikai } from '../../lib/warikai.js';
 
   const $ = (id) => document.getElementById(id);
-  const yen = (n) => '¥' + Math.round(n).toLocaleString('ja-JP');
+  const yen = (value) => `¥${Math.round(value).toLocaleString('ja-JP')}`;
+  let currentMode = 'equal';
+  const trackedModes = new Set();
 
-  function show(box) { box.classList.add('visible'); }
-  function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
-
-  function render() {
-    const box = $('result');
-    const amount = $('amount').value;
-    const people = $('people').value;
-    const method = document.querySelector('input[name="method"]:checked')?.value || 'ceil';
-    const organizerPays = $('organizer').checked;
-
-    const r = calcWarikai(amount, people, method, organizerPays);
-    if (r.perPerson === 0) return hide(box);
-
-    show(box);
-    $('perPerson').textContent = yen(r.perPerson);
-
-    const details = $('details');
-    if (organizerPays && r.organizerPays !== r.perPerson) {
-      details.innerHTML = `
-        <div class="result-row"><span class="label">幹事が払う額</span><span class="value">${yen(r.organizerPays)}</span></div>
-        <div class="result-row"><span class="label">合計金額</span><span class="value">${yen(r.total)}</span></div>
-      `;
-    } else {
-      details.innerHTML = `
-        <div class="result-row"><span class="label">合計金額</span><span class="value">${yen(r.total)}</span></div>
-      `;
-    }
-
-    window.setResultShare?.('割り勘計算器\n一人あたり：' + $('perPerson').textContent);
+  function setMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-btn').forEach((button) => {
+      const active = button.dataset.mode === mode;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    $('equalPanel').hidden = mode !== 'equal';
+    $('weightedPanel').hidden = mode !== 'weighted';
+    render();
   }
 
-  $('amount').addEventListener('input', render);
-  $('people').addEventListener('input', render);
-  document.querySelectorAll('input[name="method"]').forEach((el) => {
-    el.addEventListener('change', render);
-  });
+  function showDifference(difference) {
+    const box = $('difference');
+    box.className = 'receipt-difference';
+    if (difference === 0) {
+      box.classList.add('is-exact');
+      box.textContent = '会計と集金合計がぴったり一致します';
+    } else if (difference > 0) {
+      box.classList.add('is-over');
+      box.textContent = `会計より ${yen(difference)} 多く集めます（お釣り）`;
+    } else {
+      box.classList.add('is-short');
+      box.textContent = `会計まで ${yen(Math.abs(difference))} 不足します（幹事が調整）`;
+    }
+  }
+
+  function renderEqual(amount) {
+    const people = Number($('people').value);
+    const organizerPays = $('organizer').checked;
+    const result = calcWarikai(amount, people, $('method').value, organizerPays, Number($('unit').value));
+    if (!result.perPerson && !result.organizerPays) return null;
+
+    $('resultMode').textContent = '均等割り';
+    $('resultPeople').textContent = `${people}名`;
+    $('mainLabel').textContent = organizerPays ? '幹事以外・1人' : '1人あたり';
+    $('perPerson').textContent = yen(result.perPerson);
+    $('collectedTotal').textContent = yen(result.total);
+    $('warikaiDetails').innerHTML = organizerPays
+      ? `<div class="receipt-line"><span>幹事 1名</span><strong>${yen(result.organizerPays)}</strong></div><div class="receipt-line"><span>ほか ${people - 1}名 × ${yen(result.perPerson)}</span><strong>${yen(result.perPerson * (people - 1))}</strong></div>`
+      : `<div class="receipt-line"><span>${people}名 × ${yen(result.perPerson)}</span><strong>${yen(result.total)}</strong></div>`;
+    showDifference(result.difference);
+    return organizerPays
+      ? `幹事：${yen(result.organizerPays)}\nほか${people - 1}名：1人 ${yen(result.perPerson)}`
+      : `${people}名：1人 ${yen(result.perPerson)}\n集金合計：${yen(result.total)}`;
+  }
+
+  function renderWeighted(amount) {
+    const groups = [0, 1, 2].map((index) => ({
+      name: $(`groupName${index}`).value,
+      people: Number($(`groupPeople${index}`).value),
+      weight: Number($(`groupWeight${index}`).value),
+    }));
+    const result = calcWeightedWarikai(amount, groups, Number($('weightedUnit').value), $('weightedMethod').value);
+    if (result.groups.length === 0) return null;
+
+    $('resultMode').textContent = '傾斜割り';
+    $('resultPeople').textContent = `${result.people}名`;
+    $('mainLabel').textContent = 'グループ別の支払い';
+    $('perPerson').textContent = `${result.groups.length}段階`;
+    $('collectedTotal').textContent = yen(result.collectedTotal);
+    $('warikaiDetails').innerHTML = result.groups.map((group) => (
+      `<div class="receipt-line"><span>${group.name} ${group.people}名 × ${yen(group.perPerson)}</span><strong>${yen(group.subtotal)}</strong></div>`
+    )).join('');
+    showDifference(result.difference);
+    return result.groups.map((group) => `${group.name}（${group.people}名）：1人 ${yen(group.perPerson)}`).join('\n') + `\n集金合計：${yen(result.collectedTotal)}`;
+  }
+
+  function render() {
+    const amount = Number($('amount').value);
+    const shareText = currentMode === 'equal' ? renderEqual(amount) : renderWeighted(amount);
+    $('result').hidden = !shareText;
+    if (!shareText) {
+      window.hideResultShare?.();
+      return;
+    }
+    window.setResultShare?.(`割り勘計算\n会計：${yen(amount)}\n${shareText}`);
+    if (!trackedModes.has(currentMode)) {
+      window.trackCalculatorResult?.(currentMode);
+      trackedModes.add(currentMode);
+    }
+  }
+
+  document.querySelectorAll('.mode-btn').forEach((button) => button.addEventListener('click', () => setMode(button.dataset.mode)));
+  document.querySelectorAll('.warikan-panel input, .warikan-panel select').forEach((input) => input.addEventListener('input', render));
   $('organizer').addEventListener('change', render);
 </script>

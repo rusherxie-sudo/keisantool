@@ -256,10 +256,10 @@ export const tools = [
   {
     slug: 'warikai',
     nav: '割り勘',
-    name: '割り勘計算器',
+    name: '割り勘計算ツール',
     icon: '💸',
     category: '生活・日常',
-    short: '金額と人数から一人あたりの金額を計算',
+    short: '端数処理・幹事調整・傾斜配分に対応',
     live: true,
   },
   {
