@@ -146,6 +146,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'hyoujun-hensa',
+    nav: '標準偏差',
+    name: '標準偏差計算ツール',
+    icon: '📈',
+    category: '生活・日常',
+    short: 'データから平均・分散も自動計算',
+    live: true,
+  },
+  {
     slug: 'seiri',
     nav: '排卵日・生理日',
     name: '排卵日・生理日計算器',

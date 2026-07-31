@@ -1,0 +1,324 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'hyoujun-hensa';
+const title = '標準偏差計算ツール｜平均・分散・母集団・標本を自動計算';
+const description =
+  '数値を貼り付けるだけで標準偏差を自動計算。母標準偏差（n）と標本標準偏差（n−1）、平均、分散、中央値、偏差平方和、計算過程を無料で確認できます。ExcelのSTDEV.P・STDEV.Sにも対応。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '標準偏差計算ツール',
+  description,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 標準偏差</div>
+    <h1>標準偏差計算ツール</h1>
+    <p>データを貼り付けるだけで、母標準偏差・標本標準偏差・分散・平均と計算過程をまとめて表示します。</p>
+    <div class="feature-chips" aria-label="対応する計算">
+      <span>母集団 n</span><span>標本 n−1</span><span>Excel貼り付け対応</span><span>計算過程つき</span>
+    </div>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-panel active">
+      <div class="form-group">
+        <label for="data-values">数値データ</label>
+        <textarea id="data-values" rows="6" placeholder="例：2, 4, 4, 4, 5, 5, 7, 9"></textarea>
+        <small class="field-note">カンマ・空白・改行・タブ区切りに対応。Excelやスプレッドシートの列もそのまま貼り付けられます。</small>
+      </div>
+
+      <div class="quick-actions">
+        <button type="button" id="fill-example">例のデータを入力</button>
+        <button type="button" id="clear-data" class="secondary">クリア</button>
+      </div>
+
+      <div class="option-grid">
+        <div class="form-group">
+          <label for="data-type">主結果として表示</label>
+          <select id="data-type">
+            <option value="population">母集団（nで割る・STDEV.P）</option>
+            <option value="sample">標本（n−1で割る・STDEV.S）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="decimal-digits">表示する小数桁</label>
+          <select id="decimal-digits">
+            <option value="2">小数第2位まで</option>
+            <option value="4" selected>小数第4位まで</option>
+            <option value="6">小数第6位まで</option>
+          </select>
+        </div>
+      </div>
+
+      <p id="input-error" class="input-error" role="alert"></p>
+
+      <div class="result-box" id="stats-result" aria-live="polite">
+        <div class="result-label" id="primary-label">母標準偏差（σ）</div>
+        <div class="result-main" id="primary-value">0</div>
+
+        <div class="headline-results">
+          <div><span>母標準偏差 σ</span><strong id="population-sd">—</strong><small>分母 n</small></div>
+          <div><span>標本標準偏差 s</span><strong id="sample-sd">—</strong><small>分母 n−1</small></div>
+        </div>
+
+        <div class="result-grid">
+          <div><span>データ数 n</span><strong id="stat-count">—</strong></div>
+          <div><span>合計</span><strong id="stat-sum">—</strong></div>
+          <div><span>平均</span><strong id="stat-mean">—</strong></div>
+          <div><span>中央値</span><strong id="stat-median">—</strong></div>
+          <div><span>母分散</span><strong id="population-variance">—</strong></div>
+          <div><span>標本分散</span><strong id="sample-variance">—</strong></div>
+          <div><span>最小値</span><strong id="stat-min">—</strong></div>
+          <div><span>最大値</span><strong id="stat-max">—</strong></div>
+          <div><span>範囲</span><strong id="stat-range">—</strong></div>
+          <div><span>標準誤差</span><strong id="standard-error">—</strong></div>
+        </div>
+
+        <div class="calculation-steps">
+          <h2>計算過程</h2>
+          <ol>
+            <li>平均 x̄ ＝ 合計 ÷ n ＝ <strong id="step-mean">—</strong></li>
+            <li>偏差平方和 Σ(x−x̄)² ＝ <strong id="step-squares">—</strong></li>
+            <li id="step-variance">分散 ＝ 偏差平方和 ÷ n ＝ —</li>
+            <li id="step-sd">標準偏差 ＝ √分散 ＝ —</li>
+          </ol>
+        </div>
+
+        <details class="detail-table-box">
+          <summary>値ごとの偏差・偏差平方を確認</summary>
+          <div class="table-scroll">
+            <table id="deviation-table">
+              <thead><tr><th>No.</th><th>値 x</th><th>偏差 x−x̄</th><th>偏差平方 (x−x̄)²</th></tr></thead>
+              <tbody id="deviation-body"></tbody>
+            </table>
+          </div>
+          <p id="row-limit-note" class="row-limit-note"></p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>標準偏差とは？</h2>
+    <p>
+      標準偏差は、データが平均の周りにどれくらい散らばっているかを表す値です。小さいほど値が平均付近に集まり、大きいほどばらつきが大きいことを示します。分散は偏差を二乗した平均で、標準偏差はその<strong>正の平方根</strong>です。標準偏差は元のデータと同じ単位になるため、分散より直感的に比較できます。
+    </p>
+
+    <h2>標準偏差の求め方・公式</h2>
+    <div class="formula-grid">
+      <div class="formula-card">
+        <h3>母標準偏差（母集団全体）</h3>
+        <p class="formula">σ ＝ √&#123; Σ(xᵢ−μ)² ÷ n &#125;</p>
+        <p>手元のデータが調べたい集団のすべてなら、偏差平方和をデータ数 n で割ります。Excelでは <code>STDEV.P</code> です。</p>
+      </div>
+      <div class="formula-card">
+        <h3>標本標準偏差（サンプル）</h3>
+        <p class="formula">s ＝ √&#123; Σ(xᵢ−x̄)² ÷ (n−1) &#125;</p>
+        <p>大きな母集団から抽出した一部の標本なら、偏差平方和を n−1 で割ります。Excelでは <code>STDEV.S</code> です。</p>
+      </div>
+    </div>
+
+    <h2>2, 4, 4, 4, 5, 5, 7, 9 の計算例</h2>
+    <ol>
+      <li>合計40を8個で割り、平均は5。</li>
+      <li>各値から5を引いて二乗し、偏差平方和は32。</li>
+      <li>母分散は32÷8＝4、母標準偏差は√4＝<strong>2</strong>。</li>
+      <li>標本分散は32÷7≒4.5714、標本標準偏差は<strong>約2.1381</strong>。</li>
+    </ol>
+
+    <h2>母集団と標本はどちらを使う？</h2>
+    <div class="table-scroll static-table">
+      <table>
+        <thead><tr><th>データの意味</th><th>選ぶ種類</th><th>分母</th><th>Excel</th></tr></thead>
+        <tbody>
+          <tr><td>クラス全員、当日の全製品など対象のすべて</td><td>母集団</td><td>n</td><td>STDEV.P</td></tr>
+          <tr><td>アンケート回答者、抜き取り検査など全体の一部</td><td>標本</td><td>n−1</td><td>STDEV.S</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>迷う場合は「このデータだけを説明したい」のか、「このデータから、より大きな集団のばらつきを推定したい」のかで判断します。</p>
+
+    <h2>標準偏差を見るときの注意点</h2>
+    <ul>
+      <li>極端に大きい・小さい外れ値は、偏差を二乗するため結果を大きく動かします。</li>
+      <li>途中の平均や偏差を早く丸めず、最後の表示時にだけ丸めると誤差を抑えられます。</li>
+      <li>平均値が大きく異なるデータ同士の相対的なばらつきを比べる場合は、標準偏差だけでなく変動係数も検討します。</li>
+      <li>テスト得点から個人の相対位置を知りたい場合は、計算した標準偏差を<a href="/hensachi/">偏差値計算器</a>に入力できます。</li>
+    </ul>
+
+    <h2>参考資料</h2>
+    <ul class="source-list">
+      <li><a href="https://www.stat.go.jp/naruhodo/10_tokucho/chirabari.html" target="_blank" rel="noopener noreferrer">総務省統計局「データの散らばりを見る」</a></li>
+      <li><a href="https://www.stat.go.jp/dstart/point/seminar/02/3-3-1.html" target="_blank" rel="noopener noreferrer">統計データ利活用センター「記述統計量」</a></li>
+      <li><a href="https://support.microsoft.com/ja-jp/excel/functions/stdev-s-function" target="_blank" rel="noopener noreferrer">Microsoft「STDEV.S 関数」</a></li>
+    </ul>
+
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。データの目的に応じて母集団・標本を正しく選び、重要な分析では統計の専門家や原資料もご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: '標準偏差はどうやって計算しますか？', a: '平均を求め、各値と平均の差を二乗して合計します。母集団ならデータ数n、標本ならn−1で割って分散を求め、その正の平方根を取ると標準偏差です。' },
+    { q: '母標準偏差と標本標準偏差の違いは？', a: '対象の全データなら母標準偏差（nで割る）、大きな母集団から取り出した一部のデータなら標本標準偏差（n−1で割る）を使います。' },
+    { q: 'Excelではどの関数を使いますか？', a: '母集団全体はSTDEV.P、標本から母集団を推定する場合はSTDEV.Sを使います。' },
+    { q: '標準偏差が0になるのはどんな場合ですか？', a: 'すべてのデータが同じ値なら、平均との差がすべて0になるため標準偏差も0です。' },
+    { q: '負の数や小数も計算できますか？', a: 'はい。負数、小数、指数表記を含むデータも計算できます。カンマ、空白、改行、タブで区切って入力してください。' },
+    { q: '分散と標準偏差は何が違いますか？', a: '分散は偏差平方の平均で単位が二乗になります。標準偏差は分散の平方根で、元データと同じ単位になるためばらつきを解釈しやすい値です。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { parseNumberList, descriptiveStatistics, deviationRows } from '../../lib/hyoujun-hensa.js';
+
+  const $ = (id) => document.getElementById(id);
+  const MAX_DETAIL_ROWS = 200;
+
+  function formatNumber(value) {
+    if (value === null || value === undefined || !Number.isFinite(value)) return '計算不可';
+    const digits = Number($('decimal-digits').value);
+    if (value !== 0 && Math.abs(value) < 10 ** -digits) return value.toExponential(digits);
+    return value.toLocaleString('ja-JP', { maximumFractionDigits: digits });
+  }
+
+  function hideResult(message = '') {
+    $('stats-result').classList.remove('visible');
+    $('input-error').textContent = message;
+    $('deviation-body').innerHTML = '';
+    window.hideResultShare?.();
+  }
+
+  function render() {
+    const raw = $('data-values').value;
+    if (raw.trim() === '') return hideResult();
+    const values = parseNumberList(raw);
+    if (values === null) return hideResult('数値ではない値が含まれています。数値だけをカンマ・空白・改行で区切って入力してください。');
+
+    const stats = descriptiveStatistics(values);
+    const rows = deviationRows(values);
+    if (stats === null || rows === null) return hideResult('データを確認してください。');
+
+    const mode = $('data-type').value;
+    const isSample = mode === 'sample';
+    const primary = isSample ? stats.sampleStandardDeviation : stats.populationStandardDeviation;
+    const variance = isSample ? stats.sampleVariance : stats.populationVariance;
+    const denominator = isSample ? stats.count - 1 : stats.count;
+    const modeLabel = isSample ? '標本標準偏差（s）' : '母標準偏差（σ）';
+
+    $('input-error').textContent = '';
+    $('stats-result').classList.add('visible');
+    $('primary-label').textContent = modeLabel;
+    $('primary-value').textContent = formatNumber(primary);
+    $('population-sd').textContent = formatNumber(stats.populationStandardDeviation);
+    $('sample-sd').textContent = formatNumber(stats.sampleStandardDeviation);
+    $('stat-count').textContent = stats.count.toLocaleString('ja-JP');
+    $('stat-sum').textContent = formatNumber(stats.sum);
+    $('stat-mean').textContent = formatNumber(stats.mean);
+    $('stat-median').textContent = formatNumber(stats.median);
+    $('population-variance').textContent = formatNumber(stats.populationVariance);
+    $('sample-variance').textContent = formatNumber(stats.sampleVariance);
+    $('stat-min').textContent = formatNumber(stats.min);
+    $('stat-max').textContent = formatNumber(stats.max);
+    $('stat-range').textContent = formatNumber(stats.range);
+    $('standard-error').textContent = formatNumber(stats.standardError);
+    $('step-mean').textContent = formatNumber(stats.mean);
+    $('step-squares').textContent = formatNumber(stats.sumSquaredDeviations);
+    $('step-variance').textContent = `${isSample ? '標本分散' : '母分散'} ＝ ${formatNumber(stats.sumSquaredDeviations)} ÷ ${denominator} ＝ ${formatNumber(variance)}`;
+    $('step-sd').textContent = `${modeLabel} ＝ √${formatNumber(variance)} ＝ ${formatNumber(primary)}`;
+
+    $('deviation-body').innerHTML = rows.slice(0, MAX_DETAIL_ROWS).map((row) =>
+      `<tr><td>${row.index}</td><td>${formatNumber(row.value)}</td><td>${formatNumber(row.deviation)}</td><td>${formatNumber(row.squaredDeviation)}</td></tr>`
+    ).join('');
+    $('row-limit-note').textContent = rows.length > MAX_DETAIL_ROWS
+      ? `計算には全${rows.length.toLocaleString('ja-JP')}件を使用し、明細は先頭${MAX_DETAIL_ROWS}件を表示しています。`
+      : '';
+
+    window.setResultShare?.([
+      '標準偏差計算ツール',
+      `${modeLabel}：${formatNumber(primary)}`,
+      `平均：${formatNumber(stats.mean)}`,
+      `データ数：${stats.count}`,
+    ].join('\n'));
+  }
+
+  $('data-values').addEventListener('input', render);
+  ['data-type', 'decimal-digits'].forEach((id) => $(id).addEventListener('change', render));
+  $('fill-example').addEventListener('click', () => {
+    $('data-values').value = '2, 4, 4, 4, 5, 5, 7, 9';
+    render();
+  });
+  $('clear-data').addEventListener('click', () => {
+    $('data-values').value = '';
+    hideResult();
+    $('data-values').focus();
+  });
+</script>
+
+<style>
+  .feature-chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .feature-chips span { padding:6px 11px; border-radius:999px; background:var(--primary-light); color:var(--primary-dark); font-size:.76rem; font-weight:700; }
+  #data-values { width:100%; box-sizing:border-box; min-height:142px; padding:13px 14px; border:1.5px solid var(--border-input); border-radius:var(--r-md); background:var(--surface-sub); color:var(--text); font:inherit; line-height:1.6; resize:vertical; }
+  #data-values:focus { outline:none; border-color:var(--cat-color); box-shadow:0 0 0 3px color-mix(in srgb, var(--cat-color) 14%, transparent); }
+  .field-note { display:block; margin-top:7px; color:var(--text-muted); font-size:.8rem; line-height:1.55; }
+  .quick-actions { display:flex; flex-wrap:wrap; gap:10px; margin:-4px 0 18px; }
+  .quick-actions button { min-height:40px; padding:7px 14px; border:0; border-radius:var(--r-md); background:var(--cat-color); color:#fff; font:inherit; font-size:.82rem; font-weight:700; cursor:pointer; }
+  .quick-actions .secondary { background:var(--surface-sub); color:var(--text-2); border:1px solid var(--border-input); }
+  .option-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:16px; }
+  .input-error { min-height:1.3em; margin:0 0 8px; color:var(--danger); font-size:.82rem; font-weight:700; }
+  #primary-label { text-transform:none; }
+  .headline-results { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0; }
+  .headline-results > div { display:flex; flex-direction:column; align-items:center; padding:14px; border-radius:var(--r-md); background:var(--surface-sub); }
+  .headline-results span { color:var(--text-2); font-size:.82rem; }
+  .headline-results strong { margin:4px 0; color:var(--cat-color); font-size:1.35rem; }
+  .headline-results small { color:var(--text-muted); }
+  .result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px; overflow:hidden; border:1px solid var(--border-2); border-radius:var(--r-md); background:var(--border-2); }
+  .result-grid > div { display:flex; justify-content:space-between; gap:12px; padding:10px 12px; background:var(--surface); }
+  .result-grid span { color:var(--text-2); }
+  .result-grid strong { text-align:right; overflow-wrap:anywhere; }
+  .calculation-steps { margin-top:18px; padding:16px 18px; border-radius:var(--r-md); background:var(--primary-light); }
+  .calculation-steps h2 { margin:0 0 8px; font-size:1rem; }
+  .calculation-steps ol { margin:0; padding-left:1.4rem; }
+  .calculation-steps li { margin:5px 0; line-height:1.55; overflow-wrap:anywhere; }
+  .detail-table-box { margin-top:16px; }
+  .detail-table-box summary { cursor:pointer; font-weight:700; color:var(--text-2); }
+  .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .detail-table-box .table-scroll { margin-top:10px; }
+  .row-limit-note { margin:8px 0 0; color:var(--text-muted); font-size:.78rem; }
+  .formula-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0 22px; }
+  .formula-card { padding:18px; border:1px solid var(--border-2); border-radius:var(--r-lg); background:var(--surface-sub); }
+  .formula-card h3 { margin:0 0 8px; }
+  .formula { font-size:1.08rem; font-weight:800; color:var(--primary-dark); overflow-wrap:anywhere; }
+  .formula-card code { padding:2px 5px; border-radius:4px; background:var(--surface); }
+  .static-table { margin:14px 0; }
+  .source-list a { overflow-wrap:anywhere; }
+  @media (max-width:640px) {
+    .option-grid, .headline-results, .formula-grid { grid-template-columns:1fr; }
+    .result-grid { grid-template-columns:1fr; }
+    .result-grid > div { align-items:flex-start; }
+    .result-grid strong { max-width:54%; }
+  }
+</style>
+
+<style is:global>
+  #deviation-table, .static-table table { width:100%; border-collapse:collapse; min-width:560px; font-size:.88rem; }
+  #deviation-table th, #deviation-table td, .static-table th, .static-table td { padding:9px 11px; border-bottom:1px solid var(--border-2); text-align:right; white-space:nowrap; }
+  #deviation-table th:first-child, #deviation-table td:first-child, .static-table th:first-child, .static-table td:first-child { text-align:left; }
+  #deviation-table thead th, .static-table thead th { color:var(--text-3); background:var(--surface-sub); font-weight:700; }
+</style>
