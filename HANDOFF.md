@@ -23,7 +23,7 @@
 - `/heihoukon/` 已上线平方根・ルート计算工具，支持小数近似、整数根号简约、完全平方数、负数虚数和2〜100次方根。核心逻辑在 `src/lib/heihoukon.js`；`√a` 表示非负主平方根，方程 `x²=a` 的解才写作 `±√a`，负数偶次方根在实数范围不存在。
 - `/heikin-chuouchi/` 已上线平均值・中央値・最頻値计算工具，支持Excel列粘贴、并列众数、排序频数表与五数概括。核心逻辑在 `src/lib/heikin-chuouchi.js`，复用 `hyoujun-hensa.js` 的解析与补偿求和；四分位数采用“奇数个时排除整体中央値，再分别取上下半组中央値”的学校统计口径，不等同于Excel `QUARTILE.INC` 插值法。
 - `/bunsuu/` 已上线分数计算・分数电卓，支持分数四则运算、最小公倍数通分、约分途中式、仮分数／帯分数／小数／百分比显示和有限小数精确转分数。核心逻辑在 `src/lib/bunsuu.js`，所有分子分母使用BigInt精确运算；分母永远规范为正，整数限100位、小数限30位。
-- 当前验证基线：65 个测试文件、1425 项测试；生产构建 540 页。
+- 当前验证基线：66 个测试文件、1,440 项测试；生产构建 541 页。
 - 2026-08-01 伤病手当金版本提交 `06332fd`，Cloudflare 预览 `2570d4e2.keisantool.pages.dev`。工具页与文章页在 GSC 均已收录，但上次抓取仍为7月9日／7月20日；人工重抓配额刷新后优先提交这两页，并在7〜14天后复查“傷病手当金 計算／条件／期間／退職後”等查询。
 - 2026-08-01 标准偏差版本提交 `74165d5`，Cloudflare 预览 `c83c2dfc.keisantool.pages.dev`。新页在GSC仍为未知URL；配额刷新后优先请求首次抓取，2〜3天后复查收录，7〜14天后复查“標準偏差／求め方／計算／エクセル”查询。
 - 2026-08-01 时间计算版本提交 `db7f184`，Cloudflare 预览 `3b606c02.keisantool.pages.dev`。新页在GSC仍为未知URL；配额刷新后优先请求首次抓取，2〜3天后复查收录，7〜14天后复查“時間計算／勤務時間／時間差／足し算／小数時間”查询。
@@ -35,6 +35,7 @@
 - 2026-08-01 平均值・中央値版本提交 `e956b8f`，Cloudflare预览 `a9c298e8.keisantool.pages.dev`。新页在GSC仍为未知URL；IndexNow已成功提交新页、标准偏差入口、生活分类和llms.txt，配额刷新后优先请求首次抓取，2〜3天后复查收录，7〜14天后复查“平均値／中央値／最頻値／四分位範囲／Excel”查询。
 - 2026-08-01 GSC额度恢复后，已逐一确认 `/hyoujun-hensa/`、`/jikan/`、`/rieki-ritsu/`、`/tsubo-heibei/`、`/heihoukon/`、`/heikin-chuouchi/`、`/kinzoku-nensuu/`、`/yukyu-nissu/` 共8个Google未知URL成功加入优先抓取队列；`/nissu/` 与 `/umaredoshi/1988/` 已收录，未浪费额度重复提交。
 - 2026-08-01 分数计算版本提交 `f40023b`，Cloudflare预览 `a1545d6d.keisantool.pages.dev`。正式域名连续6次稳定返回新版，IndexNow已提交新页、两条入口、生活分类和llms.txt；GSC当前仍为未知URL，下一次可用请求额度优先提交，2〜3天后复查收录，7〜14天后复查“分数の計算／分数電卓／通分／約分／帯分数”查询。
+- 2026-08-01 概率计算版本提交 `f9a0748`，Cloudflare预览 `5d1c57bb.keisantool.pages.dev`。新增 `/kakuritsu/` 基本概率、nPr、nCr、n!与反复试行三个模式，使用BigInt保持情况数精确；IndexNow已提交，`/bunsuu/` 与新页均已成功加入Google优先抓取队列，2〜3天后复查收录。
 - 用户文件 `src/content/blog/kokuho-ryoukin-keisan-hoho.md` 为未跟踪内容，增长迭代不得修改、删除或误提交。
 
 ## 0. 2026-07-18 最新改造
@@ -97,7 +98,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 5. **日期处理**：用 UTC 正午基准（见 `src/lib/shussan.js` 的 `toDate/toISO/addDays`），避免时区/夏令时跨日 bug。
 6. **法规/数值每年要复核**：日本税制·社保每年 4月/8月 改定。已知踩过的坑见第 8 节。
 
-## 5. 全工具清单（62个，按分类；下表部分行是犬猫成对工具合并展示，行数≠工具数）
+## 5. 全工具清单（67个，按分类；下表部分行是犬猫成对工具合并展示，行数≠工具数）
 
 | 分类 | slug | 工具 |
 |------|------|------|
@@ -111,6 +112,7 @@ npx wrangler pages deploy dist --project-name=keisantool
 | 健康・身体 | hensachi | 偏差値（含从分数列表自动算SD） |
 | 生活・日常 | hyoujun-hensa | 標準偏差（母集団／標本、分散、偏差明细） |
 | 生活・日常 | heikin-chuouchi | 平均値・中央値・最頻値（并列众数、五数概括、四分位数） |
+| 生活・日常 | kakuritsu | 確率・順列・組み合わせ（基本概率、nPr、nCr、n!、反复试行） |
 | 生活・日常 | shussan | 出産予定日（含逆算+妊娠月数） |
 | 生活・日常 | yakudoshi | 厄年チェッカー（含和暦早見表SSR） |
 | 生活・日常 | kyuyo | 給与・残業代（含自动时给+分类残業） |
