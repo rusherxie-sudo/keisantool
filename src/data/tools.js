@@ -182,6 +182,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'kakuritsu',
+    nav: '確率計算',
+    name: '確率計算・順列・組み合わせ計算ツール',
+    icon: '🎲',
+    category: '生活・日常',
+    short: '確率・nPr・nCr・反復試行を自動計算',
+    live: true,
+  },
+  {
     slug: 'heihoukon',
     nav: '平方根・ルート',
     name: '平方根・ルート計算機',

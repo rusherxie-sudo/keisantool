@@ -1,0 +1,277 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { combination, permutation, repeatedTrialProbability } from '../../lib/kakuritsu.js';
+
+const slug = 'kakuritsu';
+const title = '確率計算ツール｜順列・組み合わせnPr・nCr、反復試行を自動計算';
+const description = '基本確率、順列nPr、組み合わせnCr、階乗n!、反復試行の確率を無料で自動計算。何通りか、ちょうどk回、少なくとも1回の答えと公式を確認できます。';
+const diceCombinations = combination(6, 2);
+const lineupPermutations = permutation(6, 2);
+const trialExample = repeatedTrialProbability(5, 2, 0.2);
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '確率計算・順列・組み合わせ計算ツール',
+  description,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 確率計算</div>
+    <h1>確率計算・順列・組み合わせ計算ツール</h1>
+    <p>基本確率、何通りあるか、繰り返したときの確率を、式と一緒に計算できます。</p>
+    <div class="feature-chips" aria-label="対応する計算">
+      <span>基本確率</span><span>順列 nPr</span><span>組み合わせ nCr</span><span>階乗 n!</span><span>反復試行</span>
+    </div>
+  </div>
+
+  <div class="calc-card probability-card" id="probability-tool">
+    <div class="probability-tabs" role="tablist" aria-label="計算の種類">
+      <button type="button" class="probability-tab is-active" data-mode="basic" role="tab" aria-selected="true">基本確率<small>当たり÷全体</small></button>
+      <button type="button" class="probability-tab" data-mode="cases" role="tab" aria-selected="false">場合の数<small>nPr・nCr・n!</small></button>
+      <button type="button" class="probability-tab" data-mode="repeat" role="tab" aria-selected="false">反復試行<small>ちょうど・1回以上</small></button>
+    </div>
+
+    <div class="calc-panel active probability-panel">
+      <section class="probability-mode" data-panel="basic">
+        <h2>基本確率を計算</h2>
+        <p class="mode-lead">同様に確からしい全体のうち、目的の結果が何通りあるかを入力します。</p>
+        <div class="input-grid">
+          <div class="form-group"><label for="basic-favorable">目的の結果（通り）</label><input id="basic-favorable" type="number" min="0" step="1" value="3" /></div>
+          <div class="form-group"><label for="basic-total">全体（通り）</label><input id="basic-total" type="number" min="1" step="1" value="6" /></div>
+        </div>
+        <p class="form-error" id="basic-error" role="alert" hidden></p>
+        <div class="probability-result" id="basic-result" aria-live="polite">
+          <div class="result-primary"><span>確率</span><strong id="basic-percent">50%</strong><small id="basic-formula">3 ÷ 6</small></div>
+          <div class="result-grid"><div><span>約分した分数</span><strong id="basic-fraction">1/2</strong></div><div><span>小数</span><strong id="basic-decimal">0.5</strong></div></div>
+        </div>
+      </section>
+
+      <section class="probability-mode" data-panel="cases" hidden>
+        <h2>順列・組み合わせ・階乗をまとめて計算</h2>
+        <p class="mode-lead">n個からr個を選ぶとき、並べる順序を区別するなら順列、区別しないなら組み合わせです。</p>
+        <div class="input-grid">
+          <div class="form-group"><label for="cases-n">全体の数 n</label><input id="cases-n" type="number" min="0" max="1000" step="1" value="10" /></div>
+          <div class="form-group"><label for="cases-r">選ぶ数 r</label><input id="cases-r" type="number" min="0" max="1000" step="1" value="3" /></div>
+        </div>
+        <p class="input-note">0 ≤ r ≤ n ≤ 1,000。大きな答えも整数で正確に表示します。</p>
+        <p class="form-error" id="cases-error" role="alert" hidden></p>
+        <div class="case-results" id="cases-result" aria-live="polite">
+          <div><span>順列 nPr</span><strong id="cases-permutation">720</strong><small id="cases-p-formula">10! ÷ (10−3)!</small></div>
+          <div class="featured"><span>組み合わせ nCr</span><strong id="cases-combination">120</strong><small id="cases-c-formula">10! ÷ (3! × 7!)</small></div>
+          <div><span>階乗 n!</span><strong id="cases-factorial">3628800</strong><small>nから1までを掛ける</small></div>
+        </div>
+      </section>
+
+      <section class="probability-mode" data-panel="repeat" hidden>
+        <h2>反復試行の確率を計算</h2>
+        <p class="mode-lead">同じ成功確率の独立した試行をn回行い、ちょうどk回成功する確率を求めます。</p>
+        <div class="input-grid three-columns">
+          <div class="form-group"><label for="repeat-n">試行回数 n</label><input id="repeat-n" type="number" min="0" max="1000" step="1" value="5" /></div>
+          <div class="form-group"><label for="repeat-k">成功回数 k</label><input id="repeat-k" type="number" min="0" max="1000" step="1" value="2" /></div>
+          <div class="form-group"><label for="repeat-p">1回の成功確率（%）</label><input id="repeat-p" type="number" min="0" max="100" step="any" value="20" /></div>
+        </div>
+        <p class="form-error" id="repeat-error" role="alert" hidden></p>
+        <div class="probability-result repeat-result" id="repeat-result" aria-live="polite">
+          <div class="result-primary"><span>ちょうど <b id="repeat-k-label">2</b> 回成功</span><strong id="repeat-exact">20.48%</strong><small id="repeat-formula">5C2 × 0.2² × 0.8³</small></div>
+          <div class="result-grid"><div><span>少なくとも1回成功</span><strong id="repeat-at-least">67.232%</strong></div><div><span>組み合わせ数 nCk</span><strong id="repeat-combinations">10</strong></div></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>確率の求め方</h2>
+    <p>すべての結果が同じ起こりやすさなら、確率は<strong>目的の結果の場合の数 ÷ 全体の場合の数</strong>で求めます。サイコロで偶数が出る結果は2・4・6の3通り、全体は6通りなので、確率は3/6＝1/2＝50％です。</p>
+    <div class="formula-cards">
+      <div><span>基本確率</span><strong>目的の場合の数 ÷ 全体</strong><small>分数・小数・百分率は同じ確率</small></div>
+      <div><span>順列</span><strong>nPr = n! / (n−r)!</strong><small>並べる順番を区別する</small></div>
+      <div><span>組み合わせ</span><strong>nCr = n! / r!(n−r)!</strong><small>選ぶだけで順番を区別しない</small></div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>順列と組み合わせの違い</h2>
+    <div class="comparison-grid">
+      <div><h3>順列 nPr</h3><p>選んだ後の順番を区別します。6人から会長と副会長を選ぶと、役職が入れ替われば別の結果なので <strong>6P2＝{lineupPermutations}通り</strong>です。</p></div>
+      <div><h3>組み合わせ nCr</h3><p>選ぶ順番を区別しません。6人から2人の委員を選ぶなら、A→BとB→Aは同じ組なので <strong>6C2＝{diceCombinations}通り</strong>です。</p></div>
+    </div>
+    <p>迷ったときは「選ばれたものが同じでも、順番や役割が変わると別の結果になるか」を確認します。別なら順列、同じなら組み合わせです。</p>
+  </section>
+
+  <section class="howto">
+    <h2>反復試行・二項確率の計算</h2>
+    <p>1回の成功確率がpの独立した試行をn回行い、ちょうどk回成功する確率は <strong>nCk × p<sup>k</sup> × (1−p)<sup>n−k</sup></strong> です。成功率20％を5回試してちょうど2回成功する確率は、5C2×0.2²×0.8³＝<strong>{(trialExample.exactly * 100).toFixed(3)}％</strong>です。</p>
+    <p>「少なくとも1回」は、反対の事象である「1回も成功しない」を使うと、<strong>1−(1−p)<sup>n</sup></strong>で短く計算できます。同じ例では<strong>{(trialExample.atLeastOne * 100).toFixed(3)}％</strong>です。</p>
+  </section>
+
+  <section class="howto">
+    <h2>使う前に確認したい前提</h2>
+    <ul>
+      <li>基本確率の「目的÷全体」は、各結果が同様に確からしい場合に使います。</li>
+      <li>反復試行は、各試行が独立し、毎回の成功確率が同じ場合の計算です。</li>
+      <li>実際の抽選、検査、投資、ゲームなどでは、公開された確率や条件がこの前提を満たすか確認してください。</li>
+      <li>表示した百分率は読みやすさのため丸めています。内部計算は丸め前の値を使います。</li>
+    </ul>
+    <p>確率を分数のまま四則計算する場合は<a href="/bunsuu/">分数計算・分数電卓</a>、データの代表値は<a href="/heikin-chuouchi/">平均値・中央値・最頻値計算</a>、ばらつきは<a href="/hyoujun-hensa/">標準偏差計算ツール</a>で確認できます。</p>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料</h2>
+    <ul>
+      <li><a href="https://www.mext.go.jp/content/20230217-mxt_kyoiku02-100002620_05.pdf" target="_blank" rel="noopener noreferrer">文部科学省「高等学校学習指導要領解説 数学編 理数編」</a>：数学Aで扱う場合の数、順列、組み合わせ、確率の位置づけ。</li>
+      <li><a href="https://www.stat.go.jp/dss/getting/pdf/mid.pdf" target="_blank" rel="noopener noreferrer">総務省統計局「データ分析の基礎知識」</a>：場合の数、順列・組み合わせを用いた確率計算。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の抽選・統計判断では、試行の独立性や各結果の起こりやすさなど、計算の前提条件をご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '確率はどうやって計算しますか？', a: '各結果が同様に確からしいとき、目的の結果の場合の数を全体の場合の数で割ります。サイコロで偶数が出る確率は3÷6＝1/2＝50％です。' },
+    { q: '順列nPrと組み合わせnCrの違いは何ですか？', a: '順列は並べる順序や役割を区別し、組み合わせは選ばれたものが同じなら順序を区別しません。会長と副会長は順列、同じ役割の委員を選ぶなら組み合わせです。' },
+    { q: '0!が1になるのはなぜですか？', a: '0個を並べる方法は「何も並べない」1通りと定めます。またnC0＝1などの公式を一貫して成立させるため、0!＝1です。' },
+    { q: '少なくとも1回当たる確率はどう求めますか？', a: '1回の当選確率をp、試行回数をnとすると、1回も当たらない確率は(1−p)^nです。その反対なので、少なくとも1回は1−(1−p)^nで求めます。' },
+    { q: 'ガチャの確率計算にも使えますか？', a: '各回が独立し、毎回の当選確率が同じなら反復試行として計算できます。天井、確定枠、途中で変わる提供割合がある場合は同じ式をそのまま使えません。' },
+    { q: '大きな順列や組み合わせも正確ですか？', a: 'nPr、nCr、n!は整数演算でn＝1,000まで正確に計算します。答えが非常に長い場合も省略せず表示します。' },
+    { q: '確率を足してよいのはどんなときですか？', a: '同時に起こらない排反事象の「AまたはB」は確率を足せます。重なりがある場合は、AとBの共通部分の確率を1回引く必要があります。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { combination, factorial, permutation, repeatedTrialProbability, simpleProbability } from '../../lib/kakuritsu.js';
+
+  const $ = (id) => document.getElementById(id);
+  const formatPercent = (value) => `${Number((value * 100).toFixed(8)).toLocaleString('ja-JP', { maximumFractionDigits: 8 })}%`;
+  const formatDecimal = (value) => Number(value.toFixed(12)).toString();
+  const integerValue = (id) => Number($(id).value);
+
+  function showError(id, message) {
+    const element = $(id);
+    element.textContent = message;
+    element.hidden = !message;
+  }
+
+  function updateBasic() {
+    const favorable = integerValue('basic-favorable');
+    const total = integerValue('basic-total');
+    const result = simpleProbability(favorable, total);
+    showError('basic-error', result ? '' : '0以上の目的数と、それ以上の正の全体数を整数で入力してください。');
+    $('basic-result').hidden = !result;
+    if (!result) return;
+    $('basic-percent').textContent = formatPercent(result.decimal);
+    $('basic-formula').textContent = `${result.favorable} ÷ ${result.total}`;
+    $('basic-fraction').textContent = `${result.numerator}/${result.denominator}`;
+    $('basic-decimal').textContent = formatDecimal(result.decimal);
+  }
+
+  function updateCases() {
+    const n = integerValue('cases-n');
+    const r = integerValue('cases-r');
+    const p = permutation(n, r);
+    const c = combination(n, r);
+    const f = factorial(n);
+    const valid = p !== null && c !== null && f !== null;
+    showError('cases-error', valid ? '' : '0 ≤ r ≤ n ≤ 1,000となる整数を入力してください。');
+    $('cases-result').hidden = !valid;
+    if (!valid) return;
+    $('cases-permutation').textContent = p;
+    $('cases-combination').textContent = c;
+    $('cases-factorial').textContent = f;
+    $('cases-p-formula').textContent = `${n}! ÷ (${n}−${r})!`;
+    $('cases-c-formula').textContent = `${n}! ÷ (${r}! × ${n - r}!)`;
+  }
+
+  function updateRepeat() {
+    const n = integerValue('repeat-n');
+    const k = integerValue('repeat-k');
+    const percent = Number($('repeat-p').value);
+    const result = repeatedTrialProbability(n, k, percent / 100);
+    showError('repeat-error', result ? '' : '0 ≤ k ≤ n ≤ 1,000、成功確率0〜100%の範囲で入力してください。');
+    $('repeat-result').hidden = !result;
+    if (!result) return;
+    $('repeat-k-label').textContent = String(k);
+    $('repeat-exact').textContent = formatPercent(result.exactly);
+    $('repeat-at-least').textContent = formatPercent(result.atLeastOne);
+    $('repeat-combinations').textContent = result.combinations;
+    $('repeat-formula').textContent = `${n}C${k} × ${(percent / 100).toLocaleString('ja-JP')}^${k} × ${(1 - percent / 100).toLocaleString('ja-JP')}^${n - k}`;
+  }
+
+  document.querySelectorAll('.probability-tab').forEach((button) => {
+    button.addEventListener('click', () => {
+      const mode = button.dataset.mode;
+      document.querySelectorAll('.probability-tab').forEach((tab) => {
+        const active = tab === button;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll('.probability-mode').forEach((panel) => {
+        panel.hidden = panel.dataset.panel !== mode;
+      });
+    });
+  });
+
+  ['basic-favorable', 'basic-total'].forEach((id) => $(id).addEventListener('input', updateBasic));
+  ['cases-n', 'cases-r'].forEach((id) => $(id).addEventListener('input', updateCases));
+  ['repeat-n', 'repeat-k', 'repeat-p'].forEach((id) => $(id).addEventListener('input', updateRepeat));
+  updateBasic();
+  updateCases();
+  updateRepeat();
+</script>
+
+<style>
+  .probability-card { overflow: hidden; }
+  .probability-tabs { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
+  .probability-tab { display: flex; flex-direction: column; gap: 3px; padding: 14px 8px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); font-weight: var(--fw-bold); }
+  .probability-tab small { font-size: .68rem; font-weight: var(--fw-normal); }
+  .probability-tab.is-active { border-bottom-color: var(--cat-color); background: var(--surface); color: var(--cat-color); }
+  .probability-tab:focus-visible { outline: 3px solid var(--cat-tint); outline-offset: -3px; }
+  .probability-panel { padding: 24px; }
+  .probability-mode[hidden], .form-error[hidden], .probability-result[hidden], .case-results[hidden] { display: none; }
+  .probability-mode h2 { margin: 0 0 6px; font-size: 1rem; }
+  .mode-lead, .input-note { margin: 0 0 18px; color: var(--text-muted); font-size: .76rem; }
+  .input-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .input-grid.three-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .form-error { margin: 12px 0 0; color: var(--danger); font-size: .76rem; font-weight: var(--fw-bold); }
+  .probability-result { margin-top: 20px; overflow: hidden; border: 1px solid var(--cat-color); border-radius: var(--r-md); }
+  .result-primary { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 22px 14px; background: var(--cat-tint); text-align: center; }
+  .result-primary span, .result-grid span, .case-results span { color: var(--text-muted); font-size: .72rem; }
+  .result-primary strong { overflow-wrap: anywhere; color: var(--cat-color); font: var(--fw-bold) clamp(2rem, 8vw, 3rem)/1.2 var(--font-mono); }
+  .result-primary small { font-family: var(--font-mono); }
+  .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); }
+  .result-grid > div { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; padding: 14px; }
+  .result-grid > div + div { border-left: 1px solid var(--border-2); }
+  .result-grid strong { overflow-wrap: anywhere; font: var(--fw-bold) 1rem/1.4 var(--font-mono); }
+  .case-results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+  .case-results > div { display: flex; flex-direction: column; gap: 7px; min-width: 0; padding: 16px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .case-results .featured { border-color: var(--cat-color); background: var(--cat-tint); }
+  .case-results strong { overflow-wrap: anywhere; font: var(--fw-bold) 1rem/1.45 var(--font-mono); }
+  .case-results small { color: var(--text-muted); font: .68rem/1.4 var(--font-mono); }
+  .formula-cards, .comparison-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .formula-cards > div, .comparison-grid > div { padding: 16px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .formula-cards span { color: var(--cat-color); font-size: .72rem; font-weight: var(--fw-bold); }
+  .formula-cards strong { display: block; margin: 8px 0; font: var(--fw-bold) .9rem/1.5 var(--font-mono); }
+  .formula-cards small { color: var(--text-muted); }
+  .comparison-grid { grid-template-columns: repeat(2, 1fr); }
+  .comparison-grid h3 { margin-top: 0; color: var(--cat-color); }
+  .source-box ul { padding-left: 1.25rem; }
+  .source-box li + li { margin-top: 8px; }
+  .disclaimer { margin-top: 18px; padding: 14px; border-left: 4px solid var(--cat-color); background: var(--cat-tint); font-size: .76rem; }
+  @media (max-width: 700px) {
+    .probability-panel { padding: 18px; }
+    .input-grid, .input-grid.three-columns, .case-results, .formula-cards, .comparison-grid { grid-template-columns: 1fr; }
+    .probability-tab { padding-inline: 4px; font-size: .75rem; }
+    .probability-tab small { font-size: .6rem; }
+    .result-primary strong { font-size: 2rem; }
+  }
+</style>

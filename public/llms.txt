@@ -31,6 +31,7 @@
 - [標準偏差計算ツール](https://keisantool.com/hyoujun-hensa/): データから平均・分散も自動計算
 - [平均値・中央値・最頻値計算ツール](https://keisantool.com/heikin-chuouchi/): 代表値・四分位数をまとめて計算
 - [分数計算・分数電卓](https://keisantool.com/bunsuu/): 四則計算・約分・帯分数・小数変換
+- [確率計算・順列・組み合わせ計算ツール](https://keisantool.com/kakuritsu/): 確率・nPr・nCr・反復試行を自動計算
 - [出産予定日計算器](https://keisantool.com/shussan/): 妊娠週数・予定日
 - [厄年チェッカー](https://keisantool.com/yakudoshi/): 前厄・本厄・後厄
 - [給与・時給・残業代計算器](https://keisantool.com/kyuyo/): 時給・残業代・手取り
