@@ -173,6 +173,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'bunsuu',
+    nav: '分数計算',
+    name: '分数計算・分数電卓',
+    icon: '½',
+    category: '生活・日常',
+    short: '四則計算・約分・帯分数・小数変換',
+    live: true,
+  },
+  {
     slug: 'heihoukon',
     nav: '平方根・ルート',
     name: '平方根・ルート計算機',
