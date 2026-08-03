@@ -1,0 +1,55 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+const slug = 'denwa-format';
+const title = '電話番号フォーマット変換｜ハイフン自動入力・+81変換を無料で';
+const description = '日本の電話番号に正しい位置でハイフンを自動追加。携帯、固定電話、050、0120、0800、+81の国内・国際形式を無料で一括整形できます。入力内容はブラウザ内だけで処理。';
+const jsonld = { '@context':'https://schema.org','@type':'WebApplication',name:'電話番号フォーマット変換ツール',description,applicationCategory:'UtilitiesApplication',operatingSystem:'Web',offers:{'@type':'Offer',price:'0',priceCurrency:'JPY'},featureList:['日本の電話番号へハイフン追加','+81と国内形式の変換','複数行の一括整形','ブラウザ内処理'] };
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/henkan/">変換・ツール</a> ／ 電話番号整形</div>
+    <h1>電話番号フォーマット変換ツール</h1>
+    <p>ハイフンなし・全角・+81の電話番号を、日本国内で読みやすい形式へ自動変換します。</p>
+  </div>
+  <div class="calc-card" id="phone-tool">
+    <div class="form-group"><label for="phone-input">電話番号（複数行対応）</label><textarea id="phone-input" rows="7" placeholder="09012345678&#10;+81 3 1234 5678&#10;0120-123-456"></textarea></div>
+    <div class="mode-row"><label><input type="radio" name="mode" value="national" checked /> 国内形式</label><label><input type="radio" name="mode" value="international" /> 国際形式（+81）</label></div>
+    <div class="form-group"><label for="phone-output">変換結果</label><textarea id="phone-output" rows="7" readonly placeholder="ここに変換結果が表示されます"></textarea></div>
+    <div class="action-row"><button id="sample-button" class="secondary-button" type="button">例を入力</button><button id="copy-button" class="primary-button" type="button">結果をコピー</button></div>
+    <p id="phone-summary" class="summary" aria-live="polite">電話番号を入力してください</p>
+  </div>
+  <div class="ad-slot"></div>
+  <section class="howto">
+    <h2>電話番号にハイフンを自動で入れる方法</h2>
+    <p>電話番号を貼り付けると、携帯電話、固定電話、IP電話、フリーダイヤルなどの番号体系を判定し、適切な位置へハイフンを追加します。複数の番号は1行に1件ずつ入力してください。</p>
+    <h2>対応する主な電話番号</h2>
+    <ul><li>070・080・090から始まる携帯電話</li><li>03・06を含む全国の固定電話</li><li>050から始まるIP電話</li><li>0120・0800のフリーダイヤル</li><li>+81から始まる日本の国際形式</li></ul>
+    <h2>+81形式と国内形式の違い</h2>
+    <p>海外から日本へ電話するときは、国内番号先頭の0を外して国番号+81を付けます。たとえば「090-1234-5678」は「+81 90 1234 5678」です。本ツールでは両形式を切り替えられます。</p>
+    <h2>Excelの電話番号を一括整理</h2>
+    <p>Excelの列をそのまま貼り付け、変換結果をコピーして戻せます。文字コードが原因でCSVが文字化けする場合は<a href="/csv-mojibake/">CSV文字化け修復ツール</a>、全角数字の変換には<a href="/moji/">全角半角変換</a>、日付形式の確認には<a href="/wareki/">和暦・西暦変換</a>をご利用ください。</p>
+    <div class="disclaimer">※ 番号体系にもとづく形式チェックであり、契約中の番号か、実際につながる番号かは確認できません。緊急通報・特殊番号など一部は対象外です。計算結果はあくまで参考値です。</div>
+  </section>
+  <RelatedTools current={slug} />
+  <Faq items={[
+    {q:'ハイフンの位置は電話番号によって違いますか？',a:'はい。日本の固定電話は市外局番の長さが地域によって異なります。本ツールは電話番号メタデータを使って区切り位置を判定します。'},
+    {q:'+81の電話番号を国内形式へ戻せますか？',a:'はい。+81の後ろにある国内番号へ先頭の0を補い、日本国内向け形式で表示します。'},
+    {q:'複数の電話番号をまとめて変換できますか？',a:'はい。1行に1件ずつ貼り付けると、順番を保ったまま一括変換できます。'},
+    {q:'入力した電話番号は保存されますか？',a:'いいえ。変換はブラウザ内で行われ、入力した番号はサーバーへ送信・保存されません。'},
+  ]}/>
+  <div class="ad-slot"></div>
+</ToolLayout>
+<script>
+  import { formatPhoneLines } from '../../lib/denwa-format.js';
+  const $=(id)=>document.getElementById(id); let tracked=false;
+  function render(){const rows=formatPhoneLines($('phone-input').value);const mode=document.querySelector('input[name="mode"]:checked').value;let valid=0,invalid=0;$('phone-output').value=rows.map(row=>{if(!row.original)return '';if(row.valid){valid++;return mode==='international'?row.international:row.formatted;}invalid++;return row.original;}).join('\n');$('phone-summary').textContent=valid||invalid?`変換できた番号：${valid}件 ／ 確認が必要：${invalid}件`:'電話番号を入力してください';if(valid&&!tracked){window.trackCalculatorResult?.('phone_format');tracked=true;}}
+  $('phone-input').addEventListener('input',render);document.querySelectorAll('input[name="mode"]').forEach(el=>el.addEventListener('change',render));
+  $('sample-button').addEventListener('click',()=>{$('phone-input').value='09012345678\n+81 3 1234 5678\n0120-123-456';render();});
+  $('copy-button').addEventListener('click',async()=>{await navigator.clipboard.writeText($('phone-output').value);$('copy-button').textContent='コピーしました';setTimeout(()=>$('copy-button').textContent='結果をコピー',1500);});
+</script>
+<style>
+  textarea{width:100%;padding:14px;border:1.5px solid var(--border-input);border-radius:var(--r-lg);background:var(--surface-sub);font:1rem/1.65 var(--font-sans);resize:vertical}textarea:focus{outline:0;border-color:var(--cat-color);box-shadow:0 0 0 3px color-mix(in srgb,var(--cat-color) 14%,transparent)}textarea[readonly]{background:var(--cat-tint)}
+  .mode-row{display:flex;gap:10px;margin:-4px 0 18px}.mode-row label{flex:1;padding:13px;border:1.5px solid var(--border);border-radius:var(--r-lg);font-size:.9rem;font-weight:700}.mode-row input{width:1px;height:1px;margin-right:8px}.action-row{display:flex;gap:10px}.primary-button,.secondary-button{flex:1;min-height:48px;border-radius:var(--r-pill);font-weight:800;cursor:pointer}.primary-button{border:0;background:var(--cat-color);color:#fff}.secondary-button{border:1.5px solid var(--border);background:#fff;color:var(--text)}.summary{text-align:center;margin:14px 0 0;color:var(--text-muted);font-size:.85rem}@media(max-width:520px){.mode-row,.action-row{flex-direction:column}}
+</style>

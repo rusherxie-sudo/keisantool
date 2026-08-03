@@ -1,0 +1,156 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'csv-mojibake';
+const title = 'CSV文字化け修復・文字コード変換｜Shift_JIS・UTF-8を無料変換';
+const description = 'CSVの文字化けをブラウザ内で修復。Shift_JIS・CP932・UTF-8・EUC-JPを自動判定し、Excelで開きやすいUTF-8 BOM付きまたはShift_JISへ無料変換できます。ファイル送信・登録不要。';
+const jsonld = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: 'CSV文字化け修復・文字コード変換ツール',
+  description, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['CSV文字コードの自動判定', 'Shift_JIS・UTF-8変換', 'Excel向けUTF-8 BOM出力', 'ブラウザ内処理'],
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/moji-tool/">文字ツール</a> ／ CSV文字化け修復</div>
+    <h1>CSV文字化け修復・文字コード変換</h1>
+    <p>文字化けしたCSVを選ぶだけ。文字コードを判定し、Excelで開けるUTF-8 BOM付きやShift_JISへ変換します。</p>
+    <div class="feature-chips"><span>ファイル送信なし</span><span>自動判定</span><span>プレビュー対応</span><span>登録不要</span></div>
+  </div>
+
+  <div class="calc-card" id="csv-tool">
+    <div class="calc-panel active">
+      <label class="drop-zone" for="csv-file">
+        <strong>CSV・TXTファイルを選択</strong>
+        <span>クリックまたはドラッグ＆ドロップ</span>
+        <input id="csv-file" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain" />
+      </label>
+      <p id="file-name" class="file-name">ファイルはまだ選択されていません</p>
+      <div class="setting-grid">
+        <div class="form-group">
+          <label for="source-encoding">入力文字コード</label>
+          <select id="source-encoding"><option value="auto">自動判定</option><option value="UTF-8">UTF-8</option><option value="Shift_JIS">Shift_JIS / CP932</option><option value="EUC-JP">EUC-JP</option><option value="ISO-2022-JP">ISO-2022-JP</option></select>
+        </div>
+        <div class="form-group">
+          <label for="target-encoding">出力文字コード</label>
+          <select id="target-encoding"><option value="UTF-8-BOM">UTF-8（BOM付き・Excel向け）</option><option value="UTF-8">UTF-8（BOMなし）</option><option value="Shift_JIS">Shift_JIS / CP932</option></select>
+        </div>
+        <div class="form-group">
+          <label for="line-ending">改行コード</label>
+          <select id="line-ending"><option value="CRLF">CRLF（Windows・Excel向け）</option><option value="LF">LF（Mac・Linux向け）</option></select>
+        </div>
+      </div>
+      <div id="csv-status" class="status" hidden aria-live="polite"></div>
+      <section id="preview-wrap" class="preview-wrap" hidden>
+        <div class="preview-head"><strong>先頭20行のプレビュー</strong><span id="preview-note"></span></div>
+        <div class="table-scroll"><table id="csv-preview"></table></div>
+      </section>
+      <button id="download-button" class="primary-button" type="button" disabled>変換したCSVをダウンロード</button>
+    </div>
+  </div>
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>CSVの文字化けを直す方法</h2>
+    <ol><li>文字化けしたCSVまたはTXTを選択します。</li><li>自動判定結果とプレビューを確認します。</li><li>通常は「UTF-8（BOM付き）」を選び、変換後のCSVをダウンロードします。</li></ol>
+    <p>Windows版ExcelでUTF-8のCSVを直接開いたときに文字化けする場合、先頭にBOMを付けるとUTF-8として認識されやすくなります。古い業務システムへ取り込む場合はShift_JISを選べます。</p>
+    <h2>対応する文字コード</h2>
+    <p>UTF-8、UTF-8 BOM、Shift_JIS／CP932、EUC-JP、ISO-2022-JPの読み込みに対応します。文字コードの自動判定は短いファイルや英数字だけのファイルでは確定できないことがあるため、必ずプレビューをご確認ください。</p>
+    <h2>Excelで先頭の0を保持するには</h2>
+    <p>郵便番号や電話番号の先頭0はCSV内に残っていても、Excelが数値として解釈すると表示時に消えることがあります。本ツールは文字コードを変換するもので、Excelの列型は変更しません。取り込み時に該当列を「文字列」として指定してください。</p>
+    <h2>関連する文字ツール</h2>
+    <p><a href="/moji/">全角半角変換・文字数カウント</a>、<a href="/nihongo-seikei/">日本語文章整形</a>、<a href="/denwa-format/">電話番号フォーマット変換</a>も、貼り付けたデータをブラウザ内だけで処理します。</p>
+    <div class="disclaimer">※ ファイルはサーバーへ送信されず、お使いのブラウザ内で処理されます。変換前の原本を保存し、プレビューと変換結果をご確認ください。計算結果はあくまで参考値です。</div>
+  </section>
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: 'CSVファイルはサーバーへアップロードされますか？', a: 'いいえ。選択したファイルの読み込み、判定、変換、ダウンロードはすべてお使いのブラウザ内で行われます。' },
+    { q: 'Excelで開くならどの文字コードがおすすめですか？', a: '新しいExcelではUTF-8 BOM付きが扱いやすい選択です。取り込み先がShift_JISを指定している場合は、その仕様を優先してください。' },
+    { q: '変換後も一部の文字が「?」になります', a: 'Shift_JISに存在しない絵文字や一部Unicode文字は表現できません。UTF-8 BOM付きでの出力をご利用ください。' },
+    { q: 'CSV以外のTXTやTSVも使えますか？', a: '文字コード変換は可能です。プレビューはカンマ区切りとして表示するため、TSVでは1行が1セルに見える場合があります。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { decodeText, encodeText, normalizeCsvLineEndings, parseCsvPreview } from '../../lib/csv-mojibake.js';
+  const $ = (id) => document.getElementById(id);
+  let selectedFile = null;
+  let selectedBytes = null;
+  let decodedText = '';
+
+  function escapeCell(value) {
+    const td = document.createElement('td');
+    td.textContent = value;
+    return td;
+  }
+  function renderPreview() {
+    const rows = parseCsvPreview(decodedText, 20);
+    const table = $('csv-preview');
+    table.replaceChildren();
+    rows.forEach((row, rowIndex) => {
+      const tr = document.createElement('tr');
+      row.forEach((cell) => {
+        const node = rowIndex === 0 ? document.createElement('th') : escapeCell(cell);
+        if (rowIndex === 0) node.textContent = cell;
+        tr.append(node);
+      });
+      table.append(tr);
+    });
+    $('preview-note').textContent = `${rows.length}行を表示`;
+    $('preview-wrap').hidden = rows.length === 0;
+  }
+  function decode() {
+    if (!selectedBytes) return;
+    try {
+      const result = decodeText(selectedBytes, $('source-encoding').value);
+      decodedText = result.text;
+      $('csv-status').hidden = false;
+      $('csv-status').textContent = `判定した文字コード：${result.encoding}　／　ファイルサイズ：${(selectedBytes.length / 1024).toFixed(1)} KB`;
+      $('download-button').disabled = false;
+      renderPreview();
+    } catch {
+      $('csv-status').hidden = false;
+      $('csv-status').textContent = '読み込みに失敗しました。入力文字コードを手動で選択してください。';
+      $('download-button').disabled = true;
+    }
+  }
+  async function loadFile(file) {
+    if (!file) return;
+    selectedFile = file;
+    selectedBytes = new Uint8Array(await file.arrayBuffer());
+    $('file-name').textContent = `${file.name}（${(file.size / 1024).toFixed(1)} KB）`;
+    decode();
+  }
+  $('csv-file').addEventListener('change', (event) => loadFile(event.target.files?.[0]));
+  $('source-encoding').addEventListener('change', decode);
+  const drop = document.querySelector('.drop-zone');
+  drop.addEventListener('dragover', (event) => { event.preventDefault(); drop.classList.add('dragging'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('dragging'));
+  drop.addEventListener('drop', (event) => { event.preventDefault(); drop.classList.remove('dragging'); loadFile(event.dataTransfer.files?.[0]); });
+  $('download-button').addEventListener('click', () => {
+    if (!selectedFile) return;
+    const text = normalizeCsvLineEndings(decodedText, $('line-ending').value);
+    const bytes = encodeText(text, $('target-encoding').value);
+    const blob = new Blob([bytes], { type: 'text/csv;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = selectedFile.name.replace(/\.[^.]+$/, '') + '-converted.csv';
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    window.trackCalculatorResult?.('csv_download');
+  });
+</script>
+
+<style>
+  .drop-zone{display:grid;place-items:center;gap:6px;min-height:150px;padding:24px;border:2px dashed var(--cat-color);border-radius:var(--r-xl);background:var(--cat-tint);cursor:pointer;text-align:center}
+  .drop-zone.dragging{filter:brightness(.96);transform:scale(.995)} .drop-zone strong{font-size:1.05rem}.drop-zone span,.file-name{color:var(--text-muted);font-size:.85rem}.drop-zone input{position:absolute;width:1px;height:1px;opacity:0}
+  .file-name{text-align:center;margin:10px 0 22px}.setting-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.status{padding:14px 16px;border-radius:var(--r-lg);background:var(--cat-tint);font-weight:700;margin-bottom:18px}
+  .preview-wrap{margin:8px 0 20px}.preview-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px}.preview-head span{font-size:.8rem;color:var(--text-muted)}.table-scroll{overflow:auto;max-height:340px;border:1px solid var(--border);border-radius:var(--r-lg)}
+  #csv-preview{border-collapse:collapse;min-width:100%;font-size:.82rem}#csv-preview :global(th),#csv-preview :global(td){padding:9px 12px;border:1px solid var(--border);white-space:pre-wrap;max-width:320px}#csv-preview :global(th){position:sticky;top:0;background:var(--cat-tint);text-align:left}
+  .primary-button{width:100%;min-height:52px;border:0;border-radius:var(--r-pill);background:var(--cat-color);color:#fff;font-weight:800;font-size:1rem;cursor:pointer}.primary-button:disabled{opacity:.4;cursor:not-allowed}
+  @media(max-width:760px){.setting-grid{grid-template-columns:1fr}.drop-zone{min-height:130px}.preview-head{align-items:flex-start;flex-direction:column}}
+</style>

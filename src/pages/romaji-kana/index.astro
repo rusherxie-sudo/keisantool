@@ -1,0 +1,53 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+const slug='romaji-kana';
+const title='ローマ字・かな変換｜ひらがな・カタカナを無料で相互変換';
+const description='ひらがな・カタカナをローマ字へ、ローマ字をひらがな・カタカナへ無料変換。ヘボン式・訓令式、促音・拗音・長音に対応し、名前や日本語学習にも使えます。';
+const jsonld={'@context':'https://schema.org','@type':'WebApplication',name:'ローマ字・かな変換ツール',description,applicationCategory:'EducationalApplication',operatingSystem:'Web',offers:{'@type':'Offer',price:'0',priceCurrency:'JPY'},featureList:['かなからローマ字へ変換','ローマ字からひらがな・カタカナへ変換','ヘボン式・訓令式対応','促音・拗音・長音対応']};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/moji-tool/">文字ツール</a> ／ ローマ字・かな</div><h1>ローマ字・かな変換ツール</h1><p>ひらがな・カタカナ・ローマ字を入力するだけで相互変換。ヘボン式と訓令式を選べます。</p></div>
+  <div class="calc-card" id="romaji-tool">
+    <div class="calc-panel active">
+      <div class="control-grid">
+        <div class="form-group"><label for="direction">変換方向</label><select id="direction"><option value="kana-romaji">かな → ローマ字</option><option value="romaji-hira">ローマ字 → ひらがな</option><option value="romaji-kata">ローマ字 → カタカナ</option></select></div>
+        <div class="form-group" id="system-group"><label for="system">ローマ字の方式</label><select id="system"><option value="hepburn">ヘボン式（shi・chi・tsu）</option><option value="kunrei">訓令式（si・ti・tu）</option></select></div>
+      </div>
+      <div class="editor-grid">
+        <div class="form-group"><label for="romaji-input">変換する文字</label><textarea id="romaji-input" rows="9" placeholder="例：がっこう しんぶん ちゃ"></textarea></div>
+        <div class="swap" aria-hidden="true">→</div>
+        <div class="form-group"><label for="romaji-output">変換結果</label><textarea id="romaji-output" rows="9" readonly></textarea></div>
+      </div>
+      <div class="button-row"><button id="sample-button" class="secondary-button" type="button">例を入力</button><button id="copy-button" class="primary-button" type="button">結果をコピー</button></div>
+    </div>
+  </div>
+  <div class="ad-slot"></div>
+  <section class="howto">
+    <h2>ローマ字・かな変換の使い方</h2><p>変換方向を選び、文字を入力すると結果が自動表示されます。「がっこう」の促音、「しゃ」の拗音、「スーパー」の長音にも対応します。</p>
+    <h2>ヘボン式と訓令式の違い</h2><p>ヘボン式は英語話者が発音しやすい「し＝shi、ち＝chi、つ＝tsu」を使い、駅名や案内表示などで広く見られます。訓令式は日本語の音の規則を重視し、「し＝si、ち＝ti、つ＝tu」と表します。提出先が方式を指定している場合は、その規則を優先してください。</p>
+    <h2>名前をローマ字にするときの注意</h2><p>本ツールは入力された<strong>読み仮名</strong>をローマ字へ変換します。漢字の氏名には複数の読み方があるため、漢字だけから正しい読みを自動決定することはできません。パスポートや公的書類では、長音や「ん」の表記を含めて発行機関の案内をご確認ください。</p>
+    <h2>関連する日本語変換</h2><p>ひらがなとカタカナだけを変換する場合は<a href="/moji/">全角半角・かな変換</a>、余分な改行や空白を直す場合は<a href="/nihongo-seikei/">日本語文章整形</a>、文字数やUTF-8バイト数は<a href="/moji/">文字数カウント</a>が便利です。</p>
+    <div class="disclaimer">※ 固有名詞、外来語、パスポート表記には個別の例外があります。提出用の表記は必ず提出先の規則をご確認ください。計算結果はあくまで参考値です。</div>
+  </section>
+  <RelatedTools current={slug}/>
+  <Faq items={[
+    {q:'「し」はshiとsiのどちらですか？',a:'ヘボン式ではshi、訓令式ではsiです。本ツールは方式を切り替えて確認できます。'},
+    {q:'小さい「っ」や「ゃ・ゅ・ょ」に対応していますか？',a:'はい。「がっこう→gakkou」「しゃ→sha」のように促音と拗音を変換します。'},
+    {q:'漢字の名前をカタカナへ変換できますか？',a:'漢字には複数の読みがあるため、漢字だけから唯一の正しい読みは決められません。読み仮名を入力してご利用ください。'},
+    {q:'入力した名前や文章は送信されますか？',a:'いいえ。変換はお使いのブラウザ内で完結し、入力内容はサーバーへ送信されません。'},
+  ]}/>
+  <div class="ad-slot"></div>
+</ToolLayout>
+<script>
+  import { kanaToRomaji,romajiToHiragana,romajiToKatakana } from '../../lib/romaji-kana.js';
+  const $=(id)=>document.getElementById(id);let tracked=false;
+  function render(){const value=$('romaji-input').value;const direction=$('direction').value;$('system-group').hidden=direction!=='kana-romaji';let output='';if(direction==='kana-romaji')output=kanaToRomaji(value,$('system').value);else if(direction==='romaji-hira')output=romajiToHiragana(value);else output=romajiToKatakana(value);$('romaji-output').value=output;if(output&&!tracked){window.trackCalculatorResult?.(direction);tracked=true;}}
+  ['romaji-input','direction','system'].forEach(id=>$(id).addEventListener(id==='romaji-input'?'input':'change',render));
+  $('sample-button').addEventListener('click',()=>{const direction=$('direction').value;$('romaji-input').value=direction==='kana-romaji'?'がっこう しんぶん ちゃ スーパー':'gakkou shinbun cha suupaa';render();});
+  $('copy-button').addEventListener('click',async()=>{await navigator.clipboard.writeText($('romaji-output').value);$('copy-button').textContent='コピーしました';setTimeout(()=>$('copy-button').textContent='結果をコピー',1500);});
+</script>
+<style>
+  .control-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.editor-grid{display:grid;grid-template-columns:1fr 34px 1fr;align-items:center}.swap{text-align:center;font-size:1.5rem;color:var(--cat-color)}textarea{width:100%;padding:14px;border:1.5px solid var(--border-input);border-radius:var(--r-lg);background:var(--surface-sub);font:1rem/1.7 var(--font-sans);resize:vertical}textarea:focus{outline:0;border-color:var(--cat-color)}textarea[readonly]{background:var(--cat-tint)}.button-row{display:flex;gap:10px}.primary-button,.secondary-button{flex:1;min-height:50px;border-radius:var(--r-pill);font-weight:800;cursor:pointer}.primary-button{border:0;background:var(--cat-color);color:#fff}.secondary-button{border:1.5px solid var(--border);background:#fff}@media(max-width:700px){.control-grid,.editor-grid{grid-template-columns:1fr}.swap{transform:rotate(90deg);margin:-6px}.button-row{flex-direction:column}}
+</style>

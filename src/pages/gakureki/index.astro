@@ -1,0 +1,54 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+const slug='gakureki';
+const title='入学・卒業年度計算｜生年月日から履歴書の学歴を自動計算';
+const description='生年月日から小学校・中学校・高校・大学・短大・専門学校・大学院の入学年と卒業年を自動計算。早生まれ、浪人、留年、西暦・和暦に対応した履歴書用の無料学歴早見ツール。';
+const jsonld={'@context':'https://schema.org','@type':'WebApplication',name:'入学・卒業年度計算ツール',description,applicationCategory:'BusinessApplication',operatingSystem:'Web',offers:{'@type':'Offer',price:'0',priceCurrency:'JPY'},featureList:['生年月日から学歴年月を計算','早生まれ対応','浪人・留年対応','西暦・和暦表示']};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 入学・卒業年度</div><h1>入学・卒業年度計算ツール</h1><p>生年月日から入学・卒業年月を自動計算。早生まれ、浪人、留年、和暦表示にも対応します。</p></div>
+  <div class="calc-card" id="history-tool"><div class="calc-panel active">
+    <div class="input-grid">
+      <div class="form-group"><label for="birth-date">生年月日</label><input id="birth-date" type="date" /></div>
+      <div class="form-group"><label for="higher-type">高校卒業後</label><select id="higher-type"><option value="university">大学（4年制）</option><option value="university-6">大学（6年制）</option><option value="junior-college">短期大学</option><option value="vocational-2">専門学校（2年制）</option><option value="vocational-3">専門学校（3年制）</option><option value="none">進学なし</option></select></div>
+      <div class="form-group"><label for="entrance-delay">浪人・入学延期</label><select id="entrance-delay"><option value="0">なし</option><option value="1">1年</option><option value="2">2年</option><option value="3">3年</option></select></div>
+      <div class="form-group"><label for="graduation-delay">留年・休学による延長</label><select id="graduation-delay"><option value="0">なし</option><option value="1">1年</option><option value="2">2年</option><option value="3">3年</option></select></div>
+      <div class="form-group"><label for="calendar">表示</label><select id="calendar"><option value="both">西暦＋和暦</option><option value="western">西暦</option><option value="wareki">和暦</option></select></div>
+      <label class="check-row"><input id="graduate-school" type="checkbox" /> 大学院（修士課程）も表示</label>
+    </div>
+    <p id="history-error" class="error" hidden></p>
+    <section id="history-result" class="result" hidden aria-live="polite">
+      <div class="result-head"><strong>履歴書用 学歴年月</strong><button id="copy-button" type="button">学歴をコピー</button></div>
+      <div class="table-scroll"><table><thead><tr><th>学校</th><th>入学</th><th>卒業</th></tr></thead><tbody id="history-rows"></tbody></table></div>
+      <p id="cohort-note"></p>
+    </section>
+  </div></div>
+  <div class="ad-slot"></div>
+  <section class="howto">
+    <h2>履歴書の入学・卒業年度を計算</h2><p>生年月日を入力すると、日本の標準的な就学年数にもとづき、小学校から高校、その後の大学・短大・専門学校までの入学年月と卒業年月を表示します。結果はそのままコピーして履歴書の下書きに使えます。</p>
+    <h2>早生まれは4月1日まで</h2><p>日本の学年は<strong>4月2日生まれから翌年4月1日生まれまで</strong>が同じ学年です。1月1日から4月1日生まれは、同じ西暦年の4月2日以降に生まれた人より1学年上になります。本ツールは4月1日と4月2日の境界を日付から自動判定します。</p>
+    <h2>浪人・留年・休学がある場合</h2><p>浪人年数は高校卒業後の入学年へ、留年・休学年数は選択した高等教育機関の卒業年へ加算します。転校、飛び級、秋入学、海外の学校、留年時期によって実際の経歴と異なる場合は、卒業証書などの原本を優先してください。</p>
+    <h2>履歴書は西暦と和暦のどちらで書く？</h2><p>どちらでも構いませんが、履歴書全体で統一することが大切です。和暦と西暦の個別変換は<a href="/wareki/">和暦・西暦変換</a>、現在の年齢・学年・干支は<a href="/nenrei/">年齢計算器</a>、年度ごとの学年一覧は<a href="/gakunen-hayami/">学年早見表</a>で確認できます。</p>
+    <div class="disclaimer">※ 標準的な4月入学・修業年限にもとづく参考結果です。転校、編入、留学、休学、秋入学などは反映されません。最終的には卒業証書・学校の記録をご確認ください。計算結果はあくまで参考値です。</div>
+  </section>
+  <RelatedTools current={slug}/>
+  <Faq items={[
+    {q:'4月1日生まれは早生まれですか？',a:'はい。日本の同一学年は4月2日から翌年4月1日までなので、4月1日生まれは前年度の学年に入ります。'},
+    {q:'浪人した年数を反映できますか？',a:'はい。高校卒業後の入学延期を0～3年から選択できます。'},
+    {q:'大学の留年や休学も計算できますか？',a:'卒業延長年数として0～3年を加算できます。実際の在籍年月は学校の記録をご確認ください。'},
+    {q:'和暦で履歴書用の年月を表示できますか？',a:'はい。西暦、和暦、西暦と和暦の併記から選べます。'},
+  ]}/><div class="ad-slot"></div>
+</ToolLayout>
+<script>
+  import { academicHistory,formatAcademicMonth } from '../../lib/gakureki.js';
+  const $=(id)=>document.getElementById(id);let copyText='';let tracked=false;
+  const rowLabels={elementary:'小学校',juniorHigh:'中学校',highSchool:'高等学校'};
+  function addRow(label,period,calendar){const tr=document.createElement('tr');[label,formatAcademicMonth(period.admission,calendar),formatAcademicMonth(period.graduation,calendar)].forEach(value=>{const td=document.createElement('td');td.textContent=value;tr.append(td);});$('history-rows').append(tr);return `${formatAcademicMonth(period.admission,calendar)}　${label} 入学\n${formatAcademicMonth(period.graduation,calendar)}　${label} 卒業`;}
+  function render(){const birth=$('birth-date').value;if(!birth){$('history-result').hidden=true;$('history-error').hidden=true;return;}const result=academicHistory(birth,{higherEducation:$('higher-type').value,entranceDelay:$('entrance-delay').value,graduationDelay:$('graduation-delay').value,graduateSchool:$('graduate-school').checked});if(!result){$('history-error').textContent='正しい生年月日を入力してください。';$('history-error').hidden=false;$('history-result').hidden=true;return;}$('history-error').hidden=true;$('history-rows').replaceChildren();const calendar=$('calendar').value;const lines=[];Object.entries(rowLabels).forEach(([key,label])=>lines.push(addRow(label,result[key],calendar)));if(result.higher)lines.push(addRow(result.higher.label,result.higher,calendar));if(result.graduate)lines.push(addRow(result.graduate.label,result.graduate,calendar));copyText=lines.join('\n');$('cohort-note').textContent=`${result.cohort}年4月2日～${result.cohort+1}年4月1日生まれの学年として計算`;$('history-result').hidden=false;if(!tracked){window.trackCalculatorResult?.('academic_history');tracked=true;}}
+  ['birth-date','higher-type','entrance-delay','graduation-delay','calendar','graduate-school'].forEach(id=>$(id).addEventListener('change',render));$('copy-button').addEventListener('click',async()=>{await navigator.clipboard.writeText(copyText);$('copy-button').textContent='コピーしました';setTimeout(()=>$('copy-button').textContent='学歴をコピー',1500);});
+</script>
+<style>
+  .input-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.check-row{display:flex;align-items:center;gap:9px;min-height:56px;padding:0 14px;border:1.5px solid var(--border);border-radius:var(--r-lg);font-size:.88rem;font-weight:700}.check-row input{width:18px;height:18px}.error{padding:12px;background:#fff0f0;color:#b42318;border-radius:var(--r-lg)}.result{margin-top:12px}.result-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.result-head strong{font-size:1.05rem}.result-head button{border:0;border-radius:var(--r-pill);background:var(--cat-color);color:white;padding:10px 18px;font-weight:800}.table-scroll{overflow:auto;border:1px solid var(--border);border-radius:var(--r-lg)}table{width:100%;border-collapse:collapse;min-width:620px}th,td{padding:13px 15px;border-bottom:1px solid var(--border);text-align:left}th{background:var(--cat-tint);font-size:.82rem}td{font-size:.9rem}#cohort-note{font-size:.8rem;color:var(--text-muted);margin:10px 0 0}@media(max-width:760px){.input-grid{grid-template-columns:1fr}.result-head{align-items:flex-start;gap:10px;flex-direction:column}}
+</style>

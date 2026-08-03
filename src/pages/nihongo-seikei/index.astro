@@ -1,0 +1,53 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+const slug='nihongo-seikei';
+const title='日本語文章整形｜空白・改行・句読点をコピペで一括修正';
+const description='日本語文章の重複空白、余分な改行、空行、カンマ・ピリオドを無料で一括整形。PDFからコピーした不自然な折り返しも結合できます。入力内容はブラウザ内だけで処理。';
+const jsonld={'@context':'https://schema.org','@type':'WebApplication',name:'日本語文章整形ツール',description,applicationCategory:'UtilitiesApplication',operatingSystem:'Web',offers:{'@type':'Offer',price:'0',priceCurrency:'JPY'},featureList:['重複空白の整理','空行の圧縮','日本語句読点の統一','PDF折り返し改行の結合','Unicode正規化']};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/moji-tool/">文字ツール</a> ／ 日本語文章整形</div><h1>日本語文章整形ツール</h1><p>余分な空白・改行・句読点をコピペで整理。PDFからコピーした文章の折り返しも修正できます。</p></div>
+  <div class="calc-card" id="seikei-tool"><div class="calc-panel active">
+    <div class="option-grid">
+      <label><input id="spaces" type="checkbox" checked/> 重複空白を1つに</label>
+      <label><input id="trim-lines" type="checkbox" checked/> 行頭・行末を整理</label>
+      <label><input id="blank-lines" type="checkbox" checked/> 連続する空行を圧縮</label>
+      <label><input id="punctuation" type="checkbox" checked/> 「, .」を「、。」へ</label>
+      <label><input id="join-wrapped" type="checkbox"/> PDFの折り返し改行を結合</label>
+      <label><input id="unicode" type="checkbox" checked/> Unicode表記を統一</label>
+    </div>
+    <div class="editor-grid">
+      <div class="form-group"><label for="seikei-input">整形前</label><textarea id="seikei-input" rows="11" placeholder="整形したい日本語文章を貼り付けてください"></textarea></div>
+      <div class="form-group"><label for="seikei-output">整形後</label><textarea id="seikei-output" rows="11" readonly></textarea></div>
+    </div>
+    <div class="metrics"><span>整形前 <strong id="before-count">0</strong>文字</span><span>整形後 <strong id="after-count">0</strong>文字</span><span>削減 <strong id="reduced-count">0</strong>文字</span></div>
+    <div class="button-row"><button id="sample-button" class="secondary-button" type="button">例を入力</button><button id="copy-button" class="primary-button" type="button">整形結果をコピー</button></div>
+  </div></div>
+  <div class="ad-slot"></div>
+  <section class="howto">
+    <h2>日本語文章をきれいに整形</h2><p>メール、議事録、Web原稿、生成AIの文章、PDFからコピーしたテキストなどを貼り付けると、選択したルールで自動整形します。処理したくない項目はチェックを外せます。</p>
+    <h2>PDFからコピーした改行を削除</h2><p>PDFでは見た目の折り返しが改行としてコピーされ、文章の途中で行が切れることがあります。「PDFの折り返し改行を結合」を有効にすると、句点で終わっていない行を次の行へ結合します。段落の空行と「・」などの箇条書きはできるだけ保持します。</p>
+    <h2>空白と句読点の表記を統一</h2><p>全角スペースと連続する半角スペースを1つの半角スペースへ整理し、行頭・行末の不要な空白を削除します。日本語文字の後ろにあるカンマとピリオドは読点・句点へ変換します。小数点などを含む技術文書ではプレビューを確認してください。</p>
+    <h2>ほかの文字変換</h2><p>全角半角やひらがな・カタカナの変換、文字数・バイト数・原稿用紙枚数は<a href="/moji/">文字変換・文字数カウント</a>、ローマ字変換は<a href="/romaji-kana/">ローマ字・かな変換</a>、CSVファイルの文字化けには<a href="/csv-mojibake/">CSV文字コード変換</a>をご利用ください。</p>
+    <div class="disclaimer">※ 自動整形により意図した改行や記号が変わる場合があります。原文を保存し、整形後の内容をご確認ください。入力内容はサーバーへ送信されません。計算結果はあくまで参考値です。</div>
+  </section>
+  <RelatedTools current={slug}/>
+  <Faq items={[
+    {q:'PDFからコピーした文章の改行を消せますか？',a:'はい。「PDFの折り返し改行を結合」を選ぶと、文章途中の改行を結合し、空行や箇条書きはできるだけ残します。'},
+    {q:'すべての改行が削除されますか？',a:'通常は連続空行だけを圧縮します。PDF折り返し結合を有効にした場合も、句点で終わる行や箇条書きは保持します。'},
+    {q:'半角と全角も変換できますか？',a:'このページは文章構造の整形用です。英数字やカタカナの全角・半角変換には、当サイトの全角半角変換ツールをご利用ください。'},
+    {q:'入力した文章は保存されますか？',a:'いいえ。すべてブラウザ内で処理し、文章はサーバーへ送信・保存されません。'},
+  ]}/><div class="ad-slot"></div>
+</ToolLayout>
+<script>
+  import { normalizeJapaneseText } from '../../lib/nihongo-seikei.js';
+  const $=(id)=>document.getElementById(id);let tracked=false;
+  function render(){const input=$('seikei-input').value;const output=normalizeJapaneseText(input,{spaces:$('spaces').checked,trimLines:$('trim-lines').checked,blankLines:$('blank-lines').checked,punctuation:$('punctuation').checked,joinWrapped:$('join-wrapped').checked,unicode:$('unicode').checked?'NFC':false});$('seikei-output').value=output;const before=[...input].length,after=[...output].length;$('before-count').textContent=before.toLocaleString('ja-JP');$('after-count').textContent=after.toLocaleString('ja-JP');$('reduced-count').textContent=Math.max(0,before-after).toLocaleString('ja-JP');if(output&&!tracked){window.trackCalculatorResult?.('text_normalize');tracked=true;}}
+  $('seikei-input').addEventListener('input',render);document.querySelectorAll('.option-grid input').forEach(el=>el.addEventListener('change',render));
+  $('sample-button').addEventListener('click',()=>{$('seikei-input').value=' 今日は　　晴れ,  \n\n\n明日も晴れ.\n\nこれはPDFから\nコピーした文章です。';render();});$('copy-button').addEventListener('click',async()=>{await navigator.clipboard.writeText($('seikei-output').value);$('copy-button').textContent='コピーしました';setTimeout(()=>$('copy-button').textContent='整形結果をコピー',1500);});
+</script>
+<style>
+  .option-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:18px}.option-grid label{display:flex;align-items:center;gap:8px;padding:11px 12px;border:1.5px solid var(--border);border-radius:var(--r-lg);font-size:.84rem;font-weight:700}.option-grid input{width:17px;height:17px}.editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}textarea{width:100%;padding:14px;border:1.5px solid var(--border-input);border-radius:var(--r-lg);background:var(--surface-sub);font:1rem/1.75 var(--font-sans);resize:vertical}textarea:focus{outline:0;border-color:var(--cat-color)}textarea[readonly]{background:var(--cat-tint)}.metrics{display:flex;justify-content:center;flex-wrap:wrap;gap:16px;margin:0 0 16px;color:var(--text-muted);font-size:.84rem}.metrics strong{color:var(--cat-color)}.button-row{display:flex;gap:10px}.primary-button,.secondary-button{flex:1;min-height:50px;border-radius:var(--r-pill);font-weight:800;cursor:pointer}.primary-button{border:0;background:var(--cat-color);color:#fff}.secondary-button{border:1.5px solid var(--border);background:#fff}@media(max-width:740px){.option-grid{grid-template-columns:1fr 1fr}.editor-grid{grid-template-columns:1fr}.button-row{flex-direction:column}}@media(max-width:430px){.option-grid{grid-template-columns:1fr}}
+</style>

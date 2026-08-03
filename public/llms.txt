@@ -36,6 +36,7 @@
 - [出産予定日計算器](https://keisantool.com/shussan/): 妊娠週数・予定日
 - [厄年チェッカー](https://keisantool.com/yakudoshi/): 前厄・本厄・後厄
 - [給与・時給・残業代計算器](https://keisantool.com/kyuyo/): 時給・残業代・手取り
+- [入学・卒業年度計算ツール](https://keisantool.com/gakureki/): 生年月日から学歴欄の入学・卒業年月を計算
 - [時差計算ツール](https://keisantool.com/jisa/): 日本と世界の現在時刻・時間変換
 - [ガソリン代・燃費計算ツール](https://keisantool.com/gasoline/): 通勤・旅行の交通費と実燃費を計算
 - [割り勘計算ツール](https://keisantool.com/warikai/): 端数処理・幹事調整・傾斜配分に対応
@@ -67,10 +68,14 @@
 ## 文字ツール
 
 - [全角半角変換・文字数カウントツール](https://keisantool.com/moji/): 全角半角・かな・文字数カウント
+- [CSV文字化け修復・文字コード変換ツール](https://keisantool.com/csv-mojibake/): Shift_JIS・UTF-8を判定してExcel向けに変換
+- [ローマ字・かな変換ツール](https://keisantool.com/romaji-kana/): ひらがな・カタカナ・ローマ字を相互変換
+- [日本語文章整形ツール](https://keisantool.com/nihongo-seikei/): 空白・改行・句読点をコピペで一括整理
 
 ## 変換・ツール
 
 - [平方根・ルート計算機](https://keisantool.com/heihoukon/): 平方根・根号の簡約・n乗根を計算
+- [電話番号フォーマット変換ツール](https://keisantool.com/denwa-format/): 日本の電話番号にハイフンを自動追加
 - [カラーコード変換ツール](https://keisantool.com/color-code/): HEX・RGB・HSL・抵抗カラーコード
 - [単位変換器](https://keisantool.com/tani/): 長さ・重さ・面積・温度ほか
 - [坪・平米（㎡）換算ツール](https://keisantool.com/tsubo-heibei/): 坪・平米・畳と縦横面積を換算
