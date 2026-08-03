@@ -39,6 +39,7 @@
 - [入学・卒業年度計算ツール](https://keisantool.com/gakureki/): 生年月日から学歴欄の入学・卒業年月を計算
 - [時差計算ツール](https://keisantool.com/jisa/): 日本と世界の現在時刻・時間変換
 - [ガソリン代・燃費計算ツール](https://keisantool.com/gasoline/): 通勤・旅行の交通費と実燃費を計算
+- [電気代・消費電力計算ツール](https://keisantool.com/denki-dai/): W・使用時間・単価から電気代を計算
 - [割り勘計算ツール](https://keisantool.com/warikai/): 端数処理・幹事調整・傾斜配分に対応
 - [産休・育休計算器](https://keisantool.com/saniku/): 休業期間・出産手当金・育休給付金
 - [傷病手当金計算シミュレーション](https://keisantool.com/shoubyou/): 支給日額・期間・総額を計算

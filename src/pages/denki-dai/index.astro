@@ -1,0 +1,189 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { calculateElectricityCost, wattsFromVoltageCurrent } from '../../lib/denki-dai.js';
+
+const slug = 'denki-dai';
+const title = '電気代・消費電力計算ツール｜W・使用時間・1kWh単価から料金を計算';
+const description = '消費電力（W）、使用時間、日数、電力量料金単価から電気代を無料計算。kWh・1日あたりの目安、100VとAからWを求める計算にも対応します。';
+const example = calculateElectricityCost({ watts: 600, hoursPerDay: 3, days: 30, unitPrice: 31 });
+const wattsExample = wattsFromVoltageCurrent(100, 8);
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '電気代・消費電力計算ツール',
+  description,
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 電気代計算</div>
+    <h1>電気代・消費電力計算ツール</h1>
+    <p>家電のW数、使う時間、日数、1kWhあたりの単価から、電気代と使用電力量を計算します。</p>
+    <div class="feature-chips" aria-label="対応する計算"><span>電気代</span><span>kWh換算</span><span>1日・1か月の目安</span><span>V・AからW</span></div>
+  </div>
+
+  <div class="calc-card electricity-card">
+    <div class="electricity-tabs" role="tablist" aria-label="計算の種類">
+      <button type="button" class="electricity-tab is-active" data-mode="cost" role="tab" aria-selected="true">電気代を計算<small>W × 時間 × 単価</small></button>
+      <button type="button" class="electricity-tab" data-mode="power" role="tab" aria-selected="false">消費電力を計算<small>V × A → W</small></button>
+    </div>
+    <div class="calc-panel active electricity-panel">
+      <section class="electricity-mode" data-panel="cost">
+        <h2>消費電力から電気代を計算</h2>
+        <p class="mode-lead">本体や取扱説明書にある消費電力（W）と、実際に使う時間を入力してください。</p>
+        <div class="input-grid">
+          <div class="form-group"><label for="watts">消費電力（W）</label><input id="watts" type="number" min="0" step="any" value="600" inputmode="decimal" /></div>
+          <div class="form-group"><label for="hours">1日の使用時間（時間）</label><input id="hours" type="number" min="0" step="any" value="3" inputmode="decimal" /></div>
+          <div class="form-group"><label for="days">使用日数（日）</label><input id="days" type="number" min="0.1" step="any" value="30" inputmode="decimal" /></div>
+          <div class="form-group"><label for="unit-price">電力量料金単価（円/kWh）</label><input id="unit-price" type="number" min="0.1" step="any" value="31" inputmode="decimal" /></div>
+        </div>
+        <div class="preset-row" aria-label="よく使う期間"><span>期間の目安</span><button type="button" data-days="1">1日</button><button type="button" data-days="7">1週間</button><button type="button" data-days="30">30日</button><button type="button" data-days="31">31日</button></div>
+        <p class="form-error" id="cost-error" role="alert" hidden></p>
+        <div class="cost-result" id="cost-result" aria-live="polite">
+          <div class="result-main"><span>電気代の目安</span><strong id="cost-yen">1,674円</strong><small id="cost-period">30日間</small></div>
+          <div class="result-grid"><div><span>使用電力量</span><strong id="cost-kwh">54kWh</strong></div><div><span>1日あたり</span><strong id="cost-daily">55円</strong></div><div><span>計算式</span><strong id="cost-formula">0.6kW × 3時間 × 30日 × 31円</strong></div></div>
+        </div>
+      </section>
+
+      <section class="electricity-mode" data-panel="power" hidden>
+        <h2>電圧・電流から消費電力（W）を計算</h2>
+        <p class="mode-lead">交流機器の概算として、電圧（V）に電流（A）を掛けて求めます。力率や交流条件が分かる機器は、銘板・仕様書の値を優先してください。</p>
+        <div class="input-grid two-columns">
+          <div class="form-group"><label for="voltage">電圧（V）</label><input id="voltage" type="number" min="0.1" step="any" value="100" inputmode="decimal" /></div>
+          <div class="form-group"><label for="current">電流（A）</label><input id="current" type="number" min="0.1" step="any" value="8" inputmode="decimal" /></div>
+        </div>
+        <p class="form-error" id="power-error" role="alert" hidden></p>
+        <div class="power-result" id="power-result" aria-live="polite"><span>消費電力の目安</span><strong id="power-watts">800W</strong><small id="power-formula">100V × 8A</small></div>
+      </section>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>電気代の計算式</h2>
+    <div class="formula-cards"><div><span>使用電力量</span><strong>W ÷ 1,000 × 時間 × 日数</strong><small>単位はkWh</small></div><div><span>電気代</span><strong>使用電力量 × 円/kWh</strong><small>基本料金は別途</small></div><div><span>消費電力</span><strong>電圧V × 電流A</strong><small>交流では概算</small></div></div>
+    <p>消費電力600Wの家電を毎日3時間、30日間使い、単価を31円/kWhとする場合、600÷1,000×3×30＝{example.kwh}kWhです。電気代は{example.kwh}×31＝<strong>{example.cost.toLocaleString('ja-JP')}円</strong>となります。</p>
+  </section>
+
+  <section class="howto">
+    <h2>「1kWhあたりの単価」はどこで確認する？</h2>
+    <p>電気料金の明細では、電力量料金の単価がkWhあたりで記載されます。ただし実際の請求額には基本料金、燃料費調整額、再生可能エネルギー発電促進賦課金、各種割引などが含まれる場合があります。このツールには、ご自身の契約・明細に合う単価を入力してください。</p>
+    <p>料金プランが段階制の場合は、使用量に応じて単価が変わります。家電1台の追加使用量を概算するときは、該当する段階の単価を使うと目安をつかめます。世帯全体の正確な請求額を再現するものではありません。</p>
+  </section>
+
+  <section class="howto">
+    <h2>W数と実際の消費電力量の違い</h2>
+    <p>製品に表示されたW数は最大消費電力や定格消費電力の場合があります。エアコン、冷蔵庫、炊飯器などは運転状態によって消費電力が変わるため、常に表示W数で動くわけではありません。電気代の実績を確認するには、ワットチェッカーや電力会社の使用量明細も併用してください。</p>
+    <p>100Vで8Aなら、単純計算では100×8＝<strong>{wattsExample}W</strong>です。一方、モーターやACアダプターなどの交流機器は力率の影響を受けることがあるため、仕様書に消費電力（W）が書かれている場合はその値を優先します。</p>
+  </section>
+
+  <section class="howto">
+    <h2>節電の比較に使うときの注意</h2>
+    <ul><li>同じ家電でも設定温度、室温、扉の開閉、運転モードで使用電力量は変わります。</li><li>「1日あたり」は合計額を日数で割った目安です。実際には毎日の使い方で変動します。</li><li>家電を買い替える比較では、カタログの年間消費電力量（kWh/年）を使うと条件をそろえやすくなります。</li><li>電気工事やコンセント容量の判断には使わず、資格を持つ電気工事士または販売店にご相談ください。</li></ul>
+    <p>割合で節電率を比較する場合は<a href="/wariai/">割合・パーセント計算</a>、時間の合計・換算は<a href="/jikan/">時間計算ツール</a>、床面積の換算は<a href="/tsubo-heibei/">坪・平米換算ツール</a>も利用できます。</p>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料</h2>
+    <ul><li><a href="https://www.enecho.meti.go.jp/" target="_blank" rel="noopener noreferrer">資源エネルギー庁</a>：省エネルギーと電気料金に関する公的情報。</li><li><a href="https://www.eccj.or.jp/" target="_blank" rel="noopener noreferrer">省エネルギーセンター</a>：家庭での省エネに関する情報。</li></ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の請求額は契約プラン、基本料金、燃料費調整額、再エネ賦課金、使用状況などにより異なります。電気工事・容量判定には使用しないでください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '電気代はどう計算しますか？', a: '消費電力をkWへ換算し、使用時間と日数を掛けてkWhを求め、電力量料金単価を掛けます。600Wを3時間ずつ30日使うと、0.6×3×30＝54kWhです。' },
+    { q: '1kWhあたりの単価は何円ですか？', a: '契約プラン、地域、使用量の段階、燃料費調整額などで変わります。電気料金の明細または電力会社の料金表で確認し、その値を入力してください。' },
+    { q: 'WとkWhの違いは何ですか？', a: 'Wはその時点の消費電力、kWhは一定時間に使った電力量です。たとえば100Wを10時間使うと1kWhです。' },
+    { q: '電気代に基本料金は含まれますか？', a: '含まれません。このツールは入力した消費電力による電力量料金の目安です。基本料金や各種調整額は別にかかる場合があります。' },
+    { q: '100VとAからWを計算できますか？', a: '概算では電圧V×電流Aで求められます。ただし交流機器は力率の影響を受けるため、仕様書にW表示があるときはその値を優先してください。' },
+    { q: 'エアコンの電気代にも使えますか？', a: '目安として使えますが、エアコンは室温、設定温度、断熱性、運転モードで消費電力が大きく変わります。定格値だけでは実際の月額と一致しない場合があります。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calculateElectricityCost, wattsFromVoltageCurrent } from '../../lib/denki-dai.js';
+  const $ = (id) => document.getElementById(id);
+  const numberValue = (id) => { const raw = $(id).value.trim(); return raw === '' ? Number.NaN : Number(raw); };
+  const format = (value, digits = 4) => Number(value.toFixed(digits)).toLocaleString('ja-JP', { maximumFractionDigits: digits });
+  const showError = (id, message) => { const element = $(id); element.textContent = message; element.hidden = !message; };
+
+  function updateCost() {
+    const result = calculateElectricityCost({ watts: numberValue('watts'), hoursPerDay: numberValue('hours'), days: numberValue('days'), unitPrice: numberValue('unit-price') });
+    showError('cost-error', result ? '' : '消費電力と使用時間は0以上、日数と単価は0より大きい数値を入力してください。');
+    $('cost-result').hidden = !result;
+    if (!result) return;
+    $('cost-yen').textContent = `${result.cost.toLocaleString('ja-JP')}円`;
+    $('cost-period').textContent = `${format(result.days, 2)}日間`;
+    $('cost-kwh').textContent = `${format(result.kwh)}kWh`;
+    $('cost-daily').textContent = `${result.dailyCost.toLocaleString('ja-JP')}円`;
+    $('cost-formula').textContent = `${format(result.watts / 1000)}kW × ${format(result.hoursPerDay)}時間 × ${format(result.days, 2)}日 × ${format(result.unitPrice)}円`;
+  }
+
+  function updatePower() {
+    const voltage = numberValue('voltage');
+    const current = numberValue('current');
+    const result = wattsFromVoltageCurrent(voltage, current);
+    showError('power-error', result === null ? '電圧と電流に0より大きい数値を入力してください。' : '');
+    $('power-result').hidden = result === null;
+    if (result === null) return;
+    $('power-watts').textContent = `${format(result)}W`;
+    $('power-formula').textContent = `${format(voltage)}V × ${format(current)}A`;
+  }
+
+  document.querySelectorAll('.electricity-tab').forEach((button) => button.addEventListener('click', () => {
+    const mode = button.dataset.mode;
+    document.querySelectorAll('.electricity-tab').forEach((tab) => { const active = tab === button; tab.classList.toggle('is-active', active); tab.setAttribute('aria-selected', String(active)); });
+    document.querySelectorAll('.electricity-mode').forEach((panel) => { panel.hidden = panel.dataset.panel !== mode; });
+  }));
+  ['watts', 'hours', 'days', 'unit-price'].forEach((id) => $(id).addEventListener('input', updateCost));
+  ['voltage', 'current'].forEach((id) => $(id).addEventListener('input', updatePower));
+  document.querySelectorAll('[data-days]').forEach((button) => button.addEventListener('click', () => { $('days').value = button.dataset.days; updateCost(); }));
+  updateCost(); updatePower();
+</script>
+
+<style>
+  .feature-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .feature-chips span { padding: 5px 10px; border: 1px solid color-mix(in srgb, var(--cat-color) 30%, transparent); border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .72rem; font-weight: var(--fw-bold); }
+  .electricity-card { overflow: hidden; }
+  .electricity-tabs { display: grid; grid-template-columns: repeat(2, 1fr); border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
+  .electricity-tab { display: flex; flex-direction: column; gap: 3px; padding: 15px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); font-weight: var(--fw-bold); }
+  .electricity-tab small { font-size: .68rem; font-weight: var(--fw-normal); }
+  .electricity-tab.is-active { border-bottom-color: var(--cat-color); background: var(--surface); color: var(--cat-color); }
+  .electricity-panel { padding: 24px; }
+  .electricity-mode[hidden], .form-error[hidden], .cost-result[hidden], .power-result[hidden] { display: none; }
+  .electricity-mode h2 { margin: 0 0 6px; font-size: 1rem; }
+  .mode-lead { margin: 0 0 18px; color: var(--text-muted); font-size: .78rem; }
+  .input-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  .input-grid.two-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .form-error { margin: 12px 0 0; color: var(--danger); font-size: .78rem; font-weight: var(--fw-bold); }
+  .preset-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; }
+  .preset-row span { color: var(--text-muted); font-size: .72rem; }
+  .preset-row button { padding: 6px 10px; border: 1px solid var(--border-2); border-radius: 999px; background: var(--surface); color: var(--text); cursor: pointer; font-family: var(--font-sans); font-size: .72rem; }
+  .preset-row button:hover { border-color: var(--cat-color); color: var(--cat-color); }
+  .cost-result, .power-result { margin-top: 20px; overflow: hidden; border: 1px solid var(--cat-color); border-radius: var(--r-md); }
+  .result-main, .power-result { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px 16px; background: var(--cat-tint); text-align: center; }
+  .result-main span, .result-main small, .power-result span, .power-result small { color: var(--text-muted); font-size: .74rem; }
+  .result-main strong, .power-result strong { color: var(--cat-color); font: var(--fw-bold) clamp(2rem, 8vw, 3rem)/1.2 var(--font-mono); }
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr 2fr; }
+  .result-grid > div { display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 14px; text-align: center; }
+  .result-grid > div + div { border-left: 1px solid var(--border-2); }
+  .result-grid span { color: var(--text-muted); font-size: .7rem; }
+  .result-grid strong { overflow-wrap: anywhere; font: var(--fw-bold) .92rem/1.45 var(--font-mono); }
+  .formula-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .formula-cards > div { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .formula-cards span, .formula-cards small { color: var(--text-muted); font-size: .72rem; }
+  .formula-cards strong { font-family: var(--font-mono); }
+  .source-box { border-left: 4px solid var(--cat-color); }
+  .disclaimer { margin-top: 16px; padding: 14px; border-radius: var(--r-md); background: var(--surface-sub); font-size: .78rem; }
+  @media (max-width: 700px) { .electricity-panel { padding: 18px; } .input-grid, .input-grid.two-columns, .formula-cards, .result-grid { grid-template-columns: 1fr; } .result-grid > div + div { border-top: 1px solid var(--border-2); border-left: 0; } }
+</style>

@@ -371,6 +371,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'denki-dai',
+    nav: '電気代',
+    name: '電気代・消費電力計算ツール',
+    icon: '⚡',
+    category: '生活・日常',
+    short: 'W・使用時間・単価から電気代を計算',
+    live: true,
+  },
+  {
     slug: 'warikai',
     nav: '割り勘',
     name: '割り勘計算ツール',
