@@ -1,0 +1,346 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { calculateTrig, solveRightTriangle } from '../../lib/sankaku-kansuu.js';
+
+const slug = 'sankaku-kansuu';
+const title = '三角関数計算ツール｜sin・cos・tan、逆三角関数を自動計算';
+const description = '角度からsin・cos・tan、値からasin・acos・atanを無料で計算。度とラジアンに対応し、三平方の定理で直角三角形の辺・角度・面積も求められます。';
+const thirtyDegrees = calculateTrig(30, 'degree');
+const triangle345 = solveRightTriangle({ a: 3, b: 4 });
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '三角関数計算ツール',
+  description,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 三角関数</div>
+    <h1>三角関数計算ツール</h1>
+    <p>sin・cos・tan、逆三角関数、直角三角形を1つの画面で計算できます。</p>
+    <div class="feature-chips" aria-label="対応する計算">
+      <span>sin・cos・tan</span><span>asin・acos・atan</span><span>度・ラジアン</span><span>三平方の定理</span>
+    </div>
+  </div>
+
+  <div class="calc-card trig-card" id="trig-tool">
+    <div class="trig-tabs" role="tablist" aria-label="計算の種類">
+      <button type="button" class="trig-tab is-active" data-mode="trig" role="tab" aria-selected="true">三角関数<small>角度 → 値</small></button>
+      <button type="button" class="trig-tab" data-mode="inverse" role="tab" aria-selected="false">逆三角関数<small>値 → 角度</small></button>
+      <button type="button" class="trig-tab" data-mode="triangle" role="tab" aria-selected="false">直角三角形<small>2辺 → 残り</small></button>
+    </div>
+
+    <div class="calc-panel active trig-panel">
+      <section class="trig-mode" data-panel="trig">
+        <h2>角度からsin・cos・tanを計算</h2>
+        <p class="mode-lead">角度と単位を入力すると、3つの三角関数を同時に表示します。</p>
+        <div class="input-grid">
+          <div class="form-group">
+            <label for="trig-angle">角度</label>
+            <input id="trig-angle" type="number" step="any" value="30" inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <label for="trig-unit">単位</label>
+            <select id="trig-unit">
+              <option value="degree">度（°）</option>
+              <option value="radian">ラジアン（rad）</option>
+            </select>
+          </div>
+        </div>
+        <p class="form-error" id="trig-error" role="alert" hidden></p>
+        <div class="value-results" id="trig-result" aria-live="polite">
+          <div><span>sin θ</span><strong id="trig-sin">0.5</strong></div>
+          <div class="featured"><span>cos θ</span><strong id="trig-cos">0.8660254038</strong></div>
+          <div><span>tan θ</span><strong id="trig-tan">0.5773502692</strong></div>
+        </div>
+        <div class="conversion-line"><span>単位換算</span><strong id="trig-conversion">30° = 0.5235987756 rad</strong></div>
+      </section>
+
+      <section class="trig-mode" data-panel="inverse" hidden>
+        <h2>値から角度を逆算</h2>
+        <p class="mode-lead">asin・acosは−1〜1、atanはすべての実数を入力できます。</p>
+        <div class="input-grid three-columns">
+          <div class="form-group">
+            <label for="inverse-function">関数</label>
+            <select id="inverse-function">
+              <option value="asin">asin（sin⁻¹）</option>
+              <option value="acos">acos（cos⁻¹）</option>
+              <option value="atan">atan（tan⁻¹）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="inverse-value">値</label>
+            <input id="inverse-value" type="number" step="any" value="0.5" inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <label for="inverse-unit">答えの単位</label>
+            <select id="inverse-unit">
+              <option value="degree">度（°）</option>
+              <option value="radian">ラジアン（rad）</option>
+            </select>
+          </div>
+        </div>
+        <p class="form-error" id="inverse-error" role="alert" hidden></p>
+        <div class="primary-result" id="inverse-result" aria-live="polite">
+          <span id="inverse-label">asin(0.5)</span>
+          <strong id="inverse-answer">30°</strong>
+          <small id="inverse-other">= 0.5235987756 rad</small>
+        </div>
+      </section>
+
+      <section class="trig-mode" data-panel="triangle" hidden>
+        <h2>直角三角形の辺と角度を計算</h2>
+        <p class="mode-lead">分かっている2辺を選び、長さを入力します。斜辺cは直角の向かい側です。</p>
+        <div class="form-group known-sides">
+          <label for="triangle-pair">分かっている辺</label>
+          <select id="triangle-pair">
+            <option value="ab">底辺 a と 高さ b</option>
+            <option value="ac">底辺 a と 斜辺 c</option>
+            <option value="bc">高さ b と 斜辺 c</option>
+          </select>
+        </div>
+        <div class="input-grid">
+          <div class="form-group">
+            <label for="triangle-first" id="triangle-first-label">底辺 a</label>
+            <input id="triangle-first" type="number" min="0" step="any" value="3" inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <label for="triangle-second" id="triangle-second-label">高さ b</label>
+            <input id="triangle-second" type="number" min="0" step="any" value="4" inputmode="decimal" />
+          </div>
+        </div>
+        <p class="form-error" id="triangle-error" role="alert" hidden></p>
+        <div class="triangle-results" id="triangle-result" aria-live="polite">
+          <div><span>底辺 a</span><strong id="triangle-a">3</strong></div>
+          <div><span>高さ b</span><strong id="triangle-b">4</strong></div>
+          <div class="featured"><span>斜辺 c</span><strong id="triangle-c">5</strong></div>
+          <div><span>角A</span><strong id="triangle-angle-a">36.86989765°</strong></div>
+          <div><span>角B</span><strong id="triangle-angle-b">53.13010235°</strong></div>
+          <div><span>面積</span><strong id="triangle-area">6</strong></div>
+        </div>
+        <div class="conversion-line"><span>周の長さ</span><strong id="triangle-perimeter">12</strong></div>
+      </section>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>三角関数sin・cos・tanとは</h2>
+    <p>直角三角形で、注目する角をθ、斜辺をc、θの向かい側をa、隣の辺をbとすると、<strong>sin θ＝a/c、cos θ＝b/c、tan θ＝a/b</strong>です。辺の長さが変わっても角度が同じなら比は変わりません。</p>
+    <div class="formula-cards">
+      <div><span>正弦</span><strong>sin θ = 対辺 ÷ 斜辺</strong><small>30°では {Number(thirtyDegrees.sin.toFixed(10))}</small></div>
+      <div><span>余弦</span><strong>cos θ = 隣辺 ÷ 斜辺</strong><small>30°では {thirtyDegrees.cos.toFixed(10)}</small></div>
+      <div><span>正接</span><strong>tan θ = 対辺 ÷ 隣辺</strong><small>cos θ＝0では定義されない</small></div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>度とラジアンの換算</h2>
+    <p>1周は360°であり、ラジアンでは2π radです。そのため、<strong>度 × π ÷ 180＝ラジアン</strong>、<strong>ラジアン × 180 ÷ π＝度</strong>で換算します。180°＝π rad、90°＝π/2 rad、45°＝π/4 radです。</p>
+    <p>プログラミングや高等数学ではラジアンがよく使われます。一般的な角度表記から計算するときは「度」、πを使った角度や数式の値を入力するときは「ラジアン」を選んでください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>逆三角関数asin・acos・atanの使い方</h2>
+    <p>逆三角関数は、三角関数の値から角度を求めます。たとえばsin θ＝0.5となる代表的な角度は、asin(0.5)＝30°です。asinとacosの入力範囲は−1〜1、atanはすべての実数です。</p>
+    <ul>
+      <li><strong>asin</strong>：sinの値から−90°〜90°の角度を返します。</li>
+      <li><strong>acos</strong>：cosの値から0°〜180°の角度を返します。</li>
+      <li><strong>atan</strong>：tanの値から−90°より大きく90°より小さい角度を返します。</li>
+    </ul>
+    <p>三角関数は周期を持つため、同じ値になる角度はほかにもあります。このツールの逆三角関数は、通常の電卓と同じ主値を表示します。</p>
+  </section>
+
+  <section class="howto">
+    <h2>三平方の定理で直角三角形を計算</h2>
+    <p>直角をはさむ2辺をa・b、斜辺をcとすると、<strong>a²＋b²＝c²</strong>です。2辺が分かれば残りの1辺を計算できます。a＝3、b＝4ならc＝√(3²＋4²)＝<strong>{triangle345.c}</strong>です。</p>
+    <p>辺の比から角度も求められます。この例では角Aが約<strong>{triangle345.angleA.toFixed(4)}°</strong>、角Bが約<strong>{triangle345.angleB.toFixed(4)}°</strong>、面積はa×b÷2＝<strong>{triangle345.area}</strong>です。平方根だけを計算したい場合は<a href="/heihoukon/">平方根・ルート計算機</a>も利用できます。</p>
+  </section>
+
+  <section class="howto">
+    <h2>計算結果の丸めと注意点</h2>
+    <ul>
+      <li>画面では読みやすい桁数に丸めますが、内部では丸める前の値で計算します。</li>
+      <li>tanはcos＝0となる90°、270°などでは定義されないため「定義なし」と表示します。</li>
+      <li>直角三角形で斜辺を入力するときは、もう一方の辺より長い値が必要です。</li>
+      <li>測量や工作では、入力値自体の測定誤差も結果に影響します。</li>
+    </ul>
+    <p>データの平均を確認する場合は<a href="/heikin-chuouchi/">平均値・中央値計算</a>、割合の逆算には<a href="/wariai/">割合・パーセント計算</a>を利用できます。</p>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料</h2>
+    <ul>
+      <li><a href="https://www.mext.go.jp/content/20230217-mxt_kyoiku02-100002620_05.pdf" target="_blank" rel="noopener noreferrer">文部科学省「高等学校学習指導要領解説 数学編 理数編」</a>：三角比、三角関数、度数法と弧度法の学習内容。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。設計・測量・安全性に関わる用途では、必要な精度と条件を専門家または公的資料でご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '三角関数はどうやって計算しますか？', a: '直角三角形では、sinは対辺÷斜辺、cosは隣辺÷斜辺、tanは対辺÷隣辺です。このツールでは角度を入力するだけで3つを同時に計算できます。' },
+    { q: 'sin・cos・tanの違いは何ですか？', a: '注目する角に対して使う辺の比が違います。sinは対辺と斜辺、cosは隣辺と斜辺、tanは対辺と隣辺の比です。' },
+    { q: '度とラジアンはどう換算しますか？', a: '度にπ/180を掛けるとラジアン、ラジアンに180/πを掛けると度になります。180°＝π radです。' },
+    { q: 'tan 90°が計算できないのはなぜですか？', a: 'tan θ＝sin θ÷cos θで、cos 90°＝0です。0で割ることはできないため、tan 90°は定義されません。' },
+    { q: 'asin・acos・atanとは何ですか？', a: '三角関数の値から角度を求める逆三角関数です。たとえばasin(0.5)の主値は30°です。' },
+    { q: '三平方の定理で何が計算できますか？', a: '直角三角形の2辺が分かれば、a²＋b²＝c²を使って残りの辺を求められます。このツールでは角度、面積、周の長さも同時に表示します。' },
+    { q: 'マイナスの角度や360°を超える角度も計算できますか？', a: 'はい。負の角度や360°を超える角度も入力でき、三角関数の周期に従って計算します。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calculateInverseTrig, calculateTrig, solveRightTriangle } from '../../lib/sankaku-kansuu.js';
+
+  const $ = (id) => document.getElementById(id);
+  const PAIR_LABELS = {
+    ab: ['底辺 a', '高さ b'],
+    ac: ['底辺 a', '斜辺 c'],
+    bc: ['高さ b', '斜辺 c'],
+  };
+
+  function formatNumber(value, digits = 10) {
+    if (value === null) return '定義なし';
+    if (value === 0) return '0';
+    const absolute = Math.abs(value);
+    if (absolute >= 1e12 || absolute < 1e-9) return value.toExponential(10).replace(/\.0+e/, 'e');
+    return Number(value.toFixed(digits)).toLocaleString('ja-JP', { maximumFractionDigits: digits });
+  }
+
+  function showError(id, message) {
+    const element = $(id);
+    element.textContent = message;
+    element.hidden = !message;
+  }
+
+  function updateTrig() {
+    const rawAngle = $('trig-angle').value.trim();
+    const angle = rawAngle === '' ? Number.NaN : Number(rawAngle);
+    const unit = $('trig-unit').value;
+    const result = calculateTrig(angle, unit);
+    showError('trig-error', result ? '' : '有効な角度を入力してください。');
+    $('trig-result').hidden = !result;
+    if (!result) return;
+    $('trig-sin').textContent = formatNumber(result.sin);
+    $('trig-cos').textContent = formatNumber(result.cos);
+    $('trig-tan').textContent = formatNumber(result.tan);
+    $('trig-conversion').textContent = `${formatNumber(result.degrees)}° = ${formatNumber(result.radians)} rad`;
+  }
+
+  function updateInverse() {
+    const functionName = $('inverse-function').value;
+    const rawValue = $('inverse-value').value.trim();
+    const value = rawValue === '' ? Number.NaN : Number(rawValue);
+    const unit = $('inverse-unit').value;
+    const answer = calculateInverseTrig(functionName, value, unit);
+    const otherUnit = unit === 'degree' ? 'radian' : 'degree';
+    const other = calculateInverseTrig(functionName, value, otherUnit);
+    const valid = answer !== null;
+    showError('inverse-error', valid ? '' : functionName === 'atan' ? '有効な数値を入力してください。' : '−1以上1以下の値を入力してください。');
+    $('inverse-result').hidden = !valid;
+    if (!valid) return;
+    $('inverse-label').textContent = `${functionName}(${formatNumber(value)})`;
+    $('inverse-answer').textContent = `${formatNumber(answer)}${unit === 'degree' ? '°' : ' rad'}`;
+    $('inverse-other').textContent = `= ${formatNumber(other)}${otherUnit === 'degree' ? '°' : ' rad'}`;
+  }
+
+  function updateTriangle() {
+    const pair = $('triangle-pair').value;
+    const first = Number($('triangle-first').value);
+    const second = Number($('triangle-second').value);
+    const labels = PAIR_LABELS[pair];
+    $('triangle-first-label').textContent = labels[0];
+    $('triangle-second-label').textContent = labels[1];
+    const values = pair === 'ab' ? { a: first, b: second } : pair === 'ac' ? { a: first, c: second } : { b: first, c: second };
+    const result = solveRightTriangle(values);
+    showError('triangle-error', result ? '' : '2辺に0より大きい値を入力してください。斜辺cはもう一方の辺より長くします。');
+    $('triangle-result').hidden = !result;
+    if (!result) return;
+    $('triangle-a').textContent = formatNumber(result.a);
+    $('triangle-b').textContent = formatNumber(result.b);
+    $('triangle-c').textContent = formatNumber(result.c);
+    $('triangle-angle-a').textContent = `${formatNumber(result.angleA, 8)}°`;
+    $('triangle-angle-b').textContent = `${formatNumber(result.angleB, 8)}°`;
+    $('triangle-area').textContent = formatNumber(result.area);
+    $('triangle-perimeter').textContent = formatNumber(result.perimeter);
+  }
+
+  document.querySelectorAll('.trig-tab').forEach((button) => {
+    button.addEventListener('click', () => {
+      const mode = button.dataset.mode;
+      document.querySelectorAll('.trig-tab').forEach((tab) => {
+        const active = tab === button;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll('.trig-mode').forEach((panel) => {
+        panel.hidden = panel.dataset.panel !== mode;
+      });
+    });
+  });
+
+  ['trig-angle', 'trig-unit'].forEach((id) => $(id).addEventListener('input', updateTrig));
+  ['inverse-function', 'inverse-value', 'inverse-unit'].forEach((id) => $(id).addEventListener('input', updateInverse));
+  ['triangle-pair', 'triangle-first', 'triangle-second'].forEach((id) => $(id).addEventListener('input', updateTriangle));
+  updateTrig();
+  updateInverse();
+  updateTriangle();
+</script>
+
+<style>
+  .feature-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .feature-chips span { padding: 5px 10px; border: 1px solid color-mix(in srgb, var(--cat-color) 30%, transparent); border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .72rem; font-weight: var(--fw-bold); }
+  .trig-card { overflow: hidden; }
+  .trig-tabs { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
+  .trig-tab { display: flex; flex-direction: column; gap: 3px; padding: 14px 8px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); font-weight: var(--fw-bold); }
+  .trig-tab small { font-size: .68rem; font-weight: var(--fw-normal); }
+  .trig-tab.is-active { border-bottom-color: var(--cat-color); background: var(--surface); color: var(--cat-color); }
+  .trig-tab:focus-visible { outline: 3px solid var(--cat-tint); outline-offset: -3px; }
+  .trig-panel { padding: 24px; }
+  .trig-mode[hidden], .form-error[hidden], .value-results[hidden], .primary-result[hidden], .triangle-results[hidden] { display: none; }
+  .trig-mode h2 { margin: 0 0 6px; font-size: 1rem; }
+  .mode-lead { margin: 0 0 18px; color: var(--text-muted); font-size: .76rem; }
+  .input-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .input-grid.three-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .form-group select { width: 100%; }
+  .known-sides { max-width: 360px; margin-bottom: 16px; }
+  .form-error { margin: 12px 0 0; color: var(--danger); font-size: .76rem; font-weight: var(--fw-bold); }
+  .value-results, .triangle-results { display: grid; gap: 10px; margin-top: 20px; }
+  .value-results { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .triangle-results { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .value-results > div, .triangle-results > div { display: flex; flex-direction: column; gap: 7px; min-width: 0; padding: 16px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .value-results .featured, .triangle-results .featured { border-color: var(--cat-color); background: var(--cat-tint); }
+  .value-results span, .triangle-results span { color: var(--text-muted); font-size: .72rem; }
+  .value-results strong, .triangle-results strong { overflow-wrap: anywhere; font: var(--fw-bold) 1rem/1.45 var(--font-mono); }
+  .conversion-line { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; padding: 12px 16px; border-radius: var(--r-md); background: var(--surface-sub); }
+  .conversion-line span { color: var(--text-muted); font-size: .72rem; }
+  .conversion-line strong { text-align: right; font: var(--fw-bold) .84rem/1.4 var(--font-mono); }
+  .primary-result { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 20px; padding: 24px 16px; border: 1px solid var(--cat-color); border-radius: var(--r-md); background: var(--cat-tint); text-align: center; }
+  .primary-result span, .primary-result small { color: var(--text-muted); font-family: var(--font-mono); }
+  .primary-result strong { overflow-wrap: anywhere; color: var(--cat-color); font: var(--fw-bold) clamp(2rem, 8vw, 3rem)/1.2 var(--font-mono); }
+  .formula-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .formula-cards > div { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .formula-cards span, .formula-cards small { color: var(--text-muted); font-size: .72rem; }
+  .formula-cards strong { font-family: var(--font-mono); }
+  .source-box { border-left: 4px solid var(--cat-color); }
+  .disclaimer { margin-top: 16px; padding: 14px; border-radius: var(--r-md); background: var(--surface-sub); font-size: .78rem; }
+  @media (max-width: 700px) {
+    .trig-tabs { grid-template-columns: 1fr; }
+    .trig-tab { flex-direction: row; justify-content: center; border-bottom-width: 1px; border-left: 3px solid transparent; }
+    .trig-tab.is-active { border-left-color: var(--cat-color); border-bottom-color: var(--border-2); }
+    .trig-panel { padding: 18px; }
+    .input-grid, .input-grid.three-columns, .value-results, .triangle-results, .formula-cards { grid-template-columns: 1fr; }
+    .conversion-line { align-items: flex-start; flex-direction: column; }
+    .conversion-line strong { text-align: left; }
+  }
+</style>

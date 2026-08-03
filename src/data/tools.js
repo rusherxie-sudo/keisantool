@@ -191,6 +191,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'sankaku-kansuu',
+    nav: '三角関数',
+    name: '三角関数計算ツール',
+    icon: '△',
+    category: '生活・日常',
+    short: 'sin・cos・tan・逆三角関数・直角三角形',
+    live: true,
+  },
+  {
     slug: 'heihoukon',
     nav: '平方根・ルート',
     name: '平方根・ルート計算機',
