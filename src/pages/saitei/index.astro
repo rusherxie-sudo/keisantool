@@ -9,15 +9,15 @@ import { NATIONAL_WEIGHTED_AVERAGE, minimumWagePrefectures } from '../../lib/sai
 
 const slug = 'saitei';
 const prefectures = minimumWagePrefectures();
-const title = '最低賃金 2026年｜全国一覧・月給の時給換算計算 | 計算ツール';
-const description = '2026年現在の最低賃金を47都道府県別に一覧掲載。時給から日給・月給を計算し、月給が最低賃金以上か厚生労働省の式で無料チェックできます。令和8年度改定は審議中です。';
+const title = '最低賃金 2026年｜全国一覧・令和8年度の改定目安と月給計算';
+const description = '現在適用中の最低賃金を47都道府県別に一覧掲載。令和8年度は中央最低賃金審議会がAランク54円、B・Cランク56円の引上げ目安を答申。最終額・発効日は都道府県ごとに決定前です。';
 const jsonld = {
   '@context': 'https://schema.org', '@type': 'WebApplication', name: '最低賃金計算・全国一覧',
   description, applicationCategory: 'UtilityApplication', operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
 const faqItems = [
-  { q: '2026年の最低賃金はいくらですか？', a: `2026年8月1日時点で適用中の地域別最低賃金は、東京都の1,226円から高知県・宮崎県・沖縄県の1,023円まで都道府県ごとに異なります。令和8年度の改定額は現在審議中で、まだ最終決定されていません。` },
+  { q: '2026年の最低賃金はいくらですか？', a: `現在適用中の地域別最低賃金は、東京都の1,226円から高知県・宮崎県・沖縄県の1,023円まで都道府県ごとに異なります。令和8年度は2026年7月28日に中央最低賃金審議会がAランク54円、B・Cランク56円の引上げ目安を答申しましたが、都道府県ごとの最終額と発効日は未決定です。` },
   { q: '月給が最低賃金以上か計算する方法は？', a: '最低賃金の対象になる月給を12倍し、年間所定労働日数と1日の所定労働時間の積で割って時間額に換算します。通勤手当、家族手当、賞与、時間外・休日・深夜の割増賃金などは対象月給から除きます。' },
   { q: '最低賃金はいつ変わりますか？', a: '地域別最低賃金は毎年度審議され、都道府県ごとの発効日から適用されます。令和7年度は2025年10月から2026年3月にかけて順次発効しました。' },
   { q: 'アルバイトや高校生にも最低賃金は適用されますか？', a: '原則として雇用形態や年齢にかかわらず、都道府県内で働くすべての労働者に適用されます。特定産業では地域別最低賃金より高い特定最低賃金が適用される場合があります。' },
@@ -32,8 +32,8 @@ const faqItems = [
   </div>
 
   <aside class="status-note" aria-label="令和8年度改定状況">
-    <strong>令和8年度（2026年度）の改定額は審議中です</strong>
-    <p>2026年8月1日時点では都道府県別の新しい最低賃金は未決定です。このページは現在適用中の令和7年度確定額を掲載し、決定前の予想値は計算に使用していません。</p>
+    <strong>令和8年度の引上げ目安が2026年7月28日に答申されました</strong>
+    <p>中央最低賃金審議会の目安はAランク54円、B・Cランク56円です。これは地方最低賃金審議会での答申・都道府県労働局長による決定前の目安であり、このページの計算は引き続き現在適用中の令和7年度確定額で行います。</p>
   </aside>
 
   <div class="calc-card"><MinimumWageCalculator /></div>
@@ -45,10 +45,11 @@ const faqItems = [
     <p>全国加重平均は<strong>{NATIONAL_WEIGHTED_AVERAGE.toLocaleString('ja-JP')}円</strong>です。金額と発効日は厚生労働省「令和7年度地域別最低賃金の全国一覧」に基づきます。都道府県名を選ぶと地域別の計算ページへ移動します。</p>
     <div class="data-table-wrap"><div class="data-table-scroll">
       <table class="data-table wage-table">
-        <thead><tr><th>都道府県</th><th>最低賃金</th><th>発効日</th></tr></thead>
+        <thead><tr><th>都道府県</th><th>現在適用中</th><th>令和8年度の目安</th><th>発効日</th></tr></thead>
         <tbody>{prefectures.map((row) => {
           const [y, m, d] = row.effectiveDate.split('-').map(Number);
-          return <tr><th scope="row"><a href={`/saitei/${row.slug}/`}>{row.prefecture}</a></th><td class="num"><strong>{row.wage.toLocaleString('ja-JP')}円</strong></td><td>{y}年{m}月{d}日</td></tr>;
+          const increase = ['saitama', 'chiba', 'tokyo', 'kanagawa', 'aichi', 'osaka'].includes(row.slug) ? 54 : 56;
+          return <tr><th scope="row"><a href={`/saitei/${row.slug}/`}>{row.prefecture}</a></th><td class="num"><strong>{row.wage.toLocaleString('ja-JP')}円</strong></td><td class="num">+{increase}円（目安）</td><td>{y}年{m}月{d}日</td></tr>;
         })}</tbody>
       </table>
     </div></div>
@@ -73,7 +74,7 @@ const faqItems = [
     <ul>
       <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html" target="_blank" rel="nofollow noopener">厚生労働省「地域別最低賃金の全国一覧」</a></li>
       <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/chingin/newpage_43899.html" target="_blank" rel="nofollow noopener">厚生労働省「最低賃金額以上かどうかを確認する方法」</a></li>
-      <li><a href="https://www.mhlw.go.jp/stf/shingi/shingi-tingin_127941.html" target="_blank" rel="nofollow noopener">厚生労働省「中央最低賃金審議会 目安に関する小委員会」</a></li>
+      <li><a href="https://www.mhlw.go.jp/stf/newpage_74920.html" target="_blank" rel="nofollow noopener">厚生労働省「令和8年度地域別最低賃金額改定の目安について」（2026年7月28日）</a></li>
     </ul>
   </section>
 
@@ -87,7 +88,7 @@ const faqItems = [
   .status-note { margin-bottom: 20px; padding: 16px 18px; border-left: 4px solid var(--warning); border-radius: var(--r-sm); background: var(--warning-bg); }
   .status-note strong { color: var(--warning-text); }
   .status-note p { margin: 5px 0 0; font-size: .84rem; line-height: 1.7; }
-  .wage-table { min-width: 520px; }
+  .wage-table { min-width: 650px; }
   .wage-table th[scope="row"] { text-align: left; }
   .wage-table a, .sources a { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
   .formula { margin: 16px 0; padding: 16px; border-radius: var(--r-sm); color: var(--cat-color); background: var(--cat-tint); text-align: center; font-weight: var(--fw-bold); }
