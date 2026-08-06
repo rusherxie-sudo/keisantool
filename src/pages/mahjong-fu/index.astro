@@ -1,0 +1,258 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'mahjong-fu';
+const title = '麻雀符計算ツール｜面子・待ちから符数を自動計算';
+const description = '麻雀の符を無料で自動計算。和了方法、雀頭、待ち、刻子・槓子を選ぶだけで、符の内訳と切り上げ後の符数が分かります。七対子・平和ツモにも対応。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '麻雀符計算ツール',
+  description,
+  applicationCategory: 'GameApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['麻雀の符数を自動計算', '面子・雀頭・待ちの符を加算', '符の内訳を表示', '七対子25符・平和ツモ20符に対応'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 麻雀符計算</div>
+    <h1>麻雀符計算ツール</h1>
+    <p>和了方法・雀頭・待ち・4つの面子を選ぶと、符の内訳と切り上げ後の符数を自動計算します。</p>
+    <div class="feature-chips" aria-label="対応する計算"><span>通常形</span><span>七対子</span><span>平和ツモ</span><span>内訳表示</span></div>
+  </div>
+
+  <div class="calc-card fu-card" id="fu-tool">
+    <div class="calc-panel active">
+      <div class="form-group">
+        <label for="hand-type">和了の形</label>
+        <select id="hand-type">
+          <option value="normal">通常形（4面子＋雀頭）</option>
+          <option value="chiitoitsu">七対子（固定25符）</option>
+          <option value="pinfuTsumo">平和ツモ（固定20符）</option>
+        </select>
+      </div>
+
+      <div id="normal-inputs">
+        <div class="two-columns">
+          <div class="form-group">
+            <label for="win-type">和了方法</label>
+            <select id="win-type">
+              <option value="ron">ロン</option>
+              <option value="tsumo">ツモ</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="closed-state">手牌の状態</label>
+            <select id="closed-state">
+              <option value="closed">門前（鳴いていない）</option>
+              <option value="open">副露（チー・ポンあり）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="pair-fu">雀頭（対子）</label>
+            <select id="pair-fu">
+              <option value="0">数牌・オタ風（0符）</option>
+              <option value="2">三元牌・場風・自風（2符）</option>
+              <option value="4">連風牌（4符のルール）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="wait-fu">待ちの形</label>
+            <select id="wait-fu">
+              <option value="0">両面・シャンポン（0符）</option>
+              <option value="2">辺張・嵌張・単騎（2符）</option>
+            </select>
+          </div>
+        </div>
+
+        <fieldset class="meld-fieldset">
+          <legend>4つの面子</legend>
+          <p>順子、刻子、槓子をそれぞれ選んでください。</p>
+          <div class="meld-grid">
+            {[1, 2, 3, 4].map((number) => (
+              <div class="form-group">
+                <label for={`meld-${number}`}>面子 {number}</label>
+                <select id={`meld-${number}`} class="meld-select">
+                  <option value="sequence">順子（0符）</option>
+                  <option value="openTriplet:simple">中張牌の明刻（2符）</option>
+                  <option value="openTriplet:terminal">幺九牌・字牌の明刻（4符）</option>
+                  <option value="closedTriplet:simple">中張牌の暗刻（4符）</option>
+                  <option value="closedTriplet:terminal">幺九牌・字牌の暗刻（8符）</option>
+                  <option value="openQuad:simple">中張牌の明槓（8符）</option>
+                  <option value="openQuad:terminal">幺九牌・字牌の明槓（16符）</option>
+                  <option value="closedQuad:simple">中張牌の暗槓（16符）</option>
+                  <option value="closedQuad:terminal">幺九牌・字牌の暗槓（32符）</option>
+                </select>
+              </div>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="primary-result" id="fu-result" aria-live="polite">
+        <span>計算結果</span>
+        <strong id="result-fu">30符</strong>
+        <small id="result-rounding">合計30符（切り上げなし）</small>
+      </div>
+      <div class="breakdown" id="fu-breakdown">
+        <div><span>基本符</span><strong id="breakdown-base">20符</strong></div>
+        <div><span>和了方法</span><strong id="breakdown-win">10符</strong></div>
+        <div><span>雀頭</span><strong id="breakdown-pair">0符</strong></div>
+        <div><span>待ち</span><strong id="breakdown-wait">0符</strong></div>
+        <div><span>面子</span><strong id="breakdown-melds">0符</strong></div>
+      </div>
+      <p class="rule-note" id="special-note" hidden></p>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>麻雀の符計算のやり方</h2>
+    <p>一般的なリーチ麻雀では、まず<strong>基本20符</strong>に、和了方法・雀頭・待ち・面子の符を足します。通常形は合計を10符単位に切り上げます。たとえば38符なら40符です。</p>
+    <ol>
+      <li>門前ロンは10符、ツモは2符を加えます。</li>
+      <li>三元牌・場風・自風の雀頭は2符、辺張・嵌張・単騎待ちは2符です。</li>
+      <li>刻子・槓子は、明か暗か、中張牌か幺九牌・字牌かで符が変わります。</li>
+      <li>すべてを合計し、通常形は10符単位に切り上げます。</li>
+    </ol>
+    <div class="formula-box"><strong>通常形の符 ＝ 20符 ＋ 和了方法 ＋ 雀頭 ＋ 待ち ＋ 面子</strong><span>合計38符 → 40符、合計46符 → 50符</span></div>
+  </section>
+
+  <section class="howto">
+    <h2>刻子・槓子の符早見表</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>面子</th><th>中張牌</th><th>幺九牌・字牌</th></tr></thead>
+        <tbody>
+          <tr><td>明刻</td><td>2符</td><td>4符</td></tr>
+          <tr><td>暗刻</td><td>4符</td><td>8符</td></tr>
+          <tr><td>明槓</td><td>8符</td><td>16符</td></tr>
+          <tr><td>暗槓</td><td>16符</td><td>32符</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>順子は0符です。1・9・字牌を使った刻子・槓子は、2〜8の中張牌を使った場合の2倍になります。ロン牌で完成した刻子は、符計算では明刻として扱う点にも注意してください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>七対子・平和ツモ・最低30符の例外</h2>
+    <ul>
+      <li><strong>七対子</strong>：切り上げをせず、固定25符です。</li>
+      <li><strong>平和ツモ</strong>：一般的なリーチ麻雀では固定20符です。</li>
+      <li><strong>副露したロンで加符がない形</strong>：20符ではなく30符として扱うのが一般的です。</li>
+    </ul>
+    <p>連風牌の雀頭を2符とするか4符とするかなど、採用ルールによって一部の扱いが異なります。このツールでは選択できるようにしています。対局前に雀荘・大会・アプリのルールを確認してください。</p>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料と注意点</h2>
+    <ul>
+      <li><a href="https://www.nihon-majan.org/funokeisan.html" target="_blank" rel="noopener noreferrer">日本麻雀連盟「符の計算」</a>：基本符、和了方法、待ち、刻子・槓子の符。</li>
+      <li><a href="https://www.nihon-majan.org/ritimajyan.html" target="_blank" rel="noopener noreferrer">日本麻雀連盟「リーチ麻雀」</a>：一般的なリーチ麻雀を基にした競技ルール。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。採用ルールによる違いがあるため、実際の対局ではその卓・大会・サービスの規定を優先してください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '麻雀の符はどう計算しますか？', a: '基本20符に、門前ロン・ツモ・雀頭・待ち・刻子・槓子の符を加え、通常形は10符単位に切り上げます。' },
+    { q: '七対子は何符ですか？', a: '七対子は固定25符です。30符に切り上げず、25符のまま点数計算に使います。' },
+    { q: '平和ツモは何符ですか？', a: '一般的なリーチ麻雀では固定20符です。本ツールでは「平和ツモ」を選ぶと20符で表示します。' },
+    { q: '単騎・嵌張・辺張待ちは何符ですか？', a: 'いずれも2符です。両面待ちとシャンポン待ちそのものには待ちの符が付きません。' },
+    { q: '暗刻と明刻はどう見分けますか？', a: '鳴かずに手牌内で完成した刻子は暗刻、ポンした刻子は明刻です。ただしロン牌で完成した刻子は符計算上は明刻として扱います。' },
+    { q: 'ダブ東・ダブ南の雀頭は何符ですか？', a: '連風牌の雀頭は4符とするルールと2符とするルールがあります。本ツールでは0・2・4符から選択できます。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calculateMahjongFu } from '../../lib/mahjong-fu.js';
+
+  const $ = (id) => document.getElementById(id);
+
+  function parseMeld(value) {
+    if (value === 'sequence') return { type: 'sequence', terminalOrHonor: false };
+    const [type, tileClass] = value.split(':');
+    return { type, terminalOrHonor: tileClass === 'terminal' };
+  }
+
+  function update() {
+    const handType = $('hand-type').value;
+    const normal = handType === 'normal';
+    $('normal-inputs').hidden = !normal;
+
+    const result = calculateMahjongFu(normal ? {
+      handType,
+      winType: $('win-type').value,
+      isClosed: $('closed-state').value === 'closed',
+      pairFu: Number($('pair-fu').value),
+      waitFu: Number($('wait-fu').value),
+      melds: [...document.querySelectorAll('.meld-select')].map((select) => parseMeld(select.value)),
+    } : { handType });
+
+    if (!result) return;
+    $('result-fu').textContent = `${result.fu}符`;
+    $('fu-breakdown').hidden = result.fixed;
+    $('special-note').hidden = !result.fixed;
+
+    if (result.fixed) {
+      const label = handType === 'chiitoitsu' ? '七対子は切り上げを行わず、固定25符です。' : '平和ツモは一般的なルールで固定20符です。';
+      $('result-rounding').textContent = label;
+      $('special-note').textContent = label;
+    } else {
+      $('result-rounding').textContent = result.rawFu === result.fu
+        ? `合計${result.rawFu}符（切り上げなし）`
+        : result.rawFu === 20
+          ? '加符なし20符のため、最低30符として計算'
+          : `合計${result.rawFu}符 → 10符単位で切り上げ`;
+      $('breakdown-base').textContent = `${result.breakdown.base}符`;
+      $('breakdown-win').textContent = `${result.breakdown.win}符`;
+      $('breakdown-pair').textContent = `${result.breakdown.pair}符`;
+      $('breakdown-wait').textContent = `${result.breakdown.wait}符`;
+      $('breakdown-melds').textContent = `${result.breakdown.melds}符`;
+    }
+  }
+
+  document.querySelectorAll('#fu-tool select').forEach((select) => select.addEventListener('change', update));
+  update();
+</script>
+
+<style>
+  .fu-card { overflow: hidden; }
+  .calc-panel { padding: 1.5rem; }
+  .two-columns, .meld-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+  .meld-fieldset { margin: 1.2rem 0 0; padding: 1rem; border: 1px solid #dbe3ec; border-radius: 12px; }
+  .meld-fieldset legend { padding: 0 .4rem; color: #334155; font-weight: 800; }
+  .meld-fieldset > p { margin: 0; color: #64748b; font-size: .9rem; }
+  .meld-grid { margin-top: .8rem; }
+  .primary-result { margin-top: 1.3rem; padding: 1.25rem; border-radius: 14px; background: var(--cat-tint); text-align: center; }
+  .primary-result span, .primary-result small { display: block; }
+  .primary-result strong { display: block; margin: .15rem 0; color: var(--cat-color); font-size: clamp(2.2rem, 6vw, 3.2rem); }
+  .primary-result small { color: #64748b; }
+  .breakdown { display: grid; grid-template-columns: repeat(5, 1fr); gap: .55rem; margin-top: .75rem; }
+  .breakdown > div { padding: .7rem .35rem; border: 1px solid #e2e8f0; border-radius: 9px; background: #fff; text-align: center; }
+  .breakdown span, .breakdown strong { display: block; }
+  .breakdown span { color: #64748b; font-size: .78rem; }
+  .breakdown strong { margin-top: .2rem; color: #1e293b; }
+  .rule-note { margin: .8rem 0 0; padding: .8rem; border-radius: 9px; background: #f8fafc; color: #475569; text-align: center; }
+  .formula-box { display: grid; gap: .4rem; margin: 1rem 0; padding: 1rem; border-left: 4px solid var(--cat-color); border-radius: 0 10px 10px 0; background: var(--cat-tint); }
+  .formula-box span { color: #475569; }
+  .table-wrap { overflow-x: auto; margin: 1rem 0; }
+  table { width: 100%; border-collapse: collapse; min-width: 420px; }
+  th, td { padding: .7rem; border-bottom: 1px solid #e2e8f0; text-align: center; }
+  th { background: #f8fafc; color: #475569; }
+
+  @media (max-width: 700px) {
+    .calc-panel { padding: 1rem; }
+    .two-columns, .meld-grid { grid-template-columns: 1fr; gap: .7rem; }
+    .breakdown { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

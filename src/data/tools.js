@@ -191,6 +191,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'mahjong-fu',
+    nav: '麻雀符計算',
+    name: '麻雀符計算ツール',
+    icon: '🀄',
+    category: '生活・日常',
+    short: '待ち・面子から符数を自動計算',
+    live: true,
+  },
+  {
     slug: 'sankaku-kansuu',
     nav: '三角関数',
     name: '三角関数計算ツール',
