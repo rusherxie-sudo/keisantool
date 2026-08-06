@@ -1,0 +1,252 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { calculateSlope, slopeFromRoofPitch } from '../../lib/koubai.js';
+
+const slug = 'koubai';
+const title = '勾配計算ツール｜角度・パーセント・屋根の寸勾配を換算';
+const description = '高低差と水平距離から勾配の角度、パーセント、1:n、パーミル、斜面長を無料計算。角度や屋根の寸勾配からも逆算できます。';
+const example = calculateSlope(4, 10);
+const roofPitches = [3, 4, 5, 6].map((sun) => ({ sun, ...slopeFromRoofPitch(sun, 10) }));
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '勾配計算ツール',
+  description,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['高低差と水平距離から勾配を計算', '角度・パーセント・1:n・‰の相互換算', '屋根の寸勾配換算', '斜面の長さを計算'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 勾配計算</div>
+    <h1>勾配計算ツール</h1>
+    <p>高低差・水平距離・角度・パーセント・屋根の寸勾配を相互換算します。</p>
+    <div class="feature-chips" aria-label="計算できる勾配表記">
+      <span>角度（°）</span><span>パーセント（%）</span><span>比率（1:n）</span><span>屋根の寸勾配</span>
+    </div>
+  </div>
+
+  <div class="calc-card slope-card" id="slope-tool">
+    <div class="calc-panel active">
+      <div class="form-group">
+        <label for="slope-mode">入力方法</label>
+        <select id="slope-mode">
+          <option value="rise-run">高低差と水平距離</option>
+          <option value="percent">パーセント勾配</option>
+          <option value="angle">角度</option>
+          <option value="roof">屋根の寸勾配</option>
+        </select>
+      </div>
+
+      <div class="input-grid">
+        <div class="form-group">
+          <label for="slope-primary" id="primary-label">高低差</label>
+          <div class="input-with-unit">
+            <input id="slope-primary" type="number" step="any" value="4" inputmode="decimal" />
+            <span id="primary-unit">m</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="slope-run">水平距離</label>
+          <div class="input-with-unit">
+            <input id="slope-run" type="number" min="0" step="any" value="10" inputmode="decimal" />
+            <span id="run-unit">m</span>
+          </div>
+        </div>
+      </div>
+      <p class="unit-note" id="unit-note">高低差と水平距離は、m・cm・mmなど同じ単位で入力してください。</p>
+      <p class="form-error" id="slope-error" role="alert" hidden></p>
+
+      <div class="primary-result" id="slope-result" aria-live="polite">
+        <span>勾配</span>
+        <strong id="result-percent">40%</strong>
+        <small id="result-formula">高低差 4 ÷ 水平距離 10 × 100</small>
+      </div>
+
+      <div class="result-grid">
+        <div><span>角度</span><strong id="result-angle">21.8014°</strong></div>
+        <div><span>比率</span><strong id="result-ratio">1 : 2.5</strong></div>
+        <div><span>パーミル</span><strong id="result-permille">400‰</strong></div>
+        <div><span>屋根勾配</span><strong id="result-roof">4寸</strong></div>
+        <div><span>斜面の長さ</span><strong id="result-length">10.7703</strong></div>
+        <div><span>高低差</span><strong id="result-rise">4</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>勾配の計算方法</h2>
+    <p>勾配は、進行方向の<strong>高低差を水平距離で割った値</strong>です。高低差4、水平距離10なら、4÷10＝0.4なので40%勾配になります。角度は arctan（高低差÷水平距離）で求め、この例では約<strong>{example.degrees.toFixed(2)}°</strong>です。</p>
+    <div class="formula-box">
+      <strong>勾配（%）＝ 高低差 ÷ 水平距離 × 100</strong>
+      <span>角度（°）＝ arctan（高低差 ÷ 水平距離）× 180 ÷ π</span>
+    </div>
+    <p>高低差と水平距離は、両方をm、両方をcmのように同じ単位で入力します。斜面に沿った実際の長さは、三平方の定理で計算します。</p>
+  </section>
+
+  <section class="howto">
+    <h2>パーセント・角度・1:nの読み方</h2>
+    <ul>
+      <li><strong>10%</strong>：水平に100進む間に10上がる勾配です。</li>
+      <li><strong>1:10</strong>：高さ1に対して水平距離10の勾配で、10%と同じです。</li>
+      <li><strong>100‰</strong>：100パーミルは10%と同じです。</li>
+      <li><strong>45°</strong>：高さと水平距離が同じ1:1で、100%勾配です。</li>
+    </ul>
+    <p>角度とパーセントは同じ数値ではありません。たとえば10°は約17.63%、10%は約5.71°です。割合だけを計算したい場合は<a href="/wariai/">割合・パーセント計算</a>も利用できます。</p>
+  </section>
+
+  <section class="howto">
+    <h2>屋根の寸勾配と角度の早見表</h2>
+    <p>屋根の「4寸勾配」は、水平10寸に対して4寸上がる勾配です。つまり比率は4÷10＝0.4、40%、角度は約21.8°です。寸勾配は長さそのものではなく、水平10に対する高さの割合を表します。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>寸勾配</th><th>パーセント</th><th>角度</th><th>比率</th></tr></thead>
+        <tbody>
+          {roofPitches.map((item) => (
+            <tr>
+              <td>{item.sun}寸</td>
+              <td>{item.percent.toFixed(0)}%</td>
+              <td>{item.degrees.toFixed(2)}°</td>
+              <td>1 : {item.oneIn.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>屋根材、地域の積雪・風、下地、排水条件などによって必要な勾配は変わります。実際の屋根設計や施工可否は、製品仕様と専門家の確認を優先してください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>スロープ・道路・排水勾配で使う場合</h2>
+    <p>スロープ、道路、造成、排水ではパーセントや1:n、鉄道などではパーミルが使われることがあります。入力する「水平距離」は斜面に沿った距離ではなく、真上から見た水平の長さです。</p>
+    <p>車いす用スロープ、道路、排水設備には用途や場所に応じた基準があります。このツールは表記の換算と幾何学的な長さの計算を行うもので、法令適合や安全性を判定するものではありません。辺と角度を詳しく求める場合は<a href="/sankaku-kansuu/">三角関数計算</a>、平方根の確認には<a href="/heihoukon/">平方根・ルート計算</a>を利用できます。</p>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料と注意点</h2>
+    <ul>
+      <li><a href="https://www.mext.go.jp/content/20230217-mxt_kyoiku02-100002620_05.pdf" target="_blank" rel="noopener noreferrer">文部科学省「高等学校学習指導要領解説 数学編 理数編」</a>：三角比と三角関数。</li>
+      <li><a href="https://www.mlit.go.jp/report/press/house05_hh_000699.html" target="_blank" rel="noopener noreferrer">国土交通省「一定規模の緩勾配屋根について」</a>：屋根勾配と積雪荷重に関する注意。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。建築・土木・道路・排水・バリアフリー設備の設計や施工では、図面、現地条件、適用法令および専門家の確認を優先してください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '勾配はどうやって計算しますか？', a: '高低差を水平距離で割ります。パーセント表示は、その値に100を掛けます。高低差1m・水平距離10mなら10%勾配です。' },
+    { q: '10%勾配は何度ですか？', a: 'arctan(0.1)で計算し、約5.71度です。10度は約17.63%なので、角度とパーセントは同じ数値ではありません。' },
+    { q: '1:12の勾配は何パーセントですか？', a: '1÷12×100で約8.33%です。角度は約4.76度です。' },
+    { q: '4寸勾配は何度・何パーセントですか？', a: '水平10に対して高さ4なので40%、角度は約21.80度です。' },
+    { q: '斜面の長さも計算できますか？', a: 'はい。高低差と水平距離から、三平方の定理を使って斜面に沿った長さを表示します。' },
+    { q: '下り勾配も入力できますか？', a: 'はい。高低差をマイナスで入力すると、角度とパーセントもマイナスで表示します。斜面の長さは正の値です。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import {
+    calculateSlope,
+    slopeFromAngle,
+    slopeFromPercent,
+    slopeFromRoofPitch,
+  } from '../../lib/koubai.js';
+
+  const $ = (id) => document.getElementById(id);
+  const configs = {
+    'rise-run': { label: '高低差', unit: 'm', value: 4, note: '高低差と水平距離は、m・cm・mmなど同じ単位で入力してください。' },
+    percent: { label: 'パーセント勾配', unit: '%', value: 10, note: '水平距離を入力すると、必要な高低差と斜面長も逆算します。' },
+    angle: { label: '角度', unit: '°', value: 10, note: '角度は−90°より大きく90°未満で入力してください。' },
+    roof: { label: '屋根勾配', unit: '寸', value: 4, note: '4寸勾配は、水平10に対して高さ4の勾配です。' },
+  };
+
+  function format(value, digits = 4) {
+    if (!Number.isFinite(value)) return '―';
+    return Number(value.toFixed(digits)).toLocaleString('ja-JP', { maximumFractionDigits: digits });
+  }
+
+  function resultFor(mode, primary, run) {
+    if (mode === 'percent') return slopeFromPercent(primary, run);
+    if (mode === 'angle') return slopeFromAngle(primary, run);
+    if (mode === 'roof') return slopeFromRoofPitch(primary, run);
+    return calculateSlope(primary, run);
+  }
+
+  function update() {
+    const mode = $('slope-mode').value;
+    const primaryRaw = $('slope-primary').value.trim();
+    const runRaw = $('slope-run').value.trim();
+    const primary = primaryRaw === '' ? Number.NaN : Number(primaryRaw);
+    const run = runRaw === '' ? Number.NaN : Number(runRaw);
+    const result = resultFor(mode, primary, run);
+    const error = $('slope-error');
+    error.textContent = result ? '' : mode === 'angle'
+      ? '角度は−90°より大きく90°未満、水平距離は0より大きい値で入力してください。'
+      : '有効な値を入力してください。水平距離は0より大きい値が必要です。';
+    error.hidden = Boolean(result);
+    $('slope-result').hidden = !result;
+    if (!result) return;
+
+    $('result-percent').textContent = `${format(result.percent)}%`;
+    $('result-angle').textContent = `${format(result.degrees)}°`;
+    $('result-ratio').textContent = result.oneIn === null ? '水平（比率なし）' : `1 : ${format(result.oneIn)}`;
+    $('result-permille').textContent = `${format(result.permille)}‰`;
+    $('result-roof').textContent = `${format(result.roofPitchSun)}寸`;
+    $('result-length').textContent = format(result.slopeLength);
+    $('result-rise').textContent = format(result.rise);
+    $('result-formula').textContent = `高低差 ${format(result.rise)} ÷ 水平距離 ${format(result.run)} × 100`;
+  }
+
+  $('slope-mode').addEventListener('change', () => {
+    const config = configs[$('slope-mode').value];
+    $('primary-label').textContent = config.label;
+    $('primary-unit').textContent = config.unit;
+    $('slope-primary').value = String(config.value);
+    $('unit-note').textContent = config.note;
+    update();
+  });
+  $('slope-primary').addEventListener('input', update);
+  $('slope-run').addEventListener('input', update);
+  update();
+</script>
+
+<style>
+  .slope-card { overflow: hidden; }
+  .calc-panel { padding: 1.5rem; }
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+  .input-with-unit { display: flex; align-items: stretch; }
+  .input-with-unit input { border-radius: 10px 0 0 10px; min-width: 0; }
+  .input-with-unit span { display: flex; align-items: center; justify-content: center; min-width: 3.5rem; padding: 0 .75rem; border: 1px solid #cbd5e1; border-left: 0; border-radius: 0 10px 10px 0; background: #f8fafc; color: #475569; font-weight: 700; }
+  .unit-note { margin: .7rem 0 0; color: #64748b; font-size: .9rem; }
+  .form-error { margin: .8rem 0 0; padding: .7rem .85rem; border-radius: 8px; background: #fff1f2; color: #be123c; }
+  .primary-result { margin-top: 1.25rem; padding: 1.25rem; border-radius: 14px; background: var(--cat-tint); text-align: center; }
+  .primary-result span, .primary-result small { display: block; }
+  .primary-result strong { display: block; margin: .2rem 0; color: var(--cat-color); font-size: clamp(2rem, 5vw, 3rem); }
+  .primary-result small { color: #64748b; }
+  .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin-top: .8rem; }
+  .result-grid > div { padding: .8rem; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; text-align: center; }
+  .result-grid span, .result-grid strong { display: block; }
+  .result-grid span { color: #64748b; font-size: .82rem; }
+  .result-grid strong { margin-top: .2rem; color: #1e293b; }
+  .formula-box { display: grid; gap: .45rem; margin: 1rem 0; padding: 1rem; border-left: 4px solid var(--cat-color); border-radius: 0 10px 10px 0; background: var(--cat-tint); }
+  .formula-box span { color: #475569; }
+  .table-wrap { overflow-x: auto; margin: 1rem 0; }
+  table { width: 100%; border-collapse: collapse; min-width: 420px; }
+  th, td { padding: .7rem; border-bottom: 1px solid #e2e8f0; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  th { background: #f8fafc; color: #475569; }
+
+  @media (max-width: 620px) {
+    .calc-panel { padding: 1rem; }
+    .input-grid { grid-template-columns: 1fr; }
+    .result-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>

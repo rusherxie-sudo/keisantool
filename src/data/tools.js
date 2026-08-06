@@ -380,6 +380,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'koubai',
+    nav: '勾配計算',
+    name: '勾配計算ツール',
+    icon: '📐',
+    category: '生活・日常',
+    short: '高低差から角度・パーセント・屋根勾配を計算',
+    live: true,
+  },
+  {
     slug: 'warikai',
     nav: '割り勘',
     name: '割り勘計算ツール',
