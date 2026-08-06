@@ -7,7 +7,7 @@ import ResultShare from '../../components/ResultShare.astro';
 import { dateRangeBreakdown } from '../../lib/nissu.js';
 
 const slug = 'nissu';
-const title = '日数計算・日付計算｜何日間・何日後・営業日を無料計算';
+const title = '日数計算｜2つの日付は何日間？今日から何日後・営業日も計算';
 const description =
   '日数計算・日付計算を無料で。2つの日付が何日間・何年何ヶ月何日か、土日祝を除く営業日数、今日から何日後・何営業日後の日付を自動計算します。';
 const jsonld = {
@@ -30,6 +30,12 @@ const example = dateRangeBreakdown('2026-08-03', '2026-08-11', { includeBoth: tr
     <h1>日数計算・日付計算｜何日間・何日後・営業日</h1>
     <p>2つの日付が何日間・何年何ヶ月何日かを計算。土日祝を除く営業日数や、今日から何日後・何営業日後の日付もすぐ分かります。</p>
   </div>
+
+  <nav class="task-links" aria-label="やりたい計算から選ぶ">
+    <a href="#rangePanel" data-mode-link="range">2つの日付は何日間？</a>
+    <a href="#shiftPanel" data-mode-link="shift">今日から何日後・何日前？</a>
+    <a href="#business-example">土日祝を除く営業日は？</a>
+  </nav>
 
   <div class="calc-card nissu-card">
     <div class="nissu-tabs" role="group" aria-label="日付計算の種類">
@@ -110,7 +116,7 @@ const example = dateRangeBreakdown('2026-08-03', '2026-08-11', { includeBoth: tr
     <p>民法第140条では、日・週・月・年で期間を定める場合は原則として初日を算入しないとされています。ただし午前0時から始まる場合や、個別の法令・契約に別の定めがある場合など例外があります。法的期限はこのツールだけで判断せず、該当する規定をご確認ください。</p>
   </section>
 
-  <section class="howto">
+  <section class="howto" id="business-example">
     <h2>営業日の日数計算例｜2026年8月3日〜11日</h2>
     <p>開始日・終了日の両方を含めて数えると、暦日は{example.calendarDays}日です。土日{example.weekendDays}日と、平日の祝日「{example.holidays[0].name}」を除くため、営業日は{example.businessDays}日になります。</p>
     <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
@@ -144,6 +150,9 @@ const example = dateRangeBreakdown('2026-08-03', '2026-08-11', { includeBoth: tr
 </ToolLayout>
 
 <style>
+  .task-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 16px; }
+  .task-links a { display: grid; place-items: center; min-height: 44px; padding: 8px 10px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface); color: var(--text); font-size: .76rem; font-weight: var(--fw-bold); line-height: 1.45; text-align: center; }
+  .task-links a:hover { border-color: var(--cat-color); background: var(--cat-tint); color: var(--cat-color); }
   .nissu-card { overflow: hidden; }
   .nissu-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
   .nissu-tab { display: flex; flex-direction: column; gap: 2px; padding: 14px 10px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); }
@@ -195,6 +204,7 @@ const example = dateRangeBreakdown('2026-08-03', '2026-08-11', { includeBoth: tr
   .source-box a { color: var(--cat-color); font-weight: var(--fw-bold); }
   .business-cell { color: var(--cat-color); font-weight: var(--fw-bold); }
   @media (max-width: 560px) {
+    .task-links { grid-template-columns: 1fr; }
     .nissu-panel { padding: 18px; }
     .date-grid { grid-template-columns: 1fr; gap: 0; }
     .date-arrow { min-height: 24px; transform: rotate(90deg); }
@@ -305,6 +315,7 @@ const example = dateRangeBreakdown('2026-08-03', '2026-08-11', { includeBoth: tr
   $('from').value = localToday();
   $('base').value = localToday();
   document.querySelectorAll('.nissu-tab').forEach((button) => button.addEventListener('click', () => setMode(button.dataset.mode)));
+  document.querySelectorAll('[data-mode-link]').forEach((link) => link.addEventListener('click', () => setMode(link.dataset.modeLink)));
   document.querySelectorAll('[data-today-target]').forEach((button) => button.addEventListener('click', () => {
     $(button.dataset.todayTarget).value = localToday();
     if (button.dataset.todayTarget === 'base') renderShift(); else renderRange();

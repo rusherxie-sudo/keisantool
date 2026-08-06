@@ -91,6 +91,11 @@ const STAR_PROFILES: StarProfile[] = [
     <p>生年月日を入力するだけで、運命星（6星）とプラス・マイナス、{CURRENT_YEAR}年の大殺界を自動判定。今後9年の早見表も無料で確認できます。</p>
   </div>
 
+  <section class="rk-current-answer" aria-labelledby="rk-current-heading">
+    <h2 id="rk-current-heading">{CURRENT_YEAR}年に大殺界なのは何星人？</h2>
+    <p><strong>{daisakkaiTypes.map((item) => `${item.type}（${item.zone}）`).join('・')}</strong>です。生年月日を入力すると、自分の運命星と今年の運勢をすぐ確認できます。</p>
+  </section>
+
   <div class="calc-card">
     <div class="wide-input">
       <div class="form-group">
@@ -265,6 +270,10 @@ const STAR_PROFILES: StarProfile[] = [
 </style>
 
 <style>
+  .rk-current-answer { margin: 0 0 16px; padding: 15px 18px; border: 1px solid var(--cat-color); border-radius: var(--r-md); background: var(--cat-tint); }
+  .rk-current-answer h2 { margin: 0 0 5px; color: var(--text); font-size: 1rem; }
+  .rk-current-answer p { margin: 0; color: var(--text); font-size: .86rem; line-height: 1.7; }
+  .rk-current-answer strong { color: var(--cat-color); }
   .rk-note { font-size: .8rem; color: var(--text-muted); margin-top: 12px; line-height: 1.7; }
   .rk-forecast { margin-top: 18px; padding-top: 16px; border-top: 1.5px solid var(--border-2); }
   .rk-forecast .result-label { margin-bottom: 10px; }

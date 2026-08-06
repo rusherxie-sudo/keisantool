@@ -105,6 +105,13 @@ const color = getColorByCategory('生活・日常');
           <div class="um-fact"><dt>六星占術の陽陰</dt><dd>{pol}{polMark}</dd></div>
         </dl>
       </div>
+      <div class="um-exact-age">
+        <div class="form-group">
+          <label for="birth-date">誕生日を入力して今日の満年齢を確認</label>
+          <input type="date" id="birth-date" min={`${year}-01-01`} max={`${year}-12-31`} data-birth-year={year} />
+        </div>
+        <p id="exact-age-result" class="um-exact-result" aria-live="polite">月日まで入力すると、今日時点の正確な年齢を表示します。</p>
+      </div>
     </div>
 
     <section class="howto um-section">
@@ -270,6 +277,7 @@ const color = getColorByCategory('生活・日常');
 
     <Faq items={[
       { q: `${year}年（${wareki}）生まれは今年（${BASE_YEAR}年）何歳ですか？`, a: `${BASE_YEAR}年の誕生日を迎えると満${age}歳、誕生日前は満${age - 1}歳です。数え年では${kazoe}歳になります。` },
+      { q: `${year}年生まれの今日時点の正確な年齢は？`, a: `誕生日を迎えたかどうかで満${age - 1}歳または満${age}歳です。ページ上部で生まれた月日を入力すると、今日時点の満年齢を自動計算できます。` },
       { q: `${year}年生まれの厄年はいつですか？`, a: `数え年で数えて、男性の本厄は${honyakuListM.map((r) => `${r.year}年（${r.kazoe}歳${r.isTaiyaku ? '・大厄' : ''}）`).join('、')}、女性の本厄は${honyakuListF.map((r) => `${r.year}年（${r.kazoe}歳${r.isTaiyaku ? '・大厄' : ''}）`).join('、')}です。それぞれ前年が前厄、翌年が後厄になります。` },
       { q: `${year}年の干支は何ですか？`, a: `${year}年（${wareki}）の干支（十二支）は${e.kanji}（${e.yomi}）です。干支は12年周期なので、${year - 12}年や${year + 12}年生まれの方と同じ干支になります。` },
     ]} />
@@ -294,6 +302,38 @@ const color = getColorByCategory('生活・日常');
     <div class="ad-slot"></div>
   </div>
 </ToolLayout>
+
+<script>
+  import { mannenrei } from '../../lib/nenrei.js';
+
+  const birthInput = document.getElementById('birth-date');
+  const exactResult = document.getElementById('exact-age-result');
+
+  function localToday() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }
+
+  birthInput?.addEventListener('change', () => {
+    const birth = birthInput.value;
+    const expectedYear = Number(birthInput.dataset.birthYear);
+    if (!birth || Number(birth.slice(0, 4)) !== expectedYear) {
+      exactResult.textContent = `${expectedYear}年の誕生日を入力してください。`;
+      exactResult.classList.remove('has-result');
+      return;
+    }
+    const exactAge = mannenrei(birth, localToday());
+    if (exactAge == null) {
+      exactResult.textContent = '今日時点の年齢を計算できませんでした。';
+      exactResult.classList.remove('has-result');
+      return;
+    }
+    const [, month, day] = birth.split('-').map(Number);
+    exactResult.textContent = `今日時点：満${exactAge}歳（${month}月${day}日生まれ）`;
+    exactResult.classList.add('has-result');
+    window.trackCalculatorResult?.('exact-age');
+  });
+</script>
 
 <style>
   /* ラッパー div は幅に影響させない（各セクションの max-width は global 側で制御） */
@@ -331,6 +371,10 @@ const color = getColorByCategory('生活・日常');
   }
   .um-fact dt { font-size: .72rem; color: var(--text-muted); font-weight: var(--fw-bold); margin-bottom: 2px; }
   .um-fact dd { margin: 0; font-weight: var(--fw-bold); color: var(--text); font-size: .95rem; }
+  .um-exact-age { display: grid; grid-template-columns: minmax(220px, .8fr) minmax(260px, 1.2fr); gap: 18px; align-items: end; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border-2); }
+  .um-exact-age .form-group { margin: 0; }
+  .um-exact-result { display: grid; place-items: center; min-height: 48px; margin: 0; padding: 10px 14px; border-radius: var(--r-md); background: var(--surface-sub); color: var(--text-muted); font-size: .8rem; line-height: 1.5; text-align: center; }
+  .um-exact-result.has-result { background: var(--cat-tint); color: var(--cat-color); font-size: 1rem; font-weight: var(--fw-bold); }
 
   /* セクション共通 */
   .um-section { margin-top: 28px; }
@@ -353,6 +397,7 @@ const color = getColorByCategory('生活・日常');
     .um-yaku-grid, .um-rokusei-grid { grid-template-columns: 1fr; }
     .um-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .um-main { margin: 0 auto; }
+    .um-exact-age { grid-template-columns: 1fr; gap: 10px; }
   }
 
   /* 前後年ナビ */
