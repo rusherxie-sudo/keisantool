@@ -5,7 +5,7 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
-import { NATIONAL_WEIGHTED_AVERAGE, minimumWagePrefectures } from '../../lib/saitei.js';
+import { NATIONAL_WEIGHTED_AVERAGE, NATIONAL_WAGE_HISTORY, minimumWagePrefectures } from '../../lib/saitei.js';
 
 const slug = 'saitei';
 const prefectures = minimumWagePrefectures();
@@ -69,12 +69,26 @@ const faqItems = [
     <div class="disclaimer">※ 計算結果はあくまで参考値です。個別の賃金項目や特定最低賃金の適用は、都道府県労働局または労働基準監督署に確認してください。</div>
   </section>
 
+  <section class="howto">
+    <h2>全国最低賃金の推移｜令和2〜7年度</h2>
+    <p>全国加重平均は令和2年度の902円から令和7年度の1,121円へ、6年度分で219円上昇しました。都道府県別の推移は、一覧の地域名から各ページで確認できます。</p>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table history-table">
+      <thead><tr><th>年度</th><th>全国加重平均</th><th>前年度比</th></tr></thead>
+      <tbody>{NATIONAL_WAGE_HISTORY.map((row, index) => <tr>
+        <th scope="row">令和{row.fiscalYear - 2018}年度</th>
+        <td class="num"><strong>{row.wage.toLocaleString('ja-JP')}円</strong></td>
+        <td class="num">{index === 0 ? '―' : `+${row.wage - NATIONAL_WAGE_HISTORY[index - 1].wage}円`}</td>
+      </tr>)}</tbody>
+    </table></div></div>
+  </section>
+
   <section class="howto sources">
     <h2>出典・改定状況</h2>
     <ul>
       <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html" target="_blank" rel="nofollow noopener">厚生労働省「地域別最低賃金の全国一覧」</a></li>
       <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/chingin/newpage_43899.html" target="_blank" rel="nofollow noopener">厚生労働省「最低賃金額以上かどうかを確認する方法」</a></li>
       <li><a href="https://www.mhlw.go.jp/stf/newpage_74920.html" target="_blank" rel="nofollow noopener">厚生労働省「令和8年度地域別最低賃金額改定の目安について」（2026年7月28日）</a></li>
+      <li><a href="https://saiteichingin.mhlw.go.jp/table/page_list_past.html" target="_blank" rel="nofollow noopener">厚生労働省「地域別最低賃金の全国一覧（過去5年分）」</a></li>
     </ul>
   </section>
 
@@ -89,7 +103,9 @@ const faqItems = [
   .status-note strong { color: var(--warning-text); }
   .status-note p { margin: 5px 0 0; font-size: .84rem; line-height: 1.7; }
   .wage-table { min-width: 650px; }
+  .history-table { min-width: 480px; }
   .wage-table th[scope="row"] { text-align: left; }
+  .history-table th[scope="row"] { text-align: left; }
   .wage-table a, .sources a { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
   .formula { margin: 16px 0; padding: 16px; border-radius: var(--r-sm); color: var(--cat-color); background: var(--cat-tint); text-align: center; font-weight: var(--fw-bold); }
 </style>

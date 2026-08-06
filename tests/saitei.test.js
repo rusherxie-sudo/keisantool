@@ -13,6 +13,8 @@ import {
   overtimeWage,
   monthlyHourlyEquivalent,
   checkMonthlyWage,
+  getMinimumWageHistory,
+  getMinimumWageCities,
 } from '../src/lib/saitei.js';
 
 describe('令和7年度の地域別最低賃金データ', () => {
@@ -85,6 +87,37 @@ describe('地域別最低賃金の取得', () => {
   it('北海道は1075円', () => expect(getMinimumWage('北海道')).toBe(1075));
   it('存在しない地域はnull', () => expect(getMinimumWage('不明')).toBeNull());
   it('slugからも情報を取得できる', () => expect(getMinimumWageInfo('fukuoka').prefecture).toBe('福岡県'));
+});
+
+describe('最低賃金の推移と主要都市', () => {
+  it('検索需要の大きい地域は令和2〜7年度の公式推移を返す', () => {
+    expect(getMinimumWageHistory('tokyo')).toEqual([
+      { fiscalYear: 2020, wage: 1013 },
+      { fiscalYear: 2021, wage: 1041 },
+      { fiscalYear: 2022, wage: 1072 },
+      { fiscalYear: 2023, wage: 1113 },
+      { fiscalYear: 2024, wage: 1163 },
+      { fiscalYear: 2025, wage: 1226 },
+    ]);
+    expect(getMinimumWageHistory('大阪府').map((row) => row.wage)).toEqual([
+      964, 992, 1023, 1064, 1114, 1177,
+    ]);
+    expect(getMinimumWageHistory('北海道').map((row) => row.wage)).toEqual([
+      861, 889, 920, 960, 1010, 1075,
+    ]);
+  });
+
+  it('返却値を変更しても履歴データを汚染しない', () => {
+    const history = getMinimumWageHistory('tokyo');
+    history[0].wage = 1;
+    expect(getMinimumWageHistory('tokyo')[0].wage).toBe(1013);
+  });
+
+  it('都道府県額が適用される主要都市を返す', () => {
+    expect(getMinimumWageCities('osaka')).toEqual(['大阪市', '堺市', '東大阪市']);
+    expect(getMinimumWageCities('愛知県')).toEqual(['名古屋市', '豊田市', '岡崎市']);
+    expect(getMinimumWageCities('不明')).toEqual([]);
+  });
 });
 
 describe('最低賃金から日給・月給・年給を計算', () => {

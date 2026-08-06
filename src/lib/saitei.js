@@ -4,6 +4,14 @@
 // 金額の端数は Math.floor で切り捨てる。
 
 export const NATIONAL_WEIGHTED_AVERAGE = 1121;
+export const NATIONAL_WAGE_HISTORY = [
+  { fiscalYear: 2020, wage: 902 },
+  { fiscalYear: 2021, wage: 930 },
+  { fiscalYear: 2022, wage: 961 },
+  { fiscalYear: 2023, wage: 1004 },
+  { fiscalYear: 2024, wage: 1055 },
+  { fiscalYear: 2025, wage: 1121 },
+];
 
 const MINIMUM_WAGE_PREFECTURES = [
   { prefecture: '北海道', slug: 'hokkaido', wage: 1075, effectiveDate: '2025-10-04', region: '北海道' },
@@ -55,6 +63,37 @@ const MINIMUM_WAGE_PREFECTURES = [
   { prefecture: '沖縄県', slug: 'okinawa', wage: 1023, effectiveDate: '2025-12-01', region: '九州・沖縄' },
 ];
 
+// 厚生労働省「地域別最低賃金の全国一覧（過去5年分）」と令和7年度一覧。
+// 検索需要と流入が大きい地域から、令和2〜7年度の推移を掲載する。
+const MINIMUM_WAGE_HISTORY = {
+  hokkaido: [861, 889, 920, 960, 1010, 1075],
+  chiba: [925, 953, 984, 1026, 1076, 1140],
+  tokyo: [1013, 1041, 1072, 1113, 1163, 1226],
+  kanagawa: [1012, 1040, 1071, 1112, 1162, 1225],
+  nagano: [849, 877, 908, 948, 998, 1061],
+  gifu: [852, 880, 910, 950, 1001, 1065],
+  shizuoka: [885, 913, 944, 984, 1034, 1097],
+  aichi: [927, 955, 986, 1027, 1077, 1140],
+  osaka: [964, 992, 1023, 1064, 1114, 1177],
+  hyogo: [900, 928, 960, 1001, 1052, 1116],
+  hiroshima: [871, 899, 930, 970, 1020, 1085],
+};
+
+// 市区町村ごとに地域別最低賃金が分かれるわけではないことを、主要都市名の検索にも明示する。
+const MINIMUM_WAGE_CITIES = {
+  hokkaido: ['札幌市', '旭川市', '函館市'],
+  chiba: ['千葉市', '船橋市', '柏市'],
+  tokyo: ['東京23区', '八王子市', '町田市'],
+  kanagawa: ['横浜市', '川崎市', '相模原市'],
+  nagano: ['長野市', '松本市', '上田市'],
+  gifu: ['岐阜市', '大垣市', '各務原市'],
+  shizuoka: ['静岡市', '浜松市', '沼津市'],
+  aichi: ['名古屋市', '豊田市', '岡崎市'],
+  osaka: ['大阪市', '堺市', '東大阪市'],
+  hyogo: ['神戸市', '姫路市', '尼崎市'],
+  hiroshima: ['広島市', '福山市', '呉市'],
+};
+
 export const MINIMUM_WAGE_DATA = Object.fromEntries(
   MINIMUM_WAGE_PREFECTURES.map(({ prefecture, wage }) => [prefecture, wage]),
 );
@@ -72,6 +111,20 @@ export function getMinimumWageInfo(prefectureOrSlug) {
 
 export function getMinimumWage(prefectureOrSlug) {
   return getMinimumWageInfo(prefectureOrSlug)?.wage ?? null;
+}
+
+export function getMinimumWageHistory(prefectureOrSlug) {
+  const info = getMinimumWageInfo(prefectureOrSlug);
+  if (!info || !MINIMUM_WAGE_HISTORY[info.slug]) return [];
+  return MINIMUM_WAGE_HISTORY[info.slug].map((wage, index) => ({
+    fiscalYear: 2020 + index,
+    wage,
+  }));
+}
+
+export function getMinimumWageCities(prefectureOrSlug) {
+  const info = getMinimumWageInfo(prefectureOrSlug);
+  return info ? [...(MINIMUM_WAGE_CITIES[info.slug] ?? [])] : [];
 }
 
 export function dailyWage(prefectureOrSlug, hours = 8) {

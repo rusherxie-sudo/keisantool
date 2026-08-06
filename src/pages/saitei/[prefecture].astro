@@ -4,7 +4,7 @@ import MinimumWageCalculator from '../../components/MinimumWageCalculator.astro'
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
-import { minimumWagePrefectures, calcSaitei } from '../../lib/saitei.js';
+import { minimumWagePrefectures, calcSaitei, getMinimumWageHistory, getMinimumWageCities } from '../../lib/saitei.js';
 
 export function getStaticPaths() {
   return minimumWagePrefectures().map((info) => ({ params: { prefecture: info.slug }, props: { info } }));
@@ -15,13 +15,20 @@ const allPrefectures = minimumWagePrefectures();
 const sameRegion = allPrefectures.filter((row) => row.region === info.region && row.slug !== info.slug);
 const estimate20 = calcSaitei(info.prefecture, 8, 20);
 const estimate22 = calcSaitei(info.prefecture, 8, 22);
+const wageHistory = getMinimumWageHistory(info.slug);
+const cities = getMinimumWageCities(info.slug);
+const sixYearIncrease = wageHistory.length ? info.wage - wageHistory[0].wage : null;
 const [effectiveYear, effectiveMonth, effectiveDay] = info.effectiveDate.split('-').map(Number);
 const effectiveText = `${effectiveYear}年${effectiveMonth}月${effectiveDay}日`;
 const guidelineIncrease = ['saitama', 'chiba', 'tokyo', 'kanagawa', 'aichi', 'osaka'].includes(info.slug) ? 54 : 56;
 const slug = `saitei/${info.slug}`;
 const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
-const title = `${info.prefecture}の最低賃金は${info.wage.toLocaleString('ja-JP')}円【2026年現在】｜月給・時給計算`;
-const description = `${info.prefecture}の最低賃金は時給${info.wage.toLocaleString('ja-JP')}円（${effectiveText}発効）です。令和8年度は+${guidelineIncrease}円の引上げ目安が答申済み。最終額・発効日は未決定です。`;
+const title = wageHistory.length
+  ? `${info.prefecture}の最低賃金は${info.wage.toLocaleString('ja-JP')}円【2026年現在】｜推移・月給計算`
+  : `${info.prefecture}の最低賃金は${info.wage.toLocaleString('ja-JP')}円【2026年現在】｜月給・時給計算`;
+const description = cities.length
+  ? `${info.prefecture}（${cities.join('・')}）の最低賃金は時給${info.wage.toLocaleString('ja-JP')}円。令和2〜7年度の推移、日給・月給の目安、令和8年度の改定状況を確認できます。`
+  : `${info.prefecture}の最低賃金は時給${info.wage.toLocaleString('ja-JP')}円（${effectiveText}発効）です。令和8年度は+${guidelineIncrease}円の引上げ目安が答申済み。最終額・発効日は未決定です。`;
 const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', name: `${info.prefecture}の最低賃金計算`, description, url: canonicalUrl, applicationCategory: 'UtilityApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } };
 const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
   { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
@@ -32,6 +39,8 @@ const faqItems = [
   { q: `${info.prefecture}の2026年の最低賃金はいくらですか？`, a: `現在適用中の${info.prefecture}の地域別最低賃金は、時間額${info.wage.toLocaleString('ja-JP')}円です。令和8年度は中央最低賃金審議会が+${guidelineIncrease}円の引上げ目安を答申しましたが、地方審議会の答申と最終決定・発効日はまだ確定していません。` },
   { q: `${info.prefecture}で1日8時間働く最低日給はいくらですか？`, a: `${info.wage.toLocaleString('ja-JP')}円×8時間で、最低日給の目安は${estimate22.dailyWage.toLocaleString('ja-JP')}円です。休憩時間は労働時間に含めません。` },
   { q: `${info.prefecture}の最低月給はいくらですか？`, a: `1日8時間・月20日なら${estimate20.monthlyWage.toLocaleString('ja-JP')}円、月22日なら${estimate22.monthlyWage.toLocaleString('ja-JP')}円が単純計算の目安です。実際の判定は年間所定労働時間で月給を時間額換算します。` },
+  ...(cities.length ? [{ q: `${cities[0]}の最低賃金はいくらですか？`, a: `${cities[0]}を含む${info.prefecture}内では、原則として${info.prefecture}の地域別最低賃金${info.wage.toLocaleString('ja-JP')}円が適用されます。市区町村ごとに別の地域別最低賃金が設定されるものではありません。ただし、対象産業ではより高い特定最低賃金が適用される場合があります。` }] : []),
+  ...(wageHistory.length ? [{ q: `${info.prefecture}の最低賃金はどのように推移していますか？`, a: `令和2年度の${wageHistory[0].wage.toLocaleString('ja-JP')}円から令和7年度の${info.wage.toLocaleString('ja-JP')}円へ、6年度分で${sixYearIncrease.toLocaleString('ja-JP')}円上昇しています。年度別の金額はページ内の推移表で確認できます。` }] : []),
 ];
 ---
 
@@ -67,6 +76,26 @@ const faqItems = [
     </table></div></div>
   </section>
 
+  {cities.length && <section class="howto city-scope">
+    <h2>{cities[0]}・{cities[1]}・{cities[2]}の最低賃金</h2>
+    <p><strong>{cities.join('、')}</strong>を含む{info.prefecture}内では、原則として同じ地域別最低賃金<strong>{info.wage.toLocaleString('ja-JP')}円</strong>が適用されます。市区町村ごとに別の地域別最低賃金があるわけではありません。</p>
+    <p>ただし、勤務する事業場の産業が特定最低賃金の対象で、地域別最低賃金より高い場合は特定最低賃金が適用されます。派遣労働者は派遣先の事業場がある地域を基準に確認します。</p>
+  </section>}
+
+  {wageHistory.length && <section class="howto">
+    <h2>{info.prefecture}の最低賃金推移｜令和2〜7年度</h2>
+    <p>{info.prefecture}の最低賃金は、令和2年度の<strong>{wageHistory[0].wage.toLocaleString('ja-JP')}円</strong>から令和7年度の<strong>{info.wage.toLocaleString('ja-JP')}円</strong>へ、6年度分で<strong>{sixYearIncrease.toLocaleString('ja-JP')}円</strong>上昇しました。</p>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table history-table">
+      <thead><tr><th>年度</th><th>時間額</th><th>前年度比</th></tr></thead>
+      <tbody>{wageHistory.map((row, index) => <tr>
+        <th scope="row">令和{row.fiscalYear - 2018}年度（{row.fiscalYear}年度）</th>
+        <td class="num"><strong>{row.wage.toLocaleString('ja-JP')}円</strong></td>
+        <td class="num">{index === 0 ? '―' : `+${(row.wage - wageHistory[index - 1].wage).toLocaleString('ja-JP')}円`}</td>
+      </tr>)}</tbody>
+    </table></div></div>
+    <p class="history-note">※ 年度別の地域別最低賃金額です。発効日は年度・都道府県により異なります。</p>
+  </section>}
+
   <section class="howto">
     <h2>{info.prefecture}で最低賃金を確認するときの注意</h2>
     <ul>
@@ -90,6 +119,7 @@ const faqItems = [
       <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html" target="_blank" rel="nofollow noopener">厚生労働省「地域別最低賃金の全国一覧」</a></li>
       <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/chingin/newpage_43899.html" target="_blank" rel="nofollow noopener">厚生労働省「最低賃金額以上かどうかを確認する方法」</a></li>
       <li><a href="https://www.mhlw.go.jp/stf/newpage_74920.html" target="_blank" rel="nofollow noopener">厚生労働省「令和8年度地域別最低賃金額改定の目安について」</a></li>
+      <li><a href="https://saiteichingin.mhlw.go.jp/table/page_list_past.html" target="_blank" rel="nofollow noopener">厚生労働省「地域別最低賃金の全国一覧（過去5年分）」</a></li>
     </ul>
   </section>
 
@@ -108,7 +138,10 @@ const faqItems = [
   .status-note strong { color: var(--warning-text); }
   .status-note p { margin: 4px 0 0; font-size: .8rem; line-height: 1.65; }
   .estimate-table { min-width: 560px; }
+  .history-table { min-width: 520px; }
   .estimate-table th[scope="row"] { text-align: left; }
+  .history-table th[scope="row"] { text-align: left; }
+  .history-note { color: var(--text-muted); font-size: .76rem; }
   .region-links > div { display: flex; flex-wrap: wrap; gap: 8px; }
   .region-links a, .sources a, .hub-link { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
   .region-links > div a { padding: 8px 10px; border: 1px solid var(--border-2); border-radius: var(--r-sm); background: var(--surface-sub); text-decoration: none; }
