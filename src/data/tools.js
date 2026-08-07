@@ -209,6 +209,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'sankakkei-menseki',
+    nav: '三角形の面積',
+    name: '三角形の面積計算ツール',
+    icon: '△',
+    category: '生活・日常',
+    short: '底辺・3辺・角度・座標から面積を計算',
+    live: true,
+  },
+  {
     slug: 'heihoukon',
     nav: '平方根・ルート',
     name: '平方根・ルート計算機',

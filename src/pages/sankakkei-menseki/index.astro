@@ -1,0 +1,330 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+import { triangleFromThreeSides, triangleFromTwoSidesAngle } from '../../lib/sankakkei-menseki.js';
+
+const slug = 'sankakkei-menseki';
+const title = '三角形の面積計算ツール｜底辺・3辺・角度・座標から自動計算';
+const description = '三角形の面積を無料で自動計算。底辺×高さ、3辺からヘロンの公式、2辺とその間の角、3点の座標・ベクトルに対応し、公式と計算例も確認できます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '三角形の面積計算ツール',
+  description,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['底辺と高さから面積を計算', '3辺からヘロンの公式で計算', '2辺とその間の角から計算', '3点の座標・ベクトルから計算'],
+};
+
+const heron345 = triangleFromThreeSides(3, 4, 5);
+const angleExample = triangleFromTwoSidesAngle(5, 7, 60);
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 三角形の面積</div>
+    <h1>三角形の面積計算ツール</h1>
+    <p>分かっている値に合わせて、底辺と高さ・3辺・2辺と角度・3点の座標から面積を自動計算します。</p>
+    <div class="feature-chips" aria-label="対応する計算方法">
+      <span>底辺×高さ</span><span>ヘロンの公式</span><span>2辺×sin</span><span>座標・ベクトル</span>
+    </div>
+  </div>
+
+  <div class="calc-card triangle-card" id="triangle-area-tool">
+    <div class="triangle-tabs" role="tablist" aria-label="面積の計算方法">
+      <button type="button" class="triangle-tab is-active" data-mode="base" role="tab" aria-selected="true">底辺と高さ<small>基本の公式</small></button>
+      <button type="button" class="triangle-tab" data-mode="sides" role="tab" aria-selected="false">3辺<small>ヘロンの公式</small></button>
+      <button type="button" class="triangle-tab" data-mode="angle" role="tab" aria-selected="false">2辺と角度<small>sinを使用</small></button>
+      <button type="button" class="triangle-tab" data-mode="coordinates" role="tab" aria-selected="false">3点の座標<small>座標・ベクトル</small></button>
+    </div>
+
+    <div class="calc-panel active triangle-panel">
+      <section class="triangle-mode" data-panel="base">
+        <h2>底辺と高さから三角形の面積を計算</h2>
+        <p class="mode-lead">底辺と、その底辺に垂直な高さを入力してください。</p>
+        <div class="input-grid">
+          <div class="form-group"><label for="base-value">底辺</label><input id="base-value" type="number" min="0" step="any" value="10" inputmode="decimal" /></div>
+          <div class="form-group"><label for="height-value">高さ</label><input id="height-value" type="number" min="0" step="any" value="6" inputmode="decimal" /></div>
+        </div>
+        <p class="form-error" id="base-error" role="alert" hidden>0より大きい底辺と高さを入力してください。</p>
+        <div class="area-result" id="base-result" aria-live="polite">
+          <span>三角形の面積</span><strong id="base-area">30</strong><small id="base-formula">10 × 6 ÷ 2</small>
+        </div>
+      </section>
+
+      <section class="triangle-mode" data-panel="sides" hidden>
+        <h2>3辺からヘロンの公式で面積を計算</h2>
+        <p class="mode-lead">3辺の長さが分かるときに使います。最も長い辺は、ほかの2辺の合計より短い必要があります。</p>
+        <div class="input-grid three-columns">
+          <div class="form-group"><label for="side-a">辺 a</label><input id="side-a" type="number" min="0" step="any" value="3" inputmode="decimal" /></div>
+          <div class="form-group"><label for="side-b">辺 b</label><input id="side-b" type="number" min="0" step="any" value="4" inputmode="decimal" /></div>
+          <div class="form-group"><label for="side-c">辺 c</label><input id="side-c" type="number" min="0" step="any" value="5" inputmode="decimal" /></div>
+        </div>
+        <p class="form-error" id="sides-error" role="alert" hidden>三角形を作れる3辺の長さを入力してください。</p>
+        <div class="area-result" id="sides-result" aria-live="polite">
+          <span>三角形の面積</span><strong id="sides-area">6</strong><small id="sides-formula">ヘロンの公式</small>
+        </div>
+        <div class="sub-results"><div><span>周の長さ</span><strong id="sides-perimeter">12</strong></div><div><span>半周長 s</span><strong id="sides-semiperimeter">6</strong></div></div>
+      </section>
+
+      <section class="triangle-mode" data-panel="angle" hidden>
+        <h2>2辺とその間の角度から面積を計算</h2>
+        <p class="mode-lead">2辺 a・bと、その2辺にはさまれた角Cを入力してください。</p>
+        <div class="input-grid three-columns">
+          <div class="form-group"><label for="angle-a">辺 a</label><input id="angle-a" type="number" min="0" step="any" value="5" inputmode="decimal" /></div>
+          <div class="form-group"><label for="angle-b">辺 b</label><input id="angle-b" type="number" min="0" step="any" value="7" inputmode="decimal" /></div>
+          <div class="form-group"><label for="included-angle">間の角 C（度）</label><input id="included-angle" type="number" min="0" max="180" step="any" value="60" inputmode="decimal" /></div>
+        </div>
+        <p class="form-error" id="angle-error" role="alert" hidden>辺は0より大きく、角度は0°より大きく180°未満で入力してください。</p>
+        <div class="area-result" id="angle-result" aria-live="polite">
+          <span>三角形の面積</span><strong id="angle-area">15.15544457</strong><small id="angle-formula">5 × 7 × sin 60° ÷ 2</small>
+        </div>
+        <div class="sub-results"><div><span>残りの辺 c</span><strong id="angle-third">6.244998</strong></div><div><span>周の長さ</span><strong id="angle-perimeter">18.244998</strong></div></div>
+      </section>
+
+      <section class="triangle-mode" data-panel="coordinates" hidden>
+        <h2>3点の座標・ベクトルから面積を計算</h2>
+        <p class="mode-lead">平面上の3点 A・B・C の x座標と y座標を入力してください。</p>
+        <div class="coordinate-grid">
+          <strong>点A</strong><div class="form-group"><label for="x1">x₁</label><input id="x1" type="number" step="any" value="0" inputmode="decimal" /></div><div class="form-group"><label for="y1">y₁</label><input id="y1" type="number" step="any" value="0" inputmode="decimal" /></div>
+          <strong>点B</strong><div class="form-group"><label for="x2">x₂</label><input id="x2" type="number" step="any" value="4" inputmode="decimal" /></div><div class="form-group"><label for="y2">y₂</label><input id="y2" type="number" step="any" value="0" inputmode="decimal" /></div>
+          <strong>点C</strong><div class="form-group"><label for="x3">x₃</label><input id="x3" type="number" step="any" value="0" inputmode="decimal" /></div><div class="form-group"><label for="y3">y₃</label><input id="y3" type="number" step="any" value="3" inputmode="decimal" /></div>
+        </div>
+        <p class="form-error" id="coordinates-error" role="alert" hidden>同一直線上にない3点の座標を入力してください。</p>
+        <div class="area-result" id="coordinates-result" aria-live="polite">
+          <span>三角形の面積</span><strong id="coordinates-area">6</strong><small>座標の行列式（外積）で計算</small>
+        </div>
+        <div class="sub-results"><div><span>3辺の長さ</span><strong id="coordinates-sides">4・5・3</strong></div><div><span>周の長さ</span><strong id="coordinates-perimeter">12</strong></div></div>
+      </section>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>三角形の面積の求め方と公式</h2>
+    <p>三角形の面積は、分かっている値によって使う公式が変わります。底辺と垂直な高さが分かる場合は<strong>底辺×高さ÷2</strong>が最も簡単です。高さが分からなくても、3辺、2辺とその間の角、または3点の座標が分かれば計算できます。</p>
+    <div class="formula-grid">
+      <div><span>底辺と高さ</span><strong>S = a × h ÷ 2</strong><small>小学校・中学校で使う基本公式</small></div>
+      <div><span>3辺 a・b・c</span><strong>S = √s(s−a)(s−b)(s−c)</strong><small>s = (a+b+c)÷2</small></div>
+      <div><span>2辺 a・bと角C</span><strong>S = ab sin C ÷ 2</strong><small>角は2辺にはさまれた角</small></div>
+      <div><span>3点の座標</span><strong>S = |外積| ÷ 2</strong><small>行列式と同じ計算</small></div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>どの公式を使えばよい？</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>分かっている値</th><th>使う計算</th><th>このツールのタブ</th></tr></thead>
+      <tbody>
+        <tr><td>底辺と垂直な高さ</td><td>底辺×高さ÷2</td><td>底辺と高さ</td></tr>
+        <tr><td>3辺の長さ</td><td>ヘロンの公式</td><td>3辺</td></tr>
+        <tr><td>2辺とその間の角</td><td>正弦（sin）</td><td>2辺と角度</td></tr>
+        <tr><td>平面上の3点</td><td>座標の行列式・外積</td><td>3点の座標</td></tr>
+      </tbody>
+    </table></div></div>
+    <p>直角三角形の残りの辺や角度まで求めたい場合は<a href="/sankaku-kansuu/">三角関数・直角三角形計算ツール</a>、平方根を簡約したい場合は<a href="/heihoukon/">平方根・ルート計算機</a>をご利用ください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>3辺から求める例｜3・4・5の三角形</h2>
+    <p>3辺が3、4、5なら半周長は s＝(3＋4＋5)÷2＝{heron345.semiperimeter}です。ヘロンの公式に代入すると、面積は√(6×3×2×1)＝<strong>{heron345.area}</strong>、周の長さは<strong>{heron345.perimeter}</strong>になります。</p>
+    <p>3辺のうち最も長い辺がほかの2辺の合計以上になる場合、三角形は作れません。本ツールはそのような入力を結果として表示しません。</p>
+  </section>
+
+  <section class="howto">
+    <h2>2辺と角度から求める例｜5・7・60°</h2>
+    <p>辺a＝5、辺b＝7、その間の角C＝60°なら、面積は5×7×sin60°÷2＝約<strong>{angleExample.area.toFixed(6)}</strong>です。残りの辺は余弦定理で約<strong>{angleExample.thirdSide.toFixed(6)}</strong>と求め、周の長さも同時に計算します。</p>
+    <p>入力する角度は必ず2辺にはさまれた角です。sin・cos・tanの値そのものを確認したい場合は<a href="/sankaku-kansuu/">三角関数計算ツール</a>をご利用ください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>座標・ベクトルから三角形の面積を求める方法</h2>
+    <p>点A(x₁,y₁)、B(x₂,y₂)、C(x₃,y₃)の面積は、ベクトルABとACの外積の大きさの半分です。平面座標では<strong>|x₁(y₂−y₃)+x₂(y₃−y₁)+x₃(y₁−y₂)|÷2</strong>として計算できます。</p>
+    <p>3点が同一直線上にある場合は面積が0となり、三角形を作れないためエラー表示にします。座標には負数や小数も入力できます。</p>
+  </section>
+
+  <section class="howto">
+    <h2>面積の単位と計算結果の注意点</h2>
+    <ul>
+      <li>入力した辺がcmなら結果はcm²、mならm²です。すべて同じ長さの単位にそろえてください。</li>
+      <li>画面では読みやすい桁数に丸めますが、内部計算では途中の値を丸めません。</li>
+      <li>測量・設計・工作では、入力した長さや角度の測定誤差も結果に影響します。</li>
+      <li>㎡を坪・帖へ換算する場合は<a href="/tsubo-heibei/">坪・平米換算ツール</a>をご利用ください。</li>
+    </ul>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料</h2>
+    <ul>
+      <li><a href="https://www.mext.go.jp/content/20230217-mxt_kyoiku02-100002620_05.pdf" target="_blank" rel="noopener noreferrer">文部科学省「高等学校学習指導要領解説 数学編 理数編」</a>：図形と計量、三角比、ベクトルの学習内容。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。設計・測量・安全性に関わる用途では、必要な精度と条件を専門家または公的資料でご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '三角形の面積はどうやって計算しますか？', a: '底辺とその底辺に垂直な高さが分かる場合は、底辺×高さ÷2で計算します。高さが分からなくても、3辺、2辺とその間の角、3点の座標から求められます。' },
+    { q: '3辺だけで三角形の面積を計算できますか？', a: 'はい。半周長s＝(a+b+c)÷2を求め、ヘロンの公式√s(s−a)(s−b)(s−c)で計算できます。' },
+    { q: '2辺と角度から面積を求める公式は？', a: '2辺をa・b、その間の角をCとすると、面積はab sin C÷2です。角度は必ず2辺にはさまれた角を入力します。' },
+    { q: '座標から三角形の面積を求められますか？', a: 'はい。3点のx・y座標から行列式（2つのベクトルの外積）を計算し、その絶対値の半分を面積として表示します。' },
+    { q: '三角形を作れない3辺とは？', a: '最も長い辺が、ほかの2辺の合計以上の場合は三角形を作れません。たとえば1・2・3や1・2・4は無効です。' },
+    { q: '計算結果の単位は何ですか？', a: '入力した長さの単位の2乗です。辺をcmで入力すればcm²、mで入力すればm²になります。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .feature-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .feature-chips span { padding: 5px 10px; border: 1px solid color-mix(in srgb, var(--cat-color) 30%, transparent); border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .72rem; font-weight: var(--fw-bold); }
+  .triangle-card { overflow: hidden; }
+  .triangle-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
+  .triangle-tab { display: flex; flex-direction: column; gap: 2px; padding: 13px 8px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); }
+  .triangle-tab { font-size: .82rem; font-weight: var(--fw-bold); }
+  .triangle-tab small { font-size: .65rem; font-weight: var(--fw-normal); }
+  .triangle-tab.is-active { border-bottom-color: var(--cat-color); background: var(--surface); color: var(--cat-color); }
+  .triangle-tab:focus-visible { outline: 3px solid var(--cat-tint); outline-offset: -3px; }
+  .triangle-panel { padding: 24px; }
+  .triangle-mode[hidden], .form-error[hidden] { display: none; }
+  .triangle-mode h2 { margin: 0 0 5px; font-size: 1.05rem; }
+  .mode-lead { margin: 0 0 18px; color: var(--text-muted); font-size: .82rem; line-height: 1.7; }
+  .input-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .input-grid.three-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .coordinate-grid { display: grid; grid-template-columns: 50px repeat(2, minmax(0, 1fr)); gap: 10px 14px; align-items: end; }
+  .coordinate-grid > strong { align-self: center; color: var(--cat-color); font-family: var(--font-mono); text-align: center; }
+  .coordinate-grid .form-group { margin: 0; }
+  .form-error { margin: 12px 0 0; padding: 9px 12px; border-radius: var(--r-sm); background: var(--danger-bg); color: var(--danger); font-size: .78rem; }
+  .area-result { display: flex; flex-direction: column; align-items: center; gap: 5px; margin-top: 20px; padding: 20px; border-radius: var(--r-md); background: var(--cat-tint); text-align: center; }
+  .area-result span { color: var(--text-muted); font-size: .76rem; font-weight: var(--fw-bold); }
+  .area-result strong { color: var(--cat-color); font: var(--fw-bold) clamp(2rem, 6vw, 2.8rem)/1.1 var(--font-mono); }
+  .area-result small { color: var(--text-muted); font-family: var(--font-mono); }
+  .sub-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+  .sub-results div { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 11px 13px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .sub-results span { color: var(--text-muted); font-size: .72rem; }
+  .sub-results strong { font-family: var(--font-mono); font-size: .88rem; }
+  .formula-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+  .formula-grid div { display: flex; flex-direction: column; gap: 5px; padding: 15px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .formula-grid span, .formula-grid small { color: var(--text-muted); font-size: .72rem; }
+  .formula-grid strong { color: var(--text); font-family: var(--font-mono); font-size: .88rem; }
+  .source-box ul { padding-left: 1.2em; }
+  .source-box a { color: var(--cat-color); font-weight: var(--fw-bold); }
+  @media (max-width: 700px) {
+    .triangle-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .triangle-tab:nth-child(-n+2) { border-bottom: 1px solid var(--border-2); }
+    .input-grid.three-columns { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .triangle-panel { padding: 18px; }
+    .input-grid { grid-template-columns: 1fr; gap: 8px; }
+    .coordinate-grid { grid-template-columns: 38px repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .sub-results, .formula-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import {
+    triangleFromBaseHeight,
+    triangleFromCoordinates,
+    triangleFromThreeSides,
+    triangleFromTwoSidesAngle,
+  } from '../../lib/sankakkei-menseki.js';
+
+  const $ = (id) => document.getElementById(id);
+  let currentMode = 'base';
+  const trackedModes = new Set();
+
+  function formatNumber(value, digits = 8) {
+    if (!Number.isFinite(value)) return '―';
+    if (Math.abs(value) >= 1e12 || (value !== 0 && Math.abs(value) < 1e-8)) return value.toExponential(6);
+    return Number(value.toFixed(digits)).toLocaleString('ja-JP', { maximumFractionDigits: digits });
+  }
+
+  function setValidity(mode, result) {
+    $(`${mode}-error`).hidden = Boolean(result);
+    $(`${mode}-result`).hidden = !result;
+  }
+
+  function track(mode) {
+    if (trackedModes.has(mode)) return;
+    trackedModes.add(mode);
+    window.trackCalculatorResult?.(mode);
+  }
+
+  function setShare(label, area) {
+    window.setResultShare?.(`三角形の面積計算\n${label}\n面積 ${formatNumber(area)}`);
+  }
+
+  function renderBase() {
+    const base = Number($('base-value').value);
+    const height = Number($('height-value').value);
+    const result = triangleFromBaseHeight($('base-value').value, $('height-value').value);
+    setValidity('base', result);
+    if (!result) return window.hideResultShare?.();
+    $('base-area').textContent = formatNumber(result.area);
+    $('base-formula').textContent = `${formatNumber(base)} × ${formatNumber(height)} ÷ 2`;
+    track('base');
+    setShare('底辺と高さ', result.area);
+  }
+
+  function renderSides() {
+    const result = triangleFromThreeSides($('side-a').value, $('side-b').value, $('side-c').value);
+    setValidity('sides', result);
+    if (!result) return window.hideResultShare?.();
+    $('sides-area').textContent = formatNumber(result.area);
+    $('sides-perimeter').textContent = formatNumber(result.perimeter);
+    $('sides-semiperimeter').textContent = formatNumber(result.semiperimeter);
+    track('sides');
+    setShare('3辺（ヘロンの公式）', result.area);
+  }
+
+  function renderAngle() {
+    const a = Number($('angle-a').value);
+    const b = Number($('angle-b').value);
+    const angle = Number($('included-angle').value);
+    const result = triangleFromTwoSidesAngle($('angle-a').value, $('angle-b').value, $('included-angle').value);
+    setValidity('angle', result);
+    if (!result) return window.hideResultShare?.();
+    $('angle-area').textContent = formatNumber(result.area);
+    $('angle-third').textContent = formatNumber(result.thirdSide);
+    $('angle-perimeter').textContent = formatNumber(result.perimeter);
+    $('angle-formula').textContent = `${formatNumber(a)} × ${formatNumber(b)} × sin ${formatNumber(angle)}° ÷ 2`;
+    track('angle');
+    setShare('2辺とその間の角', result.area);
+  }
+
+  function renderCoordinates() {
+    const ids = ['x1', 'y1', 'x2', 'y2', 'x3', 'y3'];
+    const result = triangleFromCoordinates(...ids.map((id) => $(id).value));
+    setValidity('coordinates', result);
+    if (!result) return window.hideResultShare?.();
+    $('coordinates-area').textContent = formatNumber(result.area);
+    $('coordinates-sides').textContent = result.sides.map((side) => formatNumber(side, 6)).join('・');
+    $('coordinates-perimeter').textContent = formatNumber(result.perimeter);
+    track('coordinates');
+    setShare('3点の座標', result.area);
+  }
+
+  const renderers = { base: renderBase, sides: renderSides, angle: renderAngle, coordinates: renderCoordinates };
+
+  function setMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.triangle-tab').forEach((button) => {
+      const active = button.dataset.mode === mode;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-selected', String(active));
+    });
+    document.querySelectorAll('.triangle-mode').forEach((panel) => { panel.hidden = panel.dataset.panel !== mode; });
+    renderers[currentMode]();
+  }
+
+  document.querySelectorAll('.triangle-tab').forEach((button) => button.addEventListener('click', () => setMode(button.dataset.mode)));
+  ['base-value', 'height-value'].forEach((id) => $(id).addEventListener('input', renderBase));
+  ['side-a', 'side-b', 'side-c'].forEach((id) => $(id).addEventListener('input', renderSides));
+  ['angle-a', 'angle-b', 'included-angle'].forEach((id) => $(id).addEventListener('input', renderAngle));
+  ['x1', 'y1', 'x2', 'y2', 'x3', 'y3'].forEach((id) => $(id).addEventListener('input', renderCoordinates));
+  renderBase();
+</script>
