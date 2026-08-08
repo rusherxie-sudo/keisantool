@@ -1,0 +1,271 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'hayasa';
+const title = '速さ・距離・時間計算ツール｜時速・秒速・ペースを自動計算';
+const description = '距離と時間から速さを無料計算。時速km、秒速m、分速、1kmペースを同時表示し、速さ×時間から距離、距離÷速さから所要時間も逆算できます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '速さ・距離・時間計算ツール',
+  description,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['距離と時間から速さを計算', '速さと時間から距離を計算', '距離と速さから時間を計算', '時速・分速・秒速・1kmペースを換算'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 速さ計算</div>
+    <h1>速さ・距離・時間計算ツール</h1>
+    <p>分かっている2つの値を入力すると、速さ・距離・所要時間を自動計算します。</p>
+    <div class="feature-chips" aria-label="対応する計算">
+      <span>時速 km/h</span><span>秒速 m/s</span><span>分速 m/分</span><span>1kmペース</span>
+    </div>
+  </div>
+
+  <div class="calc-card speed-card" id="speed-tool">
+    <div class="speed-tabs" role="tablist" aria-label="計算したい項目">
+      <button type="button" class="speed-tab is-active" data-mode="speed" role="tab" aria-selected="true">速さを計算<small>距離 ÷ 時間</small></button>
+      <button type="button" class="speed-tab" data-mode="distance" role="tab" aria-selected="false">距離を計算<small>速さ × 時間</small></button>
+      <button type="button" class="speed-tab" data-mode="time" role="tab" aria-selected="false">時間を計算<small>距離 ÷ 速さ</small></button>
+    </div>
+
+    <div class="calc-panel active speed-panel">
+      <section class="speed-mode" data-panel="speed">
+        <h2>距離と時間から速さを計算</h2>
+        <p class="mode-lead">例：10kmを30分で進むと、時速20kmです。</p>
+        <div class="input-grid distance-input">
+          <div class="form-group"><label for="speed-distance">距離</label><input id="speed-distance" type="number" min="0" step="any" value="10" inputmode="decimal" /></div>
+          <div class="form-group"><label for="speed-distance-unit">距離の単位</label><select id="speed-distance-unit"><option value="km">km</option><option value="m">m</option></select></div>
+        </div>
+        <fieldset class="duration-fieldset">
+          <legend>かかった時間</legend>
+          <div class="duration-grid">
+            <label><span>時間</span><input id="speed-hours" type="number" min="0" step="1" value="0" inputmode="numeric" /></label>
+            <label><span>分</span><input id="speed-minutes" type="number" min="0" max="59" step="1" value="30" inputmode="numeric" /></label>
+            <label><span>秒</span><input id="speed-seconds" type="number" min="0" max="59" step="1" value="0" inputmode="numeric" /></label>
+          </div>
+        </fieldset>
+        <p class="form-error" id="speed-error" role="alert" hidden>0より大きい距離と時間を入力してください。分・秒は0〜59です。</p>
+        <div class="main-result" id="speed-result" aria-live="polite"><span>速さ</span><strong id="speed-kmh">20 km/h</strong><small>速さ ＝ 距離 ÷ 時間</small></div>
+        <div class="result-grid">
+          <div><span>秒速</span><strong id="speed-mps">5.5556 m/s</strong></div>
+          <div><span>分速</span><strong id="speed-mpm">333.333 m/分</strong></div>
+          <div><span>1kmペース</span><strong id="speed-pace">3分00秒 /km</strong></div>
+        </div>
+      </section>
+
+      <section class="speed-mode" data-panel="distance" hidden>
+        <h2>速さと時間から距離を計算</h2>
+        <p class="mode-lead">例：時速60kmで1時間30分進むと、距離は90kmです。</p>
+        <div class="input-grid distance-input">
+          <div class="form-group"><label for="distance-speed">速さ</label><input id="distance-speed" type="number" min="0" step="any" value="60" inputmode="decimal" /></div>
+          <div class="form-group"><label for="distance-speed-unit">速さの単位</label><select id="distance-speed-unit"><option value="kmh">km/h（時速）</option><option value="mps">m/s（秒速）</option><option value="mpm">m/分（分速）</option></select></div>
+        </div>
+        <fieldset class="duration-fieldset">
+          <legend>進んだ時間</legend>
+          <div class="duration-grid">
+            <label><span>時間</span><input id="distance-hours" type="number" min="0" step="1" value="1" inputmode="numeric" /></label>
+            <label><span>分</span><input id="distance-minutes" type="number" min="0" max="59" step="1" value="30" inputmode="numeric" /></label>
+            <label><span>秒</span><input id="distance-seconds" type="number" min="0" max="59" step="1" value="0" inputmode="numeric" /></label>
+          </div>
+        </fieldset>
+        <p class="form-error" id="distance-error" role="alert" hidden>0より大きい速さと時間を入力してください。分・秒は0〜59です。</p>
+        <div class="main-result" id="distance-result" aria-live="polite"><span>進む距離</span><strong id="distance-km">90 km</strong><small>距離 ＝ 速さ × 時間</small></div>
+        <div class="result-grid two-results">
+          <div><span>メートル</span><strong id="distance-m">90,000 m</strong></div>
+          <div><span>使用した速さ</span><strong id="distance-mps">16.6667 m/s</strong></div>
+        </div>
+      </section>
+
+      <section class="speed-mode" data-panel="time" hidden>
+        <h2>距離と速さから時間を計算</h2>
+        <p class="mode-lead">例：10kmを時速20kmで進むと、所要時間は30分です。</p>
+        <div class="input-grid time-input-grid">
+          <div class="form-group"><label for="time-distance">距離</label><input id="time-distance" type="number" min="0" step="any" value="10" inputmode="decimal" /></div>
+          <div class="form-group"><label for="time-distance-unit">距離の単位</label><select id="time-distance-unit"><option value="km">km</option><option value="m">m</option></select></div>
+          <div class="form-group"><label for="time-speed">速さ</label><input id="time-speed" type="number" min="0" step="any" value="20" inputmode="decimal" /></div>
+          <div class="form-group"><label for="time-speed-unit">速さの単位</label><select id="time-speed-unit"><option value="kmh">km/h（時速）</option><option value="mps">m/s（秒速）</option><option value="mpm">m/分（分速）</option></select></div>
+        </div>
+        <p class="form-error" id="time-error" role="alert" hidden>0より大きい距離と速さを入力してください。</p>
+        <div class="main-result" id="time-result" aria-live="polite"><span>所要時間</span><strong id="time-duration">30分00秒</strong><small>時間 ＝ 距離 ÷ 速さ</small></div>
+        <div class="result-grid two-results">
+          <div><span>合計分数</span><strong id="time-total-minutes">30分</strong></div>
+          <div><span>合計秒数</span><strong id="time-total-seconds">1,800秒</strong></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>速さ・距離・時間の求め方と公式</h2>
+    <p>速さの計算は、次の3つの公式を使います。分かっている2つの値に合わせて、このツール上部のタブを選んでください。</p>
+    <div class="formula-grid">
+      <div><span>速さを求める</span><strong>速さ ＝ 距離 ÷ 時間</strong><small>10km ÷ 0.5時間 ＝ 20km/h</small></div>
+      <div><span>距離を求める</span><strong>距離 ＝ 速さ × 時間</strong><small>60km/h × 1.5時間 ＝ 90km</small></div>
+      <div><span>時間を求める</span><strong>時間 ＝ 距離 ÷ 速さ</strong><small>10km ÷ 20km/h ＝ 0.5時間</small></div>
+    </div>
+    <p>時間だけを足し引きしたい場合は<a href="/jikan/">時間計算ツール</a>、km/hとm/sなどの換算だけをしたい場合は<a href="/tani/">単位変換器</a>をご利用ください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>時速・分速・秒速の換算方法</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>換算</th><th>計算式</th><th>例</th></tr></thead>
+      <tbody>
+        <tr><th>時速 → 秒速</th><td>km/h ÷ 3.6</td><td>36km/h ＝ 10m/s</td></tr>
+        <tr><th>秒速 → 時速</th><td>m/s × 3.6</td><td>10m/s ＝ 36km/h</td></tr>
+        <tr><th>分速 → 秒速</th><td>m/分 ÷ 60</td><td>600m/分 ＝ 10m/s</td></tr>
+        <tr><th>秒速 → 分速</th><td>m/s × 60</td><td>10m/s ＝ 600m/分</td></tr>
+      </tbody>
+    </table></div></div>
+    <p>距離と速さは単位をそろえてから計算します。このツールは内部で距離をm、時間を秒にそろえるため、kmと分の組み合わせもそのまま入力できます。</p>
+  </section>
+
+  <section class="howto">
+    <h2>ランニングの1kmペースと移動時間</h2>
+    <p>1kmペースは「かかった秒数 ÷ 距離km」で求めます。10kmを50分なら1kmあたり5分、時速は12km/hです。徒歩・自転車・ランニングでは信号、坂道、休憩の有無で実際の所要時間が変わるため、停止時間を含めたい場合は入力する時間に加えてください。</p>
+    <p>車の移動費まで知りたい場合は、計算した距離を<a href="/gasoline/">ガソリン代計算ツール</a>へ入力すると、燃費と単価から必要な燃料費を計算できます。</p>
+    <div class="source-box">
+      <h3>参考資料</h3>
+      <ul><li><a href="https://www.mext.go.jp/a_menu/shotou/new-cs/1387014.htm" rel="nofollow noopener" target="_blank">文部科学省「学習指導要領」</a>：算数・数学で扱う数量関係と速さの学習内容。</li></ul>
+    </div>
+    <div class="disclaimer">※ 実際の移動時間は交通状況・休憩・勾配・天候などで変わります。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '速さはどうやって計算しますか？', a: '進んだ距離を、かかった時間で割ります。10kmを30分（0.5時間）で進んだ場合は、10÷0.5＝時速20kmです。' },
+    { q: '時速を秒速に直す方法は？', a: '時速kmの数値を3.6で割ると秒速mになります。時速36kmなら36÷3.6＝秒速10mです。' },
+    { q: '距離と速さから時間を計算できますか？', a: 'はい。「時間を計算」タブで距離と速さを入力すると、所要時間を時・分・秒で表示します。' },
+    { q: '分や秒を含む時間でも計算できますか？', a: 'はい。時間・分・秒を別々に入力できます。分と秒は0〜59の範囲で入力してください。' },
+    { q: 'ランニングの1kmペースも分かりますか？', a: 'はい。「速さを計算」では時速・秒速・分速と一緒に、1kmあたり何分何秒かを表示します。' },
+    { q: '入力した距離や時間は保存されますか？', a: 'いいえ。計算はブラウザ内で行い、入力内容をサーバーへ保存しません。登録も不要です。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .feature-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .feature-chips span { padding: 5px 10px; border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .72rem; font-weight: var(--fw-bold); }
+  .speed-card { overflow: hidden; }
+  .speed-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
+  .speed-tab { display: flex; flex-direction: column; gap: 2px; padding: 13px 8px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); font-size: .82rem; font-weight: var(--fw-bold); }
+  .speed-tab small { font-size: .65rem; font-weight: var(--fw-normal); }
+  .speed-tab.is-active { border-bottom-color: var(--cat-color); background: var(--surface); color: var(--cat-color); }
+  .speed-tab:focus-visible { outline: 3px solid var(--cat-tint); outline-offset: -3px; }
+  .speed-panel { padding: 24px; }
+  .speed-mode[hidden], .form-error[hidden] { display: none; }
+  .speed-mode h2 { margin: 0 0 5px; font-size: 1.05rem; }
+  .mode-lead { margin: 0 0 18px; color: var(--text-muted); font-size: .8rem; }
+  .input-grid { display: grid; gap: 12px; }
+  .distance-input { grid-template-columns: minmax(0, 2fr) minmax(150px, 1fr); }
+  .time-input-grid { grid-template-columns: minmax(0, 1.4fr) minmax(130px, 1fr) minmax(0, 1.4fr) minmax(160px, 1fr); }
+  .form-group select { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: var(--r-md); background: var(--surface); color: var(--text); font-family: var(--font-sans); }
+  .duration-fieldset { margin: 16px 0 0; padding: 0; border: 0; }
+  .duration-fieldset legend { margin-bottom: 7px; color: var(--text-muted); font-size: .72rem; font-weight: var(--fw-bold); }
+  .duration-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .duration-grid label { position: relative; }
+  .duration-grid label span { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); color: var(--text-muted); font-size: .72rem; pointer-events: none; }
+  .duration-grid input { width: 100%; min-height: 48px; padding: 10px 44px 10px 12px; border: 1px solid var(--border-input); border-radius: var(--r-md); background: var(--surface-sub); color: var(--text); font: var(--fw-bold) 1rem/1 var(--font-mono); }
+  .form-error { margin: 12px 0 0; padding: 9px 12px; border-radius: var(--r-sm); background: var(--danger-bg); color: var(--danger); font-size: .78rem; }
+  .main-result { display: flex; flex-direction: column; align-items: center; gap: 5px; margin-top: 20px; padding: 20px; border-radius: var(--r-md); background: var(--cat-tint); text-align: center; }
+  .main-result span { color: var(--text-muted); font-size: .76rem; font-weight: var(--fw-bold); }
+  .main-result strong { color: var(--cat-color); font: var(--fw-bold) clamp(1.8rem, 6vw, 2.7rem)/1.1 var(--font-mono); }
+  .main-result small { color: var(--text-muted); font-family: var(--font-mono); }
+  .result-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+  .result-grid.two-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .result-grid div { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 11px 13px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .result-grid span { color: var(--text-muted); font-size: .7rem; }
+  .result-grid strong { font-family: var(--font-mono); font-size: .82rem; text-align: right; }
+  .formula-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
+  .formula-grid div { display: flex; flex-direction: column; gap: 6px; padding: 15px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .formula-grid span, .formula-grid small { color: var(--text-muted); font-size: .72rem; }
+  .formula-grid strong { font-family: var(--font-mono); font-size: .86rem; }
+  .source-box ul { padding-left: 1.2em; }
+  .source-box a { color: var(--cat-color); font-weight: var(--fw-bold); }
+  @media (max-width: 760px) {
+    .time-input-grid { grid-template-columns: 1fr 1fr; }
+    .formula-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .speed-tab { padding: 11px 4px; font-size: .74rem; }
+    .speed-panel { padding: 18px; }
+    .distance-input, .time-input-grid { grid-template-columns: 1fr; }
+    .duration-grid { gap: 6px; }
+    .result-grid, .result-grid.two-results { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import { calculateDistance, calculateSpeed, calculateTime } from '../../lib/hayasa.js';
+
+  const $ = (id) => document.getElementById(id);
+  const number = (value, digits = 4) => new Intl.NumberFormat('ja-JP', { maximumFractionDigits: digits }).format(value);
+  const durationText = (hours, minutes, seconds) => `${hours ? `${hours}時間` : ''}${minutes ? `${minutes}分` : hours ? '0分' : ''}${String(seconds).padStart(2, '0')}秒`;
+  const paceText = (seconds) => {
+    const rounded = Math.round(seconds);
+    return `${Math.floor(rounded / 60)}分${String(rounded % 60).padStart(2, '0')}秒 /km`;
+  };
+  let activeMode = 'speed';
+
+  function validity(mode, result) {
+    $(`${mode}-error`).hidden = Boolean(result);
+    $(`${mode}-result`).hidden = !result;
+    document.querySelector(`[data-panel="${mode}"] .result-grid`).hidden = !result;
+  }
+
+  function updateSpeed() {
+    const result = calculateSpeed($('speed-distance').value, $('speed-distance-unit').value, $('speed-hours').value, $('speed-minutes').value, $('speed-seconds').value);
+    validity('speed', result);
+    if (!result) return window.hideResultShare?.();
+    $('speed-kmh').textContent = `${number(result.kilometersPerHour)} km/h`;
+    $('speed-mps').textContent = `${number(result.metersPerSecond)} m/s`;
+    $('speed-mpm').textContent = `${number(result.metersPerMinute, 3)} m/分`;
+    $('speed-pace').textContent = paceText(result.paceSecondsPerKm);
+    window.setResultShare?.(`速さ計算\n結果：${number(result.kilometersPerHour)} km/h\n秒速：${number(result.metersPerSecond)} m/s`);
+  }
+
+  function updateDistance() {
+    const result = calculateDistance($('distance-speed').value, $('distance-speed-unit').value, $('distance-hours').value, $('distance-minutes').value, $('distance-seconds').value);
+    validity('distance', result);
+    if (!result) return window.hideResultShare?.();
+    $('distance-km').textContent = `${number(result.distanceKilometers)} km`;
+    $('distance-m').textContent = `${number(result.distanceMeters, 2)} m`;
+    $('distance-mps').textContent = `${number(result.metersPerSecond)} m/s`;
+    window.setResultShare?.(`距離計算\n結果：${number(result.distanceKilometers)} km`);
+  }
+
+  function updateTime() {
+    const result = calculateTime($('time-distance').value, $('time-distance-unit').value, $('time-speed').value, $('time-speed-unit').value);
+    validity('time', result);
+    if (!result) return window.hideResultShare?.();
+    $('time-duration').textContent = durationText(result.hours, result.minutes, result.seconds);
+    $('time-total-minutes').textContent = `${number(result.durationSeconds / 60, 2)}分`;
+    $('time-total-seconds').textContent = `${number(result.durationSeconds, 2)}秒`;
+    window.setResultShare?.(`所要時間計算\n結果：${durationText(result.hours, result.minutes, result.seconds)}`);
+  }
+
+  const updaters = { speed: updateSpeed, distance: updateDistance, time: updateTime };
+  document.querySelectorAll('.speed-tab').forEach((tab) => tab.addEventListener('click', () => {
+    activeMode = tab.dataset.mode;
+    document.querySelectorAll('.speed-tab').forEach((item) => {
+      const active = item === tab;
+      item.classList.toggle('is-active', active);
+      item.setAttribute('aria-selected', String(active));
+    });
+    document.querySelectorAll('.speed-mode').forEach((panel) => { panel.hidden = panel.dataset.panel !== activeMode; });
+    updaters[activeMode]();
+  }));
+  document.querySelectorAll('#speed-tool input, #speed-tool select').forEach((input) => input.addEventListener('input', () => updaters[activeMode]()));
+  updateSpeed();
+</script>

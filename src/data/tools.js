@@ -515,6 +515,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'hayasa',
+    nav: '速さ計算',
+    name: '速さ・距離・時間計算ツール',
+    icon: '🏃',
+    category: '生活・日常',
+    short: '距離と時間から時速・秒速・ペースを計算',
+    live: true,
+  },
+  {
     slug: 'nenrei-hayami',
     nav: '年齢早見表',
     name: '年齢早見表',
