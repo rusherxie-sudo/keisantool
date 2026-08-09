@@ -218,6 +218,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'en-menseki',
+    nav: '円の面積・円周',
+    name: '円の面積・円周計算ツール',
+    icon: '◯',
+    category: '生活・日常',
+    short: '半径・直径・面積・円周から円を逆算',
+    live: true,
+  },
+  {
     slug: 'heihoukon',
     nav: '平方根・ルート',
     name: '平方根・ルート計算機',

@@ -35,6 +35,7 @@
 - [麻雀符計算ツール](https://keisantool.com/mahjong-fu/): 待ち・面子から符数を自動計算
 - [三角関数計算ツール](https://keisantool.com/sankaku-kansuu/): sin・cos・tan・逆三角関数・直角三角形
 - [三角形の面積計算ツール](https://keisantool.com/sankakkei-menseki/): 底辺・3辺・角度・座標から面積を計算
+- [円の面積・円周計算ツール](https://keisantool.com/en-menseki/): 半径・直径・面積・円周から円を逆算
 - [出産予定日計算器](https://keisantool.com/shussan/): 妊娠週数・予定日
 - [厄年チェッカー](https://keisantool.com/yakudoshi/): 前厄・本厄・後厄
 - [給与・時給・残業代計算器](https://keisantool.com/kyuyo/): 時給・残業代・手取り

@@ -1,0 +1,190 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'en-menseki';
+const title = '円の面積・円周計算ツール｜半径・直径・面積から逆算';
+const description = '円の面積と円周を無料で自動計算。半径・直径・面積・円周のどれか1つを入力すると、ほかの値と計算式をまとめて逆算できます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '円の面積・円周計算ツール',
+  description,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['半径から円の面積と円周を計算', '直径から半径を逆算', '面積から半径と直径を逆算', '円周から半径と面積を逆算'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 円の面積・円周</div>
+    <h1>円の面積・円周計算ツール</h1>
+    <p>半径・直径・面積・円周のうち分かっている値を1つ入力すると、円のすべての値を自動計算します。</p>
+    <div class="feature-chips"><span>面積 S＝πr²</span><span>円周 L＝2πr</span><span>逆算対応</span><span>単位自由</span></div>
+  </div>
+
+  <div class="calc-card circle-card" id="circle-tool">
+    <div class="circle-tabs" role="tablist" aria-label="分かっている値">
+      <button type="button" class="circle-tab is-active" data-mode="radius" role="tab" aria-selected="true">半径から</button>
+      <button type="button" class="circle-tab" data-mode="diameter" role="tab" aria-selected="false">直径から</button>
+      <button type="button" class="circle-tab" data-mode="area" role="tab" aria-selected="false">面積から</button>
+      <button type="button" class="circle-tab" data-mode="circumference" role="tab" aria-selected="false">円周から</button>
+    </div>
+    <div class="calc-panel active circle-panel">
+      <div class="circle-input-row">
+        <div class="form-group">
+          <label for="circle-value" id="circle-label">半径 r</label>
+          <input id="circle-value" type="number" min="0" step="any" value="5" inputmode="decimal" />
+        </div>
+        <div class="form-group unit-group">
+          <label for="circle-unit">長さの単位</label>
+          <select id="circle-unit"><option>cm</option><option>mm</option><option>m</option><option>km</option><option>単位なし</option></select>
+        </div>
+      </div>
+      <p class="input-hint" id="circle-hint">半径は、円の中心から円周までの長さです。</p>
+      <p class="form-error" id="circle-error" role="alert" hidden>0より大きい数値を入力してください。</p>
+      <div class="primary-result" aria-live="polite"><span id="primary-label">円の面積</span><strong id="primary-value">78.539816</strong><small id="primary-formula">5² × π</small></div>
+      <div class="result-grid">
+        <div><span>半径 r</span><strong id="result-radius">5 cm</strong></div>
+        <div><span>直径 d</span><strong id="result-diameter">10 cm</strong></div>
+        <div><span>円周 L</span><strong id="result-circumference">31.415927 cm</strong></div>
+        <div><span>面積 S</span><strong id="result-area">78.539816 cm²</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>円の面積と円周の求め方</h2>
+    <p>半径を <strong>r</strong>、円周率を <strong>π（約3.14159265）</strong>とすると、円の面積は「半径×半径×円周率」、円周の長さは「直径×円周率」で求めます。</p>
+    <div class="formula-grid">
+      <div><span>円の面積</span><strong>S＝πr²</strong><small>半径×半径×円周率</small></div>
+      <div><span>円周の長さ</span><strong>L＝2πr＝πd</strong><small>直径×円周率</small></div>
+      <div><span>面積から半径</span><strong>r＝√(S÷π)</strong><small>面積を円周率で割って平方根</small></div>
+      <div><span>円周から半径</span><strong>r＝L÷(2π)</strong><small>円周を2πで割る</small></div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>半径5cmの円の計算例</h2>
+    <p>半径5cmなら、面積は 5×5×π＝<strong>約78.539816cm²</strong>、円周は 2×5×π＝<strong>約31.415927cm</strong>です。直径は半径の2倍なので10cmです。</p>
+    <p>画面では最大8桁の有効数字に整えて表示しますが、内部の計算ではJavaScriptの <code>Math.PI</code> を使用し、途中の値を丸めません。</p>
+  </section>
+
+  <section class="howto">
+    <h2>直径・面積・円周から逆算する方法</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>分かっている値</th><th>半径の求め方</th><th>例</th></tr></thead>
+      <tbody>
+        <tr><td>直径 d</td><td>r＝d÷2</td><td>直径10cm → 半径5cm</td></tr>
+        <tr><td>面積 S</td><td>r＝√(S÷π)</td><td>面積約78.54cm² → 半径約5cm</td></tr>
+        <tr><td>円周 L</td><td>r＝L÷(2π)</td><td>円周約31.42cm → 半径約5cm</td></tr>
+      </tbody>
+    </table></div></div>
+    <p>面積から反対に求めるときは平方根を使います。平方根の値や根号の簡約だけを確認したい場合は<a href="/heihoukon/">平方根・ルート計算機</a>も利用できます。</p>
+  </section>
+
+  <section class="howto">
+    <h2>単位と入力時の注意</h2>
+    <ul>
+      <li>半径・直径・円周は長さなので cm、m などを使い、面積は cm²、m² のように2乗の単位になります。</li>
+      <li>面積を入力するタブでは、選んだ単位の2乗として扱います。たとえば単位がmなら入力面積はm²です。</li>
+      <li>設計図や実測値では、元の測定精度以上の桁に意味はありません。用途に合う桁数へ丸めてください。</li>
+      <li>三角形の面積は<a href="/sankakkei-menseki/">三角形の面積計算ツール</a>、㎡・坪・帖の換算は<a href="/tsubo-heibei/">坪・平米換算ツール</a>をご利用ください。</li>
+    </ul>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料</h2>
+    <ul><li><a href="https://www.mext.go.jp/a_menu/shotou/new-cs/1387014.htm" target="_blank" rel="noopener noreferrer">文部科学省「小学校学習指導要領解説」</a>：円の面積、円周率を用いた計算の学習内容。</li></ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。設計・施工・安全性に関わる用途では、必要な精度と条件を専門家または公的資料でご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '円の面積の計算式は？', a: '半径をrとすると、円の面積Sはπr²、つまり半径×半径×円周率で計算します。' },
+    { q: '円周の長さはどう計算しますか？', a: '直径×円周率、または2×半径×円周率で計算します。' },
+    { q: '面積から半径を逆算できますか？', a: 'はい。面積を円周率πで割り、その平方根を取ると半径になります。' },
+    { q: '直径10cmの円の面積は？', a: '半径は5cmなので、5×5×π＝約78.539816cm²です。' },
+    { q: '円周率は3.14で計算していますか？', a: '内部ではMath.PIの精度で計算し、画面表示だけを読みやすい桁数に整えています。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .feature-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .feature-chips span { padding:5px 10px; border:1px solid color-mix(in srgb,var(--cat-color) 30%,transparent); border-radius:999px; background:var(--cat-tint); color:var(--cat-color); font-size:.72rem; font-weight:var(--fw-bold); }
+  .circle-card { overflow:hidden; }
+  .circle-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border-bottom:1px solid var(--border-2); background:var(--surface-sub); }
+  .circle-tab { padding:14px 8px; border:0; border-bottom:3px solid transparent; background:transparent; color:var(--text-muted); font:var(--fw-bold) .82rem var(--font-sans); cursor:pointer; }
+  .circle-tab.is-active { border-bottom-color:var(--cat-color); background:var(--surface); color:var(--cat-color); }
+  .circle-tab:focus-visible { outline:3px solid var(--cat-tint); outline-offset:-3px; }
+  .circle-panel { padding:24px; }
+  .circle-input-row { display:grid; grid-template-columns:2fr 1fr; gap:14px; align-items:end; }
+  .unit-group select { width:100%; }
+  .input-hint { margin:8px 0 0; color:var(--text-muted); font-size:.76rem; }
+  .form-error { margin:12px 0 0; padding:9px 12px; border-radius:var(--r-sm); background:var(--danger-bg); color:var(--danger); font-size:.78rem; }
+  .form-error[hidden] { display:none; }
+  .primary-result { display:flex; flex-direction:column; align-items:center; gap:5px; margin-top:20px; padding:20px; border-radius:var(--r-md); background:var(--cat-tint); text-align:center; }
+  .primary-result span { color:var(--text-muted); font-size:.76rem; font-weight:var(--fw-bold); }
+  .primary-result strong { color:var(--cat-color); font:var(--fw-bold) clamp(1.8rem,6vw,2.8rem)/1.1 var(--font-mono); overflow-wrap:anywhere; }
+  .primary-result small { color:var(--text-muted); font-family:var(--font-mono); }
+  .result-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:10px; }
+  .result-grid div { display:flex; flex-direction:column; gap:5px; padding:13px; border:1px solid var(--border-2); border-radius:var(--r-md); background:var(--surface-sub); }
+  .result-grid span { color:var(--text-muted); font-size:.72rem; }
+  .result-grid strong { font-family:var(--font-mono); font-size:.88rem; overflow-wrap:anywhere; }
+  .formula-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:16px; }
+  .formula-grid div { display:flex; flex-direction:column; gap:5px; padding:15px; border:1px solid var(--border-2); border-radius:var(--r-md); background:var(--surface-sub); }
+  .formula-grid span,.formula-grid small { color:var(--text-muted); font-size:.72rem; }
+  .formula-grid strong { font-family:var(--font-mono); font-size:.92rem; }
+  .source-box a { color:var(--cat-color); font-weight:var(--fw-bold); }
+  @media (max-width:600px) { .circle-input-row,.result-grid,.formula-grid { grid-template-columns:1fr; } .circle-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); } .circle-tab:nth-child(-n+2) { border-bottom:1px solid var(--border-2); } }
+</style>
+
+<script>
+  import { circleFromArea, circleFromCircumference, circleFromDiameter, circleFromRadius } from '../../lib/en-menseki.js';
+
+  const modes = {
+    radius: { label:'半径 r', hint:'半径は、円の中心から円周までの長さです。', primary:'円の面積', formula:(v) => `${v}² × π`, calculate:circleFromRadius },
+    diameter: { label:'直径 d', hint:'直径は、円の中心を通る端から端までの長さです。', primary:'円の面積', formula:(v) => `(${v} ÷ 2)² × π`, calculate:circleFromDiameter },
+    area: { label:'円の面積 S', hint:'選択した長さの単位の2乗（cmならcm²）で入力します。', primary:'半径', formula:(v) => `√(${v} ÷ π)`, calculate:circleFromArea },
+    circumference: { label:'円周 L', hint:'円の外周1周分の長さを入力します。', primary:'半径', formula:(v) => `${v} ÷ (2 × π)`, calculate:circleFromCircumference },
+  };
+  let currentMode = 'radius';
+  const $ = (id) => document.getElementById(id);
+  const format = (value) => Number(value.toPrecision(8)).toLocaleString('ja-JP',{maximumFractionDigits:10});
+  const lengthUnit = () => $('circle-unit').value === '単位なし' ? '' : ` ${$('circle-unit').value}`;
+  const areaUnit = () => $('circle-unit').value === '単位なし' ? '' : ` ${$('circle-unit').value}²`;
+
+  function render() {
+    const raw = $('circle-value').value;
+    const mode = modes[currentMode];
+    const result = mode.calculate(raw);
+    $('circle-error').hidden = result !== null;
+    if (!result) return;
+    $('result-radius').textContent = `${format(result.radius)}${lengthUnit()}`;
+    $('result-diameter').textContent = `${format(result.diameter)}${lengthUnit()}`;
+    $('result-circumference').textContent = `${format(result.circumference)}${lengthUnit()}`;
+    $('result-area').textContent = `${format(result.area)}${areaUnit()}`;
+    $('primary-label').textContent = mode.primary;
+    $('primary-value').textContent = currentMode === 'area' || currentMode === 'circumference' ? `${format(result.radius)}${lengthUnit()}` : `${format(result.area)}${areaUnit()}`;
+    $('primary-formula').textContent = mode.formula(raw);
+  }
+
+  document.querySelectorAll('.circle-tab').forEach((tab) => tab.addEventListener('click', () => {
+    currentMode = tab.dataset.mode;
+    document.querySelectorAll('.circle-tab').forEach((button) => { button.classList.toggle('is-active',button === tab); button.setAttribute('aria-selected',String(button === tab)); });
+    $('circle-label').textContent = modes[currentMode].label;
+    $('circle-hint').textContent = modes[currentMode].hint;
+    render();
+  }));
+  $('circle-value').addEventListener('input',render);
+  $('circle-unit').addEventListener('change',render);
+  render();
+</script>
