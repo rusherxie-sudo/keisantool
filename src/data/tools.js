@@ -227,6 +227,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'taiseki',
+    nav: '体積計算',
+    name: '体積・表面積計算ツール',
+    icon: '📦',
+    category: '生活・日常',
+    short: '直方体・円柱・円錐・球の体積を計算',
+    live: true,
+  },
+  {
     slug: 'heihoukon',
     nav: '平方根・ルート',
     name: '平方根・ルート計算機',

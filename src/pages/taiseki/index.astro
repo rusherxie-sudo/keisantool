@@ -1,0 +1,130 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'taiseki';
+const title = '体積・表面積計算ツール｜直方体・円柱・円錐・球・リットル';
+const description = '直方体・立方体・円柱・円錐・球の体積と表面積を無料で自動計算。mm・cm・mに対応し、m³・L・mLへの容量換算も同時に確認できます。';
+const jsonld = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: '体積・表面積計算ツール', description,
+  applicationCategory: 'EducationalApplication', operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['直方体と立方体の体積・表面積', '円柱と円錐の体積・表面積', '球の体積・表面積', '立方メートル・リットル・ミリリットル換算'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 体積計算</div>
+    <h1>体積・表面積計算ツール</h1>
+    <p>立体を選んで長さを入力すると、体積・表面積・リットル換算をまとめて自動計算します。</p>
+    <div class="feature-chips"><span>直方体</span><span>立方体</span><span>円柱</span><span>円錐</span><span>球</span><span>L換算</span></div>
+  </div>
+
+  <div class="calc-card volume-card" id="volume-tool">
+    <div class="volume-tabs" role="tablist" aria-label="立体の種類">
+      <button type="button" class="volume-tab is-active" data-mode="rect" role="tab" aria-selected="true">直方体</button>
+      <button type="button" class="volume-tab" data-mode="cube" role="tab" aria-selected="false">立方体</button>
+      <button type="button" class="volume-tab" data-mode="cylinder" role="tab" aria-selected="false">円柱</button>
+      <button type="button" class="volume-tab" data-mode="cone" role="tab" aria-selected="false">円錐</button>
+      <button type="button" class="volume-tab" data-mode="sphere" role="tab" aria-selected="false">球</button>
+    </div>
+    <div class="calc-panel active volume-panel">
+      <h2 id="shape-heading">直方体の体積を計算</h2>
+      <p class="mode-lead" id="shape-lead">縦・横・高さを同じ単位で入力してください。</p>
+      <div class="input-grid">
+        <div class="form-group" id="field-a"><label for="value-a" id="label-a">縦</label><input id="value-a" type="number" min="0" step="any" value="10" inputmode="decimal" /></div>
+        <div class="form-group" id="field-b"><label for="value-b" id="label-b">横</label><input id="value-b" type="number" min="0" step="any" value="5" inputmode="decimal" /></div>
+        <div class="form-group" id="field-c"><label for="value-c" id="label-c">高さ</label><input id="value-c" type="number" min="0" step="any" value="4" inputmode="decimal" /></div>
+        <div class="form-group"><label for="length-unit">長さの単位</label><select id="length-unit"><option value="cm">cm</option><option value="mm">mm</option><option value="m">m</option></select></div>
+      </div>
+      <p class="form-error" id="volume-error" role="alert" hidden>0より大きい数値を入力してください。</p>
+      <div class="primary-result" aria-live="polite"><span>体積</span><strong id="result-volume">200 cm³</strong><small id="result-formula">10 × 5 × 4</small></div>
+      <div class="result-grid">
+        <div><span>表面積</span><strong id="result-surface">220 cm²</strong></div>
+        <div><span>立方メートル</span><strong id="result-m3">0.0002 m³</strong></div>
+        <div><span>リットル</span><strong id="result-liter">0.2 L</strong></div>
+        <div><span>ミリリットル</span><strong id="result-ml">200 mL</strong></div>
+        <div id="slant-result" hidden><span>母線</span><strong id="result-slant">—</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>体積の求め方と公式</h2>
+    <p>体積は立体が占める空間の大きさです。長さの単位がcmなら結果はcm³、mならm³になります。円柱・円錐・球では円周率πを使います。</p>
+    <div class="formula-grid">
+      <div><span>直方体</span><strong>V＝縦×横×高さ</strong><small>表面積＝2(縦×横＋縦×高さ＋横×高さ)</small></div>
+      <div><span>立方体</span><strong>V＝一辺³</strong><small>表面積＝6×一辺²</small></div>
+      <div><span>円柱</span><strong>V＝πr²h</strong><small>底面積×高さ</small></div>
+      <div><span>円錐</span><strong>V＝πr²h÷3</strong><small>同じ底面・高さの円柱の3分の1</small></div>
+      <div><span>球</span><strong>V＝4πr³÷3</strong><small>表面積＝4πr²</small></div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>体積をリットルへ換算する方法</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>体積</th><th>リットル</th><th>ミリリットル</th></tr></thead>
+      <tbody><tr><td>1 m³</td><td>1,000 L</td><td>1,000,000 mL</td></tr><tr><td>1 dm³</td><td>1 L</td><td>1,000 mL</td></tr><tr><td>1 cm³</td><td>0.001 L</td><td>1 mL（1 cc）</td></tr><tr><td>1 mm³</td><td>0.000001 L</td><td>0.001 mL</td></tr></tbody>
+    </table></div></div>
+    <p>箱や水槽の内寸をcmで入力すると、計算したcm³を1,000で割った値がリットルです。単位だけを相互変換したい場合は<a href="/tani/">単位変換ツール</a>をご利用ください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>円柱の体積計算例</h2>
+    <p>半径5cm、高さ10cmの円柱は、底面積が5²×π＝約78.5398cm²なので、体積は5²×π×10＝<strong>約785.398cm³</strong>、つまり約0.785398Lです。</p>
+    <p>半径ではなく直径が分かっている場合は、直径を2で割ってから入力します。円の面積・円周や直径からの逆算は<a href="/en-menseki/">円の面積・円周計算ツール</a>で確認できます。</p>
+  </section>
+
+  <section class="howto">
+    <h2>入力・結果の注意点</h2>
+    <ul>
+      <li>縦・横・高さ・半径は、すべて同じ長さの単位にそろえてください。</li>
+      <li>容器の容量は外寸ではなく内寸で計算します。板厚や満水にしない余裕分は別途考慮してください。</li>
+      <li>画面では読みやすい桁数に整えますが、内部計算では途中の値を丸めません。</li>
+      <li>床面積を㎡・坪・帖へ換算する場合は<a href="/tsubo-heibei/">坪・平米換算ツール</a>をご利用ください。</li>
+    </ul>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料</h2>
+    <ul><li><a href="https://www.mext.go.jp/a_menu/shotou/new-cs/1387014.htm" target="_blank" rel="noopener noreferrer">文部科学省「小学校学習指導要領解説」</a>：角柱・円柱の体積と単位の学習内容。</li></ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。設計・施工・容量保証に関わる用途では、必要な精度と条件を専門家または製品仕様でご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '直方体の体積はどう計算しますか？', a: '縦×横×高さで計算します。3つの長さは同じ単位にそろえてください。' },
+    { q: '円柱の体積の計算式は？', a: '半径をr、高さをhとすると、円柱の体積はπr²hです。' },
+    { q: '円錐の体積はなぜ3分の1ですか？', a: '同じ底面積と高さを持つ円柱の体積の3分の1になるため、πr²h÷3で計算します。' },
+    { q: 'cm³をリットルに換算するには？', a: 'cm³を1,000で割るとLになります。1cm³は1mLです。' },
+    { q: '水槽の容量はどう計算しますか？', a: '内側の縦・横・高さをcmで測り、直方体として計算します。得られたcm³を1,000で割るとLです。' },
+    { q: '表面積も計算できますか？', a: 'はい。選択した立体の体積とあわせて、底面を含む全表面積も表示します。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .feature-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.feature-chips span{padding:5px 10px;border:1px solid color-mix(in srgb,var(--cat-color) 30%,transparent);border-radius:999px;background:var(--cat-tint);color:var(--cat-color);font-size:.72rem;font-weight:var(--fw-bold)}
+  .volume-card{overflow:hidden}.volume-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-bottom:1px solid var(--border-2);background:var(--surface-sub)}.volume-tab{padding:14px 6px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--text-muted);font:var(--fw-bold) .8rem var(--font-sans);cursor:pointer}.volume-tab.is-active{border-bottom-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}.volume-tab:focus-visible{outline:3px solid var(--cat-tint);outline-offset:-3px}
+  .volume-panel{padding:24px}.volume-panel h2{margin:0 0 5px;font-size:1.05rem}.mode-lead{margin:0 0 18px;color:var(--text-muted);font-size:.8rem}.input-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}.form-group[hidden],.form-error[hidden],#slant-result[hidden]{display:none}.input-grid select{width:100%}.form-error{margin:12px 0 0;padding:9px 12px;border-radius:var(--r-sm);background:var(--danger-bg);color:var(--danger);font-size:.78rem}
+  .primary-result{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:20px;padding:20px;border-radius:var(--r-md);background:var(--cat-tint);text-align:center}.primary-result span{color:var(--text-muted);font-size:.76rem;font-weight:var(--fw-bold)}.primary-result strong{color:var(--cat-color);font:var(--fw-bold) clamp(1.8rem,6vw,2.8rem)/1.1 var(--font-mono);overflow-wrap:anywhere}.primary-result small{color:var(--text-muted);font-family:var(--font-mono)}
+  .result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}.result-grid div{display:flex;flex-direction:column;gap:5px;padding:13px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.result-grid span{color:var(--text-muted);font-size:.72rem}.result-grid strong{font-family:var(--font-mono);font-size:.84rem;overflow-wrap:anywhere}
+  .formula-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}.formula-grid div{display:flex;flex-direction:column;gap:5px;padding:15px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.formula-grid span,.formula-grid small{color:var(--text-muted);font-size:.72rem}.formula-grid strong{font-family:var(--font-mono);font-size:.88rem}.source-box a{color:var(--cat-color);font-weight:var(--fw-bold)}
+  @media(max-width:700px){.volume-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.input-grid,.result-grid,.formula-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:440px){.input-grid,.result-grid,.formula-grid{grid-template-columns:1fr}.volume-tab{font-size:.74rem}}
+</style>
+
+<script>
+  import { calculateCone, calculateCube, calculateCylinder, calculateRectangularPrism, calculateSphere, convertCubicVolume } from '../../lib/taiseki.js';
+  const configs={rect:{heading:'直方体の体積を計算',lead:'縦・横・高さを同じ単位で入力してください。',labels:['縦','横','高さ'],count:3,formula:(a,b,c)=>`${a} × ${b} × ${c}`,calc:(a,b,c)=>calculateRectangularPrism(a,b,c)},cube:{heading:'立方体の体積を計算',lead:'一辺の長さを入力してください。',labels:['一辺'],count:1,formula:a=>`${a}³`,calc:a=>calculateCube(a)},cylinder:{heading:'円柱の体積を計算',lead:'底面の半径と高さを入力してください。',labels:['半径 r','高さ h'],count:2,formula:(r,h)=>`${r}² × π × ${h}`,calc:(r,h)=>calculateCylinder(r,h)},cone:{heading:'円錐の体積を計算',lead:'底面の半径と垂直な高さを入力してください。',labels:['半径 r','高さ h'],count:2,formula:(r,h)=>`${r}² × π × ${h} ÷ 3`,calc:(r,h)=>calculateCone(r,h)},sphere:{heading:'球の体積を計算',lead:'球の半径を入力してください。',labels:['半径 r'],count:1,formula:r=>`4 × π × ${r}³ ÷ 3`,calc:r=>calculateSphere(r)}};
+  let mode='rect'; const $=id=>document.getElementById(id); const values=()=>[$('value-a').value,$('value-b').value,$('value-c').value]; const fmt=v=>Number(v.toPrecision(9)).toLocaleString('ja-JP',{maximumFractionDigits:12});
+  function render(){const config=configs[mode];const raw=values();const result=config.calc(...raw);$('volume-error').hidden=result!==null;if(!result)return;const unit=$('length-unit').value;const converted=convertCubicVolume(result.volume,unit);$('result-volume').textContent=`${fmt(result.volume)} ${unit}³`;$('result-surface').textContent=`${fmt(result.surfaceArea)} ${unit}²`;$('result-m3').textContent=`${fmt(converted.cubicMeters)} m³`;$('result-liter').textContent=`${fmt(converted.liters)} L`;$('result-ml').textContent=`${fmt(converted.milliliters)} mL`;$('result-formula').textContent=config.formula(...raw);$('slant-result').hidden=result.slantHeight===undefined;if(result.slantHeight!==undefined)$('result-slant').textContent=`${fmt(result.slantHeight)} ${unit}`;}
+  function selectMode(next){mode=next;const config=configs[mode];$('shape-heading').textContent=config.heading;$('shape-lead').textContent=config.lead;['a','b','c'].forEach((key,index)=>{$(`field-${key}`).hidden=index>=config.count;if(index<config.count)$(`label-${key}`).textContent=config.labels[index]});document.querySelectorAll('.volume-tab').forEach(tab=>{const active=tab.dataset.mode===mode;tab.classList.toggle('is-active',active);tab.setAttribute('aria-selected',String(active))});render()}
+  document.querySelectorAll('.volume-tab').forEach(tab=>tab.addEventListener('click',()=>selectMode(tab.dataset.mode)));['value-a','value-b','value-c','length-unit'].forEach(id=>$(id).addEventListener('input',render));render();
+</script>
