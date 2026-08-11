@@ -37,6 +37,7 @@
 - [三角形の面積計算ツール](https://keisantool.com/sankakkei-menseki/): 底辺・3辺・角度・座標から面積を計算
 - [円の面積・円周計算ツール](https://keisantool.com/en-menseki/): 半径・直径・面積・円周から円を逆算
 - [体積・表面積計算ツール](https://keisantool.com/taiseki/): 直方体・円柱・円錐・球の体積を計算
+- [縮尺計算ツール](https://keisantool.com/shukushaku/): 地図・図面の縮尺と実際の距離を計算
 - [出産予定日計算器](https://keisantool.com/shussan/): 妊娠週数・予定日
 - [厄年チェッカー](https://keisantool.com/yakudoshi/): 前厄・本厄・後厄
 - [給与・時給・残業代計算器](https://keisantool.com/kyuyo/): 時給・残業代・手取り

@@ -1,0 +1,120 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'shukushaku';
+const title = '縮尺計算ツール｜地図・図面の実際の距離と1:nを自動計算';
+const description = '地図・図面上の長さと縮尺1:nから実際の距離を自動計算。実際の長さから図上寸法、2つの長さから縮尺も逆算できます。mm・cm・m・km対応。';
+const jsonld = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: '縮尺計算ツール', description,
+  applicationCategory: 'EducationalApplication', operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['地図・図面から実際の距離を計算', '実際の長さから図上寸法を計算', '2つの長さから縮尺を逆算', 'mm・cm・m・kmの単位変換'],
+};
+const scales = [50, 100, 200, 500, 1000, 2500, 25000, 50000];
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 縮尺計算</div>
+    <h1>縮尺計算ツール</h1>
+    <p>地図・図面の長さ、実際の距離、縮尺1:nを相互に計算します。</p>
+    <div class="feature-chips"><span>地図の距離</span><span>図面寸法</span><span>縮尺を逆算</span><span>mm・cm・m・km</span></div>
+  </div>
+
+  <div class="calc-card scale-card" id="scale-tool">
+    <div class="scale-tabs" role="tablist" aria-label="縮尺の計算方法">
+      <button type="button" class="scale-tab is-active" data-mode="to-real" role="tab" aria-selected="true">図上 → 実際</button>
+      <button type="button" class="scale-tab" data-mode="to-drawing" role="tab" aria-selected="false">実際 → 図上</button>
+      <button type="button" class="scale-tab" data-mode="find-scale" role="tab" aria-selected="false">縮尺を求める</button>
+    </div>
+    <div class="calc-panel active scale-panel">
+      <h2 id="mode-heading">地図・図面から実際の距離を計算</h2>
+      <p class="mode-lead" id="mode-lead">図上の長さと縮尺の分母を入力してください。</p>
+      <div class="input-grid">
+        <div class="form-group">
+          <label for="primary-value" id="primary-label">地図・図面上の長さ</label>
+          <div class="value-unit"><input id="primary-value" type="number" min="0" step="any" value="5" inputmode="decimal" /><select id="primary-unit"><option value="mm">mm</option><option value="cm" selected>cm</option><option value="m">m</option><option value="km">km</option></select></div>
+        </div>
+        <div class="form-group" id="scale-field">
+          <label for="scale-denominator">縮尺</label>
+          <div class="scale-input"><span>1 :</span><input id="scale-denominator" type="number" min="1" step="any" value="25000" inputmode="decimal" /></div>
+        </div>
+        <div class="form-group" id="secondary-field" hidden>
+          <label for="secondary-value" id="secondary-label">実際の長さ</label>
+          <div class="value-unit"><input id="secondary-value" type="number" min="0" step="any" value="500" inputmode="decimal" /><select id="secondary-unit"><option value="mm">mm</option><option value="cm">cm</option><option value="m" selected>m</option><option value="km">km</option></select></div>
+        </div>
+      </div>
+      <div class="preset-row" id="preset-row" aria-label="よく使う縮尺">
+        <span>よく使う縮尺</span>{scales.map((scale) => <button type="button" data-scale={scale}>1:{scale.toLocaleString('ja-JP')}</button>)}
+      </div>
+      <p class="form-error" id="scale-error" role="alert" hidden>0より大きい長さと、1以上の縮尺を入力してください。</p>
+      <div class="primary-result" id="scale-result" aria-live="polite"><span id="result-label">実際の距離</span><strong id="result-primary">1.25 km</strong><small id="result-formula">5 cm × 25,000 ＝ 1.25 km</small></div>
+      <div class="result-grid" id="length-results">
+        <div><span>mm</span><strong id="result-mm">1,250,000 mm</strong></div><div><span>cm</span><strong id="result-cm">125,000 cm</strong></div><div><span>m</span><strong id="result-m">1,250 m</strong></div><div><span>km</span><strong id="result-km">1.25 km</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>縮尺1:nの計算方法</h2>
+    <p>縮尺1:25,000は、地図上の1cmが実際の25,000cmを表すという意味です。単位をそろえてから縮尺の分母を掛けると実際の距離、分母で割ると図上の長さが求められます。</p>
+    <div class="formula-grid"><div><span>図上 → 実際</span><strong>実際の長さ＝図上の長さ×縮尺の分母</strong></div><div><span>実際 → 図上</span><strong>図上の長さ＝実際の長さ÷縮尺の分母</strong></div><div><span>縮尺を逆算</span><strong>分母＝実際の長さ÷図上の長さ</strong></div></div>
+    <p>たとえば1:25,000の地図で5cmなら、5×25,000＝125,000cm＝1,250m＝<strong>1.25km</strong>です。</p>
+  </section>
+
+  <section class="howto">
+    <h2>地図・建築図面でよく使う縮尺早見表</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table"><thead><tr><th>縮尺</th><th>図上1cmの実際</th><th>主な用途の例</th></tr></thead><tbody><tr><td>1:50</td><td>50cm</td><td>詳細図・家具配置</td></tr><tr><td>1:100</td><td>1m</td><td>建築平面図</td></tr><tr><td>1:500</td><td>5m</td><td>配置図・敷地図</td></tr><tr><td>1:2,500</td><td>25m</td><td>都市域の地図</td></tr><tr><td>1:25,000</td><td>250m</td><td>地形図</td></tr><tr><td>1:50,000</td><td>500m</td><td>広域地図</td></tr></tbody></table></div></div>
+    <p>印刷やPDF表示で拡大・縮小すると、記載された縮尺と画面上・紙上の長さが一致しないことがあります。寸法線やスケールバーがある場合は、それらを優先してください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>縮尺を求めるときの単位と注意点</h2>
+    <ul><li>図上と実際の長さは、内部でmに統一してから比を計算します。</li><li>1:100と1/100は同じ縮尺表記です。分母が大きいほど、より広い範囲を小さく表します。</li><li>画面上のWeb地図はズームや端末により表示寸法が変わるため、固定縮尺として定規で測れない場合があります。</li><li>長さだけを換算する場合は<a href="/tani/">単位変換ツール</a>、図面の勾配は<a href="/koubai/">勾配計算ツール</a>、面積は<a href="/tsubo-heibei/">坪・平米換算</a>をご利用ください。</li></ul>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料</h2>
+    <ul><li><a href="https://www.gsi.go.jp/KIDS/KIDS04.html" target="_blank" rel="noopener noreferrer">国土地理院「距離と縮尺」</a>：1:25,000の地図上の長さから実際の距離を求める計算例。</li><li><a href="https://www.gsi.go.jp/KIDS/map-index/map-25.htm" target="_blank" rel="noopener noreferrer">国土地理院「2万5千分1地形図」</a>：地形図の縮尺と特徴。</li></ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。測量、登記、施工、製作など精度が必要な用途では、原図の寸法、測量成果、図面の注記および専門家の確認を優先してください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '1:100の図面で1cmは実際に何mですか？', a: '1cm×100＝100cmなので、実際には1mです。' },
+    { q: '1:25,000の地図で4cmは何kmですか？', a: '4cm×25,000＝100,000cm＝1,000mなので1kmです。' },
+    { q: '実際の距離から地図上の長さを計算できますか？', a: 'はい。「実際→図上」を選び、実際の長さと縮尺を入力するとmm・cm・m・kmで表示します。' },
+    { q: '2つの長さから縮尺を求められますか？', a: 'はい。図上の長さと実際の長さを入力すると、単位をそろえて1:nの分母を逆算します。' },
+    { q: '1:50と1:100ではどちらが大きい縮尺ですか？', a: '1:50の方が大縮尺で、同じ対象をより大きく詳しく表します。分母が小さい方が大縮尺です。' },
+    { q: 'PDFやコピーした図面でも計算できますか？', a: '計算はできますが、印刷倍率やPDF表示倍率で長さが変わる場合があります。寸法線やスケールバーを確認してください。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .feature-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.feature-chips span{padding:5px 10px;border:1px solid color-mix(in srgb,var(--cat-color) 30%,transparent);border-radius:999px;background:var(--cat-tint);color:var(--cat-color);font-size:.72rem;font-weight:var(--fw-bold)}
+  .scale-card{overflow:hidden}.scale-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--border-2);background:var(--surface-sub)}.scale-tab{padding:14px 8px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--text-muted);font:var(--fw-bold) .8rem var(--font-sans);cursor:pointer}.scale-tab.is-active{border-bottom-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}.scale-panel{padding:24px}.scale-panel h2{margin:0 0 5px;font-size:1.05rem}.mode-lead{margin:0 0 18px;color:var(--text-muted);font-size:.8rem}.input-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.form-group[hidden],.form-error[hidden],#length-results[hidden],.preset-row[hidden]{display:none}.value-unit{display:grid;grid-template-columns:minmax(0,1fr) 90px;gap:8px}.value-unit select{width:100%}.scale-input{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px}.scale-input span{font:var(--fw-bold) 1rem var(--font-mono)}.preset-row{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:13px}.preset-row span{margin-right:3px;color:var(--text-muted);font-size:.72rem}.preset-row button{padding:6px 8px;border:1px solid var(--border-2);border-radius:999px;background:var(--surface-sub);color:var(--text);font-size:.7rem;cursor:pointer}.form-error{margin:12px 0 0;padding:9px 12px;border-radius:var(--r-sm);background:var(--danger-bg);color:var(--danger);font-size:.78rem}
+  .primary-result{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:20px;padding:20px;border-radius:var(--r-md);background:var(--cat-tint);text-align:center}.primary-result span{color:var(--text-muted);font-size:.76rem;font-weight:var(--fw-bold)}.primary-result strong{color:var(--cat-color);font:var(--fw-bold) clamp(1.8rem,6vw,2.8rem)/1.1 var(--font-mono);overflow-wrap:anywhere}.primary-result small{color:var(--text-muted);font-family:var(--font-mono)}.result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}.result-grid div{display:flex;flex-direction:column;gap:5px;padding:13px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.result-grid span{color:var(--text-muted);font-size:.72rem}.result-grid strong{font-family:var(--font-mono);font-size:.84rem;overflow-wrap:anywhere}.formula-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.formula-grid div{display:flex;flex-direction:column;gap:6px;padding:15px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.formula-grid span{color:var(--text-muted);font-size:.72rem}.formula-grid strong{font-family:var(--font-mono);font-size:.82rem}.source-box a{color:var(--cat-color);font-weight:var(--fw-bold)}
+  @media(max-width:700px){.input-grid,.result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.formula-grid{grid-template-columns:1fr}}@media(max-width:440px){.scale-tab{padding-inline:3px;font-size:.7rem}.input-grid,.result-grid{grid-template-columns:1fr}.value-unit{grid-template-columns:minmax(0,1fr) 78px}}
+</style>
+
+<script>
+  import { convertLength, drawingLengthFromScale, realLengthFromScale, scaleFromLengths } from '../../lib/shukushaku.js';
+  const $=id=>document.getElementById(id); let mode='to-real';
+  const configs={
+    'to-real':{heading:'地図・図面から実際の距離を計算',lead:'図上の長さと縮尺の分母を入力してください。',label:'地図・図面上の長さ',value:'5',unit:'cm',result:'実際の距離'},
+    'to-drawing':{heading:'実際の長さから図上寸法を計算',lead:'実際の長さを縮尺の分母で割ります。',label:'実際の長さ',value:'2',unit:'km',result:'地図・図面上の長さ'},
+    'find-scale':{heading:'図上長と実際の長さから縮尺を求める',lead:'2つの長さは異なる単位でも計算できます。',label:'地図・図面上の長さ',value:'1',unit:'cm',result:'縮尺'},
+  };
+  const fmt=(value,digits=9)=>Number(value.toPrecision(digits)).toLocaleString('ja-JP',{maximumFractionDigits:12});
+  function renderLength(meters,label,formula){$('result-label').textContent=label;$('result-primary').textContent=meters>=1000?`${fmt(meters/1000)} km`:meters>=1?`${fmt(meters)} m`:meters>=.01?`${fmt(meters*100)} cm`:`${fmt(meters*1000)} mm`;$('result-formula').textContent=formula;for(const unit of ['mm','cm','m','km'])$(`result-${unit}`).textContent=`${fmt(convertLength(meters,'m',unit))} ${unit}`;$('length-results').hidden=false;}
+  function render(){const primary=$('primary-value').value;const primaryUnit=$('primary-unit').value;const denominator=$('scale-denominator').value;let valid=true;if(mode==='to-real'){const meters=realLengthFromScale(primary,primaryUnit,denominator,'m');valid=meters!==null;if(valid)renderLength(meters,configs[mode].result,`${primary} ${primaryUnit} × ${fmt(Number(denominator))} ＝ ${fmt(meters)} m`);}else if(mode==='to-drawing'){const meters=drawingLengthFromScale(primary,primaryUnit,denominator,'m');valid=meters!==null;if(valid)renderLength(meters,configs[mode].result,`${primary} ${primaryUnit} ÷ ${fmt(Number(denominator))} ＝ ${fmt(meters)} m`);}else{const secondary=$('secondary-value').value;const secondaryUnit=$('secondary-unit').value;const scale=scaleFromLengths(primary,primaryUnit,secondary,secondaryUnit);valid=scale!==null;if(valid){$('result-label').textContent='縮尺';$('result-primary').textContent=`1 : ${fmt(scale)}`;$('result-formula').textContent=`${secondary} ${secondaryUnit} ÷ ${primary} ${primaryUnit}`;$('length-results').hidden=true;}}$('scale-error').hidden=valid;$('scale-result').hidden=!valid;}
+  function selectMode(next){mode=next;const config=configs[mode];$('mode-heading').textContent=config.heading;$('mode-lead').textContent=config.lead;$('primary-label').textContent=config.label;$('primary-value').value=config.value;$('primary-unit').value=config.unit;$('scale-field').hidden=mode==='find-scale';$('secondary-field').hidden=mode!=='find-scale';$('preset-row').hidden=mode==='find-scale';document.querySelectorAll('.scale-tab').forEach(tab=>{const active=tab.dataset.mode===mode;tab.classList.toggle('is-active',active);tab.setAttribute('aria-selected',String(active))});render();}
+  document.querySelectorAll('.scale-tab').forEach(tab=>tab.addEventListener('click',()=>selectMode(tab.dataset.mode)));document.querySelectorAll('[data-scale]').forEach(button=>button.addEventListener('click',()=>{$('scale-denominator').value=button.dataset.scale;render()}));['primary-value','primary-unit','scale-denominator','secondary-value','secondary-unit'].forEach(id=>$(id).addEventListener('input',render));render();
+</script>

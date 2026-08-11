@@ -236,6 +236,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'shukushaku',
+    nav: '縮尺計算',
+    name: '縮尺計算ツール',
+    icon: '🗺️',
+    category: '生活・日常',
+    short: '地図・図面の縮尺と実際の距離を計算',
+    live: true,
+  },
+  {
     slug: 'heihoukon',
     nav: '平方根・ルート',
     name: '平方根・ルート計算機',

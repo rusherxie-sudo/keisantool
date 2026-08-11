@@ -514,6 +514,19 @@
 - 部署前确认当前为`main`且`git log HEAD..main`为空，`git diff --check`通过；用户未跟踪的`src/content/blog/kokuho-ryoukin-keisan-hoho.md`未修改、未暂存，既有站点整改脏文件未纳入本轮。Cloudflare Pages部署成功（预览`51081132.keisantool.pages.dev`）；正式域名的新页、圆面积、速度、三角形面积、麻雀符、勾配、日数、六星占术、大阪最低工资、sitemap和ads.txt跨批次连续3轮全部为200且正文标记稳定。
 - IndexNow成功提交新页、圆面积入口、单位换算入口、生活分类和llms.txt共5个URL。GSC API与已登录网页均确认新页为`URL is unknown to Google`，随后网页端收到“已请求编入索引”并加入优先抓取队列的成功确认。2〜3天后复查首次抓取与收录，7〜14天后重点跟踪`体積 計算／円柱 体積／円錐 体積／球 体積／リットル換算`的展示、排名、CTR与5个标签使用情况。
 
+### 2026-08-11：Google增量词覆盖——地图・图纸缩尺计算
+
+- GA4东京时间最新完整自然日2026-08-10总活跃用户116、sessions 127；来源维度为Bing 96、Google 7、direct 5、Yahoo 4、DuckDuckGo 2、ChatGPT 1、Copilot 1，未出现`openai`来源，因此非`openai`约116。按总活跃用户计算，Bing约82.8%、Google约6.0%、Yahoo约3.4%；总量重新超过100，但Google绝对用户仍只有7，继续扩大Google非品牌查询覆盖。
+- GSC最新可用日2026-08-09为8点击／668展示／CTR 1.20%／平均排名26.62；08-08为5／443／1.13%／23.84，点击与展示增长，CTR小幅提高，但平均排名回落。近28天已有机会中，`/rokusei/`为46点击／2,309展示／CTR1.99%／平均排名12.10，`/kinzoku-nensuu/`为10／582／1.72%／10.51；新页`/hayasa/`已获得123展示／0点击／平均排名9.94。速度页刚于08-08抓取收录，查询级数据尚受隐私阈值隐藏，本轮保留观察窗口，不在3天内覆盖标题实验。
+- GSC网页索引报告仍更新至08-07：已编入索引453、未编入索引10；原因为7个主动`noindex`、1个404、1个重定向和1个“已抓取－尚未编入索引”。单URL最新检查确认`/hayasa/`与`/en-menseki/`继续为`Submitted and indexed`；昨日新增`/taiseki/`已于08-10 09:11 UTC被Google移动端抓取并收录，canonical和Breadcrumbs正常，进一步证明汇总报告存在聚合延迟。
+- 本轮仅通过`dash.3ue.co`中转站使用Semrush日本桌面数据库。先评估`密度 計算`：月搜索量约1,900、KD17、信息意图，420个关键词总量约7,200；相关词有`密度 の 計算`1,900／KD23、`空気 密度 計算`390／KD20、`密度 計算 方法`260／KD17。最终选择更强的`縮尺 計算`：月搜索量约3,600、KD19、信息意图，150个关键词总量约8,000；相关词有`地図 の 縮尺 計算`590／KD17、`地図 縮尺 計算`590／KD17、`図面 縮尺 計算 アプリ`480／KD18、`縮尺 計算 アプリ`390／KD15。
+- 去重判断：`/wariai/`只能把无单位的A:B约成最简整数比，`/tani/`只能换算单一长度单位，`/koubai/`计算坡度；站内没有先统一图上与实际单位、再按1:n求距离或反求缩尺的页面。因此新增独立`/shukushaku/`，一个URL统一承接“图上→实际”“实际→图上”“缩尺を求める”三种任务，并从上述3页增加上下文入口，避免为地图与建筑图纸各建近义薄页。
+- 严格TDD执行RED→GREEN：先注册元数据和新增测试，确认`shukushaku.js`模块不存在的RED，再实现`convertLength`、`realLengthFromScale`、`drawingLengthFromScale`和`scaleFromLengths`纯函数。8项新增测试覆盖5cm・1:25,000＝1.25km、80mm・1:50＝4m、2km・1:25,000＝8cm、3m・1:100＝3cm、1cm対500m＝1:50,000，以及mm／cm／m／km异单位、0、负数、未知单位和放大率边界；内部以m为统一单位且不提前舍入。
+- 新页提供3个计算标签、8个常用缩尺快捷按钮、四单位同步结果、1:50至1:50,000早见表、PDF／复制倍率注意、国土地理院2项来源、6条FAQ和固定免责声明。title、description、唯一H1、canonical、WebApplication／FAQ JSON-LD、日文lang、内部链接、sitemap和llms.txt齐全。
+- 全量验证为80个测试文件、1,574项断言全部通过，生产构建556页。真实Chrome验证默认1.25km、实际2km反算图上8cm、1cm与500m反算1:50,000；1920／1440／768／375四档页面宽度均与视口一致，唯一H1和canonical正确。手机目视检查发现`.preset-row{display:flex}`覆盖HTML `hidden`，导致反求缩尺模式仍显示无意义的预设按钮；补充`.preset-row[hidden]{display:none}`后复测通过。
+- 部署前确认当前为`main`且`git log HEAD..main`为空，`git diff --check`通过；用户未跟踪的`src/content/blog/kokuho-ryoukin-keisan-hoho.md`未修改、未暂存，既有站点整改脏文件未纳入本轮。Cloudflare Pages部署成功（预览`037d206b.keisantool.pages.dev`）；正式域名传播初期新页连续3轮404且关联页仍是旧正文，随后新页、单位换算、勾配、割合和sitemap跨批次连续3轮稳定返回新版200；体积、速度、三角形面积、麻雀符、六星占术、大阪最低工资和ads.txt等跨批次旧路由均保持200。
+- IndexNow成功提交新页、3条正文入口、生活分类和llms.txt共6个URL。GSC API与已登录网页均确认新页为`URL is unknown to Google`，随后网页端收到“已请求编入索引”并加入优先抓取队列的成功确认。2〜3天后复查首次抓取与收录，7〜14天后重点跟踪`縮尺 計算／地図 縮尺 計算／図面 縮尺 計算／縮尺 計算 アプリ`的展示、排名、CTR与3个标签使用情况；同时继续观察`/hayasa/`首页边缘123展示能否产生首批点击。
+
 ## 后续优先级
 
 1. 复盘六曜页的 GSC 展示、CTR 与排名变化（搜索数据通常延迟 2–3 天）。
