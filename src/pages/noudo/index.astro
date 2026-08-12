@@ -1,0 +1,156 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'noudo';
+const title = '濃度計算ツール｜質量パーセント・モル濃度・希釈を自動計算';
+const description = '濃度を無料で自動計算。質量パーセント濃度、モル濃度mol/L、希釈のC₁V₁=C₂V₂に対応し、溶質・溶液・加える水の量も逆算します。';
+const jsonld = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: '濃度計算ツール', description,
+  applicationCategory: 'EducationalApplication', operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['質量パーセント濃度を計算', '溶質・溶媒・溶液の質量を逆算', 'モル濃度mol/Lを計算', '原液の希釈と加える溶媒量を計算'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 濃度計算</div>
+    <h1>濃度計算ツール</h1>
+    <p>質量パーセント濃度、モル濃度、原液の希釈を入力だけで計算します。</p>
+    <div class="feature-chips"><span>質量%</span><span>mol/L</span><span>希釈</span><span>逆算</span><span>途中式</span></div>
+  </div>
+
+  <div class="calc-card concentration-card" id="concentration-tool">
+    <div class="concentration-tabs" role="tablist" aria-label="濃度計算の種類">
+      <button type="button" class="concentration-tab is-active" data-mode="mass-percent" role="tab" aria-selected="true">質量パーセント</button>
+      <button type="button" class="concentration-tab" data-mode="molarity" role="tab" aria-selected="false">モル濃度</button>
+      <button type="button" class="concentration-tab" data-mode="dilution" role="tab" aria-selected="false">希釈</button>
+    </div>
+
+    <section class="calc-panel concentration-panel active" data-panel="mass-percent" role="tabpanel">
+      <h2>質量パーセント濃度を計算</h2>
+      <div class="form-group mode-select"><label for="mass-percent-mode">求める値</label><select id="mass-percent-mode"><option value="percent">濃度（%）</option><option value="solute">溶質の質量</option><option value="solution">溶液の質量</option></select></div>
+      <div class="input-grid">
+        <div class="form-group" id="mp-solute-field"><label for="mp-solute">溶質の質量（g）</label><input id="mp-solute" type="number" min="0" step="any" value="20" inputmode="decimal" /></div>
+        <div class="form-group" id="mp-solution-field"><label for="mp-solution">溶液全体の質量（g）</label><input id="mp-solution" type="number" min="0" step="any" value="200" inputmode="decimal" /></div>
+        <div class="form-group" id="mp-percent-field" hidden><label for="mp-percent">質量パーセント濃度（%）</label><input id="mp-percent" type="number" min="0" max="100" step="any" value="5" inputmode="decimal" /></div>
+      </div>
+      <p class="form-error" id="mp-error" role="alert" hidden>0以上の値を入力し、溶質は溶液全体以下、濃度は0〜100%にしてください。</p>
+      <div class="primary-result" id="mp-result" aria-live="polite"><span id="mp-result-label">質量パーセント濃度</span><strong id="mp-main">10 %</strong><small id="mp-formula">20g ÷ 200g × 100</small></div>
+      <div class="result-grid" id="mp-secondary"><div><span>溶質</span><strong id="mp-solute-out">20 g</strong></div><div><span>溶媒</span><strong id="mp-solvent-out">180 g</strong></div><div><span>溶液全体</span><strong id="mp-solution-out">200 g</strong></div></div>
+    </section>
+
+    <section class="calc-panel concentration-panel" data-panel="molarity" role="tabpanel">
+      <h2>モル濃度（mol/L）を計算</h2>
+      <div class="form-group mode-select"><label for="molarity-mode">溶質の入力方法</label><select id="molarity-mode"><option value="mass">質量とモル質量から計算</option><option value="moles">物質量（mol）を直接入力</option></select></div>
+      <div class="input-grid">
+        <div class="form-group" id="molar-mass-input-field"><label for="molar-mass-input">溶質の質量（g）</label><input id="molar-mass-input" type="number" min="0" step="any" value="5.844" inputmode="decimal" /></div>
+        <div class="form-group" id="molar-mass-field"><label for="molar-mass">モル質量（g/mol）</label><input id="molar-mass" type="number" min="0" step="any" value="58.44" inputmode="decimal" /></div>
+        <div class="form-group" id="moles-field" hidden><label for="moles">物質量（mol）</label><input id="moles" type="number" min="0" step="any" value="0.1" inputmode="decimal" /></div>
+        <div class="form-group"><label for="molar-volume">溶液の体積</label><div class="unit-input"><input id="molar-volume" type="number" min="0" step="any" value="500" inputmode="decimal" /><select id="molar-volume-unit" aria-label="溶液体積の単位"><option value="mL">mL</option><option value="L">L</option></select></div></div>
+      </div>
+      <p class="form-error" id="molar-error" role="alert" hidden>体積とモル質量は0より大きい値を入力してください。</p>
+      <div class="primary-result" id="molar-result" aria-live="polite"><span>モル濃度</span><strong id="molar-main">0.2 mol/L</strong><small id="molar-formula">(5.844g ÷ 58.44g/mol) ÷ 0.5L</small></div>
+      <div class="result-grid two" id="molar-secondary"><div><span>物質量</span><strong id="moles-out">0.1 mol</strong></div><div><span>溶液体積</span><strong id="liters-out">0.5 L</strong></div></div>
+    </section>
+
+    <section class="calc-panel concentration-panel" data-panel="dilution" role="tabpanel">
+      <h2>原液の希釈を計算</h2>
+      <div class="form-group mode-select"><label for="dilution-mode">わかっている体積</label><select id="dilution-mode"><option value="stock">使う原液量から最終体積を求める</option><option value="final">作りたい最終体積から原液量を求める</option></select></div>
+      <p class="mode-note">濃度は%同士、mol/L同士など、前後で同じ単位を使ってください。</p>
+      <div class="input-grid">
+        <div class="form-group"><label for="initial-concentration">原液の濃度</label><input id="initial-concentration" type="number" min="0" step="any" value="2" inputmode="decimal" /></div>
+        <div class="form-group"><label for="target-concentration">目標の濃度</label><input id="target-concentration" type="number" min="0" step="any" value="0.5" inputmode="decimal" /></div>
+        <div class="form-group"><label for="dilution-volume" id="dilution-volume-label">使う原液の体積（mL）</label><input id="dilution-volume" type="number" min="0" step="any" value="100" inputmode="decimal" /></div>
+      </div>
+      <p class="form-error" id="dilution-error" role="alert" hidden>0より大きい値を入力し、目標濃度を原液濃度以下にしてください。</p>
+      <div class="primary-result" id="dilution-result" aria-live="polite"><span id="dilution-result-label">希釈後の全量</span><strong id="dilution-main">400 mL</strong><small id="dilution-formula">2 × 100mL ÷ 0.5</small></div>
+      <div class="result-grid" id="dilution-secondary"><div><span>原液</span><strong id="stock-volume-out">100 mL</strong></div><div><span>加える溶媒</span><strong id="solvent-volume-out">300 mL</strong></div><div><span>希釈後の全量</span><strong id="final-volume-out">400 mL</strong></div><div><span>希釈倍率</span><strong id="dilution-factor-out">4 倍</strong></div></div>
+    </section>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>質量パーセント濃度の計算式</h2>
+    <p>質量パーセント濃度は、<strong>溶液全体の質量に対する溶質の質量の割合</strong>です。溶液の質量は「溶質＋溶媒」なので、水180gに食塩20gを溶かした場合は、20÷(20＋180)×100＝10%です。</p>
+    <div class="formula-grid"><div><span>濃度</span><strong>溶質の質量 ÷ 溶液の質量 × 100</strong></div><div><span>溶質</span><strong>溶液の質量 × 濃度 ÷ 100</strong></div><div><span>溶液</span><strong>溶質の質量 × 100 ÷ 濃度</strong></div></div>
+    <p>「溶媒の質量」を分母にしないことが重要です。質量ではなく一般的な割合・増減率を計算する場合は<a href="/wariai/">割合・パーセント計算ツール</a>をご利用ください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>モル濃度mol/Lの求め方</h2>
+    <p>モル濃度は、<strong>溶液1Lに含まれる溶質の物質量</strong>です。質量から計算する場合は、まず「質量g÷モル質量g/mol」で物質量molを求め、溶液体積Lで割ります。</p>
+    <div class="example-card"><span>NaClの例</span><strong>5.844g ÷ 58.44g/mol ＝ 0.1mol</strong><strong>0.1mol ÷ 0.5L ＝ 0.2mol/L</strong><small>500mLは0.5Lに直してから計算</small></div>
+    <p>モル質量は化学式に含まれる各元素の原子量から求めます。純度、結晶水、温度による体積変化などはこのツールでは自動補正しません。</p>
+  </section>
+
+  <section class="howto">
+    <h2>希釈の計算式 C₁V₁＝C₂V₂</h2>
+    <p>溶質の量が希釈の前後で変わらない場合、原液濃度C₁×原液体積V₁＝希釈後濃度C₂×希釈後体積V₂です。2mol/Lの原液100mLを0.5mol/Lにすると、最終体積は400mLなので、加える溶媒は300mLです。</p>
+    <div class="formula-grid two"><div><span>最終体積</span><strong>V₂＝C₁×V₁÷C₂</strong></div><div><span>必要な原液量</span><strong>V₁＝C₂×V₂÷C₁</strong></div></div>
+    <p>体積は混合によって単純加算にならない場合があります。精密な調製では「水を○mL加える」のではなく、メスフラスコなどで<strong>目標の全量まで溶媒を加える</strong>方法を優先してください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>濃度・密度・比重の違い</h2>
+    <ul><li><strong>濃度</strong>：溶液中に溶質がどれだけ含まれるかを、%やmol/Lなどで表します。</li><li><strong>密度</strong>：単位体積あたりの質量です。質量と体積から求める場合は<a href="/mitsudo/">密度・質量・体積計算ツール</a>を利用できます。</li><li><strong>比重</strong>：物質の密度と基準物質の密度の比で、単位を持ちません。</li><li>mLとLなどの体積単位だけを換算する場合は<a href="/tani/">単位変換ツール</a>をご利用ください。</li></ul>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料と計算上の注意</h2>
+    <ul><li><a href="https://www.maff.go.jp/j/seisan/syoryu/kensa/kokuryu/attach/pdf/index-17.pdf" target="_blank" rel="noopener noreferrer">農林水産省「標準計測方法の運用、検査機器の仕様」</a>：質量パーセント濃度とモル濃度の定義・計算式。</li><li><a href="https://unit.aist.go.jp/nmij/library/mise_en_pratique/substance/" target="_blank" rel="noopener noreferrer">産業技術総合研究所 NMIJ「物質量：モル」</a>：物質量molとアボガドロ定数の定義。</li><li><a href="https://www.mext.go.jp/content/20211102-mxt_kyoiku02-100002620_06.pdf" target="_blank" rel="noopener noreferrer">文部科学省「高等学校学習指導要領（平成30年告示）解説 理科編」</a>：質量パーセント濃度、物質量、モル濃度の学習範囲。</li></ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実験・製造・分析では試薬の純度、温度、体積変化、測定器の精度、必要な有効数字を確認してください。本ツールは血中アルコール濃度や医療上の投与濃度を判定するものではありません。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '質量パーセント濃度の計算式は？', a: '溶質の質量÷溶液全体の質量×100です。水180gに食塩20gを溶かすと、溶液は200gなので濃度は10%です。' },
+    { q: '溶質と溶媒の違いは？', a: '溶かされる物質が溶質、溶質を溶かす物質が溶媒です。溶質と溶媒を合わせたものが溶液です。' },
+    { q: 'モル濃度の単位は何ですか？', a: 'mol/Lです。溶質の物質量molを、溶液の体積Lで割って求めます。' },
+    { q: 'mLのままモル濃度を計算できますか？', a: 'はい。mLを選ぶと内部でLに変換します。500mLは0.5Lです。' },
+    { q: '10%の原液から2%を500mL作るには？', a: 'C₁V₁＝C₂V₂より、必要な原液は100mLです。最終体積が500mLになるまで溶媒を加えます。単純計算上の差は400mLです。' },
+    { q: '希釈するとき加える水の量は？', a: '単純計算では最終体積から原液体積を引きます。ただし精密調製では体積が単純加算にならない場合があるため、目標の全量まで溶媒を加えます。' },
+    { q: '濃度と密度は同じですか？', a: '異なります。濃度は溶液中の溶質の割合、密度は単位体積あたりの質量です。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .feature-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.feature-chips span{padding:5px 10px;border:1px solid color-mix(in srgb,var(--cat-color) 30%,transparent);border-radius:999px;background:var(--cat-tint);color:var(--cat-color);font-size:.72rem;font-weight:var(--fw-bold)}
+  .concentration-card{overflow:hidden}.concentration-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--border-2);background:var(--surface-sub)}.concentration-tab{padding:15px 8px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--text-muted);font:var(--fw-bold) .8rem var(--font-sans);cursor:pointer}.concentration-tab.is-active{border-bottom-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}.concentration-tab:focus-visible{outline:3px solid var(--cat-tint);outline-offset:-3px}.concentration-panel{padding:24px}.concentration-panel h2{margin:0 0 17px;font-size:1.05rem}.mode-select{max-width:420px}.mode-select select{width:100%}.mode-note{margin:-4px 0 14px;color:var(--text-muted);font-size:.76rem}.input-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end}.form-group[hidden],.form-error[hidden],.primary-result[hidden]{display:none}.unit-input{display:grid;grid-template-columns:minmax(0,1fr) 86px;gap:8px}.unit-input select{width:100%}.form-error{margin:12px 0 0;padding:9px 12px;border-radius:var(--r-sm);background:var(--danger-bg);color:var(--danger);font-size:.78rem}
+  .primary-result{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:20px;padding:20px;border-radius:var(--r-md);background:var(--cat-tint);text-align:center}.primary-result span{color:var(--text-muted);font-size:.76rem;font-weight:var(--fw-bold)}.primary-result strong{color:var(--cat-color);font:var(--fw-bold) clamp(1.8rem,6vw,2.8rem)/1.1 var(--font-mono);overflow-wrap:anywhere}.primary-result small{color:var(--text-muted);font-family:var(--font-mono);overflow-wrap:anywhere}.result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}.result-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.result-grid div{display:flex;flex-direction:column;gap:5px;padding:13px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.result-grid span{color:var(--text-muted);font-size:.72rem}.result-grid strong{font-family:var(--font-mono);font-size:.84rem;overflow-wrap:anywhere}
+  .formula-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.formula-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.formula-grid div{display:flex;flex-direction:column;gap:6px;padding:15px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.formula-grid span{color:var(--text-muted);font-size:.72rem}.formula-grid strong{font-family:var(--font-mono);font-size:.83rem}.example-card{display:flex;flex-direction:column;gap:6px;margin:16px 0;padding:16px;border-left:4px solid var(--cat-color);border-radius:var(--r-md);background:var(--surface-sub)}.example-card span,.example-card small{color:var(--text-muted);font-size:.72rem}.example-card strong{font-family:var(--font-mono)}.source-box a{color:var(--cat-color);font-weight:var(--fw-bold)}
+  @media(max-width:700px){.input-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.result-grid,.formula-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.concentration-tab{padding-inline:4px;font-size:.7rem}.input-grid,.result-grid,.result-grid.two,.formula-grid,.formula-grid.two{grid-template-columns:1fr}.concentration-panel{padding:18px}}
+</style>
+
+<script>
+  import { calculateMassPercent, soluteMassFromPercent, solutionMassFromPercent, calculateMolarityFromMass, calculateMolarityFromMoles, diluteFromStock, prepareDilution } from '../../lib/noudo.js';
+  const $=id=>document.getElementById(id); const tracked=new Set(); let activeMode='mass-percent'; let initialized=false;
+  const fmt=(value,digits=10)=>Number(value.toPrecision(digits)).toLocaleString('ja-JP',{maximumFractionDigits:12});
+  function showResult(mode,summary){if(activeMode!==mode)return;window.setResultShare?.(summary);if(initialized&&!tracked.has(mode)){window.trackCalculatorResult?.(mode);tracked.add(mode)}}
+  function renderMassPercent(){
+    const mode=$('mass-percent-mode').value;
+    $('mp-solute-field').hidden=mode==='solute';$('mp-solution-field').hidden=mode==='solution';$('mp-percent-field').hidden=mode==='percent';
+    let result;if(mode==='percent')result=calculateMassPercent($('mp-solute').value,$('mp-solution').value);else if(mode==='solute')result=soluteMassFromPercent($('mp-solution').value,$('mp-percent').value);else result=solutionMassFromPercent($('mp-solute').value,$('mp-percent').value);
+    const valid=result!==null;$('mp-error').hidden=valid;$('mp-result').hidden=!valid;$('mp-secondary').hidden=!valid;if(!valid)return;
+    $('mp-result-label').textContent=mode==='percent'?'質量パーセント濃度':mode==='solute'?'必要な溶質の質量':'必要な溶液の質量';$('mp-main').textContent=mode==='percent'?`${fmt(result.percent)} %`:mode==='solute'?`${fmt(result.soluteMass)} g`:`${fmt(result.solutionMass)} g`;$('mp-solute-out').textContent=`${fmt(result.soluteMass)} g`;$('mp-solvent-out').textContent=`${fmt(result.solventMass)} g`;$('mp-solution-out').textContent=`${fmt(result.solutionMass)} g`;$('mp-formula').textContent=mode==='percent'?`${fmt(result.soluteMass)}g ÷ ${fmt(result.solutionMass)}g × 100`:mode==='solute'?`${fmt(result.solutionMass)}g × ${fmt(result.percent)}% ÷ 100`:`${fmt(result.soluteMass)}g × 100 ÷ ${fmt(result.percent)}%`;showResult('mass-percent',`質量パーセント濃度計算\n${$('mp-main').textContent}`)
+  }
+  function renderMolarity(){
+    const mode=$('molarity-mode').value;$('molar-mass-input-field').hidden=mode==='moles';$('molar-mass-field').hidden=mode==='moles';$('moles-field').hidden=mode==='mass';const result=mode==='mass'?calculateMolarityFromMass($('molar-mass-input').value,$('molar-mass').value,$('molar-volume').value,$('molar-volume-unit').value):calculateMolarityFromMoles($('moles').value,$('molar-volume').value,$('molar-volume-unit').value);
+    const valid=result!==null;$('molar-error').hidden=valid;$('molar-result').hidden=!valid;$('molar-secondary').hidden=!valid;if(!valid)return;
+    $('molar-main').textContent=`${fmt(result.molPerLiter)} mol/L`;$('moles-out').textContent=`${fmt(result.moles)} mol`;$('liters-out').textContent=`${fmt(result.liters)} L`;$('molar-formula').textContent=mode==='mass'?`(${$('molar-mass-input').value}g ÷ ${$('molar-mass').value}g/mol) ÷ ${fmt(result.liters)}L`:`${fmt(result.moles)}mol ÷ ${fmt(result.liters)}L`;showResult('molarity',`モル濃度計算\n${$('molar-main').textContent}`)
+  }
+  function renderDilution(){
+    const mode=$('dilution-mode').value;$('dilution-volume-label').textContent=mode==='stock'?'使う原液の体積（mL）':'作りたい最終体積（mL）';const initial=$('initial-concentration').value,target=$('target-concentration').value,volume=$('dilution-volume').value;const result=mode==='stock'?diluteFromStock(initial,volume,target):prepareDilution(initial,target,volume);
+    const valid=result!==null;$('dilution-error').hidden=valid;$('dilution-result').hidden=!valid;$('dilution-secondary').hidden=!valid;if(!valid)return;
+    $('dilution-result-label').textContent=mode==='stock'?'希釈後の全量':'必要な原液量';$('dilution-main').textContent=mode==='stock'?`${fmt(result.finalVolume)} mL`:`${fmt(result.stockVolume)} mL`;$('stock-volume-out').textContent=`${fmt(result.stockVolume)} mL`;$('solvent-volume-out').textContent=`${fmt(result.solventToAdd)} mL`;$('final-volume-out').textContent=`${fmt(result.finalVolume)} mL`;$('dilution-factor-out').textContent=`${fmt(result.dilutionFactor)} 倍`;$('dilution-formula').textContent=mode==='stock'?`${initial} × ${volume}mL ÷ ${target}`:`${target} × ${volume}mL ÷ ${initial}`;showResult('dilution',`希釈計算\n原液 ${fmt(result.stockVolume)}mL・溶媒 ${fmt(result.solventToAdd)}mL・全量 ${fmt(result.finalVolume)}mL`)
+  }
+  const renderers={'mass-percent':renderMassPercent,molarity:renderMolarity,dilution:renderDilution};
+  document.querySelectorAll('.concentration-tab').forEach(tab=>tab.addEventListener('click',()=>{activeMode=tab.dataset.mode;document.querySelectorAll('.concentration-tab').forEach(item=>{const active=item===tab;item.classList.toggle('is-active',active);item.setAttribute('aria-selected',String(active))});document.querySelectorAll('.concentration-panel').forEach(panel=>panel.classList.toggle('active',panel.dataset.panel===activeMode));renderers[activeMode]()}));
+  ['mass-percent-mode','mp-solute','mp-solution','mp-percent'].forEach(id=>$(id).addEventListener('input',renderMassPercent));['molarity-mode','molar-mass-input','molar-mass','moles','molar-volume','molar-volume-unit'].forEach(id=>$(id).addEventListener('input',renderMolarity));['dilution-mode','initial-concentration','target-concentration','dilution-volume'].forEach(id=>$(id).addEventListener('input',renderDilution));renderMassPercent();renderMolarity();renderDilution();initialized=true;
+</script>

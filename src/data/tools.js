@@ -245,6 +245,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'noudo',
+    nav: '濃度計算',
+    name: '濃度計算ツール',
+    icon: '🧪',
+    category: '生活・日常',
+    short: '質量パーセント・モル濃度・希釈を計算',
+    live: true,
+  },
+  {
     slug: 'shukushaku',
     nav: '縮尺計算',
     name: '縮尺計算ツール',
