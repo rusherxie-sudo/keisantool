@@ -1,0 +1,136 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { equivalentResistance, calculateLedResistor } from '../../lib/teikou.js';
+
+const slug = 'teikou';
+const title = '合成抵抗計算ツール｜並列・直列・オームの法則・LED抵抗';
+const description = '抵抗値を入力して直列・並列の合成抵抗を無料計算。オームの法則による電圧・電流・抵抗・電力の逆算、LED電流制限抵抗と必要な定格電力にも対応。';
+const seriesExample = equivalentResistance([100, 220, 330], 'series');
+const parallelExample = equivalentResistance([100, 200, 300], 'parallel');
+const ledExample = calculateLedResistor(5, 2, 20, 1);
+const jsonld = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: '抵抗・オームの法則計算ツール',
+  description, applicationCategory: 'UtilityApplication', operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 抵抗計算</div>
+    <h1>抵抗・オームの法則計算ツール</h1>
+    <p>直列・並列の合成抵抗、電圧・電流・抵抗の逆算、LEDの電流制限抵抗を入力と同時に計算します。</p>
+    <div class="feature-chips" aria-label="対応する計算"><span>合成抵抗</span><span>直列・並列</span><span>オームの法則</span><span>LED抵抗</span><span>電力W</span></div>
+  </div>
+
+  <div class="calc-card resistance-card">
+    <div class="resistance-tabs" role="tablist" aria-label="抵抗計算の種類">
+      <button type="button" class="resistance-tab is-active" data-mode="equivalent" role="tab" aria-selected="true">合成抵抗</button>
+      <button type="button" class="resistance-tab" data-mode="ohm" role="tab" aria-selected="false">オームの法則</button>
+      <button type="button" class="resistance-tab" data-mode="led" role="tab" aria-selected="false">LED抵抗</button>
+    </div>
+
+    <section class="calc-panel resistance-panel active" data-panel="equivalent" role="tabpanel">
+      <h2>直列・並列の合成抵抗を計算</h2>
+      <div class="input-grid compact-grid">
+        <div class="form-group"><label for="connection-type">接続方法</label><select id="connection-type"><option value="parallel">並列接続</option><option value="series">直列接続</option></select></div>
+        <div class="form-group"><label for="resistance-unit">入力する単位</label><select id="resistance-unit"><option value="Ω">Ω</option><option value="kΩ">kΩ</option><option value="MΩ">MΩ</option></select></div>
+      </div>
+      <div class="form-group"><label for="resistance-values">抵抗値（カンマ・空白・改行で区切る）</label><textarea id="resistance-values" rows="3" spellcheck="false">100, 200, 300</textarea></div>
+      <p class="mode-note">例：100Ω、200Ω、300Ωなら「100, 200, 300」と入力します。1本だけでも計算できます。</p>
+      <p class="form-error" id="equivalent-error" role="alert" hidden>0より大きい抵抗値を1個以上入力してください。</p>
+      <div class="primary-result" id="equivalent-result" aria-live="polite"><span id="equivalent-label">並列の合成抵抗</span><strong id="equivalent-main">54.545 Ω</strong><small id="equivalent-formula">1 ÷ (1/100 + 1/200 + 1/300)</small></div>
+      <div class="result-grid two" id="equivalent-secondary"><div><span>抵抗の本数</span><strong id="resistance-count">3本</strong></div><div><span>Ω表示</span><strong id="equivalent-ohms">54.545 Ω</strong></div></div>
+    </section>
+
+    <section class="calc-panel resistance-panel" data-panel="ohm" role="tabpanel">
+      <h2>オームの法則で電圧・電流・抵抗を逆算</h2>
+      <div class="form-group mode-select"><label for="ohm-target">求める値</label><select id="ohm-target"><option value="resistance">抵抗（R）</option><option value="current">電流（I）</option><option value="voltage">電圧（V）</option></select></div>
+      <div class="input-grid">
+        <div class="form-group" id="voltage-field"><label for="ohm-voltage">電圧（V）</label><input id="ohm-voltage" type="number" min="0" step="any" value="5" inputmode="decimal" /></div>
+        <div class="form-group" id="current-field"><label for="ohm-current">電流</label><div class="unit-input"><input id="ohm-current" type="number" min="0" step="any" value="20" inputmode="decimal" /><select id="current-unit" aria-label="電流の単位"><option value="mA">mA</option><option value="A">A</option></select></div></div>
+        <div class="form-group" id="ohm-resistance-field" hidden><label for="ohm-resistance">抵抗</label><div class="unit-input"><input id="ohm-resistance" type="number" min="0" step="any" value="220" inputmode="decimal" /><select id="ohm-resistance-unit" aria-label="抵抗の単位"><option value="Ω">Ω</option><option value="kΩ">kΩ</option><option value="MΩ">MΩ</option></select></div></div>
+      </div>
+      <p class="form-error" id="ohm-error" role="alert" hidden>表示されている2つの項目に0より大きい数値を入力してください。</p>
+      <div class="primary-result" id="ohm-result" aria-live="polite"><span id="ohm-result-label">抵抗</span><strong id="ohm-main">250 Ω</strong><small id="ohm-formula">5V ÷ 0.02A</small></div>
+      <div class="result-grid" id="ohm-secondary"><div><span>電圧</span><strong id="voltage-out">5 V</strong></div><div><span>電流</span><strong id="current-out">20 mA</strong></div><div><span>抵抗</span><strong id="resistance-out">250 Ω</strong></div><div><span>電力</span><strong id="power-out">0.1 W</strong></div></div>
+    </section>
+
+    <section class="calc-panel resistance-panel" data-panel="led" role="tabpanel">
+      <h2>LEDの電流制限抵抗を計算</h2>
+      <div class="input-grid">
+        <div class="form-group"><label for="led-supply">電源電圧（V）</label><input id="led-supply" type="number" min="0" step="any" value="5" inputmode="decimal" /></div>
+        <div class="form-group"><label for="led-forward">LED 1個の順方向電圧 VF（V）</label><input id="led-forward" type="number" min="0" step="any" value="2" inputmode="decimal" /></div>
+        <div class="form-group"><label for="led-current">流したい電流（mA）</label><input id="led-current" type="number" min="0" step="any" value="20" inputmode="decimal" /></div>
+        <div class="form-group"><label for="led-count">直列LED数（個）</label><input id="led-count" type="number" min="1" step="1" value="1" inputmode="numeric" /></div>
+      </div>
+      <p class="form-error" id="led-error" role="alert" hidden>電源電圧をLEDの順方向電圧合計より大きくし、電流とLED数に正の値を入力してください。</p>
+      <div class="primary-result" id="led-result" aria-live="polite"><span>計算上の電流制限抵抗</span><strong id="led-main">150 Ω</strong><small id="led-formula">(5V − 2V × 1個) ÷ 0.02A</small></div>
+      <div class="result-grid" id="led-secondary"><div><span>LED電圧合計</span><strong id="led-voltage-out">2 V</strong></div><div><span>抵抗の消費電力</span><strong id="led-power-out">0.06 W</strong></div><div><span>必要な定格（2倍余裕）</span><strong id="led-min-power-out">0.12 W以上</strong></div><div><span>定格の目安</span><strong id="led-rating-out">0.125 W以上</strong></div></div>
+    </section>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>合成抵抗の計算式</h2>
+    <div class="formula-grid"><div><span>直列接続</span><strong>R＝R₁＋R₂＋…</strong><small>抵抗値をそのまま足す</small></div><div><span>並列接続</span><strong>1/R＝1/R₁＋1/R₂＋…</strong><small>逆数を足してから逆数を取る</small></div></div>
+    <p>100Ω、220Ω、330Ωを直列につなぐと、100＋220＋330＝<strong>{seriesExample.resistance}Ω</strong>です。100Ω、200Ω、300Ωの並列では、1÷(1/100＋1/200＋1/300)＝<strong>{parallelExample.resistance.toFixed(3)}Ω</strong>になります。並列の合成抵抗は、最も小さい抵抗値よりも小さくなります。</p>
+  </section>
+
+  <section class="howto">
+    <h2>オームの法則と電力の求め方</h2>
+    <div class="formula-grid"><div><span>電圧</span><strong>V＝I×R</strong></div><div><span>電流</span><strong>I＝V÷R</strong></div><div><span>抵抗</span><strong>R＝V÷I</strong></div><div><span>電力</span><strong>P＝V×I＝I²R＝V²/R</strong></div></div>
+    <p>電圧V・電流I・抵抗Rのうち2つが分かれば、残り1つを計算できます。本ツールは直流および抵抗負荷の基本計算を対象とします。交流回路ではインピーダンスや力率が関係するため、単純な抵抗計算と一致しない場合があります。</p>
+    <p>求めたW数から使用時間と電気代を計算する場合は<a href="/denki-dai/">電気代・消費電力計算ツール</a>をご利用ください。抵抗器の色帯からΩを読み取る場合は<a href="/color-code/">抵抗カラーコード計算</a>が使えます。</p>
+  </section>
+
+  <section class="howto">
+    <h2>LED電流制限抵抗の選び方</h2>
+    <p>電源電圧をVS、LED 1個の順方向電圧をVF、直列LED数をn、流したい電流をIとすると、抵抗は<strong>R＝(VS−VF×n)÷I</strong>です。5V電源、VF 2V、20mAなら、(5−2)÷0.02＝<strong>{ledExample.resistance}Ω</strong>、抵抗の消費電力は<strong>{ledExample.resistorPower}W</strong>です。</p>
+    <ul><li>VFと最大順方向電流はLEDの色・型番・温度で変わるため、必ずデータシートを確認してください。</li><li>計算値と同じ抵抗がない場合は、通常は電流が定格を超えないよう上側の標準抵抗値を検討します。</li><li>定格電力は周囲温度で低下します。本ツールは計算上の消費電力の2倍以上となる一般的な目安を表示しますが、実装条件とメーカーの降額曲線を優先してください。</li><li>家庭用コンセントや高電圧回路の設計・工事には使用しないでください。</li></ul>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料</h2>
+    <ul><li><a href="https://techweb.rohm.co.jp/product/circuit-design/electric-circuit-design/21859/" target="_blank" rel="noopener noreferrer">ローム TechWeb「オームの法則」</a>：V・I・R、直列・並列、LED抵抗の基本式。</li><li><a href="https://techweb.rohm.co.jp/product/passive-components/resistors/23743/" target="_blank" rel="noopener noreferrer">ローム TechWeb「抵抗器の基礎知識」</a>：抵抗器と合成抵抗。</li><li><a href="https://industrial.panasonic.com/jp/ds/ss/technical/b1" target="_blank" rel="noopener noreferrer">パナソニック「抵抗器とは？」</a>：定格電力、温度による負荷軽減と安全余裕。</li></ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。部品の許容差、温度係数、定格電力、LEDのデータシート、電源変動、配線条件を確認してください。高電圧・商用電源・安全に関わる回路の設計判断には使用しないでください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '並列抵抗の合成抵抗はどう計算しますか？', a: '各抵抗の逆数を足し、その合計の逆数を取ります。2本ならR＝R1×R2÷(R1＋R2)でも求められます。' },
+    { q: '直列抵抗の合成抵抗はどう計算しますか？', a: 'すべての抵抗値を足します。100Ω、220Ω、330Ωなら合成抵抗は650Ωです。' },
+    { q: '並列の合成抵抗が小さくなるのはなぜですか？', a: '電流が流れる経路が増えるためです。合成抵抗は、並列にした抵抗のうち最も小さい値よりも小さくなります。' },
+    { q: 'オームの法則で電流を求める式は？', a: '電流I＝電圧V÷抵抗Rです。12Vを220Ωに加えると約0.0545A、つまり約54.5mAです。' },
+    { q: 'kΩやMΩでも計算できますか？', a: 'はい。合成抵抗とオームの法則ではΩ・kΩ・MΩを選べます。1kΩは1,000Ω、1MΩは1,000,000Ωです。' },
+    { q: 'LEDの抵抗はどう計算しますか？', a: '電源電圧からLEDの順方向電圧合計を引き、流したい電流Aで割ります。VFと許容電流はLEDのデータシートを確認してください。' },
+    { q: '抵抗の定格電力は計算値と同じでよいですか？', a: '余裕が必要です。本ツールは消費電力の2倍以上となる一般的な定格目安を表示しますが、周囲温度やメーカーの降額曲線を優先してください。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .feature-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.feature-chips span{padding:5px 10px;border:1px solid color-mix(in srgb,var(--cat-color) 30%,transparent);border-radius:999px;background:var(--cat-tint);color:var(--cat-color);font-size:.72rem;font-weight:var(--fw-bold)}
+  .resistance-card{overflow:hidden}.resistance-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--border)}.resistance-tab{padding:16px 8px;border:0;border-bottom:3px solid transparent;background:var(--surface-sub);color:var(--text-muted);font-weight:var(--fw-bold);cursor:pointer}.resistance-tab.is-active{border-bottom-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}
+  .resistance-panel{padding:24px}.resistance-panel:not(.active){display:none}.resistance-panel h2{margin:0 0 18px;font-size:1.08rem}.input-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.compact-grid{grid-template-columns:repeat(2,minmax(0,260px));margin-bottom:14px}.mode-select{max-width:360px;margin-bottom:16px}.unit-input{display:grid;grid-template-columns:minmax(0,1fr) 90px}.unit-input input{border-radius:var(--r-md) 0 0 var(--r-md)}.unit-input select{border-left:0;border-radius:0 var(--r-md) var(--r-md) 0}.resistance-panel textarea{width:100%;min-height:88px;padding:14px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub);color:var(--text);font:var(--fw-bold) 1rem/1.55 var(--font-mono);resize:vertical}.mode-note{margin:9px 0 0;color:var(--text-muted);font-size:.78rem}.form-error{margin:14px 0 0;padding:10px 12px;border-radius:var(--r-md);background:#fff1f1;color:#b42318;font-size:.82rem}.primary-result{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:20px;padding:20px;border-radius:var(--r-md);background:var(--cat-tint);text-align:center}.primary-result span{color:var(--text-muted);font-size:.76rem;font-weight:var(--fw-bold)}.primary-result strong{color:var(--cat-color);font:var(--fw-bold) clamp(1.8rem,6vw,2.8rem)/1.1 var(--font-mono);overflow-wrap:anywhere}.primary-result small{color:var(--text-muted);font-family:var(--font-mono);overflow-wrap:anywhere}.result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}.result-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.result-grid div,.formula-grid div{display:flex;flex-direction:column;gap:5px;padding:13px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.result-grid span,.formula-grid span{color:var(--text-muted);font-size:.72rem}.result-grid strong{font-family:var(--font-mono);font-size:.84rem;overflow-wrap:anywhere}.formula-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}.formula-grid strong{color:var(--cat-color);font-family:var(--font-mono)}.formula-grid small{color:var(--text-muted)}[hidden]{display:none!important}
+  @media(max-width:700px){.input-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.result-grid,.formula-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.resistance-tab{padding-inline:4px;font-size:.72rem}.input-grid,.compact-grid,.result-grid,.result-grid.two,.formula-grid{grid-template-columns:1fr}.resistance-panel{padding:18px}}
+</style>
+
+<script>
+  import { convertResistance, parseResistanceValues, solveOhmsLaw, equivalentResistance, calculateLedResistor } from '../../lib/teikou.js';
+  const $=id=>document.getElementById(id);const tracked=new Set();let activeMode='equivalent',initialized=false;
+  const num=id=>$(id).value.trim()===''?null:Number($(id).value);const fmt=(value,digits=6)=>Number(value.toPrecision(digits)).toLocaleString('ja-JP',{maximumFractionDigits:10});
+  const resistanceText=value=>value>=1e6?`${fmt(value/1e6)} MΩ`:value>=1e3?`${fmt(value/1e3)} kΩ`:`${fmt(value)} Ω`;
+  const currentText=value=>value<1?`${fmt(value*1000)} mA`:`${fmt(value)} A`;const powerText=value=>value<1?`${fmt(value*1000)} mW`:`${fmt(value)} W`;
+  function publish(mode,text){if(mode!==activeMode)return;window.setResultShare?.(text);if(initialized&&!tracked.has(mode)){window.trackCalculatorResult?.(mode);tracked.add(mode)}}
+  function renderEquivalent(){const values=parseResistanceValues($('resistance-values').value,$('resistance-unit').value);const type=$('connection-type').value;const result=values?equivalentResistance(values,type):null;const valid=Boolean(result);$('equivalent-error').hidden=valid;$('equivalent-result').hidden=!valid;$('equivalent-secondary').hidden=!valid;if(!valid)return;$('equivalent-label').textContent=type==='series'?'直列の合成抵抗':'並列の合成抵抗';$('equivalent-main').textContent=resistanceText(result.resistance);$('resistance-count').textContent=`${result.count}本`;$('equivalent-ohms').textContent=`${fmt(result.resistance)} Ω`;$('equivalent-formula').textContent=type==='series'?values.map(v=>fmt(v)).join(' + '):`1 ÷ (${values.map(v=>`1/${fmt(v)}`).join(' + ')})`;publish('equivalent',`${$('equivalent-label').textContent}\n${$('equivalent-main').textContent}`)}
+  function renderOhm(){const target=$('ohm-target').value;$('voltage-field').hidden=target==='voltage';$('current-field').hidden=target==='current';$('ohm-resistance-field').hidden=target==='resistance';const voltage=target==='voltage'?null:num('ohm-voltage');const current=target==='current'?null:(num('ohm-current')*($('current-unit').value==='mA'?0.001:1));const resistance=target==='resistance'?null:convertResistance(num('ohm-resistance'),$('ohm-resistance-unit').value);const result=solveOhmsLaw({voltage,current,resistance});const valid=Boolean(result);$('ohm-error').hidden=valid;$('ohm-result').hidden=!valid;$('ohm-secondary').hidden=!valid;if(!valid)return;const labels={voltage:'電圧',current:'電流',resistance:'抵抗'};$('ohm-result-label').textContent=labels[target];$('ohm-main').textContent=target==='voltage'?`${fmt(result.voltage)} V`:target==='current'?currentText(result.current):resistanceText(result.resistance);$('voltage-out').textContent=`${fmt(result.voltage)} V`;$('current-out').textContent=currentText(result.current);$('resistance-out').textContent=resistanceText(result.resistance);$('power-out').textContent=powerText(result.power);$('ohm-formula').textContent=target==='voltage'?`${currentText(result.current)} × ${resistanceText(result.resistance)}`:target==='current'?`${fmt(result.voltage)}V ÷ ${resistanceText(result.resistance)}`:`${fmt(result.voltage)}V ÷ ${currentText(result.current)}`;publish('ohm',`オームの法則計算\n電圧 ${fmt(result.voltage)}V・電流 ${currentText(result.current)}・抵抗 ${resistanceText(result.resistance)}・電力 ${powerText(result.power)}`)}
+  function renderLed(){const result=calculateLedResistor(num('led-supply'),num('led-forward'),num('led-current'),num('led-count'));const valid=Boolean(result);$('led-error').hidden=valid;$('led-result').hidden=!valid;$('led-secondary').hidden=!valid;if(!valid)return;$('led-main').textContent=resistanceText(result.resistance);$('led-formula').textContent=`(${$('led-supply').value}V − ${$('led-forward').value}V × ${result.ledCount}個) ÷ ${fmt(result.currentAmps)}A`;$('led-voltage-out').textContent=`${fmt(result.totalForwardVoltage)} V`;$('led-power-out').textContent=`${fmt(result.resistorPower)} W`;$('led-min-power-out').textContent=`${fmt(result.minimumRatedPower)} W以上`;$('led-rating-out').textContent=`${fmt(result.recommendedRatedPower)} W以上`;publish('led',`LED電流制限抵抗\n${resistanceText(result.resistance)}・定格目安 ${fmt(result.recommendedRatedPower)}W以上`)}
+  const renderers={equivalent:renderEquivalent,ohm:renderOhm,led:renderLed};document.querySelectorAll('.resistance-tab').forEach(tab=>tab.addEventListener('click',()=>{activeMode=tab.dataset.mode;document.querySelectorAll('.resistance-tab').forEach(item=>{const active=item===tab;item.classList.toggle('is-active',active);item.setAttribute('aria-selected',String(active))});document.querySelectorAll('.resistance-panel').forEach(panel=>panel.classList.toggle('active',panel.dataset.panel===activeMode));renderers[activeMode]()}));
+  ['connection-type','resistance-unit','resistance-values'].forEach(id=>$(id).addEventListener('input',renderEquivalent));['ohm-target','ohm-voltage','ohm-current','current-unit','ohm-resistance','ohm-resistance-unit'].forEach(id=>$(id).addEventListener('input',renderOhm));['led-supply','led-forward','led-current','led-count'].forEach(id=>$(id).addEventListener('input',renderLed));renderEquivalent();renderOhm();renderLed();initialized=true;
+</script>

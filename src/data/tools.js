@@ -443,6 +443,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'teikou',
+    nav: '抵抗・オームの法則',
+    name: '抵抗・オームの法則計算ツール',
+    icon: '🔌',
+    category: '生活・日常',
+    short: '合成抵抗・電圧・電流・LED抵抗を計算',
+    live: true,
+  },
+  {
     slug: 'koubai',
     nav: '勾配計算',
     name: '勾配計算ツール',
