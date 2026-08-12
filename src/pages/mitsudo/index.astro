@@ -1,0 +1,150 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'mitsudo';
+const title = '密度計算ツール｜質量・体積をg/cm³・kg/m³で逆算';
+const description = '密度・質量・体積を無料で自動計算。g/cm³、kg/m³、g/mL、kg/Lとmg・g・kg・L・m³に対応し、公式と途中式も表示します。';
+const jsonld = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: '密度・質量・体積計算ツール', description,
+  applicationCategory: 'EducationalApplication', operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['質量と体積から密度を計算', '密度と体積から質量を計算', '質量と密度から体積を計算', '密度とSI単位の変換'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 密度計算</div>
+    <h1>密度・質量・体積計算ツール</h1>
+    <p>わかっている2つの値と単位を入力すると、密度・質量・体積を相互に逆算します。</p>
+    <div class="feature-chips"><span>g/cm³</span><span>kg/m³</span><span>g/mL</span><span>単位変換</span><span>途中式</span></div>
+  </div>
+
+  <div class="calc-card density-card" id="density-tool">
+    <div class="density-tabs" role="tablist" aria-label="求める値">
+      <button type="button" class="density-tab is-active" data-mode="density" role="tab" aria-selected="true">密度を求める</button>
+      <button type="button" class="density-tab" data-mode="mass" role="tab" aria-selected="false">質量を求める</button>
+      <button type="button" class="density-tab" data-mode="volume" role="tab" aria-selected="false">体積を求める</button>
+    </div>
+
+    <div class="calc-panel active density-panel" data-panel="density" role="tabpanel">
+      <h2>質量÷体積で密度を計算</h2>
+      <div class="input-grid">
+        <div class="form-group"><label for="density-mass">質量</label><div class="unit-input"><input id="density-mass" type="number" min="0" step="any" value="100" inputmode="decimal" /><select id="density-mass-unit" aria-label="質量の単位"><option value="g">g</option><option value="mg">mg</option><option value="kg">kg</option><option value="t">t</option></select></div></div>
+        <div class="operator">÷</div>
+        <div class="form-group"><label for="density-volume">体積</label><div class="unit-input"><input id="density-volume" type="number" min="0" step="any" value="50" inputmode="decimal" /><select id="density-volume-unit" aria-label="体積の単位"><option value="cm3">cm³</option><option value="mL">mL</option><option value="L">L</option><option value="m3">m³</option><option value="mm3">mm³</option></select></div></div>
+      </div>
+      <p class="form-error" id="density-error" role="alert" hidden>0より大きい数値を入力してください。</p>
+      <div class="primary-result" aria-live="polite"><span>密度</span><strong id="density-main">2 g/cm³</strong><small id="density-formula">100g ÷ 50cm³</small></div>
+      <div class="result-grid"><div><span>kg/m³</span><strong id="density-kgm3">2,000 kg/m³</strong></div><div><span>g/mL</span><strong id="density-gml">2 g/mL</strong></div><div><span>kg/L</span><strong id="density-kgl">2 kg/L</strong></div><div><span>比重の目安</span><strong id="density-specific">2</strong></div></div>
+    </div>
+
+    <div class="calc-panel density-panel" data-panel="mass" role="tabpanel">
+      <h2>密度×体積で質量を計算</h2>
+      <div class="input-grid">
+        <div class="form-group"><label for="mass-density">密度</label><div class="unit-input"><input id="mass-density" type="number" min="0" step="any" value="2.7" inputmode="decimal" /><select id="mass-density-unit" aria-label="密度の単位"><option value="g/cm3">g/cm³</option><option value="kg/m3">kg/m³</option><option value="g/mL">g/mL</option><option value="kg/L">kg/L</option></select></div></div>
+        <div class="operator">×</div>
+        <div class="form-group"><label for="mass-volume">体積</label><div class="unit-input"><input id="mass-volume" type="number" min="0" step="any" value="100" inputmode="decimal" /><select id="mass-volume-unit" aria-label="体積の単位"><option value="cm3">cm³</option><option value="mL">mL</option><option value="L">L</option><option value="m3">m³</option><option value="mm3">mm³</option></select></div></div>
+      </div>
+      <p class="form-error" id="mass-error" role="alert" hidden>0より大きい数値を入力してください。</p>
+      <div class="primary-result" aria-live="polite"><span>質量</span><strong id="mass-main">270 g</strong><small id="mass-formula">2.7g/cm³ × 100cm³</small></div>
+      <div class="result-grid two"><div><span>キログラム</span><strong id="mass-kg">0.27 kg</strong></div><div><span>ミリグラム</span><strong id="mass-mg">270,000 mg</strong></div></div>
+    </div>
+
+    <div class="calc-panel density-panel" data-panel="volume" role="tabpanel">
+      <h2>質量÷密度で体積を計算</h2>
+      <div class="input-grid">
+        <div class="form-group"><label for="volume-mass">質量</label><div class="unit-input"><input id="volume-mass" type="number" min="0" step="any" value="500" inputmode="decimal" /><select id="volume-mass-unit" aria-label="質量の単位"><option value="g">g</option><option value="mg">mg</option><option value="kg">kg</option><option value="t">t</option></select></div></div>
+        <div class="operator">÷</div>
+        <div class="form-group"><label for="volume-density">密度</label><div class="unit-input"><input id="volume-density" type="number" min="0" step="any" value="0.8" inputmode="decimal" /><select id="volume-density-unit" aria-label="密度の単位"><option value="g/cm3">g/cm³</option><option value="kg/m3">kg/m³</option><option value="g/mL">g/mL</option><option value="kg/L">kg/L</option></select></div></div>
+      </div>
+      <p class="form-error" id="volume-error" role="alert" hidden>0より大きい数値を入力してください。</p>
+      <div class="primary-result" aria-live="polite"><span>体積</span><strong id="volume-main">625 cm³</strong><small id="volume-formula">500g ÷ 0.8g/cm³</small></div>
+      <div class="result-grid"><div><span>リットル</span><strong id="volume-liter">0.625 L</strong></div><div><span>ミリリットル</span><strong id="volume-ml">625 mL</strong></div><div><span>立方メートル</span><strong id="volume-m3">0.000625 m³</strong></div></div>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>密度の計算式と求め方</h2>
+    <p>密度は「単位体積あたりの質量」です。文部科学省の中学校卒業程度認定試験でも、<strong>密度［g/cm³］＝質量［g］÷体積［cm³］</strong>として扱われています。</p>
+    <div class="formula-grid">
+      <div><span>密度を求める</span><strong>密度＝質量÷体積</strong><small>例：100g÷50cm³＝2g/cm³</small></div>
+      <div><span>質量を求める</span><strong>質量＝密度×体積</strong><small>例：2.7g/cm³×100cm³＝270g</small></div>
+      <div><span>体積を求める</span><strong>体積＝質量÷密度</strong><small>例：500g÷0.8g/cm³＝625cm³</small></div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>g/cm³とkg/m³の単位変換</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>基準</th><th>g/cm³</th><th>g/mL</th><th>kg/L</th><th>kg/m³</th></tr></thead>
+      <tbody><tr><td>1 g/cm³</td><td>1</td><td>1</td><td>1</td><td>1,000</td></tr><tr><td>1 kg/m³</td><td>0.001</td><td>0.001</td><td>0.001</td><td>1</td></tr></tbody>
+    </table></div></div>
+    <p>1mL＝1cm³、1L＝1,000cm³＝0.001m³です。形と寸法から先に体積を求める場合は<a href="/taiseki/">体積・表面積計算ツール</a>、単位だけを変換する場合は<a href="/tani/">単位変換ツール</a>をご利用ください。</p>
+  </section>
+
+  <section class="howto">
+    <h2>密度・比重・濃度の違い</h2>
+    <ul>
+      <li><strong>密度</strong>は単位体積あたりの質量で、g/cm³やkg/m³などの単位を持ちます。</li>
+      <li><strong>比重</strong>は物質の密度と基準物質の密度の比で、単位はありません。水を基準にする場合、常温付近ではg/cm³の数値とおおむね近くなります。</li>
+      <li><strong>濃度</strong>は溶液に含まれる溶質の割合などを表す量で、密度とは別の概念です。</li>
+    </ul>
+  </section>
+
+  <section class="howto">
+    <h2>主な物質の密度の目安</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>物質</th><th>密度の目安（g/cm³）</th><th>備考</th></tr></thead>
+      <tbody><tr><td>水</td><td>約1.00</td><td>温度により変化</td></tr><tr><td>エタノール</td><td>約0.79</td><td>温度・純度により変化</td></tr><tr><td>アルミニウム</td><td>約2.70</td><td>合金組成で変化</td></tr><tr><td>鉄</td><td>約7.87</td><td>材質で変化</td></tr><tr><td>銅</td><td>約8.96</td><td>純銅の目安</td></tr></tbody>
+    </table></div></div>
+    <p>これらは概算用の目安です。密度は温度、圧力、組成、空隙などで変わるため、設計や品質管理では対象物の仕様値を使ってください。</p>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料</h2>
+    <ul>
+      <li><a href="https://www.mext.go.jp/content/20240620-mxt_syogai02-mext_000032593_04rika.pdf" target="_blank" rel="noopener noreferrer">文部科学省「中学校卒業程度認定試験問題」</a>：密度＝質量÷体積の式とg/cm³の例題。</li>
+      <li><a href="https://unit.aist.go.jp/nmij/library/si-units/" target="_blank" rel="noopener noreferrer">産業技術総合研究所 NMIJ「国際単位系（SI）とは」</a>：密度kg/m³と体積Lの単位。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実験・設計・取引に使う場合は、温度・圧力・組成と必要な測定精度を別途ご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '密度の計算式は？', a: '密度＝質量÷体積です。質量をg、体積をcm³で入れると、密度はg/cm³になります。' },
+    { q: '質量と密度から体積を求めるには？', a: '体積＝質量÷密度で計算します。このツールの「体積を求める」タブで単位の違いも自動変換できます。' },
+    { q: '1g/cm³は何kg/m³ですか？', a: '1g/cm³＝1,000kg/m³です。また1g/cm³＝1g/mL＝1kg/Lです。' },
+    { q: '密度と比重は同じですか？', a: '同じではありません。密度は単位体積あたりの質量で単位があり、比重は基準物質との密度の比で単位がありません。' },
+    { q: '水の密度は常に1g/cm³ですか？', a: '概算では1g/cm³としますが、実際の密度は温度などで変化します。精密な計算では条件に応じた値を使ってください。' },
+    { q: '密度と濃度の違いは？', a: '密度は単位体積あたりの質量、濃度は溶液中の溶質の割合などを表す量です。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .feature-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.feature-chips span{padding:5px 10px;border:1px solid color-mix(in srgb,var(--cat-color) 30%,transparent);border-radius:999px;background:var(--cat-tint);color:var(--cat-color);font-size:.72rem;font-weight:var(--fw-bold)}
+  .density-card{overflow:hidden}.density-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--border-2);background:var(--surface-sub)}.density-tab{padding:15px 8px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--text-muted);font:var(--fw-bold) .8rem var(--font-sans);cursor:pointer}.density-tab.is-active{border-bottom-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}.density-tab:focus-visible{outline:3px solid var(--cat-tint);outline-offset:-3px}
+  .density-panel{padding:24px}.density-panel h2{margin:0 0 18px;font-size:1.05rem}.input-grid{display:grid;grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);gap:12px;align-items:end}.operator{padding:11px 0;text-align:center;color:var(--cat-color);font:var(--fw-bold) 1.4rem var(--font-mono)}.unit-input{display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,.55fr);gap:8px}.unit-input input,.unit-input select{width:100%;min-width:0}.form-error[hidden]{display:none}.form-error{margin:12px 0 0;padding:9px 12px;border-radius:var(--r-sm);background:var(--danger-bg);color:var(--danger);font-size:.78rem}
+  .primary-result{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:20px;padding:20px;border-radius:var(--r-md);background:var(--cat-tint);text-align:center}.primary-result span{color:var(--text-muted);font-size:.76rem;font-weight:var(--fw-bold)}.primary-result strong{color:var(--cat-color);font:var(--fw-bold) clamp(1.8rem,6vw,2.8rem)/1.1 var(--font-mono);overflow-wrap:anywhere}.primary-result small{color:var(--text-muted);font-family:var(--font-mono);overflow-wrap:anywhere}
+  .result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}.result-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.result-grid div{display:flex;flex-direction:column;gap:5px;padding:13px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.result-grid span{color:var(--text-muted);font-size:.72rem}.result-grid strong{font-family:var(--font-mono);font-size:.84rem;overflow-wrap:anywhere}
+  .formula-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.formula-grid div{display:flex;flex-direction:column;gap:5px;padding:15px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.formula-grid span,.formula-grid small{color:var(--text-muted);font-size:.72rem}.formula-grid strong{font-family:var(--font-mono);font-size:.88rem}.source-box a{color:var(--cat-color);font-weight:var(--fw-bold)}
+  @media(max-width:700px){.result-grid,.formula-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.density-tabs{grid-template-columns:1fr}.input-grid{grid-template-columns:1fr}.operator{padding:0}.unit-input{grid-template-columns:minmax(0,1fr) 100px}.result-grid,.result-grid.two,.formula-grid{grid-template-columns:1fr}.density-tab{padding:11px}}
+</style>
+
+<script>
+  import { calculateDensity, calculateMass, calculateVolume } from '../../lib/mitsudo.js';
+  const $=id=>document.getElementById(id); const fmt=value=>Number(value.toPrecision(9)).toLocaleString('ja-JP',{maximumFractionDigits:12}); const val=id=>$(id).value;
+  function renderDensity(){const result=calculateDensity(val('density-mass'),val('density-mass-unit'),val('density-volume'),val('density-volume-unit'));$('density-error').hidden=result!==null;if(!result)return;$('density-main').textContent=`${fmt(result.gPerCm3)} g/cm³`;$('density-kgm3').textContent=`${fmt(result.kgPerM3)} kg/m³`;$('density-gml').textContent=`${fmt(result.gPerCm3)} g/mL`;$('density-kgl').textContent=`${fmt(result.gPerCm3)} kg/L`;$('density-specific').textContent=fmt(result.gPerCm3);$('density-formula').textContent=`${val('density-mass')}${val('density-mass-unit')} ÷ ${val('density-volume')}${$('density-volume-unit').selectedOptions[0].textContent}`}
+  function renderMass(){const result=calculateMass(val('mass-density'),val('mass-density-unit'),val('mass-volume'),val('mass-volume-unit'));$('mass-error').hidden=result!==null;if(!result)return;$('mass-main').textContent=`${fmt(result.grams)} g`;$('mass-kg').textContent=`${fmt(result.kilograms)} kg`;$('mass-mg').textContent=`${fmt(result.grams*1000)} mg`;$('mass-formula').textContent=`${val('mass-density')}${$('mass-density-unit').selectedOptions[0].textContent} × ${val('mass-volume')}${$('mass-volume-unit').selectedOptions[0].textContent}`}
+  function renderVolume(){const result=calculateVolume(val('volume-mass'),val('volume-mass-unit'),val('volume-density'),val('volume-density-unit'));$('volume-error').hidden=result!==null;if(!result)return;$('volume-main').textContent=`${fmt(result.cubicCentimeters)} cm³`;$('volume-liter').textContent=`${fmt(result.liters)} L`;$('volume-ml').textContent=`${fmt(result.cubicCentimeters)} mL`;$('volume-m3').textContent=`${fmt(result.cubicMeters)} m³`;$('volume-formula').textContent=`${val('volume-mass')}${val('volume-mass-unit')} ÷ ${val('volume-density')}${$('volume-density-unit').selectedOptions[0].textContent}`}
+  const renderers={density:renderDensity,mass:renderMass,volume:renderVolume};
+  document.querySelectorAll('.density-tab').forEach(tab=>tab.addEventListener('click',()=>{const mode=tab.dataset.mode;document.querySelectorAll('.density-tab').forEach(item=>{const active=item===tab;item.classList.toggle('is-active',active);item.setAttribute('aria-selected',String(active))});document.querySelectorAll('.density-panel').forEach(panel=>panel.classList.toggle('active',panel.dataset.panel===mode));renderers[mode]()}));
+  ['density-mass','density-mass-unit','density-volume','density-volume-unit'].forEach(id=>$(id).addEventListener('input',renderDensity));['mass-density','mass-density-unit','mass-volume','mass-volume-unit'].forEach(id=>$(id).addEventListener('input',renderMass));['volume-mass','volume-mass-unit','volume-density','volume-density-unit'].forEach(id=>$(id).addEventListener('input',renderVolume));renderDensity();renderMass();renderVolume();
+</script>

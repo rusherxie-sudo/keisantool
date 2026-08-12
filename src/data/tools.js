@@ -236,6 +236,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'mitsudo',
+    nav: '密度・質量・体積',
+    name: '密度・質量・体積計算ツール',
+    icon: '⚖️',
+    category: '生活・日常',
+    short: '密度・質量・体積を単位換算つきで逆算',
+    live: true,
+  },
+  {
     slug: 'shukushaku',
     nav: '縮尺計算',
     name: '縮尺計算ツール',
