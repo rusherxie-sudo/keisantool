@@ -48,6 +48,7 @@
 - [ガソリン代・燃費計算ツール](https://keisantool.com/gasoline/): 通勤・旅行の交通費と実燃費を計算
 - [電気代・消費電力計算ツール](https://keisantool.com/denki-dai/): W・使用時間・単価から電気代を計算
 - [抵抗・オームの法則計算ツール](https://keisantool.com/teikou/): 合成抵抗・電圧・電流・LED抵抗を計算
+- [圧力・単位換算計算ツール](https://keisantool.com/atsuryoku/): Pa・MPa・bar・psi換算と力・面積・水圧を計算
 - [勾配計算ツール](https://keisantool.com/koubai/): 高低差から角度・パーセント・屋根勾配を計算
 - [割り勘計算ツール](https://keisantool.com/warikai/): 端数処理・幹事調整・傾斜配分に対応
 - [産休・育休計算器](https://keisantool.com/saniku/): 休業期間・出産手当金・育休給付金

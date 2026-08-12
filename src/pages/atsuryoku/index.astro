@@ -1,0 +1,143 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { convertPressure, solvePressure, solveHydrostatic } from '../../lib/atsuryoku.js';
+
+const slug = 'atsuryoku';
+const title = '圧力換算・計算ツール｜MPa・kPa・bar・psi・kgf/cm²';
+const description = 'Pa・kPa・MPa・bar・atm・Torr・kgf/cm²・psiを一括換算。力と面積から圧力を逆算し、水深と密度から水圧も無料で計算できます。';
+const pressureExample = solvePressure({ target: 'pressure', force: 1000, area: 100, areaUnit: 'cm²' });
+const waterExample = solveHydrostatic({ target: 'pressure', density: 1000, depth: 10 });
+const jsonld = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: '圧力・単位換算計算ツール',
+  description, applicationCategory: 'UtilityApplication', operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['圧力単位を一括換算', '圧力・力・面積を相互計算', '水深と密度から静水圧を計算'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 圧力計算</div>
+    <h1>圧力・単位換算計算ツール</h1>
+    <p>圧力単位の一括換算、圧力・力・面積の逆算、水深からの水圧計算を入力と同時に行います。</p>
+    <div class="feature-chips" aria-label="対応する計算"><span>Pa・kPa・MPa</span><span>bar・atm</span><span>kgf/cm²・psi</span><span>p＝F/S</span><span>水圧ρgh</span></div>
+  </div>
+
+  <div class="calc-card pressure-card">
+    <div class="pressure-tabs" role="tablist" aria-label="圧力計算の種類">
+      <button type="button" class="pressure-tab is-active" data-mode="convert" role="tab" aria-selected="true">単位換算</button>
+      <button type="button" class="pressure-tab" data-mode="formula" role="tab" aria-selected="false">圧力・力・面積</button>
+      <button type="button" class="pressure-tab" data-mode="water" role="tab" aria-selected="false">水圧・水深</button>
+    </div>
+
+    <section class="calc-panel pressure-panel active" data-panel="convert" role="tabpanel">
+      <h2>圧力の単位を一括換算</h2>
+      <div class="input-grid two-col">
+        <div class="form-group"><label for="convert-value">圧力</label><input id="convert-value" type="number" step="any" value="1" inputmode="decimal" /></div>
+        <div class="form-group"><label for="convert-from">変換元の単位</label><select id="convert-from"><option>Pa</option><option>hPa</option><option>kPa</option><option selected>MPa</option><option>bar</option><option>atm</option><option>Torr</option><option>kgf/cm²</option><option>psi</option></select></div>
+      </div>
+      <p class="form-error" id="convert-error" role="alert" hidden>換算できる数値と単位を入力してください。</p>
+      <div class="conversion-grid" id="conversion-grid" aria-live="polite">
+        {['Pa','hPa','kPa','MPa','bar','atm','Torr','kgf/cm²','psi'].map((unit) => <div><span>{unit}</span><strong data-pressure-unit={unit}>—</strong></div>)}
+      </div>
+    </section>
+
+    <section class="calc-panel pressure-panel" data-panel="formula" role="tabpanel">
+      <h2>圧力・力・面積を相互計算</h2>
+      <div class="form-group target-select"><label for="formula-target">求める値</label><select id="formula-target"><option value="pressure">圧力 p</option><option value="force">力 F</option><option value="area">面積 S</option></select></div>
+      <div class="input-grid">
+        <div class="form-group" id="pressure-field" hidden><label for="formula-pressure">圧力</label><div class="unit-input"><input id="formula-pressure" type="number" min="0" step="any" value="100" inputmode="decimal" /><select id="formula-pressure-unit" aria-label="圧力の単位"><option>Pa</option><option selected>kPa</option><option>MPa</option><option>bar</option><option>kgf/cm²</option><option>psi</option></select></div></div>
+        <div class="form-group" id="force-field"><label for="formula-force">力</label><div class="unit-input"><input id="formula-force" type="number" min="0" step="any" value="1000" inputmode="decimal" /><select id="formula-force-unit" aria-label="力の単位"><option selected>N</option><option>kN</option><option>kgf</option></select></div></div>
+        <div class="form-group" id="area-field"><label for="formula-area">面積</label><div class="unit-input"><input id="formula-area" type="number" min="0" step="any" value="100" inputmode="decimal" /><select id="formula-area-unit" aria-label="面積の単位"><option>mm²</option><option selected>cm²</option><option>m²</option></select></div></div>
+      </div>
+      <p class="form-error" id="formula-error" role="alert" hidden>表示されている2項目に0より大きい数値を入力してください。</p>
+      <div class="primary-result" id="formula-result" aria-live="polite"><span id="formula-label">圧力</span><strong id="formula-main">100 kPa</strong><small id="formula-expression">1000 N ÷ 100 cm²</small></div>
+      <div class="result-grid" id="formula-secondary"><div><span>圧力</span><strong id="pressure-out">100 kPa</strong></div><div><span>力</span><strong id="force-out">1 kN</strong></div><div><span>面積</span><strong id="area-out">100 cm²</strong></div></div>
+    </section>
+
+    <section class="calc-panel pressure-panel" data-panel="water" role="tabpanel">
+      <h2>水深・密度から静水圧を計算</h2>
+      <div class="form-group target-select"><label for="water-target">求める値</label><select id="water-target"><option value="pressure">水圧</option><option value="depth">水深</option></select></div>
+      <div class="input-grid">
+        <div class="form-group"><label for="water-density">液体の密度（kg/m³）</label><input id="water-density" type="number" min="0" step="any" value="1000" inputmode="decimal" /><small>水の概算：1,000</small></div>
+        <div class="form-group" id="depth-field"><label for="water-depth">水深</label><div class="unit-input"><input id="water-depth" type="number" min="0" step="any" value="10" inputmode="decimal" /><select id="water-depth-unit" aria-label="水深の単位"><option selected>m</option><option>cm</option><option>mm</option></select></div></div>
+        <div class="form-group" id="water-pressure-field" hidden><label for="water-pressure">水圧</label><div class="unit-input"><input id="water-pressure" type="number" min="0" step="any" value="98.0665" inputmode="decimal" /><select id="water-pressure-unit" aria-label="水圧の単位"><option>Pa</option><option selected>kPa</option><option>MPa</option><option>bar</option></select></div></div>
+      </div>
+      <p class="mode-note">標準重力加速度9.80665m/s²を使用したゲージ圧です。大気圧は含みません。</p>
+      <p class="form-error" id="water-error" role="alert" hidden>密度と水深または水圧に0より大きい数値を入力してください。</p>
+      <div class="primary-result" id="water-result" aria-live="polite"><span id="water-label">水圧</span><strong id="water-main">98.0665 kPa</strong><small id="water-expression">1000 × 9.80665 × 10m</small></div>
+      <div class="result-grid" id="water-secondary"><div><span>水圧</span><strong id="hydro-pressure-out">98.0665 kPa</strong></div><div><span>水深</span><strong id="hydro-depth-out">10 m</strong></div><div><span>密度</span><strong id="hydro-density-out">1,000 kg/m³</strong></div></div>
+    </section>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>圧力の計算式 p＝F÷S</h2>
+    <div class="formula-grid"><div><span>圧力</span><strong>p＝F÷S</strong><small>力を面積で割る</small></div><div><span>力</span><strong>F＝p×S</strong><small>圧力と面積を掛ける</small></div><div><span>面積</span><strong>S＝F÷p</strong><small>力を圧力で割る</small></div></div>
+    <p>圧力は単位面積あたりに働く力です。1Pa＝1N/m²なので、1,000Nを100cm²（0.01m²）に加えると、1,000÷0.01＝<strong>{convertPressure(pressureExample.pressurePa, 'Pa', 'kPa')}kPa</strong>になります。円形ピストンの面積を直径から求める場合は<a href="/en-menseki/">円の面積・円周計算ツール</a>を利用できます。</p>
+  </section>
+
+  <section class="howto">
+    <h2>Pa・MPa・bar・psi・kgf/cm²の換算</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>基準</th><th>Pa</th><th>kPa</th><th>MPa</th><th>bar</th><th>kgf/cm²</th><th>psi</th></tr></thead>
+      <tbody><tr><td>1 MPa</td><td>1,000,000</td><td>1,000</td><td>1</td><td>10</td><td>約10.1972</td><td>約145.038</td></tr><tr><td>1 kgf/cm²</td><td>98,066.5</td><td>98.0665</td><td>0.0980665</td><td>0.980665</td><td>1</td><td>約14.2233</td></tr></tbody>
+    </table></div></div>
+    <p>国内の取引・証明では法定計量単位を主表示にする必要があります。kgf/cm²やpsiは旧機器・海外仕様との照合用の参考値として扱い、正式な表示や設計ではPa・kPa・MPaなどを確認してください。長さ・重さ・面積など一般単位の換算は<a href="/tani/">単位変換ツール</a>が使えます。</p>
+  </section>
+
+  <section class="howto">
+    <h2>水圧と水深の計算式 p＝ρgh</h2>
+    <p>静止した液体の水圧は、密度ρ、重力加速度g、水深hを使って<strong>p＝ρgh</strong>で求めます。密度1,000kg/m³の水を標準重力加速度9.80665m/s²で計算すると、水深10mでは<strong>{convertPressure(waterExample.pressurePa, 'Pa', 'kPa')}kPa</strong>です。</p>
+    <ul><li>ここで求めるのは液面を0としたゲージ圧で、大気圧を含む絶対圧ではありません。</li><li>配管の流量・速度・摩擦損失・ポンプ性能による動圧は計算していません。</li><li>液体密度は温度・濃度で変化します。質量と体積から密度を求める場合は<a href="/mitsudo/">密度計算ツール</a>をご利用ください。</li></ul>
+  </section>
+
+  <section class="howto source-box">
+    <h2>計算根拠・参考資料</h2>
+    <ul>
+      <li><a href="https://unit.aist.go.jp/nmij/library/si-units/" target="_blank" rel="noopener noreferrer">産業技術総合研究所 NMIJ「国際単位系（SI）とは」</a>：1Pa＝1N/m²、SI接頭語と標準重力加速度。</li>
+      <li><a href="https://unit.aist.go.jp/riem/pv-std/information.html" target="_blank" rel="noopener noreferrer">産業技術総合研究所「圧力換算表」</a>：Pa・Torr・kgf/cm²・psi・atmの換算値。</li>
+      <li><a href="https://www.meti.go.jp/policy/economy/hyojun/techno_infra/51_qanda_tani.html" target="_blank" rel="noopener noreferrer">経済産業省「計量単位に関するQ&amp;A」</a>：圧力表示における法定計量単位の扱い。</li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。設計・施工・安全管理・取引・証明では、機器仕様、温度、絶対圧／ゲージ圧、必要精度と適用法令を専門家または公的資料でご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '1MPaは何kPaですか？', a: '1MPa＝1,000kPa＝1,000,000Paです。また10barに相当します。' },
+    { q: '1kgf/cm²は何MPaですか？', a: '1kgf/cm²＝0.0980665MPa＝98.0665kPaです。' },
+    { q: '圧力の計算式は？', a: '圧力p＝力F÷面積Sです。SI単位ではPa＝N/m²になります。' },
+    { q: '圧力から力を求めるには？', a: '力F＝圧力p×面積Sです。単位をPaとm²へそろえてから掛けます。' },
+    { q: '水深10mの水圧は何MPaですか？', a: '密度1,000kg/m³、標準重力加速度で約0.0980665MPaです。これは大気圧を除いたゲージ圧です。' },
+    { q: 'barとMPaの関係は？', a: '1bar＝0.1MPa、1MPa＝10barです。' },
+    { q: '水圧から配管流量も計算できますか？', a: 'このツールは静水圧のみを扱います。配管流量には管径、長さ、摩擦、局部損失など別の条件が必要です。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .feature-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.feature-chips span{padding:5px 10px;border:1px solid color-mix(in srgb,var(--cat-color) 30%,transparent);border-radius:999px;background:var(--cat-tint);color:var(--cat-color);font-size:.72rem;font-weight:var(--fw-bold)}
+  .pressure-card{overflow:hidden}.pressure-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--border-2);background:var(--surface-sub)}.pressure-tab{padding:15px 8px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--text-muted);font:var(--fw-bold) .8rem var(--font-sans);cursor:pointer}.pressure-tab.is-active{border-bottom-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}.pressure-tab:focus-visible{outline:3px solid var(--cat-tint);outline-offset:-3px}
+  .pressure-panel{padding:24px}.pressure-panel:not(.active){display:none}.pressure-panel h2{margin:0 0 18px;font-size:1.05rem}.input-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:end}.input-grid.two-col{grid-template-columns:repeat(2,minmax(0,280px))}.target-select{max-width:320px;margin-bottom:16px}.unit-input{display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,.6fr);gap:8px}.unit-input input,.unit-input select{width:100%;min-width:0}.form-group small,.mode-note{color:var(--text-muted);font-size:.75rem}.form-error{margin:14px 0 0;padding:10px 12px;border-radius:var(--r-md);background:var(--danger-bg);color:var(--danger);font-size:.8rem}.form-error[hidden],[hidden]{display:none!important}
+  .conversion-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:20px}.conversion-grid div,.result-grid div,.formula-grid div{display:flex;flex-direction:column;gap:5px;padding:13px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.conversion-grid span,.result-grid span,.formula-grid span,.formula-grid small{color:var(--text-muted);font-size:.72rem}.conversion-grid strong,.result-grid strong,.formula-grid strong{font-family:var(--font-mono);overflow-wrap:anywhere}.conversion-grid strong{color:var(--cat-color)}
+  .primary-result{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:20px;padding:20px;border-radius:var(--r-md);background:var(--cat-tint);text-align:center}.primary-result span{color:var(--text-muted);font-size:.76rem;font-weight:var(--fw-bold)}.primary-result strong{color:var(--cat-color);font:var(--fw-bold) clamp(1.8rem,6vw,2.8rem)/1.1 var(--font-mono);overflow-wrap:anywhere}.primary-result small{color:var(--text-muted);font-family:var(--font-mono);overflow-wrap:anywhere}.result-grid,.formula-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}.formula-grid{margin:16px 0}.formula-grid strong{color:var(--cat-color)}.source-box a{color:var(--cat-color);font-weight:var(--fw-bold)}
+  @media(max-width:700px){.input-grid,.conversion-grid,.result-grid,.formula-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.pressure-tab{padding-inline:4px;font-size:.72rem}.pressure-panel{padding:18px}.input-grid,.input-grid.two-col,.conversion-grid,.result-grid,.formula-grid{grid-template-columns:1fr}}
+</style>
+
+<script>
+  import { PRESSURE_UNITS, convertPressure, convertForce, convertArea, solvePressure, solveHydrostatic } from '../../lib/atsuryoku.js';
+  const $=id=>document.getElementById(id);const tracked=new Set();let activeMode='convert',initialized=false;
+  const num=id=>$(id).value.trim()===''?null:Number($(id).value);const fmt=(value,digits=7)=>{if(!Number.isFinite(value))return '—';const abs=Math.abs(value);if(abs!==0&&(abs>=1e12||abs<1e-7))return value.toExponential(6);return Number(value.toPrecision(digits)).toLocaleString('ja-JP',{maximumFractionDigits:12})};
+  const pressureText=pa=>pa>=1e6?`${fmt(pa/1e6)} MPa`:pa>=1e3?`${fmt(pa/1e3)} kPa`:`${fmt(pa)} Pa`;const forceText=n=>n>=1000?`${fmt(n/1000)} kN`:`${fmt(n)} N`;const areaText=m2=>m2<.01?`${fmt(m2*1e4)} cm²`:`${fmt(m2)} m²`;const depthFactor={m:1,cm:.01,mm:.001};
+  function publish(mode,text){if(mode!==activeMode)return;window.setResultShare?.(text);if(initialized&&!tracked.has(mode)){window.trackCalculatorResult?.(mode);tracked.add(mode)}}
+  function renderConvert(){const value=num('convert-value'),from=$('convert-from').value;const pa=convertPressure(value,from,'Pa'),valid=pa!==null;$('convert-error').hidden=valid;$('conversion-grid').hidden=!valid;if(!valid)return;document.querySelectorAll('[data-pressure-unit]').forEach(el=>{const unit=el.dataset.pressureUnit;el.textContent=`${fmt(convertPressure(value,from,unit))} ${unit}`});publish('convert',`圧力換算\n${fmt(value)} ${from}＝${pressureText(pa)}`)}
+  function renderFormula(){const target=$('formula-target').value;$('pressure-field').hidden=target==='pressure';$('force-field').hidden=target==='force';$('area-field').hidden=target==='area';const result=solvePressure({target,pressure:num('formula-pressure'),pressureUnit:$('formula-pressure-unit').value,force:num('formula-force'),forceUnit:$('formula-force-unit').value,area:num('formula-area'),areaUnit:$('formula-area-unit').value});const valid=Boolean(result);$('formula-error').hidden=valid;$('formula-result').hidden=!valid;$('formula-secondary').hidden=!valid;if(!valid)return;const labels={pressure:'圧力',force:'力',area:'面積'};$('formula-label').textContent=labels[target];$('formula-main').textContent=target==='pressure'?pressureText(result.pressurePa):target==='force'?forceText(result.forceN):areaText(result.areaM2);$('pressure-out').textContent=pressureText(result.pressurePa);$('force-out').textContent=forceText(result.forceN);$('area-out').textContent=`${fmt(result.areaM2*1e4)} cm²（${fmt(result.areaM2)} m²）`;$('formula-expression').textContent=target==='pressure'?`${$('formula-force').value} ${$('formula-force-unit').value} ÷ ${$('formula-area').value} ${$('formula-area-unit').value}`:target==='force'?`${$('formula-pressure').value} ${$('formula-pressure-unit').value} × ${$('formula-area').value} ${$('formula-area-unit').value}`:`${$('formula-force').value} ${$('formula-force-unit').value} ÷ ${$('formula-pressure').value} ${$('formula-pressure-unit').value}`;publish('formula',`圧力・力・面積計算\n圧力 ${pressureText(result.pressurePa)}・力 ${forceText(result.forceN)}・面積 ${areaText(result.areaM2)}`)}
+  function renderWater(){const target=$('water-target').value;$('depth-field').hidden=target==='depth';$('water-pressure-field').hidden=target==='pressure';const depth=num('water-depth')*depthFactor[$('water-depth-unit').value];const result=solveHydrostatic({target,density:num('water-density'),depth,pressure:num('water-pressure'),pressureUnit:$('water-pressure-unit').value});const valid=Boolean(result);$('water-error').hidden=valid;$('water-result').hidden=!valid;$('water-secondary').hidden=!valid;if(!valid)return;$('water-label').textContent=target==='pressure'?'水圧':'水深';$('water-main').textContent=target==='pressure'?pressureText(result.pressurePa):`${fmt(result.depthM)} m`;$('hydro-pressure-out').textContent=pressureText(result.pressurePa);$('hydro-depth-out').textContent=`${fmt(result.depthM)} m`;$('hydro-density-out').textContent=`${fmt(result.densityKgM3)} kg/m³`;$('water-expression').textContent=target==='pressure'?`${fmt(result.densityKgM3)} × 9.80665 × ${fmt(result.depthM)}m`:`${pressureText(result.pressurePa)} ÷ (${fmt(result.densityKgM3)} × 9.80665)`;publish('water',`静水圧計算\n水圧 ${pressureText(result.pressurePa)}・水深 ${fmt(result.depthM)}m`)}
+  const renderers={convert:renderConvert,formula:renderFormula,water:renderWater};document.querySelectorAll('.pressure-tab').forEach(tab=>tab.addEventListener('click',()=>{activeMode=tab.dataset.mode;document.querySelectorAll('.pressure-tab').forEach(item=>{const active=item===tab;item.classList.toggle('is-active',active);item.setAttribute('aria-selected',String(active))});document.querySelectorAll('.pressure-panel').forEach(panel=>panel.classList.toggle('active',panel.dataset.panel===activeMode));renderers[activeMode]()}));
+  ['convert-value','convert-from'].forEach(id=>$(id).addEventListener('input',renderConvert));['formula-target','formula-pressure','formula-pressure-unit','formula-force','formula-force-unit','formula-area','formula-area-unit'].forEach(id=>$(id).addEventListener('input',renderFormula));['water-target','water-density','water-depth','water-depth-unit','water-pressure','water-pressure-unit'].forEach(id=>$(id).addEventListener('input',renderWater));renderConvert();renderFormula();renderWater();initialized=true;
+</script>

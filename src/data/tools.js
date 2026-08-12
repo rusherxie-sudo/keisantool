@@ -452,6 +452,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'atsuryoku',
+    nav: '圧力・単位換算',
+    name: '圧力・単位換算計算ツール',
+    icon: '🧭',
+    category: '生活・日常',
+    short: 'Pa・MPa・bar・psi換算と力・面積・水圧を計算',
+    live: true,
+  },
+  {
     slug: 'koubai',
     nav: '勾配計算',
     name: '勾配計算ツール',
