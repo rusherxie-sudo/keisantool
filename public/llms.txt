@@ -49,6 +49,9 @@
 - [電気代・消費電力計算ツール](https://keisantool.com/denki-dai/): W・使用時間・単価から電気代を計算
 - [抵抗・オームの法則計算ツール](https://keisantool.com/teikou/): 合成抵抗・電圧・電流・LED抵抗を計算
 - [圧力・単位換算計算ツール](https://keisantool.com/atsuryoku/): Pa・MPa・bar・psi換算と力・面積・水圧を計算
+- [流量・流速計算ツール](https://keisantool.com/ryuuryou/): 体積・時間と管径・流速から流量を計算・換算
+- [トルク計算・単位換算ツール](https://keisantool.com/toruku/): 力・腕の長さ・回転数・出力からトルクを計算
+- [加速度計算ツール](https://keisantool.com/kasokudo/): 速度変化と時間から加速度・G・移動距離を計算
 - [勾配計算ツール](https://keisantool.com/koubai/): 高低差から角度・パーセント・屋根勾配を計算
 - [割り勘計算ツール](https://keisantool.com/warikai/): 端数処理・幹事調整・傾斜配分に対応
 - [産休・育休計算器](https://keisantool.com/saniku/): 休業期間・出産手当金・育休給付金
