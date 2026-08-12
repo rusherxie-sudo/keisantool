@@ -52,6 +52,10 @@
 - [流量・流速計算ツール](https://keisantool.com/ryuuryou/): 体積・時間と管径・流速から流量を計算・換算
 - [トルク計算・単位換算ツール](https://keisantool.com/toruku/): 力・腕の長さ・回転数・出力からトルクを計算
 - [加速度計算ツール](https://keisantool.com/kasokudo/): 速度変化と時間から加速度・G・移動距離を計算
+- [対角線・斜辺計算ツール](https://keisantool.com/taikakusen/): 長方形・直方体・画面サイズの対角線を計算
+- [ギア比・減速比計算ツール](https://keisantool.com/gear-hi/): 歯数から減速比・回転数・トルク・自転車速度を計算
+- [熱量・比熱計算ツール](https://keisantool.com/netsuryou/): 質量・比熱・温度差と電力・時間から熱量を計算
+- [ばね定数・荷重計算ツール](https://keisantool.com/bane-teisuu/): フックの法則と直列・並列ばねの合成定数を計算
 - [勾配計算ツール](https://keisantool.com/koubai/): 高低差から角度・パーセント・屋根勾配を計算
 - [割り勘計算ツール](https://keisantool.com/warikai/): 端数処理・幹事調整・傾斜配分に対応
 - [産休・育休計算器](https://keisantool.com/saniku/): 休業期間・出産手当金・育休給付金
