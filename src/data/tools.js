@@ -650,6 +650,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'enko',
+    nav: '円弧計算',
+    name: '円弧の長さ・扇形計算ツール',
+    icon: '◔',
+    category: '生活・日常',
+    short: '半径・直径と角度から円弧・弦・扇形を計算',
+    live: true,
+  },
+  {
     slug: 'nenrei-hayami',
     nav: '年齢早見表',
     name: '年齢早見表',

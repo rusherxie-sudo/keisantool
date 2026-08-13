@@ -5,8 +5,8 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'hayasa';
-const title = '速さ・距離・時間計算ツール｜時速・秒速・ペースを自動計算';
-const description = '距離と時間から速さを無料計算。時速km、秒速m、分速、1kmペースを同時表示し、速さ×時間から距離、距離÷速さから所要時間も逆算できます。';
+const title = '時速計算｜距離・時間・速さを自動計算（秒速・所要時間）';
+const description = '距離と時間を入力して時速・秒速・分速をすぐ計算。速さ×時間から距離、距離÷速さから所要時間も逆算でき、ランニングの1kmペースにも対応します。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -22,8 +22,8 @@ const jsonld = {
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 速さ計算</div>
-    <h1>速さ・距離・時間計算ツール</h1>
-    <p>分かっている2つの値を入力すると、速さ・距離・所要時間を自動計算します。</p>
+    <h1>時速・距離・時間の計算ツール</h1>
+    <p>距離と時間から時速を計算。分かっている2つの値を入力すると、速さ・距離・所要時間を自動で求めます。</p>
     <div class="feature-chips" aria-label="対応する計算">
       <span>時速 km/h</span><span>秒速 m/s</span><span>分速 m/分</span><span>1kmペース</span>
     </div>

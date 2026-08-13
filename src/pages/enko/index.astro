@@ -1,0 +1,125 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'enko';
+const title = '円弧の長さ計算｜半径・角度から自動計算（公式つき）';
+const description = '半径または直径と中心角から円弧の長さ、弦の長さ、扇形の面積を無料計算。円弧長から中心角を逆算でき、公式と計算例も確認できます。';
+const jsonld = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: '円弧の長さ・扇形計算ツール', description,
+  applicationCategory: 'EducationalApplication', operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['半径・直径と中心角から円弧の長さを計算', '弦の長さと扇形の面積を同時計算', '円弧の長さから中心角を逆算'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 円弧計算</div>
+    <h1>円弧の長さ・扇形計算ツール</h1>
+    <p>半径（または直径）と中心角から、円弧・弦・扇形をまとめて計算します。</p>
+    <div class="chips"><span>円弧の長さ</span><span>扇形の面積</span><span>弦の長さ</span><span>中心角を逆算</span></div>
+  </div>
+
+  <div class="calc-card arc-card">
+    <div class="tabs" role="tablist" aria-label="計算方法">
+      <button type="button" class="tab active" data-mode="arc" role="tab" aria-selected="true">円弧を計算<small>半径＋角度</small></button>
+      <button type="button" class="tab" data-mode="angle" role="tab" aria-selected="false">中心角を逆算<small>半径＋円弧長</small></button>
+    </div>
+    <section class="calc-panel panel active" data-panel="arc">
+      <h2>半径・中心角から円弧の長さを計算</h2>
+      <div class="input-grid">
+        <label>入力する長さ<select id="arc-radius-type"><option value="radius">半径</option><option value="diameter">直径</option></select></label>
+        <label>半径・直径<input id="arc-radius" type="number" min="0" step="any" value="10" inputmode="decimal"></label>
+        <label>中心角（度）<input id="arc-angle" type="number" min="0" max="360" step="any" value="90" inputmode="decimal"></label>
+        <label>単位<select id="arc-unit"><option>cm</option><option>mm</option><option>m</option><option>in</option></select></label>
+      </div>
+      <p class="error" id="arc-error" hidden>0より大きい長さと、0度より大きく360度以下の中心角を入力してください。</p>
+      <div class="main-result" id="arc-result" aria-live="polite"><span>円弧の長さ</span><strong id="arc-length">15.708 cm</strong><small>2πr × 中心角 ÷ 360</small></div>
+      <div class="result-grid"><div><span>扇形の面積</span><strong id="arc-area">78.5398 cm²</strong></div><div><span>弦の長さ</span><strong id="arc-chord">14.1421 cm</strong></div><div><span>円周</span><strong id="arc-circumference">62.8319 cm</strong></div></div>
+    </section>
+    <section class="calc-panel panel" data-panel="angle" hidden>
+      <h2>半径・円弧の長さから中心角を逆算</h2>
+      <div class="input-grid">
+        <label>入力する長さ<select id="angle-radius-type"><option value="radius">半径</option><option value="diameter">直径</option></select></label>
+        <label>半径・直径<input id="angle-radius" type="number" min="0" step="any" value="10" inputmode="decimal"></label>
+        <label>円弧の長さ<input id="angle-arc" type="number" min="0" step="any" value="15.707963" inputmode="decimal"></label>
+        <label>単位<select id="angle-unit"><option>cm</option><option>mm</option><option>m</option><option>in</option></select></label>
+      </div>
+      <p class="error" id="angle-error" hidden>0より大きい長さを入力してください。円弧の長さは円周以下にします。</p>
+      <div class="main-result" id="angle-result" aria-live="polite"><span>中心角</span><strong id="angle-value">90°</strong><small>円弧の長さ ÷ 半径 × 180 ÷ π</small></div>
+      <div class="result-grid two"><div><span>扇形の面積</span><strong id="angle-area">78.5398 cm²</strong></div><div><span>弦の長さ</span><strong id="angle-chord">14.1421 cm</strong></div></div>
+    </section>
+  </div>
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>円弧の長さ・扇形の面積の公式</h2>
+    <p>半径をr、中心角をθ（度）とすると、円弧の長さは<strong>2πr × θ ÷ 360</strong>、扇形の面積は<strong>πr² × θ ÷ 360</strong>です。半径10cm・中心角90度なら、円弧は5πcm（約15.708cm）、面積は25πcm²（約78.54cm²）になります。</p>
+    <div class="formula-grid"><div><span>円弧の長さ</span><strong>ℓ＝2πrθ÷360</strong></div><div><span>扇形の面積</span><strong>S＝πr²θ÷360</strong></div><div><span>弦の長さ</span><strong>c＝2r sin(θ÷2)</strong></div></div>
+    <p>円全体の面積だけを求める場合は<a href="/en-menseki/">円の面積計算</a>、平方根を含む長さは<a href="/heihoukon/">平方根・ルート計算</a>、長方形や画面の斜めの長さは<a href="/taikakusen/">対角線計算</a>をご利用ください。</p>
+  </section>
+  <section class="howto">
+    <h2>中心角と円弧長を逆算する方法</h2>
+    <p>中心角は<strong>θ＝円弧の長さ÷半径×180÷π</strong>で逆算できます。このツールでは円弧長が円周を超える入力は、1周以内の円弧として成立しないため計算しません。2周以上の回転距離を求めたい場合は、1周の円周に回転数を掛けてください。</p>
+    <div class="source-box"><h3>参考資料</h3><ul><li><a href="https://www.mext.go.jp/a_menu/shotou/new-cs/1387014.htm" rel="nofollow noopener" target="_blank">文部科学省「学習指導要領」</a>：算数・数学の円、中心角、図形の計量に関する学習内容。</li></ul></div>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。加工・施工では測定誤差、材料の厚み、公差、図面の指定をご確認ください。</div>
+  </section>
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '円弧の長さはどう計算しますか？', a: '半径×2×円周率×中心角÷360で計算します。半径10cm・90度なら約15.708cmです。' },
+    { q: '直径しか分からなくても計算できますか？', a: 'はい。入力する長さで「直径」を選ぶと、内部で2分の1にして半径へ変換します。' },
+    { q: '円弧の長さから角度を求められますか？', a: 'はい。「中心角を逆算」タブで半径と円弧の長さを入力してください。' },
+    { q: '弦の長さも計算できますか？', a: 'はい。円弧の両端を直線で結んだ弦の長さも同時に表示します。' },
+    { q: '半円の中心角は何度ですか？', a: '180度です。半円の円弧長は円周の半分、扇形面積は円の面積の半分になります。' },
+    { q: '入力内容は保存されますか？', a: 'いいえ。計算はブラウザ内で行い、入力値をサーバーへ保存しません。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.chips span{padding:5px 10px;border-radius:999px;background:var(--cat-tint);color:var(--cat-color);font-size:.74rem;font-weight:700}.arc-card{overflow:hidden}.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-sub)}.tab{display:flex;flex-direction:column;gap:2px;padding:13px;border:0;border-bottom:3px solid transparent;background:none;color:var(--text-muted);font-weight:700}.tab small{font-size:.66rem;font-weight:400}.tab.active{border-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}.panel{padding:24px}.panel[hidden]{display:none}.panel h2{margin-top:0;font-size:1.05rem}.input-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.input-grid label{display:flex;flex-direction:column;gap:7px;font-size:.78rem;font-weight:700}.input-grid input,.input-grid select{min-height:48px}.error{padding:10px 12px;background:var(--danger-bg);color:var(--danger);border-radius:var(--r-sm)}.main-result{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:20px;padding:20px;border-radius:var(--r-md);background:var(--cat-tint)}.main-result strong{color:var(--cat-color);font:700 clamp(1.8rem,6vw,2.8rem) var(--font-mono)}.main-result small,.main-result span{color:var(--text-muted)}.result-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}.result-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.result-grid div{display:flex;justify-content:space-between;gap:8px;padding:12px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.result-grid span{color:var(--text-muted);font-size:.72rem}.result-grid strong{font-family:var(--font-mono);font-size:.82rem;text-align:right}.formula-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.formula-grid div{display:flex;flex-direction:column;gap:6px;padding:15px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.formula-grid span{color:var(--text-muted);font-size:.72rem}.formula-grid strong{font-family:var(--font-mono)}.source-box a{color:var(--cat-color);font-weight:700}@media(max-width:760px){.input-grid{grid-template-columns:1fr 1fr}.formula-grid{grid-template-columns:1fr}}@media(max-width:480px){.panel{padding:18px}.input-grid,.result-grid,.result-grid.two{grid-template-columns:1fr}.tab{padding:11px 5px;font-size:.78rem}}
+</style>
+
+<script>
+  import { calculateArc, calculateCentralAngle } from '../../lib/enko.js';
+  const $ = (id) => document.getElementById(id);
+  const fmt = (value, digits = 8) => Number(value.toPrecision(digits)).toLocaleString('ja-JP', { maximumFractionDigits: 10 });
+  let mode = 'arc';
+  function updateArc() {
+    const result = calculateArc({ radius: $('arc-radius').value, radiusType: $('arc-radius-type').value, angle: $('arc-angle').value });
+    $('arc-error').hidden = Boolean(result); $('arc-result').hidden = !result; $('arc-result').nextElementSibling.hidden = !result;
+    if (!result) return;
+    const unit = $('arc-unit').value;
+    $('arc-length').textContent = `${fmt(result.arcLength)} ${unit}`;
+    $('arc-area').textContent = `${fmt(result.sectorArea)} ${unit}²`;
+    $('arc-chord').textContent = `${fmt(result.chordLength)} ${unit}`;
+    $('arc-circumference').textContent = `${fmt(result.circumference)} ${unit}`;
+    if (mode === 'arc') window.setResultShare?.(`円弧の長さ計算\n${$('arc-length').textContent}\n中心角：${fmt(result.angle)}°`);
+  }
+  function updateAngle() {
+    const result = calculateCentralAngle({ radius: $('angle-radius').value, radiusType: $('angle-radius-type').value, arcLength: $('angle-arc').value });
+    $('angle-error').hidden = Boolean(result); $('angle-result').hidden = !result; $('angle-result').nextElementSibling.hidden = !result;
+    if (!result) return;
+    const unit = $('angle-unit').value;
+    $('angle-value').textContent = `${fmt(result.angle)}°`;
+    $('angle-area').textContent = `${fmt(result.sectorArea)} ${unit}²`;
+    $('angle-chord').textContent = `${fmt(result.chordLength)} ${unit}`;
+    if (mode === 'angle') window.setResultShare?.(`円弧の中心角計算\n${$('angle-value').textContent}`);
+  }
+  document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => {
+    mode = tab.dataset.mode;
+    document.querySelectorAll('.tab').forEach((item) => { item.classList.toggle('active', item === tab); item.setAttribute('aria-selected', String(item === tab)); });
+    document.querySelectorAll('.panel').forEach((panel) => {
+      const active = panel.dataset.panel === mode;
+      panel.hidden = !active;
+      panel.classList.toggle('active', active);
+    });
+    mode === 'arc' ? updateArc() : updateAngle();
+  }));
+  document.querySelectorAll('.arc-card input,.arc-card select').forEach((input) => input.addEventListener('input', () => { updateArc(); updateAngle(); }));
+  updateArc(); updateAngle();
+</script>
