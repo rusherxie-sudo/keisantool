@@ -15,9 +15,9 @@ const typePages = fortuneTypes().map((item) => ({
   ...yearlyFortunes.find((fortune) => fortune.type === item.type),
 }));
 const title =
-  `六星占術 自動計算【${CURRENT_YEAR}年】｜大殺界・運命星の早見表`;
+  `六星占術自動計算 ${CURRENT_YEAR}【完全無料】大殺界・運命星・早見表`;
 const description =
-  `生年月日から六星占術の運命星・プラス／マイナスと${CURRENT_YEAR}年の大殺界を無料で自動計算。12タイプ早見表と今後9年の運勢も確認できる登録不要の診断ツールです。`;
+  `生年月日を入れるだけで六星占術の運命星・プラス／マイナスと${CURRENT_YEAR}年の大殺界を完全無料で自動計算。12タイプ早見表、今後9年の運勢も登録不要ですぐ確認できます。`;
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -87,7 +87,7 @@ const STAR_PROFILES: StarProfile[] = [
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 六星占術</div>
-    <h1>六星占術 自動計算（{CURRENT_YEAR}年の大殺界・運命星）</h1>
+    <h1>六星占術自動計算 {CURRENT_YEAR}（大殺界・運命星・早見表）</h1>
     <p>生年月日を入力するだけで、運命星（6星）とプラス・マイナス、{CURRENT_YEAR}年の大殺界を自動判定。今後9年の早見表も無料で確認できます。</p>
   </div>
 

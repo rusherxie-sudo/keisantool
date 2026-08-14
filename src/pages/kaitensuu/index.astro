@@ -1,0 +1,108 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'kaitensuu';
+const title = '回転数計算・rpm計算ツール｜モーター・プーリー・切削速度';
+const description = '回数と時間から回転数（rpm・rps）を無料計算。モーターの周波数と極数、プーリー直径、工具径と切削速度からもrpmを自動計算できます。';
+const jsonld = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: '回転数・rpm計算ツール', description,
+  applicationCategory: 'UtilityApplication', operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['回数と時間からrpm・rpsを計算', '周波数・極数・すべりからモーター回転数を計算', 'プーリー径から従動回転数を計算', '工具径と切削速度からrpmを計算'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 回転数計算</div>
+    <h1>回転数・rpm計算ツール</h1>
+    <p>回数と時間、モーター、プーリー、切削条件から1分間の回転数を計算します。</p>
+    <div class="chips"><span>rpm・rps</span><span>モーター極数</span><span>プーリー</span><span>切削速度</span></div>
+  </div>
+
+  <div class="calc-card rpm-card">
+    <div class="tabs" role="tablist" aria-label="計算方法">
+      <button type="button" class="tab active" data-mode="basic" role="tab" aria-selected="true">回数と時間</button>
+      <button type="button" class="tab" data-mode="motor" role="tab" aria-selected="false">モーター</button>
+      <button type="button" class="tab" data-mode="pulley" role="tab" aria-selected="false">プーリー</button>
+      <button type="button" class="tab" data-mode="cutting" role="tab" aria-selected="false">切削速度</button>
+    </div>
+
+    <section class="calc-panel panel active" data-panel="basic">
+      <h2>回数と時間から回転数を計算</h2>
+      <div class="input-grid"><label>回転した回数<input id="b-count" type="number" min="0" step="any" value="120" inputmode="decimal"></label><label>かかった時間<input id="b-time" type="number" min="0" step="any" value="30" inputmode="decimal"></label><label>時間の単位<select id="b-unit"><option value="s">秒</option><option value="min">分</option></select></label></div>
+      <p class="error" id="b-error" hidden>0より大きい回数と時間を入力してください。</p>
+      <div class="main-result" id="b-result" aria-live="polite"><span>回転数</span><strong id="b-rpm">240 rpm</strong><small id="b-sub">4 rps・1回転 0.25秒</small></div>
+    </section>
+
+    <section class="calc-panel panel" data-panel="motor" hidden>
+      <h2>モーターの周波数・極数から回転数を計算</h2>
+      <div class="input-grid"><label>周波数（Hz）<input id="m-hz" type="number" min="0" step="any" value="50"></label><label>極数<select id="m-poles"><option>2</option><option selected>4</option><option>6</option><option>8</option><option>10</option><option>12</option></select></label><label>すべり（%）<input id="m-slip" type="number" min="0" max="99.99" step="any" value="4"></label></div>
+      <p class="error" id="m-error" hidden>正の周波数、偶数の極数、0%以上100%未満のすべりを入力してください。</p>
+      <div class="main-result" id="m-result" aria-live="polite"><span>実回転数の目安</span><strong id="m-rpm">1,440 rpm</strong><small id="m-sub">同期速度 1,500 rpm</small></div>
+      <p class="note">誘導電動機の理論値です。実際のすべりは負荷や機種で変わるため、銘板・仕様書を優先してください。</p>
+    </section>
+
+    <section class="calc-panel panel" data-panel="pulley" hidden>
+      <h2>プーリー直径から従動回転数を計算</h2>
+      <div class="input-grid"><label>駆動側回転数（rpm）<input id="p-rpm" type="number" min="0" step="any" value="1500"></label><label>駆動側直径（mm）<input id="p-drive" type="number" min="0" step="any" value="100"></label><label>従動側直径（mm）<input id="p-driven" type="number" min="0" step="any" value="200"></label></div>
+      <p class="error" id="p-error" hidden>すべて0より大きい値を入力してください。</p>
+      <div class="main-result" id="p-result" aria-live="polite"><span>従動側回転数</span><strong id="p-output">750 rpm</strong><small id="p-sub">速度比 2 : 1</small></div>
+      <p class="note">ベルトの厚み・伸び・滑りを含まない理論値です。直径は両方とも同じ単位で入力してください。</p>
+    </section>
+
+    <section class="calc-panel panel" data-panel="cutting" hidden>
+      <h2>切削速度と工具径から回転数を計算</h2>
+      <div class="input-grid"><label>求める値<select id="c-target"><option value="rpm">回転数</option><option value="speed">切削速度</option></select></label><label>工具・工作物の直径（mm）<input id="c-diameter" type="number" min="0" step="any" value="10"></label><label id="c-speed-wrap">切削速度（m/min）<input id="c-speed" type="number" min="0" step="any" value="100"></label><label id="c-rpm-wrap" hidden>回転数（rpm）<input id="c-rpm" type="number" min="0" step="any" value="1000"></label></div>
+      <p class="error" id="c-error" hidden>直径と、表示中の入力値に0より大きい数値を入力してください。</p>
+      <div class="main-result" id="c-result" aria-live="polite"><span id="c-label">回転数</span><strong id="c-output">3,183.0989 rpm</strong><small id="c-sub">直径 10 mm・切削速度 100 m/min</small></div>
+      <p class="note">切削条件は材質、工具、剛性、冷却方法で変わります。工具メーカーの推奨条件を優先してください。</p>
+    </section>
+  </div>
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>回転数（rpm）の計算式</h2>
+    <p><strong>rpm＝回転した回数÷秒数×60</strong>です。120回転に30秒かかった場合は120÷30×60＝240rpmです。rpsは1秒当たりの回転数、rpmは1分当たりの回転数なので、1rps＝60rpmになります。</p>
+    <div class="formula-grid"><div><span>基本</span><strong>rpm＝回数÷秒×60</strong></div><div><span>モーター同期速度</span><strong>N＝120f÷極数</strong></div><div><span>プーリー</span><strong>N₂＝N₁D₁÷D₂</strong></div><div><span>切削速度</span><strong>V＝πDn÷1000</strong></div></div>
+    <p>出力とrpmから軸トルクを求める場合は<a href="/toruku/">トルク計算ツール</a>、歯数から出力rpmを求める場合は<a href="/gear-hi/">ギア比・減速比計算</a>、回転に伴う円周や円弧の距離は<a href="/enko/">円弧の長さ計算</a>をご利用ください。</p>
+  </section>
+  <section class="howto source-box">
+    <h2>計算範囲と参考資料</h2>
+    <ul><li><a href="https://www.nmri.go.jp/archives/eng/khirata/list/others/design2007.pdf" target="_blank" rel="noopener noreferrer">海上技術安全研究所「強度設計」</a>：回転数、角速度、動力、トルクの関係。</li><li><a href="https://www.tetras.uitec.jeed.go.jp/files/kankoubutu/i-109-05.pdf" target="_blank" rel="noopener noreferrer">職業能力開発総合大学校「基本的な機械要素演習」</a>：回転伝達と速度比。</li></ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。機械加工、モーター・ベルト伝動の設計や安全判断では、メーカー仕様、許容回転数、負荷、効率、安全率を必ず確認してください。</div>
+  </section>
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '回転数rpmはどう計算しますか？', a: '回転した回数を秒数で割り、60を掛けます。120回転を30秒で行う場合は240rpmです。' },
+    { q: 'rpmとrpsの違いは？', a: 'rpmは1分当たり、rpsは1秒当たりの回転数です。1rps＝60rpmです。' },
+    { q: '50Hz・4極モーターの回転数は？', a: '同期速度は120×50÷4＝1,500rpmです。誘導電動機の実回転数は、すべりの分だけ低くなります。' },
+    { q: 'プーリーを大きくすると回転数はどうなりますか？', a: '従動側プーリーの直径を大きくすると、従動側の回転数は下がります。滑りを無視した理論値です。' },
+    { q: '切削速度から回転数を求める式は？', a: '直径D（mm）、切削速度V（m/min）なら、回転数n＝1000V÷（πD）です。' },
+    { q: '入力値は保存されますか？', a: 'いいえ。計算はブラウザ内だけで行い、入力値をサーバーへ保存しません。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.chips span{padding:5px 10px;border-radius:999px;background:var(--cat-tint);color:var(--cat-color);font-size:.74rem;font-weight:700}.rpm-card{overflow:hidden}.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface-sub)}.tab{padding:14px 6px;border:0;border-bottom:3px solid transparent;background:none;color:var(--text-muted);font-weight:700}.tab.active{border-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}.panel{padding:24px}.panel[hidden]{display:none}.panel h2{margin-top:0;font-size:1.05rem}.input-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.input-grid label{display:flex;flex-direction:column;gap:7px;font-size:.78rem;font-weight:700}.input-grid label[hidden]{display:none!important}.input-grid input,.input-grid select{min-height:48px}.error{padding:10px 12px;background:var(--danger-bg);color:var(--danger);border-radius:var(--r-sm)}.main-result{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:20px;padding:20px;border-radius:var(--r-md);background:var(--cat-tint)}.main-result strong{color:var(--cat-color);font:700 clamp(1.7rem,6vw,2.7rem) var(--font-mono)}.main-result small,.main-result span,.note{color:var(--text-muted)}.note{font-size:.76rem;line-height:1.7}.formula-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}.formula-grid div{display:flex;flex-direction:column;gap:6px;padding:15px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.formula-grid span{color:var(--text-muted);font-size:.72rem}.formula-grid strong{font-family:var(--font-mono);font-size:.85rem}.source-box a{color:var(--cat-color);font-weight:700}@media(max-width:760px){.tabs{grid-template-columns:1fr 1fr}.input-grid{grid-template-columns:1fr 1fr}.formula-grid{grid-template-columns:1fr 1fr}}@media(max-width:480px){.panel{padding:18px}.input-grid,.formula-grid{grid-template-columns:1fr}.tab{font-size:.76rem}}
+</style>
+
+<script>
+  import { calculateRpm, calculateMotorSpeed, calculatePulleySpeed, calculateCuttingSpeed } from '../../lib/kaitensuu.js';
+  const $ = (id) => document.getElementById(id);
+  const fmt = (value, digits = 9) => Number(value.toPrecision(digits)).toLocaleString('ja-JP', { maximumFractionDigits: 10 });
+  let mode = 'basic';
+  function basic() { const r=calculateRpm({rotations:$('b-count').value,time:$('b-time').value,timeUnit:$('b-unit').value}); $('b-error').hidden=!!r; $('b-result').hidden=!r; if(!r)return; $('b-rpm').textContent=`${fmt(r.rpm)} rpm`; $('b-sub').textContent=`${fmt(r.rps)} rps・1回転 ${fmt(r.periodSeconds)}秒`; if(mode==='basic')window.setResultShare?.(`回転数計算\n${$('b-rpm').textContent}`); }
+  function motor() { const r=calculateMotorSpeed({frequency:$('m-hz').value,poles:$('m-poles').value,slip:$('m-slip').value}); $('m-error').hidden=!!r; $('m-result').hidden=!r; if(!r)return; $('m-rpm').textContent=`${fmt(r.actualRpm)} rpm`; $('m-sub').textContent=`同期速度 ${fmt(r.synchronousRpm)} rpm`; if(mode==='motor')window.setResultShare?.(`モーター回転数\n${$('m-rpm').textContent}`); }
+  function pulley() { const r=calculatePulleySpeed({driverRpm:$('p-rpm').value,driverDiameter:$('p-drive').value,drivenDiameter:$('p-driven').value}); $('p-error').hidden=!!r; $('p-result').hidden=!r; if(!r)return; $('p-output').textContent=`${fmt(r.drivenRpm)} rpm`; $('p-sub').textContent=`速度比 ${fmt(r.speedRatio)} : 1`; if(mode==='pulley')window.setResultShare?.(`プーリー回転数\n${$('p-output').textContent}`); }
+  function cutting() { const target=$('c-target').value; $('c-speed-wrap').hidden=target==='speed'; $('c-rpm-wrap').hidden=target==='rpm'; const r=calculateCuttingSpeed({target,diameterMm:$('c-diameter').value,rpm:$('c-rpm').value,cuttingSpeedMpm:$('c-speed').value}); $('c-error').hidden=!!r; $('c-result').hidden=!r; if(!r)return; const isRpm=target==='rpm'; $('c-label').textContent=isRpm?'回転数':'切削速度'; $('c-output').textContent=isRpm?`${fmt(r.rpm)} rpm`:`${fmt(r.cuttingSpeedMpm)} m/min`; $('c-sub').textContent=`直径 ${fmt(Number($('c-diameter').value))} mm・${isRpm?`切削速度 ${fmt(r.cuttingSpeedMpm)} m/min`:`回転数 ${fmt(r.rpm)} rpm`}`; if(mode==='cutting')window.setResultShare?.(`切削回転数計算\n${$('c-output').textContent}`); }
+  const updates={basic,motor,pulley,cutting};
+  document.querySelectorAll('.tab').forEach((tab)=>tab.addEventListener('click',()=>{mode=tab.dataset.mode;document.querySelectorAll('.tab').forEach((item)=>{item.classList.toggle('active',item===tab);item.setAttribute('aria-selected',String(item===tab));});document.querySelectorAll('.panel').forEach((panel)=>{const active=panel.dataset.panel===mode;panel.hidden=!active;panel.classList.toggle('active',active);});updates[mode]();}));
+  document.querySelectorAll('.rpm-card input,.rpm-card select').forEach((input)=>input.addEventListener('input',()=>{basic();motor();pulley();cutting();}));
+  basic(); motor(); pulley(); cutting();
+</script>

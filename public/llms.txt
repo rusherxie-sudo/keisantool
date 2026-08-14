@@ -68,6 +68,7 @@
 - [有給休暇付与日数計算ツール](https://keisantool.com/yukyu-nissu/): 正社員・パートの法定付与日数と次回付与日
 - [時間計算ツール](https://keisantool.com/jikan/): 時間差・勤務時間・足し算を自動計算
 - [速さ・距離・時間計算ツール](https://keisantool.com/hayasa/): 距離と時間から時速・秒速・ペースを計算
+- [回転数・rpm計算ツール](https://keisantool.com/kaitensuu/): 回数と時間・モーター・プーリー・切削速度からrpmを計算
 - [円弧の長さ・扇形計算ツール](https://keisantool.com/enko/): 半径・直径と角度から円弧・弦・扇形を計算
 - [年齢早見表](https://keisantool.com/nenrei-hayami/): 西暦・和暦・満年齢・数え年・干支
 - [学年早見表](https://keisantool.com/gakunen-hayami/): 生まれ年度から小中高の学年がすぐわかる

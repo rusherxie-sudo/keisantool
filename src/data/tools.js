@@ -650,6 +650,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'kaitensuu',
+    nav: '回転数計算',
+    name: '回転数・rpm計算ツール',
+    icon: '↻',
+    category: '生活・日常',
+    short: '回数と時間・モーター・プーリー・切削速度からrpmを計算',
+    live: true,
+  },
+  {
     slug: 'enko',
     nav: '円弧計算',
     name: '円弧の長さ・扇形計算ツール',
