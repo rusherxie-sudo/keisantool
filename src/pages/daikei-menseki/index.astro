@@ -1,0 +1,144 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'daikei-menseki';
+const title = '台形の面積計算｜上底・下底・高さから自動計算・逆算';
+const description = '台形の面積を無料で自動計算。上底・下底・高さから面積を求めるほか、面積から高さ・上底・下底を逆算できます。公式、計算例、中線も掲載。';
+const jsonld = {
+  '@context': 'https://schema.org', '@type': 'WebApplication', name: '台形の面積計算ツール', description,
+  applicationCategory: 'EducationalApplication', operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['上底・下底・高さから台形の面積を計算', '面積から高さ・上底・下底を逆算', '台形の中線を計算'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 台形の面積</div>
+    <h1>台形の面積計算ツール</h1>
+    <p>上底・下底・高さから面積を計算します。面積から分からない1つの値を逆算することもできます。</p>
+  </div>
+
+  <div class="calc-card" id="trapezoid-tool">
+    <div class="form-group">
+      <label for="target">求める値</label>
+      <select id="target">
+        <option value="area">面積</option><option value="height">高さ</option>
+        <option value="topBase">上底</option><option value="bottomBase">下底</option>
+      </select>
+    </div>
+    <div class="input-grid">
+      <div class="form-group" data-field="topBase"><label for="top-base">上底</label><input id="top-base" type="number" min="0" step="any" value="8" inputmode="decimal" /></div>
+      <div class="form-group" data-field="bottomBase"><label for="bottom-base">下底</label><input id="bottom-base" type="number" min="0" step="any" value="14" inputmode="decimal" /></div>
+      <div class="form-group" data-field="height"><label for="height">高さ</label><input id="height" type="number" min="0" step="any" value="6" inputmode="decimal" /></div>
+      <div class="form-group" data-field="area" hidden><label for="area">面積</label><input id="area" type="number" min="0" step="any" value="66" inputmode="decimal" /></div>
+    </div>
+    <p class="error" id="error" role="alert" hidden>0より大きい値を入力してください。逆算する辺の長さも0より大きくなる必要があります。</p>
+    <div class="result" id="result" aria-live="polite">
+      <span id="result-label">台形の面積</span><strong id="result-value">66</strong>
+      <small id="formula">(8 ＋ 14) × 6 ÷ 2</small>
+    </div>
+    <div class="sub-result"><span>中線の長さ</span><strong id="midline">11</strong></div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>台形の面積の求め方・公式</h2>
+    <p>台形は、向かい合う一組の辺が平行な四角形です。平行な2辺を上底・下底、それらに垂直な距離を高さとして、面積を次の公式で求めます。</p>
+    <div class="formula-box"><strong>台形の面積 ＝（上底 ＋ 下底）× 高さ ÷ 2</strong></div>
+    <p>上底8、下底14、高さ6なら、（8＋14）×6÷2＝<strong>66</strong>です。辺をcmで入力した場合、面積の単位はcm²になります。</p>
+  </section>
+
+  <section class="howto">
+    <h2>面積から高さ・上底・下底を逆算する公式</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>求める値</th><th>公式</th></tr></thead>
+      <tbody>
+        <tr><td>高さ</td><td>面積 × 2 ÷（上底 ＋ 下底）</td></tr>
+        <tr><td>上底</td><td>面積 × 2 ÷ 高さ − 下底</td></tr>
+        <tr><td>下底</td><td>面積 × 2 ÷ 高さ − 上底</td></tr>
+      </tbody>
+    </table></div></div>
+    <p>「求める値」を切り替えると、その値の入力欄が面積欄に入れ替わります。逆算結果が0以下になる組み合わせは、実際の台形を作れないため表示しません。</p>
+  </section>
+
+  <section class="howto">
+    <h2>台形の中線とは</h2>
+    <p>両脚の中点を結んだ線分を中線といい、長さは<strong>（上底＋下底）÷2</strong>です。したがって、台形の面積は「中線×高さ」と考えることもできます。</p>
+    <p>三角形は<a href="/sankakkei-menseki/">三角形の面積計算</a>、円は<a href="/en-menseki/">円の面積・円周計算</a>、立体は<a href="/taiseki/">体積・表面積計算</a>をご利用ください。</p>
+  </section>
+
+  <section class="howto source-box">
+    <h2>参考資料と注意点</h2>
+    <p><a href="https://www.mext.go.jp/a_menu/shotou/new-cs/1387014.htm" target="_blank" rel="noopener noreferrer">文部科学省「小学校学習指導要領解説」</a>の算数編で扱われる平面図形の内容を参考にしています。</p>
+    <ul><li>上底・下底・高さは同じ長さの単位にそろえてください。</li><li>画面では読みやすい桁数に丸めますが、内部計算では丸めずに計算します。</li></ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。設計・測量など正確性が必要な用途では、条件と単位を必ず確認してください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '台形の面積の公式は？', a: '（上底＋下底）×高さ÷2です。上底と下底は平行な2辺、高さはその2辺に垂直な距離です。' },
+    { q: '台形の高さを面積から逆算できますか？', a: 'はい。面積×2÷（上底＋下底）で求められます。このツールでは「求める値」を高さに切り替えて計算できます。' },
+    { q: '斜めの辺を高さとして入力してもよいですか？', a: 'いいえ。高さは上底と下底に対して垂直な距離です。斜めの脚の長さとは異なります。' },
+    { q: '計算結果の単位は何ですか？', a: '上底・下底・高さをcmで入力すればcm²、mで入力すればm²です。入力する長さの単位をそろえてください。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  .input-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+  [data-field][hidden], .error[hidden], .result[hidden], .sub-result[hidden] { display:none; }
+  .error { margin:12px 0 0; padding:10px 12px; border-radius:var(--r-sm); background:var(--danger-bg); color:var(--danger); font-size:.8rem; }
+  .result { display:flex; flex-direction:column; align-items:center; gap:5px; margin-top:20px; padding:22px; border-radius:var(--r-md); background:var(--cat-tint); text-align:center; }
+  .result span { color:var(--text-muted); font-size:.78rem; font-weight:var(--fw-bold); }
+  .result strong { color:var(--cat-color); font:var(--fw-bold) 2.7rem/1.1 var(--font-mono); }
+  .result small { color:var(--text-muted); font-family:var(--font-mono); }
+  .sub-result { display:flex; justify-content:space-between; margin-top:10px; padding:12px 14px; border:1px solid var(--border-2); border-radius:var(--r-md); background:var(--surface-sub); }
+  .sub-result span { color:var(--text-muted); font-size:.78rem; }
+  .sub-result strong { font-family:var(--font-mono); }
+  .formula-box { margin:16px 0; padding:18px; border-radius:var(--r-md); background:var(--cat-tint); text-align:center; }
+  .formula-box strong { color:var(--cat-color); font-family:var(--font-mono); }
+  .source-box a { color:var(--cat-color); font-weight:var(--fw-bold); }
+  @media (max-width:520px) { .input-grid { grid-template-columns:1fr; gap:8px; } }
+</style>
+
+<script>
+  import { solveTrapezoid } from '../../lib/daikei-menseki.js';
+  const $ = (id) => document.getElementById(id);
+  const labels = { area: '台形の面積', height: '高さ', topBase: '上底', bottomBase: '下底' };
+  const inputs = { topBase: $('top-base'), bottomBase: $('bottom-base'), height: $('height'), area: $('area') };
+  const fields = Object.fromEntries([...document.querySelectorAll('[data-field]')].map((el) => [el.dataset.field, el]));
+
+  function format(value) {
+    if (!Number.isFinite(value)) return '―';
+    return Number(value.toFixed(10)).toLocaleString('ja-JP', { maximumFractionDigits: 10 });
+  }
+
+  function render() {
+    const target = $('target').value;
+    Object.entries(fields).forEach(([name, field]) => { field.hidden = name === target; });
+    const result = solveTrapezoid({ target, ...Object.fromEntries(Object.entries(inputs).map(([name, input]) => [name, input.value])) });
+    $('error').hidden = Boolean(result);
+    $('result').hidden = !result;
+    document.querySelector('.sub-result').hidden = !result;
+    if (!result) return window.hideResultShare?.();
+    const value = result[target];
+    $('result-label').textContent = labels[target];
+    $('result-value').textContent = format(value);
+    $('midline').textContent = format(result.midline);
+    $('formula').textContent = target === 'area'
+      ? `(${format(result.topBase)} ＋ ${format(result.bottomBase)}) × ${format(result.height)} ÷ 2`
+      : `面積 ${format(result.area)} から逆算`;
+    window.setResultShare?.(`台形の面積計算\n${labels[target]} ${format(value)}\n中線 ${format(result.midline)}`);
+    window.trackCalculatorResult?.(target);
+  }
+
+  $('target').addEventListener('change', render);
+  Object.values(inputs).forEach((input) => input.addEventListener('input', render));
+  render();
+</script>

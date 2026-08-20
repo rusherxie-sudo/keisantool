@@ -218,6 +218,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'daikei-menseki',
+    nav: '台形の面積',
+    name: '台形の面積計算ツール',
+    icon: '⏢',
+    category: '生活・日常',
+    short: '上底・下底・高さから面積を計算・逆算',
+    live: true,
+  },
+  {
     slug: 'en-menseki',
     nav: '円の面積・円周',
     name: '円の面積・円周計算ツール',

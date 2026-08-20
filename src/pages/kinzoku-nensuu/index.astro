@@ -6,9 +6,15 @@ import ResultShare from '../../components/ResultShare.astro';
 import Faq from '../../components/Faq.astro';
 
 const slug = 'kinzoku-nensuu';
-const title = '勤続年数計算ツール｜入社日から何年何ヶ月・何年目か計算';
+const title = '入社何年目・勤続年数計算｜入社日から何年何ヶ月を自動計算';
 const description =
-  '入社日と基準日から勤続年数を何年何ヶ月何日で自動計算。現在何年目か、経過日数、次の入社周年、退職所得用の勤続年数、有給休暇の付与時期も無料で確認できます。';
+  '入社して何年目か、勤続年数が何年何ヶ月何日かを入社日から自動計算。入社年別の早見表、経過日数、次の周年、退職所得用年数、有給休暇の時期も確認できます。';
+const jstNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+const tableYear = jstNow.getMonth() < 3 ? jstNow.getFullYear() - 1 : jstNow.getFullYear();
+const aprilEntryRows = Array.from({ length: 17 }, (_, index) => {
+  const joinYear = tableYear - index;
+  return { joinYear, serviceYear: tableYear - joinYear + 1, completedYears: tableYear - joinYear };
+});
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -23,7 +29,7 @@ const jsonld = {
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 勤続年数</div>
-    <h1>勤続年数計算ツール</h1>
+    <h1>入社何年目・勤続年数計算ツール</h1>
     <p>入社日から在籍期間、現在何年目か、退職所得用の勤続年数と有給休暇の目安をまとめて計算します。</p>
     <div class="feature-chips" aria-label="計算できる項目">
       <span>何年何ヶ月何日</span><span>現在何年目</span><span>退職所得用</span><span>有給付与の目安</span>
@@ -94,6 +100,17 @@ const jsonld = {
     <h2>勤続年数の計算方法</h2>
     <p>入社日と基準日を入力すると、実際の暦に沿って<strong>何年何ヶ月何日</strong>かを計算します。1年を365日、1ヶ月を30日として近似しないため、月末やうるう年も日付どおりに扱います。</p>
     <p>たとえば2020年4月1日入社で2026年4月1日を基準日にすると、勤続期間は6年0ヶ月0日、現在は<strong>7年目</strong>です。2026年3月31日時点なら5年11ヶ月30日で、現在6年目となります。</p>
+
+    <h2>{tableYear}年4月1日時点｜入社年別「何年目」早見表</h2>
+    <p>毎年4月1日入社の場合の早見表です。同じ入社年でも4月2日以降に入社した方は周年前後で年目が異なるため、上の計算機に実際の入社日と基準日を入力してください。</p>
+    <div class="table-scroll service-year-table">
+      <table>
+        <thead><tr><th>入社年月</th><th>{tableYear}年4月1日現在</th><th>完了した勤続年数</th></tr></thead>
+        <tbody>{aprilEntryRows.map((row) => (
+          <tr><td>{row.joinYear}年4月入社</td><td><strong>{row.serviceYear}年目</strong></td><td>{row.completedYears}年</td></tr>
+        ))}</tbody>
+      </table>
+    </div>
 
     <h2>「勤続6年」と「7年目」の違い</h2>
     <p>「勤続6年」は完了した期間、「7年目」は入社から数えて現在進行中の年を表します。本ツールの「現在○年目」は入社日を1年目とし、入社周年を迎えるたびに1を加えます。履歴書や社内書類で指定の数え方がある場合は、その様式を優先してください。</p>
