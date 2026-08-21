@@ -17,6 +17,7 @@
 - [年末調整計算器](https://keisantool.com/nematsu/): 源泉徴収差額調整
 - [社会保険料計算器](https://keisantool.com/shakaihoken/): 健康保険・厚生年金・雇用保険
 - [住民税計算シミュレーション](https://keisantool.com/juminzei/): 令和8年度・年収から年額と月額を概算
+- [失業手当計算シミュレーション](https://keisantool.com/shitsugyou-teate/): 基本手当日額・28日分・総支給額を概算
 
 ## 健康・身体
 

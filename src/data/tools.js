@@ -128,6 +128,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'shitsugyou-teate',
+    nav: '失業手当',
+    name: '失業手当計算シミュレーション',
+    icon: '💼',
+    category: '税金・お金',
+    short: '基本手当日額・28日分・総支給額を概算',
+    live: true,
+  },
+  {
     slug: 'bmi',
     nav: 'BMI',
     name: 'BMI計算ツール（女性・男性）',

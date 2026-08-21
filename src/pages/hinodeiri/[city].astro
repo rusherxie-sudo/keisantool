@@ -3,7 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import Faq from '../../components/Faq.astro';
-import { listCities, cityYearTable } from '../../lib/hinodeiri.js';
+import { listCities, cityYearTable, hinodeIri } from '../../lib/hinodeiri.js';
 
 export function getStaticPaths() {
   return listCities().map((city) => ({ params: { city: city.id }, props: { city } }));
@@ -16,6 +16,11 @@ const rows = cityYearTable(YEAR, city.id);
 const otherCities = cities.filter((item) => item.id !== city.id);
 const january = rows.find((row) => row.month === 1 && row.day === 15);
 const july = rows.find((row) => row.month === 7 && row.day === 15);
+const tokyoToday = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit',
+}).format(new Date());
+const [todayYear, todayMonth, todayDay] = tokyoToday.split('-').map(Number);
+const todayResult = hinodeIri(todayYear, todayMonth, todayDay, city.id);
 const slug = `hinodeiri/${city.id}`;
 const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
 const title = `${city.name}の日の出・日の入り時刻【${YEAR}年】指定日計算・年間早見表 | 計算ツール`;
@@ -67,21 +72,21 @@ const faqItems = [
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/hinodeiri/">日の出・日の入り</a> ／ {city.name}</div>
     <h1>{city.name}の日の出・日の入り時刻【{YEAR}年】</h1>
-    <p>{city.name}の指定日の日の出、日の入り、昼の長さを計算できます。下の年間早見表では、{YEAR}年の季節による変化も一覧で確認できます。</p>
+    <p>{city.name}の指定日の日の出、日の入り、昼の長さを計算できます。本日（{todayMonth}月{todayDay}日）は日の出<strong>{todayResult.sunrise}</strong>、日の入り<strong>{todayResult.sunset}</strong>です。</p>
   </div>
 
   <div class="calc-card city-calc" data-city-id={city.id}>
     <div class="form-group">
       <label for="hd-date">日付</label>
-      <input type="date" id="hd-date" />
+      <input type="date" id="hd-date" value={tokyoToday} />
     </div>
     <div class="result-box" id="hd-result" aria-live="polite">
       <div class="result-label" id="hd-city-label">{city.name}の日の出・日の入り</div>
-      <div class="result-main" id="hd-main">―</div>
+      <div class="result-main" id="hd-main">{todayResult.sunrise} 〜 {todayResult.sunset}</div>
       <div class="result-rows">
-        <div class="result-row"><span class="label">日の出</span><span class="value" id="hd-sunrise">―</span></div>
-        <div class="result-row"><span class="label">日の入り</span><span class="value" id="hd-sunset">―</span></div>
-        <div class="result-row"><span class="label">昼の長さ</span><span class="value" id="hd-length">―</span></div>
+        <div class="result-row"><span class="label">日の出</span><span class="value" id="hd-sunrise">{todayResult.sunrise}</span></div>
+        <div class="result-row"><span class="label">日の入り</span><span class="value" id="hd-sunset">{todayResult.sunset}</span></div>
+        <div class="result-row"><span class="label">昼の長さ</span><span class="value" id="hd-length">{lengthLabel(todayResult.dayLengthMinutes)}</span></div>
       </div>
     </div>
     <p class="switch-city"><a href="/hinodeiri/">ほかの都市・日付から計算する →</a></p>

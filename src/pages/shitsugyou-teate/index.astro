@@ -1,0 +1,162 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import Faq from '../../components/Faq.astro';
+
+const slug = 'shitsugyou-teate';
+const title = '失業手当計算シミュレーション【2026年】いくらもらえる？ | 計算ツール';
+const description = '月給・年齢・雇用保険の加入年数・離職理由から、2026年8月以降の失業手当（基本手当日額）、28日分、所定給付日数、総支給額を無料で概算します。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '失業手当計算シミュレーション',
+  description,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: ['基本手当日額を計算', '28日分の支給額を計算', '所定給付日数を判定', '総支給額を概算'],
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 失業手当</div>
+    <h1>失業手当計算シミュレーション【2026年】</h1>
+    <p>離職前の月給から、失業手当が1日・28日・給付期間合計でいくらになるかを概算します。令和8年8月1日からの基準に対応。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="form-group">
+      <label for="st-salary">離職前6か月の平均月給（円）</label>
+      <input type="number" id="st-salary" inputmode="numeric" min="1" placeholder="例：300000" />
+      <small>賞与を除き、毎月決まって支払われた賃金の平均を入力</small>
+    </div>
+    <div class="field-grid">
+      <div class="form-group">
+        <label for="st-age">離職時の年齢</label>
+        <input type="number" id="st-age" inputmode="numeric" min="18" max="64" placeholder="例：35" />
+      </div>
+      <div class="form-group">
+        <label for="st-years">雇用保険の加入年数</label>
+        <input type="number" id="st-years" inputmode="decimal" min="0" step="0.5" placeholder="例：8" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="st-reason">離職理由</label>
+      <select id="st-reason">
+        <option value="ordinary">自己都合・定年など（一般離職者）</option>
+        <option value="company">会社都合等（特定受給資格者・一部の特定理由離職者）</option>
+      </select>
+    </div>
+
+    <div class="result-box" id="st-result" aria-live="polite">
+      <div class="result-label">失業手当の総支給額（概算）</div>
+      <div class="result-main" id="st-total">¥0</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">賃金日額</span><span class="value" id="st-wage-daily">¥0</span></div>
+        <div class="result-row"><span class="label">基本手当日額（1日分）</span><span class="value" id="st-daily">¥0</span></div>
+        <div class="result-row"><span class="label">28日分の目安</span><span class="value" id="st-28days">¥0</span></div>
+        <div class="result-row"><span class="label">所定給付日数</span><span class="value" id="st-days">0日</span></div>
+      </div>
+      <p class="eligibility-note" id="st-note"></p>
+    </div>
+  </div>
+
+  <ResultShare />
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>失業手当はいくらもらえる？計算方法</h2>
+    <p>雇用保険の基本手当は、原則として離職前6か月に毎月決まって支払われた賃金の合計を180で割り、「賃金日額」を求めるところから計算します。</p>
+    <ol>
+      <li><strong>賃金日額</strong>＝離職前6か月の賃金合計 ÷ 180</li>
+      <li><strong>基本手当日額</strong>＝賃金日額 × 約45〜80％（年齢と賃金日額で変動）</li>
+      <li><strong>総支給額の目安</strong>＝基本手当日額 × 所定給付日数</li>
+    </ol>
+    <p>本ツールは厚生労働省が公表した<strong>令和8年（2026年）8月1日以降</strong>の分段式を使い、1円未満を切り捨てています。賃金日額の下限は3,203円、基本手当日額の下限は2,562円です。</p>
+
+    <h2>2026年の基本手当日額の上限</h2>
+    <div class="data-table-scroll">
+      <table class="data-table">
+        <thead><tr><th>離職時の年齢</th><th>賃金日額の上限</th><th>基本手当日額の上限</th></tr></thead>
+        <tbody>
+          <tr><td>29歳以下</td><td>14,900円</td><td>7,450円</td></tr>
+          <tr><td>30〜44歳</td><td>16,540円</td><td>8,270円</td></tr>
+          <tr><td>45〜59歳</td><td>18,220円</td><td>9,110円</td></tr>
+          <tr><td>60〜64歳</td><td>17,400円</td><td>7,830円</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>自己都合と会社都合で給付日数はどう違う？</h2>
+    <p>一般離職者の所定給付日数は、被保険者期間10年未満が90日、10年以上20年未満が120日、20年以上が150日です。会社都合等に該当する場合は、年齢と加入期間により90〜330日となります。</p>
+    <p>一般離職者は原則として離職前2年間に被保険者期間が通算12か月以上、特定受給資格者・特定理由離職者は原則として離職前1年間に通算6か月以上が受給資格の目安です。離職理由の最終判定はハローワークが行います。</p>
+
+    <h2>計算に含まれないもの</h2>
+    <ul>
+      <li>7日間の待期、自己都合退職の給付制限、認定日ごとの実際の支給時期</li>
+      <li>就労・内職による減額、再就職手当、公共職業訓練による給付延長</li>
+      <li>就職困難者、高年齢求職者給付金、個別の受給資格判定</li>
+    </ul>
+    <p>離職前の給与や勤続期間も確認したい場合は、<a href="/kyuyo/">給与・手取り計算器</a>、<a href="/kinzoku-nensuu/">勤続年数計算</a>、<a href="/shakaihoken/">社会保険料計算器</a>も利用できます。</p>
+
+    <h2>公式資料</h2>
+    <ul>
+      <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000160564_00050.html" target="_blank" rel="noopener">厚生労働省「令和8年8月1日からの基本手当日額等の適用について」</a></li>
+      <li><a href="https://www.hellowork.mhlw.go.jp/insurance/insurance_benefitdays.html" target="_blank" rel="noopener">ハローワーク「基本手当の所定給付日数」</a></li>
+    </ul>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の受給資格、離職理由、賃金日額、給付日数と支給額は、離職票を持参のうえ管轄のハローワークでご確認ください。</div>
+  </section>
+
+  <RelatedTools current={slug} />
+  <Faq items={[
+    { q: '失業手当は月給30万円ならいくらですか？', a: '年齢により異なります。例えば月給30万円なら賃金日額は約1万円で、基本手当日額は30〜59歳で約6,307円、60〜64歳で約5,348円です。実際の額は離職票の賃金とハローワークの認定で決まります。' },
+    { q: '失業手当の計算にボーナスは含まれますか？', a: '原則として、臨時に支払われる賃金や3か月を超える期間ごとに支払われる賞与は含めず、離職前6か月に毎月決まって支払われた賃金を使います。' },
+    { q: '自己都合退職でも失業手当はもらえますか？', a: '受給要件を満たせば対象になります。ただし7日間の待期に加え、給付制限がかかる場合があります。個別の認定はハローワークで行われます。' },
+  ]} />
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calculateShitsugyouTeate } from '../../lib/shitsugyou-teate.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (value) => `¥${Math.floor(value).toLocaleString('ja-JP')}`;
+
+  function render() {
+    const salary = Number($('st-salary').value);
+    const age = Number($('st-age').value);
+    const insuredYears = Number($('st-years').value);
+    const reason = $('st-reason').value;
+    const result = calculateShitsugyouTeate({ age, wages6Months: salary * 6, insuredYears, reason });
+    const box = $('st-result');
+    if (result.benefitDaily === 0) {
+      box.classList.remove('visible');
+      window.hideResultShare?.();
+      return;
+    }
+    box.classList.add('visible');
+    $('st-total').textContent = yen(result.totalBenefit);
+    $('st-wage-daily').textContent = yen(result.wageDaily);
+    $('st-daily').textContent = yen(result.benefitDaily);
+    $('st-28days').textContent = yen(result.benefit28Days);
+    $('st-days').textContent = `${result.prescribedDays}日`;
+    $('st-note').textContent = result.prescribedDays === 0
+      ? '加入期間が1年未満の一般離職者は、この入力条件では所定給付日数を判定できません。受給資格をハローワークでご確認ください。'
+      : '待期・給付制限や実際の認定日数は総支給額に反映していません。';
+    window.setResultShare?.(`失業手当計算シミュレーション\n基本手当日額：${yen(result.benefitDaily)}\n28日分：${yen(result.benefit28Days)}\n所定給付日数：${result.prescribedDays}日\n総支給額（概算）：${yen(result.totalBenefit)}`);
+  }
+
+  ['st-salary', 'st-age', 'st-years', 'st-reason'].forEach((id) => $(id).addEventListener('input', render));
+</script>
+
+<style>
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group small { display: block; margin-top: 6px; color: var(--text-muted); font-size: .78rem; }
+  .eligibility-note { margin: 14px 0 0; font-size: .78rem; color: var(--text-muted); line-height: 1.65; }
+  .data-table { min-width: 540px; }
+  .data-table th:not(:first-child), .data-table td:not(:first-child) { text-align: right; }
+  .howto a { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
+  @media (max-width: 540px) { .field-grid { grid-template-columns: 1fr; gap: 0; } }
+</style>
