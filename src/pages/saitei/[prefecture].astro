@@ -21,12 +21,17 @@ const sixYearIncrease = wageHistory.length ? info.wage - wageHistory[0].wage : n
 const [effectiveYear, effectiveMonth, effectiveDay] = info.effectiveDate.split('-').map(Number);
 const effectiveText = `${effectiveYear}年${effectiveMonth}月${effectiveDay}日`;
 const guidelineIncrease = ['saitama', 'chiba', 'tokyo', 'kanagawa', 'aichi', 'osaka'].includes(info.slug) ? 54 : 56;
+const proposedText = info.proposedWage ? `${info.proposedWage.toLocaleString('ja-JP')}円` : null;
 const slug = `saitei/${info.slug}`;
 const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
-const title = wageHistory.length
+const title = info.proposedWage
+  ? `${info.prefecture}の最低賃金 2026年答申は${proposedText}｜現行${info.wage.toLocaleString('ja-JP')}円・月給計算`
+  : wageHistory.length
   ? `${info.prefecture}の最低賃金は${info.wage.toLocaleString('ja-JP')}円【2026年現在】｜推移・月給計算`
   : `${info.prefecture}の最低賃金は${info.wage.toLocaleString('ja-JP')}円【2026年現在】｜月給・時給計算`;
-const description = cities.length
+const description = info.proposedWage
+  ? `${info.prefecture}の2026年度最低賃金は${proposedText}と地方審議会が答申。現在適用中は時給${info.wage.toLocaleString('ja-JP')}円です。発効前の違いと日給・月給を確認できます。`
+  : cities.length
   ? `${info.prefecture}（${cities.join('・')}）の最低賃金は時給${info.wage.toLocaleString('ja-JP')}円。令和2〜7年度の推移、日給・月給の目安、令和8年度の改定状況を確認できます。`
   : `${info.prefecture}の最低賃金は時給${info.wage.toLocaleString('ja-JP')}円（${effectiveText}発効）です。令和8年度は+${guidelineIncrease}円の引上げ目安が答申済み。最終額・発効日は未決定です。`;
 const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', name: `${info.prefecture}の最低賃金計算`, description, url: canonicalUrl, applicationCategory: 'UtilityApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } };
@@ -36,7 +41,7 @@ const breadcrumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList'
   { '@type': 'ListItem', position: 3, name: info.prefecture, item: canonicalUrl },
 ] };
 const faqItems = [
-  { q: `${info.prefecture}の2026年の最低賃金はいくらですか？`, a: `現在適用中の${info.prefecture}の地域別最低賃金は、時間額${info.wage.toLocaleString('ja-JP')}円です。令和8年度は中央最低賃金審議会が+${guidelineIncrease}円の引上げ目安を答申しましたが、地方審議会の答申と最終決定・発効日はまだ確定していません。` },
+  { q: `${info.prefecture}の2026年の最低賃金はいくらですか？`, a: info.proposedWage ? `${info.prefecture}地方最低賃金審議会は令和8年度の改定額を${proposedText}（現行比+${info.proposedIncrease}円）と答申しました。現在適用中の金額は${info.wage.toLocaleString('ja-JP')}円で、新額は決定・発効前には適用されません。` : `現在適用中の${info.prefecture}の地域別最低賃金は、時間額${info.wage.toLocaleString('ja-JP')}円です。令和8年度は中央最低賃金審議会が+${guidelineIncrease}円の引上げ目安を答申しましたが、当サイトで地方答申額をまだ確認できていません。` },
   { q: `${info.prefecture}で1日8時間働く最低日給はいくらですか？`, a: `${info.wage.toLocaleString('ja-JP')}円×8時間で、最低日給の目安は${estimate22.dailyWage.toLocaleString('ja-JP')}円です。休憩時間は労働時間に含めません。` },
   { q: `${info.prefecture}の最低月給はいくらですか？`, a: `1日8時間・月20日なら${estimate20.monthlyWage.toLocaleString('ja-JP')}円、月22日なら${estimate22.monthlyWage.toLocaleString('ja-JP')}円が単純計算の目安です。実際の判定は年間所定労働時間で月給を時間額換算します。` },
   ...(cities.length ? [{ q: `${cities[0]}の最低賃金はいくらですか？`, a: `${cities[0]}を含む${info.prefecture}内では、原則として${info.prefecture}の地域別最低賃金${info.wage.toLocaleString('ja-JP')}円が適用されます。市区町村ごとに別の地域別最低賃金が設定されるものではありません。ただし、対象産業ではより高い特定最低賃金が適用される場合があります。` }] : []),
@@ -47,7 +52,7 @@ const faqItems = [
 <ToolLayout title={title} description={description} slug={slug} current="saitei" jsonld={jsonld} breadcrumb={breadcrumb} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/saitei/">最低賃金 全国一覧</a> ／ {info.prefecture}</div>
-    <h1>{info.prefecture}の最低賃金は{info.wage.toLocaleString('ja-JP')}円【2026年現在】</h1>
+    <h1>{info.prefecture}の最低賃金 2026年｜現行{info.wage.toLocaleString('ja-JP')}円{info.proposedWage && `・答申${proposedText}`}</h1>
     <p>{effectiveText}発効の地域別最低賃金です。日給・月給の目安と、実際の月給が最低賃金以上かを計算できます。</p>
   </div>
 
@@ -56,7 +61,9 @@ const faqItems = [
     <strong>{info.wage.toLocaleString('ja-JP')}<small>円／時間</small></strong>
     <p>発効日：{effectiveText}</p>
   </div>
-  <aside class="status-note"><strong>令和8年度は+{guidelineIncrease}円の引上げ目安が答申済み</strong><p>2026年7月28日に中央最低賃金審議会が示した目安です。{info.prefecture}の最終額と発効日は地方審議会の答申後に決定されるため、計算には現在適用中の確定額を使用しています。</p></aside>
+  <aside class="status-note">
+    {info.proposedWage ? <><strong>令和8年度は{proposedText}（現行比+{info.proposedIncrease}円）と地方答申</strong><p>{info.proposedDate.replaceAll('-', '年').replace(/年(\d{2})年(\d{2})$/, '年$1月$2日')}の地方最低賃金審議会答申です。異議申出などの手続きを経て決定・発効するまでは、現在適用中の{info.wage.toLocaleString('ja-JP')}円で計算します。<a href={info.proposedSource} target="_blank" rel="nofollow noopener">都道府県労働局の発表を確認</a></p></> : <><strong>令和8年度は+{guidelineIncrease}円の中央引上げ目安が答申済み</strong><p>2026年7月28日の中央目安です。当サイトで{info.prefecture}の地方答申額を確認できるまでは、現在適用中の確定額だけを表示・計算します。</p></>}
+  </aside>
 
   <div class="calc-card"><MinimumWageCalculator selectedPrefecture={info.prefecture} showPrefectureSelect={false} /></div>
   <ResultShare />
@@ -76,13 +83,13 @@ const faqItems = [
     </table></div></div>
   </section>
 
-  {cities.length && <section class="howto city-scope">
+  {cities.length > 0 && <section class="howto city-scope">
     <h2>{cities[0]}・{cities[1]}・{cities[2]}の最低賃金</h2>
     <p><strong>{cities.join('、')}</strong>を含む{info.prefecture}内では、原則として同じ地域別最低賃金<strong>{info.wage.toLocaleString('ja-JP')}円</strong>が適用されます。市区町村ごとに別の地域別最低賃金があるわけではありません。</p>
     <p>ただし、勤務する事業場の産業が特定最低賃金の対象で、地域別最低賃金より高い場合は特定最低賃金が適用されます。派遣労働者は派遣先の事業場がある地域を基準に確認します。</p>
   </section>}
 
-  {wageHistory.length && <section class="howto">
+  {wageHistory.length > 0 && <section class="howto">
     <h2>{info.prefecture}の最低賃金推移｜令和2〜7年度</h2>
     <p>{info.prefecture}の最低賃金は、令和2年度の<strong>{wageHistory[0].wage.toLocaleString('ja-JP')}円</strong>から令和7年度の<strong>{info.wage.toLocaleString('ja-JP')}円</strong>へ、6年度分で<strong>{sixYearIncrease.toLocaleString('ja-JP')}円</strong>上昇しました。</p>
     <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table history-table">

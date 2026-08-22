@@ -10,16 +10,16 @@ import { NATIONAL_WEIGHTED_AVERAGE, NATIONAL_WAGE_HISTORY, minimumWagePrefecture
 const slug = 'saitei';
 const prefectures = minimumWagePrefectures();
 const title = '最低賃金 2026年｜全国一覧・令和8年度の改定目安と月給計算';
-const description = '現在適用中の最低賃金を47都道府県別に一覧掲載。令和8年度は中央最低賃金審議会がAランク54円、B・Cランク56円の引上げ目安を答申。最終額・発効日は都道府県ごとに決定前です。';
+const description = '2026年の最低賃金はいつ決まる？現在適用中の47都道府県別金額と、令和8年度の中央目安・地方答申状況を一覧掲載。日給・月給も自動計算できます。';
 const jsonld = {
   '@context': 'https://schema.org', '@type': 'WebApplication', name: '最低賃金計算・全国一覧',
   description, applicationCategory: 'UtilityApplication', operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
 const faqItems = [
-  { q: '2026年の最低賃金はいくらですか？', a: `現在適用中の地域別最低賃金は、東京都の1,226円から高知県・宮崎県・沖縄県の1,023円まで都道府県ごとに異なります。令和8年度は2026年7月28日に中央最低賃金審議会がAランク54円、B・Cランク56円の引上げ目安を答申しましたが、都道府県ごとの最終額と発効日は未決定です。` },
+  { q: '2026年の最低賃金はいくらですか？', a: `現在適用中の地域別最低賃金は、東京都の1,226円から高知県・宮崎県・沖縄県の1,023円まで都道府県ごとに異なります。令和8年度は中央目安の答申後、地方審議会の答申が順次進んでいます。新額は都道府県労働局長の決定と発効日までは適用されません。` },
   { q: '月給が最低賃金以上か計算する方法は？', a: '最低賃金の対象になる月給を12倍し、年間所定労働日数と1日の所定労働時間の積で割って時間額に換算します。通勤手当、家族手当、賞与、時間外・休日・深夜の割増賃金などは対象月給から除きます。' },
-  { q: '最低賃金はいつ変わりますか？', a: '地域別最低賃金は毎年度審議され、都道府県ごとの発効日から適用されます。令和7年度は2025年10月から2026年3月にかけて順次発効しました。' },
+  { q: '2026年の最低賃金はいつ決まりますか？', a: '中央の引上げ目安は2026年7月28日に答申済みです。その後、各地方最低賃金審議会の答申、異議申出手続、都道府県労働局長の決定を経て、新しい金額が地域ごとの発効日から適用されます。地方答申額は決定・発効前にはまだ現行最低賃金ではありません。' },
   { q: 'アルバイトや高校生にも最低賃金は適用されますか？', a: '原則として雇用形態や年齢にかかわらず、都道府県内で働くすべての労働者に適用されます。特定産業では地域別最低賃金より高い特定最低賃金が適用される場合があります。' },
 ];
 ---
@@ -32,8 +32,8 @@ const faqItems = [
   </div>
 
   <aside class="status-note" aria-label="令和8年度改定状況">
-    <strong>令和8年度の引上げ目安が2026年7月28日に答申されました</strong>
-    <p>中央最低賃金審議会の目安はAランク54円、B・Cランク56円です。これは地方最低賃金審議会での答申・都道府県労働局長による決定前の目安であり、このページの計算は引き続き現在適用中の令和7年度確定額で行います。</p>
+    <strong>令和8年度は中央目安の答申後、地方答申が順次進んでいます</strong>
+    <p>中央最低賃金審議会の目安はAランク54円、B・Cランク56円です。地方答申額も決定・発効前は現行最低賃金ではないため、計算には現在適用中の令和7年度確定額を使います。公式に確認できた地方答申は一覧へ順次反映します。</p>
   </aside>
 
   <div class="calc-card"><MinimumWageCalculator /></div>
@@ -45,11 +45,11 @@ const faqItems = [
     <p>全国加重平均は<strong>{NATIONAL_WEIGHTED_AVERAGE.toLocaleString('ja-JP')}円</strong>です。金額と発効日は厚生労働省「令和7年度地域別最低賃金の全国一覧」に基づきます。都道府県名を選ぶと地域別の計算ページへ移動します。</p>
     <div class="data-table-wrap"><div class="data-table-scroll">
       <table class="data-table wage-table">
-        <thead><tr><th>都道府県</th><th>現在適用中</th><th>令和8年度の目安</th><th>発効日</th></tr></thead>
+        <thead><tr><th>都道府県</th><th>現在適用中</th><th>令和8年度の状況</th><th>現行額の発効日</th></tr></thead>
         <tbody>{prefectures.map((row) => {
           const [y, m, d] = row.effectiveDate.split('-').map(Number);
           const increase = ['saitama', 'chiba', 'tokyo', 'kanagawa', 'aichi', 'osaka'].includes(row.slug) ? 54 : 56;
-          return <tr><th scope="row"><a href={`/saitei/${row.slug}/`}>{row.prefecture}</a></th><td class="num"><strong>{row.wage.toLocaleString('ja-JP')}円</strong></td><td class="num">+{increase}円（目安）</td><td>{y}年{m}月{d}日</td></tr>;
+          return <tr><th scope="row"><a href={`/saitei/${row.slug}/`}>{row.prefecture}</a></th><td class="num"><strong>{row.wage.toLocaleString('ja-JP')}円</strong></td><td class="num">{row.proposedWage ? <><strong>{row.proposedWage.toLocaleString('ja-JP')}円</strong><small>（地方答申・未発効）</small></> : <>+{increase}円（中央目安）</>}</td><td>{y}年{m}月{d}日</td></tr>;
         })}</tbody>
       </table>
     </div></div>

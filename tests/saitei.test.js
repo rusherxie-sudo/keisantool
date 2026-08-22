@@ -18,6 +18,19 @@ import {
 } from '../src/lib/saitei.js';
 
 describe('令和7年度の地域別最低賃金データ', () => {
+  it('確認済みの令和8年度地方答申額を現行額と分けて保持する', () => {
+    expect(getMinimumWageInfo('wakayama')).toMatchObject({
+      wage: 1045, proposedWage: 1101, proposedIncrease: 56, proposedDate: '2026-08-10',
+    });
+    expect(getMinimumWageInfo('toyama')).toMatchObject({
+      wage: 1062, proposedWage: 1119, proposedIncrease: 57, proposedDate: '2026-08-05',
+    });
+    expect(getMinimumWageInfo('fukui')).toMatchObject({
+      wage: 1053, proposedWage: 1112, proposedIncrease: 59, proposedDate: '2026-08-10',
+    });
+    expect(getMinimumWageInfo('tokyo')).not.toHaveProperty('proposedWage');
+  });
+
   it('47都道府県を一意なslugと発効日つきで返す', () => {
     const rows = minimumWagePrefectures();
     expect(rows).toHaveLength(47);
