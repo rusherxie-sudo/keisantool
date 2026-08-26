@@ -122,6 +122,36 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
       ))}
     </div>
   </section>
+
+  <section class="home-value" aria-labelledby="home-value-title">
+    <div class="home-value__intro">
+      <p class="home-value__eyebrow">計算ツールについて</p>
+      <h2 id="home-value-title">答えだけでなく、計算の根拠まで確認できます</h2>
+      <p>
+        keisantool.com は、日常で迷いやすい数字をその場で確かめるための無料ツール集です。税金・社会保険・健康・日付などの計算では、入力欄と結果だけを置くのではなく、計算式、対象となる条件、端数処理、具体例、結果を使う際の注意点をできる限り同じページに掲載しています。
+      </p>
+      <p>
+        入力内容は原則としてブラウザ内で処理され、計算のために当サイトのサーバーへ送信されません。制度や料率を扱うページは国税庁、厚生労働省、自治体などの一次情報を優先し、改正時に見直します。詳しい確認手順は<a href="/editorial-policy/">制作・検証方針</a>で公開しています。
+      </p>
+    </div>
+    <div class="home-value__grid">
+      <article>
+        <span aria-hidden="true">01</span>
+        <h3>用途から選べる</h3>
+        <p>税金・健康・生活・日付・変換など、目的別のカテゴリと関連記事から必要なツールを探せます。</p>
+      </article>
+      <article>
+        <span aria-hidden="true">02</span>
+        <h3>計算過程がわかる</h3>
+        <p>式や内訳、入力例を示し、「なぜその結果になるか」を自分で確かめられる構成にしています。</p>
+      </article>
+      <article>
+        <span aria-hidden="true">03</span>
+        <h3>限界も明記する</h3>
+        <p>概算に含まれない条件や個人差、確認すべき公的窓口を示し、結果だけで判断しないための注意点を掲載します。</p>
+      </article>
+    </div>
+  </section>
 </ToolLayout>
 
 <script>
@@ -144,3 +174,34 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
     blocks.forEach((b) => obs.observe(b));
   }
 </script>
+
+<style>
+  .home-value {
+    margin: 42px 0 10px;
+    padding: 32px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-3xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+  .home-value__intro { max-width: 760px; }
+  .home-value__eyebrow {
+    margin: 0 0 7px;
+    color: var(--brand);
+    font-size: .76rem;
+    font-weight: var(--fw-black);
+    letter-spacing: .08em;
+  }
+  .home-value h2 { margin: 0 0 14px; font-size: clamp(1.25rem, 2.5vw, 1.65rem); }
+  .home-value__intro > p:not(.home-value__eyebrow) { margin: 0 0 12px; color: var(--text-2); line-height: 1.9; }
+  .home-value a { color: var(--brand); font-weight: var(--fw-bold); }
+  .home-value__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 22px; }
+  .home-value__grid article { padding: 18px; border-radius: var(--r-xl); background: var(--surface-sub); }
+  .home-value__grid span { color: var(--brand); font-family: var(--font-mono); font-size: .75rem; font-weight: var(--fw-bold); }
+  .home-value__grid h3 { margin: 7px 0; font-size: .98rem; }
+  .home-value__grid p { margin: 0; color: var(--text-3); font-size: .84rem; line-height: 1.75; }
+  @media (max-width: 680px) {
+    .home-value { margin-top: 30px; padding: 24px 18px; }
+    .home-value__grid { grid-template-columns: 1fr; }
+  }
+</style>

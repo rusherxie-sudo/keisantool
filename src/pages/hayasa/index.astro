@@ -3,10 +3,16 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
+import { speedToMetersPerSecond } from '../../lib/hayasa.js';
 
 const slug = 'hayasa';
-const title = '時速計算｜距離・時間・速さを自動計算（秒速・所要時間）';
-const description = '距離と時間を入力して時速・秒速・分速をすぐ計算。速さ×時間から距離、距離÷速さから所要時間も逆算でき、ランニングの1kmペースにも対応します。';
+const title = '時速計算・秒速換算｜距離・時間・速さを自動計算';
+const description = '距離と時間から時速・秒速・分速を無料計算。時速20kmは秒速5.56mなどの早見表、距離や所要時間の逆算、ランニングの1kmペースにも対応します。';
+const kilometerSpeeds = [1, 5, 10, 15, 20, 25, 30, 36, 40, 50, 60, 80, 100];
+const speedConversions = kilometerSpeeds.map((kilometersPerHour) => ({
+  kilometersPerHour,
+  metersPerSecond: speedToMetersPerSecond(kilometersPerHour, 'kmh'),
+}));
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -131,6 +137,24 @@ const jsonld = {
     <p>距離と速さは単位をそろえてから計算します。このツールは内部で距離をm、時間を秒にそろえるため、kmと分の組み合わせもそのまま入力できます。</p>
   </section>
 
+  <section class="howto" id="kmh-to-mps-table">
+    <h2>時速から秒速への換算早見表</h2>
+    <p><strong>時速20kmは秒速約5.56m</strong>です。時速の数値を3.6で割ると秒速になり、時速1kmは秒速約0.28m、時速36kmは秒速10mです。</p>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table conversion-table">
+      <thead><tr><th>時速（km/h）</th><th>秒速（m/s）</th><th>1秒で進む距離</th></tr></thead>
+      <tbody>
+        {speedConversions.map(({ kilometersPerHour, metersPerSecond }) => (
+          <tr>
+            <th>時速{kilometersPerHour}km</th>
+            <td>秒速{metersPerSecond.toFixed(2)}m</td>
+            <td>{metersPerSecond.toFixed(2)}m</td>
+          </tr>
+        ))}
+      </tbody>
+    </table></div></div>
+    <p>より細かい値は、上の「速さを計算」タブで距離と時間を入力するか、<a href="/tani/">単位変換器</a>で時速・秒速を直接換算してください。</p>
+  </section>
+
   <section class="howto">
     <h2>ランニングの1kmペースと移動時間</h2>
     <p>1kmペースは「かかった秒数 ÷ 距離km」で求めます。10kmを50分なら1kmあたり5分、時速は12km/hです。徒歩・自転車・ランニングでは信号、坂道、休憩の有無で実際の所要時間が変わるため、停止時間を含めたい場合は入力する時間に加えてください。</p>
@@ -146,6 +170,8 @@ const jsonld = {
   <Faq items={[
     { q: '速さはどうやって計算しますか？', a: '進んだ距離を、かかった時間で割ります。10kmを30分（0.5時間）で進んだ場合は、10÷0.5＝時速20kmです。' },
     { q: '時速を秒速に直す方法は？', a: '時速kmの数値を3.6で割ると秒速mになります。時速36kmなら36÷3.6＝秒速10mです。' },
+    { q: '時速20キロは秒速何メートルですか？', a: '時速20kmを3.6で割ると、秒速約5.56mです。1秒間に約5.56m、10秒間なら約55.6m進む速さです。' },
+    { q: '秒速1メートルは時速何キロですか？', a: '秒速の数値に3.6を掛けるため、秒速1mは時速3.6kmです。' },
     { q: '距離と速さから時間を計算できますか？', a: 'はい。「時間を計算」タブで距離と速さを入力すると、所要時間を時・分・秒で表示します。' },
     { q: '分や秒を含む時間でも計算できますか？', a: 'はい。時間・分・秒を別々に入力できます。分と秒は0〜59の範囲で入力してください。' },
     { q: 'ランニングの1kmペースも分かりますか？', a: 'はい。「速さを計算」では時速・秒速・分速と一緒に、1kmあたり何分何秒かを表示します。' },
@@ -191,6 +217,7 @@ const jsonld = {
   .formula-grid div { display: flex; flex-direction: column; gap: 6px; padding: 15px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
   .formula-grid span, .formula-grid small { color: var(--text-muted); font-size: .72rem; }
   .formula-grid strong { font-family: var(--font-mono); font-size: .86rem; }
+  .conversion-table th, .conversion-table td { white-space: nowrap; }
   .source-box ul { padding-left: 1.2em; }
   .source-box a { color: var(--cat-color); font-weight: var(--fw-bold); }
   @media (max-width: 760px) {

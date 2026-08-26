@@ -4,6 +4,7 @@
 const MASS_TO_KG = { mg: 1e-6, g: 1e-3, kg: 1, t: 1000 };
 const VOLUME_TO_M3 = { mm3: 1e-9, cm3: 1e-6, mL: 1e-6, L: 1e-3, m3: 1 };
 const DENSITY_TO_KG_PER_M3 = { 'kg/m3': 1, 'g/cm3': 1000, 'g/mL': 1000, 'kg/L': 1000 };
+const DRY_AIR_GAS_CONSTANT = 287;
 
 function positiveNumber(value) {
   if (value === '' || value == null) return null;
@@ -29,6 +30,16 @@ export function convertVolume(value, fromUnit, toUnit) {
 
 export function convertDensity(value, fromUnit, toUnit) {
   return convertByFactor(value, fromUnit, toUnit, DENSITY_TO_KG_PER_M3);
+}
+
+export function calculateAirDensity(temperatureCInput, pressureHpaInput) {
+  if (temperatureCInput === '' || temperatureCInput == null) return null;
+  const temperatureC = Number(temperatureCInput);
+  const pressureHpa = positiveNumber(pressureHpaInput);
+  const temperatureK = temperatureC + 273.15;
+  if (!Number.isFinite(temperatureC) || pressureHpa === null || temperatureK <= 0) return null;
+  const kgPerM3 = (pressureHpa * 100) / (DRY_AIR_GAS_CONSTANT * temperatureK);
+  return { kgPerM3, gPerCm3: kgPerM3 / 1000 };
 }
 
 export function calculateDensity(massInput, massUnit, volumeInput, volumeUnit) {

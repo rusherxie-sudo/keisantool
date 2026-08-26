@@ -49,7 +49,7 @@ const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
   label: `${s1.name}×${s.name}`,
 }));
 ---
-<ToolLayout title={title} description={description} slug={pageSlug} current="seiza-aisho" jsonld={jsonld} breadcrumb={breadcrumb}>
+<ToolLayout title={title} description={description} slug={pageSlug} current="seiza-aisho" jsonld={jsonld} breadcrumb={breadcrumb} robots="noindex,follow">
   <div class="page-hero">
     <div class="crumb">
       <a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ <a href="/seiza-aisho/">星座相性</a> ／ {s1.name}×{s2.name}

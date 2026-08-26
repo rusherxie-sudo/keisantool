@@ -254,6 +254,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,
 .ad-slot[data-loaded="false"]{display:none;margin:0}
 .page-wrapper.wide .ad-slot{max-width:none}
 
+/* 公開内容の確認日と編集方針を、構造化データだけでなく利用者にも見える形で示す。 */
+.content-verification{max-width:900px;margin:28px auto 0;padding:0 20px;display:flex;justify-content:flex-end;
+  align-items:center;gap:10px;flex-wrap:wrap;color:var(--text-muted);font-size:.75rem}
+.content-verification a{color:var(--text-3);font-weight:var(--fw-bold);text-decoration:underline;text-underline-offset:3px}
+
 /* ============================================================
    使い方 + 免責
    ============================================================ */

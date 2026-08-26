@@ -9,7 +9,7 @@ const description =
   'お探しのページは見つかりませんでした。URLが変更・削除された可能性があります。トップページや人気の計算ツールからお探しください。';
 const popular = ['rokusei', 'nenrei', 'zeizei', 'bmi', 'wareki', 'nissu'].map(getTool).filter(Boolean);
 ---
-<ToolLayout title={title} description={description} slug="404" current="">
+<ToolLayout title={title} description={description} slug="404" current="" robots="noindex,follow">
   <div class="page-hero">
     <h1>ページが見つかりません</h1>
     <p>お探しのページは、URLが変更されたか、削除された可能性があります。</p>

@@ -10,6 +10,7 @@ const updatedStr = updatedDate?.toLocaleDateString('ja-JP', { year: 'numeric', m
   <div class="author-box__avatar" aria-hidden="true">{author.avatar}</div>
   <div class="author-box__body">
     <div class="author-box__name">{author.name}</div>
+    <p class="author-box__bio">{author.bio} <a href="/editorial-policy/">制作・検証方針</a></p>
     <div class="author-box__meta">
       <span>公開日: <time datetime={date?.toISOString()}>{dateStr}</time></span>
       {updatedStr && updatedStr !== dateStr && (
@@ -49,6 +50,13 @@ const updatedStr = updatedDate?.toLocaleDateString('ja-JP', { year: 'numeric', m
     color: var(--text);
     margin-bottom: 4px;
   }
+  .author-box__bio {
+    margin: 0 0 5px;
+    color: var(--text-3);
+    font-size: .78rem;
+    line-height: 1.6;
+  }
+  .author-box__bio a { color: var(--cat-color); font-weight: var(--fw-bold); }
   .author-box__meta {
     font-size: .78rem;
     color: var(--text-muted);

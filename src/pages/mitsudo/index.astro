@@ -5,22 +5,22 @@ import ResultShare from '../../components/ResultShare.astro';
 import Faq from '../../components/Faq.astro';
 
 const slug = 'mitsudo';
-const title = '密度計算ツール｜質量・体積をg/cm³・kg/m³で逆算';
-const description = '密度・質量・体積を無料で自動計算。g/cm³、kg/m³、g/mL、kg/Lとmg・g・kg・L・m³に対応し、公式と途中式も表示します。';
+const title = '密度計算ツール｜空気密度・質量・体積を自動計算';
+const description = '密度・質量・体積と空気密度を無料で自動計算。温度・気圧から乾燥空気のkg/m³を求め、g/cm³、kg/m³、g/mL、kg/Lの単位変換にも対応します。';
 const jsonld = {
   '@context': 'https://schema.org', '@type': 'WebApplication', name: '密度・質量・体積計算ツール', description,
   applicationCategory: 'EducationalApplication', operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
-  featureList: ['質量と体積から密度を計算', '密度と体積から質量を計算', '質量と密度から体積を計算', '密度とSI単位の変換'],
+  featureList: ['質量と体積から密度を計算', '密度と体積から質量を計算', '質量と密度から体積を計算', '温度と気圧から乾燥空気の密度を計算', '密度とSI単位の変換'],
 };
 ---
 
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 密度計算</div>
-    <h1>密度・質量・体積計算ツール</h1>
-    <p>わかっている2つの値と単位を入力すると、密度・質量・体積を相互に逆算します。</p>
-    <div class="feature-chips"><span>g/cm³</span><span>kg/m³</span><span>g/mL</span><span>単位変換</span><span>途中式</span></div>
+    <h1>密度・空気密度計算ツール</h1>
+    <p>質量・体積・密度の相互計算に加え、温度と気圧から乾燥空気の密度を求めます。</p>
+    <div class="feature-chips"><span>空気密度</span><span>g/cm³</span><span>kg/m³</span><span>単位変換</span><span>途中式</span></div>
   </div>
 
   <div class="calc-card density-card" id="density-tool">
@@ -28,6 +28,7 @@ const jsonld = {
       <button type="button" class="density-tab is-active" data-mode="density" role="tab" aria-selected="true">密度を求める</button>
       <button type="button" class="density-tab" data-mode="mass" role="tab" aria-selected="false">質量を求める</button>
       <button type="button" class="density-tab" data-mode="volume" role="tab" aria-selected="false">体積を求める</button>
+      <button type="button" class="density-tab" data-mode="air" role="tab" aria-selected="false">空気密度</button>
     </div>
 
     <div class="calc-panel active density-panel" data-panel="density" role="tabpanel">
@@ -65,6 +66,18 @@ const jsonld = {
       <div class="primary-result" aria-live="polite"><span>体積</span><strong id="volume-main">625 cm³</strong><small id="volume-formula">500g ÷ 0.8g/cm³</small></div>
       <div class="result-grid"><div><span>リットル</span><strong id="volume-liter">0.625 L</strong></div><div><span>ミリリットル</span><strong id="volume-ml">625 mL</strong></div><div><span>立方メートル</span><strong id="volume-m3">0.000625 m³</strong></div></div>
     </div>
+
+    <div class="calc-panel density-panel" data-panel="air" role="tabpanel">
+      <h2>温度・気圧から空気密度を計算</h2>
+      <div class="air-input-grid">
+        <div class="form-group"><label for="air-temperature">気温</label><div class="unit-input"><input id="air-temperature" type="number" min="-273.14" step="any" value="15" inputmode="decimal" /><span class="fixed-unit">℃</span></div></div>
+        <div class="form-group"><label for="air-pressure">気圧</label><div class="unit-input"><input id="air-pressure" type="number" min="0" step="any" value="1013.25" inputmode="decimal" /><span class="fixed-unit">hPa</span></div></div>
+      </div>
+      <p class="input-note">乾燥空気を理想気体として近似します。標準的な海面気圧は1013.25hPaです。</p>
+      <p class="form-error" id="air-error" role="alert" hidden>気温は−273.15℃より高く、気圧は0より大きい数値を入力してください。</p>
+      <div class="primary-result" aria-live="polite"><span>乾燥空気の密度</span><strong id="air-main">1.2252 kg/m³</strong><small id="air-formula">101,325Pa ÷ (287 × 288.15K)</small></div>
+      <div class="result-grid three"><div><span>g/cm³</span><strong id="air-gcm3">0.0012252 g/cm³</strong></div><div><span>絶対温度</span><strong id="air-kelvin">288.15 K</strong></div><div><span>気圧</span><strong id="air-pascal">101,325 Pa</strong></div></div>
+    </div>
   </div>
 
   <ResultShare />
@@ -78,6 +91,16 @@ const jsonld = {
       <div><span>質量を求める</span><strong>質量＝密度×体積</strong><small>例：2.7g/cm³×100cm³＝270g</small></div>
       <div><span>体積を求める</span><strong>体積＝質量÷密度</strong><small>例：500g÷0.8g/cm³＝625cm³</small></div>
     </div>
+  </section>
+
+  <section class="howto">
+    <h2>空気密度の計算方法</h2>
+    <p>乾燥空気の密度は、気象庁の資料にある状態方程式<strong>p＝ρRT</strong>を変形し、<strong>ρ＝p÷（287×T）</strong>で近似します。pは気圧（Pa）、Tは絶対温度（K）、287は乾燥空気の気体定数（J・K⁻¹・kg⁻¹）です。摂氏温度には273.15を足してKへ変換します。</p>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>気温</th><th>気圧</th><th>乾燥空気の密度</th></tr></thead>
+      <tbody><tr><td>0℃</td><td>1013.25hPa</td><td>約1.2925kg/m³</td></tr><tr><td>15℃</td><td>1013.25hPa</td><td>約1.2252kg/m³</td></tr><tr><td>20℃</td><td>1013.25hPa</td><td>約1.2043kg/m³</td></tr><tr><td>30℃</td><td>1013.25hPa</td><td>約1.1646kg/m³</td></tr></tbody>
+    </table></div></div>
+    <p>同じ気圧なら温度が高いほど密度は小さく、同じ温度なら気圧が高いほど密度は大きくなります。実際の湿潤空気は水蒸気量でも変化するため、この計算は換気・送風量や実験の概算向けです。圧力の単位を先に換算する場合は<a href="/atsuryoku/">圧力・単位換算計算ツール</a>をご利用ください。</p>
   </section>
 
   <section class="howto">
@@ -112,6 +135,7 @@ const jsonld = {
     <ul>
       <li><a href="https://www.mext.go.jp/content/20240620-mxt_syogai02-mext_000032593_04rika.pdf" target="_blank" rel="noopener noreferrer">文部科学省「中学校卒業程度認定試験問題」</a>：密度＝質量÷体積の式とg/cm³の例題。</li>
       <li><a href="https://unit.aist.go.jp/nmij/library/si-units/" target="_blank" rel="noopener noreferrer">産業技術総合研究所 NMIJ「国際単位系（SI）とは」</a>：密度kg/m³と体積Lの単位。</li>
+      <li><a href="https://www.jma.go.jp/jma/kishou/know/expert/pdf/textbook_synop_basic_revision_20250331.pdf" target="_blank" rel="noopener noreferrer">気象庁監修「総観気象学基礎編」</a>：乾燥大気の状態方程式と気体定数287J・K⁻¹・kg⁻¹。</li>
     </ul>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。実験・設計・取引に使う場合は、温度・圧力・組成と必要な測定精度を別途ご確認ください。</div>
   </section>
@@ -124,27 +148,30 @@ const jsonld = {
     { q: '密度と比重は同じですか？', a: '同じではありません。密度は単位体積あたりの質量で単位があり、比重は基準物質との密度の比で単位がありません。' },
     { q: '水の密度は常に1g/cm³ですか？', a: '概算では1g/cm³としますが、実際の密度は温度などで変化します。精密な計算では条件に応じた値を使ってください。' },
     { q: '密度と濃度の違いは？', a: '密度は単位体積あたりの質量、濃度は溶液中の溶質の割合などを表す量です。' },
+    { q: '空気の密度はどう計算しますか？', a: '乾燥空気の近似では、空気密度kg/m³＝気圧Pa÷（287×絶対温度K）です。このツールでは気温℃と気圧hPaを入力すると自動換算します。' },
+    { q: '気温15℃・1気圧の空気密度は？', a: '気圧1013.25hPa、気温15℃の乾燥空気は約1.2252kg/m³です。湿度や空気組成により実際の値は変わります。' },
   ]} />
   <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>
   .feature-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.feature-chips span{padding:5px 10px;border:1px solid color-mix(in srgb,var(--cat-color) 30%,transparent);border-radius:999px;background:var(--cat-tint);color:var(--cat-color);font-size:.72rem;font-weight:var(--fw-bold)}
-  .density-card{overflow:hidden}.density-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--border-2);background:var(--surface-sub)}.density-tab{padding:15px 8px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--text-muted);font:var(--fw-bold) .8rem var(--font-sans);cursor:pointer}.density-tab.is-active{border-bottom-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}.density-tab:focus-visible{outline:3px solid var(--cat-tint);outline-offset:-3px}
-  .density-panel{padding:24px}.density-panel h2{margin:0 0 18px;font-size:1.05rem}.input-grid{display:grid;grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);gap:12px;align-items:end}.operator{padding:11px 0;text-align:center;color:var(--cat-color);font:var(--fw-bold) 1.4rem var(--font-mono)}.unit-input{display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,.55fr);gap:8px}.unit-input input,.unit-input select{width:100%;min-width:0}.form-error[hidden]{display:none}.form-error{margin:12px 0 0;padding:9px 12px;border-radius:var(--r-sm);background:var(--danger-bg);color:var(--danger);font-size:.78rem}
+  .density-card{overflow:hidden}.density-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid var(--border-2);background:var(--surface-sub)}.density-tab{padding:15px 8px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--text-muted);font:var(--fw-bold) .8rem var(--font-sans);cursor:pointer}.density-tab.is-active{border-bottom-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}.density-tab:focus-visible{outline:3px solid var(--cat-tint);outline-offset:-3px}
+  .density-panel{padding:24px}.density-panel h2{margin:0 0 18px;font-size:1.05rem}.input-grid{display:grid;grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);gap:12px;align-items:end}.air-input-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.operator{padding:11px 0;text-align:center;color:var(--cat-color);font:var(--fw-bold) 1.4rem var(--font-mono)}.unit-input{display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,.55fr);gap:8px}.unit-input input,.unit-input select{width:100%;min-width:0}.fixed-unit{display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:var(--surface-sub);color:var(--text-muted);font-family:var(--font-mono);font-weight:var(--fw-bold)}.input-note{margin:10px 0 0;color:var(--text-muted);font-size:.76rem}.form-error[hidden]{display:none}.form-error{margin:12px 0 0;padding:9px 12px;border-radius:var(--r-sm);background:var(--danger-bg);color:var(--danger);font-size:.78rem}
   .primary-result{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:20px;padding:20px;border-radius:var(--r-md);background:var(--cat-tint);text-align:center}.primary-result span{color:var(--text-muted);font-size:.76rem;font-weight:var(--fw-bold)}.primary-result strong{color:var(--cat-color);font:var(--fw-bold) clamp(1.8rem,6vw,2.8rem)/1.1 var(--font-mono);overflow-wrap:anywhere}.primary-result small{color:var(--text-muted);font-family:var(--font-mono);overflow-wrap:anywhere}
-  .result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}.result-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.result-grid div{display:flex;flex-direction:column;gap:5px;padding:13px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.result-grid span{color:var(--text-muted);font-size:.72rem}.result-grid strong{font-family:var(--font-mono);font-size:.84rem;overflow-wrap:anywhere}
+  .result-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}.result-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.result-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.result-grid div{display:flex;flex-direction:column;gap:5px;padding:13px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.result-grid span{color:var(--text-muted);font-size:.72rem}.result-grid strong{font-family:var(--font-mono);font-size:.84rem;overflow-wrap:anywhere}
   .formula-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.formula-grid div{display:flex;flex-direction:column;gap:5px;padding:15px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.formula-grid span,.formula-grid small{color:var(--text-muted);font-size:.72rem}.formula-grid strong{font-family:var(--font-mono);font-size:.88rem}.source-box a{color:var(--cat-color);font-weight:var(--fw-bold)}
-  @media(max-width:700px){.result-grid,.formula-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.density-tabs{grid-template-columns:1fr}.input-grid{grid-template-columns:1fr}.operator{padding:0}.unit-input{grid-template-columns:minmax(0,1fr) 100px}.result-grid,.result-grid.two,.formula-grid{grid-template-columns:1fr}.density-tab{padding:11px}}
+  @media(max-width:700px){.result-grid,.result-grid.three,.formula-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.density-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.input-grid,.air-input-grid{grid-template-columns:1fr}.operator{padding:0}.unit-input{grid-template-columns:minmax(0,1fr) 100px}.result-grid,.result-grid.two,.result-grid.three,.formula-grid{grid-template-columns:1fr}.density-tab{padding:11px}}
 </style>
 
 <script>
-  import { calculateDensity, calculateMass, calculateVolume } from '../../lib/mitsudo.js';
+  import { calculateAirDensity, calculateDensity, calculateMass, calculateVolume } from '../../lib/mitsudo.js';
   const $=id=>document.getElementById(id); const fmt=value=>Number(value.toPrecision(9)).toLocaleString('ja-JP',{maximumFractionDigits:12}); const val=id=>$(id).value;
   function renderDensity(){const result=calculateDensity(val('density-mass'),val('density-mass-unit'),val('density-volume'),val('density-volume-unit'));$('density-error').hidden=result!==null;if(!result)return;$('density-main').textContent=`${fmt(result.gPerCm3)} g/cm³`;$('density-kgm3').textContent=`${fmt(result.kgPerM3)} kg/m³`;$('density-gml').textContent=`${fmt(result.gPerCm3)} g/mL`;$('density-kgl').textContent=`${fmt(result.gPerCm3)} kg/L`;$('density-specific').textContent=fmt(result.gPerCm3);$('density-formula').textContent=`${val('density-mass')}${val('density-mass-unit')} ÷ ${val('density-volume')}${$('density-volume-unit').selectedOptions[0].textContent}`}
   function renderMass(){const result=calculateMass(val('mass-density'),val('mass-density-unit'),val('mass-volume'),val('mass-volume-unit'));$('mass-error').hidden=result!==null;if(!result)return;$('mass-main').textContent=`${fmt(result.grams)} g`;$('mass-kg').textContent=`${fmt(result.kilograms)} kg`;$('mass-mg').textContent=`${fmt(result.grams*1000)} mg`;$('mass-formula').textContent=`${val('mass-density')}${$('mass-density-unit').selectedOptions[0].textContent} × ${val('mass-volume')}${$('mass-volume-unit').selectedOptions[0].textContent}`}
   function renderVolume(){const result=calculateVolume(val('volume-mass'),val('volume-mass-unit'),val('volume-density'),val('volume-density-unit'));$('volume-error').hidden=result!==null;if(!result)return;$('volume-main').textContent=`${fmt(result.cubicCentimeters)} cm³`;$('volume-liter').textContent=`${fmt(result.liters)} L`;$('volume-ml').textContent=`${fmt(result.cubicCentimeters)} mL`;$('volume-m3').textContent=`${fmt(result.cubicMeters)} m³`;$('volume-formula').textContent=`${val('volume-mass')}${val('volume-mass-unit')} ÷ ${val('volume-density')}${$('volume-density-unit').selectedOptions[0].textContent}`}
-  const renderers={density:renderDensity,mass:renderMass,volume:renderVolume};
+  function renderAir(){const result=calculateAirDensity(val('air-temperature'),val('air-pressure'));$('air-error').hidden=result!==null;if(!result)return;const kelvin=Number(val('air-temperature'))+273.15;const pascal=Number(val('air-pressure'))*100;$('air-main').textContent=`${Number(result.kgPerM3.toFixed(4)).toLocaleString('ja-JP')} kg/m³`;$('air-gcm3').textContent=`${fmt(result.gPerCm3)} g/cm³`;$('air-kelvin').textContent=`${fmt(kelvin)} K`;$('air-pascal').textContent=`${fmt(pascal)} Pa`;$('air-formula').textContent=`${fmt(pascal)}Pa ÷ (287 × ${fmt(kelvin)}K)`}
+  const renderers={density:renderDensity,mass:renderMass,volume:renderVolume,air:renderAir};
   document.querySelectorAll('.density-tab').forEach(tab=>tab.addEventListener('click',()=>{const mode=tab.dataset.mode;document.querySelectorAll('.density-tab').forEach(item=>{const active=item===tab;item.classList.toggle('is-active',active);item.setAttribute('aria-selected',String(active))});document.querySelectorAll('.density-panel').forEach(panel=>panel.classList.toggle('active',panel.dataset.panel===mode));renderers[mode]()}));
-  ['density-mass','density-mass-unit','density-volume','density-volume-unit'].forEach(id=>$(id).addEventListener('input',renderDensity));['mass-density','mass-density-unit','mass-volume','mass-volume-unit'].forEach(id=>$(id).addEventListener('input',renderMass));['volume-mass','volume-mass-unit','volume-density','volume-density-unit'].forEach(id=>$(id).addEventListener('input',renderVolume));renderDensity();renderMass();renderVolume();
+  ['density-mass','density-mass-unit','density-volume','density-volume-unit'].forEach(id=>$(id).addEventListener('input',renderDensity));['mass-density','mass-density-unit','mass-volume','mass-volume-unit'].forEach(id=>$(id).addEventListener('input',renderMass));['volume-mass','volume-mass-unit','volume-density','volume-density-unit'].forEach(id=>$(id).addEventListener('input',renderVolume));['air-temperature','air-pressure'].forEach(id=>$(id).addEventListener('input',renderAir));renderDensity();renderMass();renderVolume();renderAir();
 </script>

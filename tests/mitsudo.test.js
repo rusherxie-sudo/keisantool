@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  calculateAirDensity,
   calculateDensity,
   calculateMass,
   calculateVolume,
@@ -7,6 +8,28 @@ import {
   convertMass,
   convertVolume,
 } from '../src/lib/mitsudo.js';
+
+describe('乾燥空気の密度計算', () => {
+  it('15℃・1013.25hPaの標準的な条件から空気密度を求める', () => {
+    const result = calculateAirDensity(15, 1013.25);
+    expect(result.kgPerM3).toBeCloseTo(101325 / (287 * 288.15), 12);
+    expect(result.gPerCm3).toBeCloseTo(result.kgPerM3 / 1000, 12);
+  });
+
+  it('温度が上がると同じ気圧で密度が下がる', () => {
+    expect(calculateAirDensity(30, 1013.25).kgPerM3).toBeLessThan(
+      calculateAirDensity(0, 1013.25).kgPerM3,
+    );
+  });
+
+  it('絶対零度以下・0以下の気圧・空欄・非数値は無効', () => {
+    expect(calculateAirDensity(-273.15, 1013.25)).toBeNull();
+    expect(calculateAirDensity(-274, 1013.25)).toBeNull();
+    expect(calculateAirDensity(20, 0)).toBeNull();
+    expect(calculateAirDensity('', 1013.25)).toBeNull();
+    expect(calculateAirDensity(20, 'abc')).toBeNull();
+  });
+});
 
 describe('密度・質量・体積の相互計算', () => {
   it('100gと50cm³から密度を求める', () => {
