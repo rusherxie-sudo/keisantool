@@ -28,6 +28,12 @@ describe('令和7年度の地域別最低賃金データ', () => {
     expect(getMinimumWageInfo('fukui')).toMatchObject({
       wage: 1053, proposedWage: 1112, proposedIncrease: 59, proposedDate: '2026-08-10',
     });
+    expect(getMinimumWageInfo('miyazaki')).toMatchObject({
+      wage: 1023, proposedWage: 1085, proposedIncrease: 62, proposedDate: '2026-08-25',
+    });
+    expect(getMinimumWageInfo('ibaraki')).toMatchObject({
+      wage: 1074, proposedWage: 1136, proposedIncrease: 62, proposedDate: '2026-08-24',
+    });
     expect(getMinimumWageInfo('tokyo')).not.toHaveProperty('proposedWage');
   });
 

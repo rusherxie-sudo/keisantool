@@ -21,7 +21,7 @@ const MINIMUM_WAGE_PREFECTURES = [
   { prefecture: '秋田県', slug: 'akita', wage: 1031, effectiveDate: '2026-03-31', region: '東北' },
   { prefecture: '山形県', slug: 'yamagata', wage: 1032, effectiveDate: '2025-12-23', region: '東北' },
   { prefecture: '福島県', slug: 'fukushima', wage: 1033, effectiveDate: '2026-01-01', region: '東北' },
-  { prefecture: '茨城県', slug: 'ibaraki', wage: 1074, effectiveDate: '2025-10-12', region: '関東' },
+  { prefecture: '茨城県', slug: 'ibaraki', wage: 1074, effectiveDate: '2025-10-12', region: '関東', proposedWage: 1136, proposedIncrease: 62, proposedDate: '2026-08-24', proposedSource: 'https://www.47news.jp/14839311.html' },
   { prefecture: '栃木県', slug: 'tochigi', wage: 1068, effectiveDate: '2025-10-01', region: '関東' },
   { prefecture: '群馬県', slug: 'gunma', wage: 1063, effectiveDate: '2026-03-01', region: '関東' },
   { prefecture: '埼玉県', slug: 'saitama', wage: 1141, effectiveDate: '2025-11-01', region: '関東' },
@@ -58,7 +58,7 @@ const MINIMUM_WAGE_PREFECTURES = [
   { prefecture: '長崎県', slug: 'nagasaki', wage: 1031, effectiveDate: '2025-12-01', region: '九州・沖縄' },
   { prefecture: '熊本県', slug: 'kumamoto', wage: 1034, effectiveDate: '2026-01-01', region: '九州・沖縄' },
   { prefecture: '大分県', slug: 'oita', wage: 1035, effectiveDate: '2026-01-01', region: '九州・沖縄' },
-  { prefecture: '宮崎県', slug: 'miyazaki', wage: 1023, effectiveDate: '2025-11-16', region: '九州・沖縄' },
+  { prefecture: '宮崎県', slug: 'miyazaki', wage: 1023, effectiveDate: '2025-11-16', region: '九州・沖縄', proposedWage: 1085, proposedIncrease: 62, proposedDate: '2026-08-25', proposedSource: 'https://www.47news.jp/14844338.html' },
   { prefecture: '鹿児島県', slug: 'kagoshima', wage: 1026, effectiveDate: '2025-11-01', region: '九州・沖縄' },
   { prefecture: '沖縄県', slug: 'okinawa', wage: 1023, effectiveDate: '2025-12-01', region: '九州・沖縄' },
 ];
