@@ -62,7 +62,7 @@ const faqItems = [
     <p>発効日：{effectiveText}</p>
   </div>
   <aside class="status-note">
-    {info.proposedWage ? <><strong>令和8年度は{proposedText}（現行比+{info.proposedIncrease}円）と地方答申</strong><p>{info.proposedDate.replaceAll('-', '年').replace(/年(\d{2})年(\d{2})$/, '年$1月$2日')}の地方最低賃金審議会答申です。異議申出などの手続きを経て決定・発効するまでは、現在適用中の{info.wage.toLocaleString('ja-JP')}円で計算します。<a href={info.proposedSource} target="_blank" rel="nofollow noopener">出典・発表を確認</a></p></> : <><strong>令和8年度は+{guidelineIncrease}円の中央引上げ目安が答申済み</strong><p>2026年7月28日の中央目安です。当サイトで{info.prefecture}の地方答申額を確認できるまでは、現在適用中の確定額だけを表示・計算します。</p></>}
+    {info.proposedWage ? <><strong>令和8年度は{proposedText}（現行比+{info.proposedIncrease}円）と地方答申</strong><p>{info.proposedDate.replaceAll('-', '年').replace(/年(\d{2})年(\d{2})$/, '年$1月$2日')}の地方最低賃金審議会答申です。正式な適用日は都道府県労働局の決定・公示後に確定し、多くは2026年10月以降の発効が見込まれます。決定・発効するまでは、現在適用中の{info.wage.toLocaleString('ja-JP')}円で計算します。<a href={info.proposedSource} target="_blank" rel="nofollow noopener">出典・発表を確認</a></p></> : <><strong>令和8年度は+{guidelineIncrease}円の中央引上げ目安が答申済み</strong><p>2026年7月28日の中央目安です。当サイトで{info.prefecture}の地方答申額を確認できるまでは、現在適用中の確定額だけを表示・計算します。</p></>}
   </aside>
 
   <div class="calc-card"><MinimumWageCalculator selectedPrefecture={info.prefecture} showPrefectureSelect={false} /></div>

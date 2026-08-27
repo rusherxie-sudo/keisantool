@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   NATIONAL_WEIGHTED_AVERAGE,
+  NATIONAL_WAGE_GUIDELINE_2026,
   MINIMUM_WAGE_DATA,
   minimumWagePrefectures,
   getMinimumWage,
@@ -17,24 +18,66 @@ import {
   getMinimumWageCities,
 } from '../src/lib/saitei.js';
 
+// 令和8年度（2026年度）の地方最低賃金審議会答申。
+// 各金額・増額は地方労働局発表または複数の報道で確認済み（2026-08-27時点）。
+// proposedSource は一次情報（労働局/審議会/主要報道）を1件ずつ保持する。
+const CONFIRMED_ANSWERS = [
+  ['wakayama', 1045, 1101, 56, '2026-08-10'],
+  ['toyama', 1062, 1119, 57, '2026-08-05'],
+  ['fukui', 1053, 1112, 59, '2026-08-10'],
+  ['miyazaki', 1023, 1085, 62, '2026-08-25'],
+  ['ibaraki', 1074, 1136, 62, '2026-08-24'],
+  ['tokyo', 1226, 1280, 54, '2026-08-05'],
+  ['kanagawa', 1225, 1279, 54, '2026-08-04'],
+  ['osaka', 1177, 1231, 54, '2026-08-05'],
+  ['saitama', 1141, 1196, 55, '2026-08-05'],
+  ['chiba', 1140, 1195, 55, '2026-08-05'],
+  ['aichi', 1140, 1195, 55, '2026-08-05'],
+  ['hyogo', 1116, 1172, 56, '2026-08-04'],
+  ['kyoto', 1122, 1180, 58, '2026-08-20'],
+  ['shizuoka', 1097, 1154, 57, '2026-08-12'],
+  ['mie', 1087, 1143, 56, '2026-08-05'],
+  ['hiroshima', 1085, 1141, 56, '2026-08-17'],
+  ['shiga', 1080, 1136, 56, '2026-08-07'],
+  ['hokkaido', 1075, 1131, 56, '2026-08-05'],
+  ['gifu', 1065, 1121, 56, '2026-08-05'],
+  ['nagano', 1061, 1117, 56, '2026-08-06'],
+  ['ishikawa', 1054, 1113, 59, '2026-08-07'],
+  ['niigata', 1050, 1108, 58, '2026-08-05'],
+  ['miyagi', 1038, 1098, 60, '2026-08-05'],
+  ['fukushima', 1033, 1094, 61, '2026-08-20'],
+  ['shimane', 1033, 1092, 59, '2026-08-14'],
+  ['akita', 1031, 1090, 59, '2026-08-18'],
+  ['aomori', 1029, 1090, 61, '2026-08-26'],
+  ['tottori', 1030, 1090, 60, '2026-08-07'],
+  ['kagawa', 1036, 1092, 56, '2026-08-05'],
+  ['yamaguchi', 1043, 1101, 58, '2026-08-12'],
+  ['okayama', 1047, 1104, 57, '2026-08-05'],
+  ['tokushima', 1046, 1103, 57, '2026-08-23'],
+  ['nara', 1051, 1107, 56, '2026-08-10'],
+  ['tochigi', 1068, 1125, 57, '2026-08-05'],
+  ['gunma', 1063, 1120, 57, '2026-08-06'],
+];
+
+// 2026-08-27時点で答申額を確認できていない地域（審議中または未確認）。
+// 金額を推定・予測として書き込んではならない。
+const NOT_YET_CONFIRMED = [
+  'iwate', 'yamagata', 'yamanashi', 'fukuoka', 'saga', 'nagasaki',
+  'kumamoto', 'oita', 'kagoshima', 'okinawa', 'kochi', 'ehime',
+];
+
 describe('令和7年度の地域別最低賃金データ', () => {
   it('確認済みの令和8年度地方答申額を現行額と分けて保持する', () => {
-    expect(getMinimumWageInfo('wakayama')).toMatchObject({
-      wage: 1045, proposedWage: 1101, proposedIncrease: 56, proposedDate: '2026-08-10',
-    });
-    expect(getMinimumWageInfo('toyama')).toMatchObject({
-      wage: 1062, proposedWage: 1119, proposedIncrease: 57, proposedDate: '2026-08-05',
-    });
-    expect(getMinimumWageInfo('fukui')).toMatchObject({
-      wage: 1053, proposedWage: 1112, proposedIncrease: 59, proposedDate: '2026-08-10',
-    });
-    expect(getMinimumWageInfo('miyazaki')).toMatchObject({
-      wage: 1023, proposedWage: 1085, proposedIncrease: 62, proposedDate: '2026-08-25',
-    });
-    expect(getMinimumWageInfo('ibaraki')).toMatchObject({
-      wage: 1074, proposedWage: 1136, proposedIncrease: 62, proposedDate: '2026-08-24',
-    });
-    expect(getMinimumWageInfo('tokyo')).not.toHaveProperty('proposedWage');
+    for (const [slug, wage, proposedWage, proposedIncrease, proposedDate] of CONFIRMED_ANSWERS) {
+      expect(getMinimumWageInfo(slug)).toMatchObject({ wage, proposedWage, proposedIncrease, proposedDate });
+    }
+    for (const slug of NOT_YET_CONFIRMED) {
+      expect(getMinimumWageInfo(slug)).not.toHaveProperty('proposedWage');
+    }
+  });
+
+  it('令和8年度の中央目安ベース全国加重平均を保持する', () => {
+    expect(NATIONAL_WAGE_GUIDELINE_2026).toBe(1176);
   });
 
   it('47都道府県を一意なslugと発効日つきで返す', () => {
