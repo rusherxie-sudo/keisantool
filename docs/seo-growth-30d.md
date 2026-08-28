@@ -769,3 +769,9 @@
 - 生产构建571页成功，`git diff --check`通过。Playwright 在 1920／1440／768／375 四档验证全国页与山形・福岡・鹿児島・愛媛・東京6个URL：全部200、`scrollWidth === innerWidth`、唯一H1、canonical 正确、免责声明齐全、无控制台错误。部署预览`f24aa505.keisantool.pages.dev`；正式域名跨批次抽查13个URL全部200（4新页＋全国页＋tokyo＋rokusei/nissu/juminzei/kinzoku-nensuu/hayasa/hinodeiri-tokyo/ads.txt），title 与答申金额（1,092／1,114／1,090／1,093円）、canonical、dateModified 均正确。
 - 本轮提交`2e0c012`（tests/saitei.test.js、src/lib/saitei.js、src/pages/saitei/index.astro、tests/lastmod.test.js、src/lib/lastmod.js 共5文件），保护文章与 .playwright-mcp 未触碰。IndexNow 增量提交全国页＋4新页共5个URL全部200。
 - 下一步：7〜14天后跟踪`山形県 最低賃金 2026／福岡県 最低賃金 2026／鹿児島県 最低賃金 2026／愛媛県 最低賃金 2026`的展示、CTR、排名；继续观察300人连续3日目标（08-26=280、08-27进行中327，非常接近）；長崎8/28再会合后检索答申结果，其余8县答申/官报公示后按同一模式补齐；复查上一轮30县与宫崎／茨城的 GSC 抓取时间；Chrome 连接恢复后对东京／大阪／爱知／神奈川／北海道等高价值页做 GSC 人工催收录（优先配额）。
+
+### 2026-08-28（追加）：育児休業給付賃金日額上限更新（8月年度复核）
+
+- 8月年度复核项：`src/lib/saniku.js` 的 `IKUKYU_DAILY_CAP` 此前为16,110円（令和7年8月值，HANDOFF 注明每年8月需更新）。本轮检索确认令和8年8月1日起改定：賃金日額上限 **16,540円**（賃金月額上限496,200円、67%月額上限332,454円、50%月額上限248,100円），与 2026-08 多家社劳士/劳务机构转载的厚劳省每勤统计联动公告交叉一致（workstyle-blog、补助金ナビ、three-sr、pacola 等，16,540円与496,200円÷30、332,454円/248,100円互相验算一致）。
+- 严格TDD执行RED→GREEN：先在`tests/saniku.test.js`将上限锚点改为16,540円并新增“67%月額332,454円・50%月額248,100円”官方月额断言，确认5项RED；再改`IKUKYU_DAILY_CAP = 16540`，单文件36项与全量95个测试文件、1,716项断言全绿。页面正文“賃金日額には上限（令和8年8月改定で16,540円）”同步更新；全站检索确认无16,110円/483,300円/323,811円残留。
+- 生产构建571页成功，`git diff --check`通过；Playwright 1920/1440/768/375 四档验证 /saniku/：无横向溢出、唯一H1、canonical、免责声明正确、页面含16,540円且不含旧值、无控制台错误。提交`4a9f788`（3文件），部署预览`1d65dd12.keisantool.pages.dev`；正式域名 /saniku/ 与 8 个历史批次 URL 全部200，线上正文已显示16,540円。IndexNow 提交 /saniku/ 返回200。
