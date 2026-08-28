@@ -52,8 +52,8 @@ describe('sourceFileForUrl', () => {
     expect(sourceFileForUrl(pagesDir, 'rokusei/kaseijin-plus')).toBe(join(pagesDir, 'rokusei/[type].astro'));
   });
 
-  it('resolves saitei prefecture URLs to the dynamic [prefecture].astro route', () => {
-    expect(sourceFileForUrl(pagesDir, 'saitei/tokyo')).toBe(join(pagesDir, 'saitei/[prefecture].astro'));
+  it('resolves saitei prefecture URLs to the data file so lastmod tracks answer updates', () => {
+    expect(sourceFileForUrl(pagesDir, 'saitei/tokyo')).toBe(join(process.cwd(), 'src/lib/saitei.js'));
   });
 
   it('resolves seiza-aisho pair URLs to the dynamic [pair].astro route', () => {

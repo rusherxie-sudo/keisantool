@@ -49,8 +49,9 @@ export function sourceFileForUrl(pagesDir, urlPath) {
   if (path.startsWith('hinodeiri/')) return join(pagesDir, 'hinodeiri/[city].astro');
   // 六星占術の12タイプ別ページも動的ルート
   if (path.startsWith('rokusei/')) return join(pagesDir, 'rokusei/[type].astro');
-  // 地域別最低賃金の47都道府県ページも動的ルート
-  if (path.startsWith('saitei/')) return join(pagesDir, 'saitei/[prefecture].astro');
+  // 地域別最低賃金の47都道府県ページ：内容は src/lib/saitei.js のデータから生成されるため、
+  // lastmod はデータファイルのコミット日時を参照する（答申追記ごとに自動更新される）。
+  if (path.startsWith('saitei/')) return join(process.cwd(), 'src/lib/saitei.js');
   // 星座相性の144組み合わせページも動的ルート（テンプレの最終更新日を lastmod にする）
   if (/^seiza-aisho\/.+/.test(path)) return join(pagesDir, 'seiza-aisho/[pair].astro');
   // 六曜カレンダーの月別スポークページも動的ルート

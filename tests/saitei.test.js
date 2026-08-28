@@ -19,7 +19,7 @@ import {
 } from '../src/lib/saitei.js';
 
 // 令和8年度（2026年度）の地方最低賃金審議会答申。
-// 各金額・増額は地方労働局発表または複数の報道で確認済み（2026-08-27時点）。
+// 各金額・増額は地方労働局発表または複数の報道で確認済み（2026-08-28時点）。
 // proposedSource は一次情報（労働局/審議会/主要報道）を1件ずつ保持する。
 const CONFIRMED_ANSWERS = [
   ['wakayama', 1045, 1101, 56, '2026-08-10'],
@@ -57,13 +57,16 @@ const CONFIRMED_ANSWERS = [
   ['nara', 1051, 1107, 56, '2026-08-10'],
   ['tochigi', 1068, 1125, 57, '2026-08-05'],
   ['gunma', 1063, 1120, 57, '2026-08-06'],
+  ['yamagata', 1032, 1092, 60, '2026-08-27'],
+  ['fukuoka', 1057, 1114, 57, '2026-08-10'],
+  ['kagoshima', 1026, 1090, 64, '2026-08-26'],
+  ['ehime', 1033, 1093, 60, '2026-08-21'],
 ];
 
-// 2026-08-27時点で答申額を確認できていない地域（審議中または未確認）。
+// 2026-08-28時点で答申額を確認できていない地域（審議中または未確認）。
 // 金額を推定・予測として書き込んではならない。
 const NOT_YET_CONFIRMED = [
-  'iwate', 'yamagata', 'yamanashi', 'fukuoka', 'saga', 'nagasaki',
-  'kumamoto', 'oita', 'kagoshima', 'okinawa', 'kochi', 'ehime',
+  'iwate', 'yamanashi', 'saga', 'nagasaki', 'kumamoto', 'oita', 'okinawa', 'kochi',
 ];
 
 describe('令和7年度の地域別最低賃金データ', () => {

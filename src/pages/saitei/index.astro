@@ -9,15 +9,17 @@ import { NATIONAL_WEIGHTED_AVERAGE, NATIONAL_WAGE_GUIDELINE_2026, NATIONAL_WAGE_
 
 const slug = 'saitei';
 const prefectures = minimumWagePrefectures();
+const confirmedCount = prefectures.filter((row) => row.proposedWage).length;
+const notYetConfirmed = prefectures.filter((row) => !row.proposedWage).map((row) => row.prefecture).join('・');
 const title = '最低賃金 2026年｜全国一覧・令和8年度の改定目安と月給計算';
-const description = '2026年の最低賃金はいつ決まる？現在適用中の47都道府県別金額と、令和8年度の地方答申（35都道府県確認済み）を一覧掲載。日給・月給も自動計算できます。';
+const description = `2026年の最低賃金はいつ決まる？現在適用中の47都道府県別金額と、令和8年度の地方答申（${confirmedCount}都道府県確認済み）を一覧掲載。日給・月給も自動計算できます。`;
 const jsonld = {
   '@context': 'https://schema.org', '@type': 'WebApplication', name: '最低賃金計算・全国一覧',
   description, applicationCategory: 'UtilityApplication', operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
 const faqItems = [
-  { q: '2026年の最低賃金はいくらですか？', a: `現在適用中の地域別最低賃金は、東京都の1,226円から高知県・宮崎県・沖縄県の1,023円まで都道府県ごとに異なります。令和8年度は中央目安の答申後、2026年8月27日時点で35都道府県の地方答申を確認しています。新額は都道府県労働局長の決定と発効日までは適用されません。` },
+  { q: '2026年の最低賃金はいくらですか？', a: `現在適用中の地域別最低賃金は、東京都の1,226円から高知県・宮崎県・沖縄県の1,023円まで都道府県ごとに異なります。令和8年度は中央目安の答申後、2026年8月28日時点で${confirmedCount}都道府県の地方答申を確認しています。新額は都道府県労働局長の決定と発効日までは適用されません。` },
   { q: '月給が最低賃金以上か計算する方法は？', a: '最低賃金の対象になる月給を12倍し、年間所定労働日数と1日の所定労働時間の積で割って時間額に換算します。通勤手当、家族手当、賞与、時間外・休日・深夜の割増賃金などは対象月給から除きます。' },
   { q: '2026年の最低賃金はいつ決まりますか？', a: '中央の引上げ目安は2026年7月28日に答申済みです。その後、各地方最低賃金審議会の答申、異議申出手続、都道府県労働局長の決定を経て、新しい金額が地域ごとの発効日から適用されます。地方答申額は決定・発効前にはまだ現行最低賃金ではありません。' },
   { q: 'アルバイトや高校生にも最低賃金は適用されますか？', a: '原則として雇用形態や年齢にかかわらず、都道府県内で働くすべての労働者に適用されます。特定産業では地域別最低賃金より高い特定最低賃金が適用される場合があります。' },
@@ -32,8 +34,8 @@ const faqItems = [
   </div>
 
   <aside class="status-note" aria-label="令和8年度改定状況">
-    <strong>令和8年度は全国47都道府県中35都道府県の地方答申を確認済み</strong>
-    <p>中央最低賃金審議会の目安はAランク54円、B・Cランク56円です。確認済みの地方答申額は一覧に「地方答申・未発効」として掲載していますが、決定・発効前は現行最低賃金ではないため、計算には現在適用中の令和7年度確定額を使います。残りの都道府県（岩手・山形・山梨・福岡・佐賀・長崎・熊本・大分・鹿児島・沖縄・高知・愛媛）は審議中または確認待ちです。</p>
+    <strong>令和8年度は全国47都道府県中{confirmedCount}都道府県の地方答申を確認済み</strong>
+    <p>中央最低賃金審議会の目安はAランク54円、B・Cランク56円です。確認済みの地方答申額は一覧に「地方答申・未発効」として掲載していますが、決定・発効前は現行最低賃金ではないため、計算には現在適用中の令和7年度確定額を使います。残りの都道府県（{notYetConfirmed}）は審議中または確認待ちです。</p>
   </aside>
 
   <div class="calc-card"><MinimumWageCalculator /></div>
