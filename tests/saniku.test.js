@@ -109,21 +109,26 @@ describe('calcIkukyuKyuufu(dailyWage, totalDays) — 育児休業給付金', () 
     expect(calcIkukyuKyuufu(10000, 0)).toBeNull();
   });
 
-  // 令和7年8月改定: 休業開始時賃金日額の上限 16,110円。高額所得者は頭打ち。
-  it('賃金日額が上限16,110円を超える場合は上限で計算（67%月上限323,811円相当）', () => {
+  // 令和8年8月改定: 休業開始時賃金日額の上限 16,540円。高額所得者は頭打ち。
+  it('賃金日額が上限16,540円を超える場合は上限で計算（67%月上限332,454円相当）', () => {
     const r = calcIkukyuKyuufu(20000, 180);
-    expect(r.first).toBe(Math.floor(16110 * 0.67 * 180)); // 1,942,866
-    expect(r.total).toBe(1942866);
+    expect(r.first).toBe(Math.floor(16540 * 0.67 * 180)); // 1,994,724
+    expect(r.total).toBe(1994724);
   });
-  it('上限ちょうど16,110円は頭打ちされない', () => {
-    const r = calcIkukyuKyuufu(16110, 180);
-    expect(r.first).toBe(Math.floor(16110 * 0.67 * 180));
+  it('上限ちょうど16,540円は頭打ちされない', () => {
+    const r = calcIkukyuKyuufu(16540, 180);
+    expect(r.first).toBe(Math.floor(16540 * 0.67 * 180));
   });
 });
 
 describe('IKUKYU_DAILY_CAP（賃金日額の上限）', () => {
-  it('令和7年8月改定の16,110円', () => {
-    expect(IKUKYU_DAILY_CAP).toBe(16110);
+  it('令和8年8月改定の16,540円', () => {
+    expect(IKUKYU_DAILY_CAP).toBe(16540);
+  });
+  it('上限で67%月額332,454円・50%月額248,100円になる（令和8年8月公表）', () => {
+    const daily = IKUKYU_DAILY_CAP;
+    expect(Math.floor(daily * 0.67 * 30)).toBe(332454);
+    expect(Math.floor(daily * 0.5 * 30)).toBe(248100);
   });
 });
 
@@ -154,9 +159,9 @@ describe('calcShusseigoShien(出生後休業支援給付金・賃金日額×13%�
     expect(r.amount).toBe(36400);
     expect(r.days).toBe(28);
   });
-  it('賃金日額は上限16,110円で頭打ち', () => {
+  it('賃金日額は上限16,540円で頭打ち', () => {
     const r = calcShusseigoShien(20000, 28);
-    expect(r.amount).toBe(Math.floor(16110 * 0.13 * 28)); // 58,640
+    expect(r.amount).toBe(Math.floor(16540 * 0.13 * 28)); // 60,205
   });
   it('0・不正 → null', () => {
     expect(calcShusseigoShien(0, 28)).toBeNull();
