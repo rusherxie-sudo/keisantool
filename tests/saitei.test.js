@@ -61,12 +61,14 @@ const CONFIRMED_ANSWERS = [
   ['fukuoka', 1057, 1114, 57, '2026-08-10'],
   ['kagoshima', 1026, 1090, 64, '2026-08-26'],
   ['ehime', 1033, 1093, 60, '2026-08-21'],
+  ['yamanashi', 1052, 1113, 61, '2026-08-28'],
+  ['nagasaki', 1031, 1087, 56, '2026-08-28'],
 ];
 
-// 2026-08-28時点で答申額を確認できていない地域（審議中または未確認）。
+// 2026-08-29時点で答申額を確認できていない地域（審議中または未確認）。
 // 金額を推定・予測として書き込んではならない。
 const NOT_YET_CONFIRMED = [
-  'iwate', 'yamanashi', 'saga', 'nagasaki', 'kumamoto', 'oita', 'okinawa', 'kochi',
+  'iwate', 'saga', 'kumamoto', 'oita', 'okinawa', 'kochi',
 ];
 
 describe('令和7年度の地域別最低賃金データ', () => {
