@@ -1,0 +1,250 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import { fortuneTable, fortuneTypes, forecast } from '../../lib/rokusei.js';
+
+const slug = 'rokusei/hayamihyou';
+const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
+
+// 基準年はビルド時に固定（毎年1月1日の再ビルドで自動更新される）。
+const BASE_YEAR = new Date().getFullYear();
+const HORIZON = 6; // 直近6年（今年〜今年+5年）
+const END_YEAR = BASE_YEAR + HORIZON - 1;
+
+const typeInfos = fortuneTypes();
+// 当年の12タイプ一覧（表示順は FORTUNE_TYPES と一致）
+const currentTable = fortuneTable(BASE_YEAR);
+// タイプ別に直近6年の forecast を引いておく（すべて lib 由来、ページ側にデータは持たない）
+const rows = typeInfos.map((ti) => {
+  const years = forecast(ti.type, BASE_YEAR, HORIZON);
+  return {
+    type: ti.type,
+    slug: ti.slug,
+    years,
+    daisakkaiYears: years.filter((y) => y.category === '大殺界').map((y) => y.year),
+  };
+});
+const rowByType = new Map(rows.map((r) => [r.type, r]));
+const daisakkaiTypes = currentTable.filter((item) => item.category === '大殺界');
+const daisakkaiSummary = daisakkaiTypes.map((item) => `${item.type}（${item.zone}）`).join('・');
+
+// 区分 → バッジ/セルのクラス名（日本語クラス名を避けるため ASCII に写像）
+const CAT_CLASS = { 大殺界: 'daisakkai', 中殺界: 'chusakkai', 小殺界: 'shosakkai', 好調: 'kouchou' };
+
+const title = `六星占術 早見表【${BASE_YEAR}年】12タイプの運勢・大殺界を一覧で速見`;
+const description =
+  `六星占術の6つの運命星とプラス／マイナスを組み合わせた12タイプについて、${BASE_YEAR}年の運気（12ゾーン）と直近6年間の大殺界をまとめた早見表です。${BASE_YEAR}年に大殺界なのは${daisakkaiSummary}。自分の運命星は生年月日からの無料自動計算で確認できます。`;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '六星占術 早見表',
+  description,
+  applicationCategory: 'LifestyleApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: '六星占術 自動計算', item: new URL('/rokusei/', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: '六星占術 早見表', item: canonicalUrl },
+  ],
+};
+
+const faqItems = [
+  {
+    q: '六星占術の早見表には何が載っていますか？',
+    a: `${BASE_YEAR}年の12タイプの運気（ゾーンと区分）と、${BASE_YEAR}年から${END_YEAR}年までの直近6年間の運勢ゾーンをまとめています。赤くハイライトした年が大殺界です。`,
+  },
+  {
+    q: `${BASE_YEAR}年に大殺界なのは何星人ですか？`,
+    a: `${BASE_YEAR}年に大殺界なのは${daisakkaiSummary}です。年運は12年周期で巡り、陰影・停止・減退の3年間が大殺界にあたります。`,
+  },
+  {
+    q: '自分の運命星が分からない場合はどうすればいいですか？',
+    a: '六星占術の運命星は生年月日から決まります。六星占術 自動計算に生年月日を入力すると、土星人〜水星人の6つの運命星とプラス／マイナスを即座に判定し、今年の運勢も表示します。',
+  },
+  {
+    q: '大殺界と宿命大殺界は同じですか？',
+    a: '異なります。この早見表が扱うのは12年周期で巡る「年運」の大殺界（陰影・停止・減退）です。人生の特定期間を扱う宿命大殺界とは別物です。',
+  },
+  {
+    q: '大殺界はどれくらい続きますか？',
+    a: '陰影・停止・減退の3年間が続けて巡ります。その後は好調期に入り、12年周期で再び大殺界が巡ってきます。',
+  },
+];
+---
+
+<ToolLayout title={title} description={description} slug={slug} current="rokusei" jsonld={jsonld} breadcrumb={breadcrumb} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/rokusei/">六星占術</a> ／ 六星占術 早見表</div>
+    <h1>六星占術 早見表（{BASE_YEAR}年版）</h1>
+    <p>
+      土星人〜水星人の6つの運命星と、生まれ年の干支で決まるプラス／マイナスを組み合わせた<strong>12タイプ</strong>について、{BASE_YEAR}年の運気と直近6年間の大殺界を一覧にしました。タイプ名をクリックすると、そのタイプの運勢ページへ移動できます。
+    </p>
+  </div>
+
+  <section class="hm-guide" aria-labelledby="hm-guide-h">
+    <h2 id="hm-guide-h">自分の運命星が分からないときは</h2>
+    <p>
+      六星占術の運命星は<strong>生年月日</strong>から決まります。どのタイプなのか分からない場合は、下のツールで無料判定してください。
+    </p>
+    <div class="hm-guide-links">
+      <a href="/rokusei/">
+        <strong>生年月日から自動計算する</strong>
+        <span>運命星・今年の運勢・大殺界を即判定</span>
+      </a>
+      {BASE_YEAR === 2026 && (
+        <a href="/rokusei/daisakkai-2026/">
+          <strong>大殺界 2026</strong>
+          <span>2026年に大殺界なのは何星人？</span>
+        </a>
+      )}
+    </div>
+  </section>
+
+  <section class="hm-section" aria-labelledby="hm-yearly-h">
+    <h2 id="hm-yearly-h">{BASE_YEAR}年 六星占術の運勢一覧（12タイプ）</h2>
+    <p>
+      {BASE_YEAR}年に大殺界なのは<strong>{daisakkaiSummary}</strong>です。「区分」バッジで運気の強弱をひと目で確認できます。
+    </p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table hm-yearly">
+          <thead>
+            <tr>
+              <th scope="col">運命星タイプ</th>
+              <th scope="col">{BASE_YEAR}年の運気（ゾーン）</th>
+              <th scope="col">区分</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentTable.map((item) => {
+              const row = rowByType.get(item.type);
+              return (
+                <tr class:list={[item.category === '大殺界' && 'is-daisakkai']}>
+                  <th scope="row"><a href={`/rokusei/${row.slug}/`}>{item.type}</a></th>
+                  <td>{item.zone}</td>
+                  <td><span class:list={['hm-badge', `hm-badge-${CAT_CLASS[item.category]}`]}>{item.category}</span></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="hm-note">
+      ※ 区分は4段階です。<strong>大殺界</strong>＝陰影・停止・減退／<strong>中殺界</strong>＝乱気／<strong>小殺界</strong>＝健弱／<strong>好調</strong>＝それ以外のゾーン。この表は1年ごとに巡る「年運」で、人生の特定期間を扱う「宿命大殺界」とは異なります。
+    </p>
+  </section>
+
+  <section class="hm-section" aria-labelledby="hm-matrix-h">
+    <h2 id="hm-matrix-h">直近6年（{BASE_YEAR}〜{END_YEAR}年）の運勢早見表</h2>
+    <p>
+      各タイプの運勢ゾーンが年ごとにどう進むかをまとめました。<strong class="hm-red-text">赤いセル＝大殺界</strong>の年です。大殺界は<strong>陰影→停止→減退</strong>と続くため、赤いセルは3年連続で並びます。
+    </p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table hm-matrix">
+          <thead>
+            <tr>
+              <th scope="col">運命星タイプ</th>
+              {rows[0].years.map((yearRow, i) => (
+                <th scope="col">{yearRow.year}年{i === 0 && <span class="num--sub">（今年）</span>}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr>
+                <th scope="row"><a href={`/rokusei/${row.slug}/`}>{row.type}</a></th>
+                {row.years.map((y) => (
+                  <td class:list={['hm-cell', `hm-cell-${CAT_CLASS[y.category]}`]}>{y.zone}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="hm-note">
+      ※ この表は{BASE_YEAR}〜{END_YEAR}年の6年分です。大殺界（3年間）の一部が表の範囲外になるタイプ（例：{BASE_YEAR}年より前に陰影に入ったタイプ）では、赤いセルが1〜2年ぶんだけ表示されます。
+    </p>
+  </section>
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>六星占術 早見表の見方</h2>
+    <p>
+      六星占術では、運命星とプラス／マイナスで決まる12タイプごとに、<strong>種子・緑生・立花・健弱・達成・乱気・再会・財成・安定・陰影・停止・減退</strong>の12の運気ゾーンが、年ごとに一つずつ進むとされています。12年で元のゾーンに戻るため、大殺界も12年周期で巡ります。
+    </p>
+    <ul>
+      <li><strong>大殺界（陰影・停止・減退）</strong>：大きな決断や新規の挑戦を控え、現状維持と健康管理を心がけるとよいとされる時期です。</li>
+      <li><strong>中殺界（乱気）・小殺界（健弱）</strong>：気持ちや体調が乱れやすいとされる年です。無理をせず、慎重に過ごすのがおすすめです。</li>
+      <li><strong>好調期</strong>：上記以外のゾーンです。特に種子〜立花、達成、再会、財成、安定は運気が伸びやすいとされます。</li>
+    </ul>
+    <p>
+      運命星の求め方やゾーン周期の算法については<a href="/rokusei/">六星占術 自動計算</a>の解説をご覧ください。生年月日を入力すれば、自分のタイプに合わせた運勢と大殺界カレンダーが自動で表示されます。
+    </p>
+    <div class="disclaimer">※ 六星占術は文化的な慣習・娯楽としての占いであり、科学的根拠や将来の出来事を保証するものではありません。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current="rokusei" />
+
+  <Faq items={faqItems} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  /* ガイドボックス（自動計算への導線＋相互リンク） */
+  .hm-guide { margin-top: 18px; padding: 18px 20px; border: 1px solid var(--cat-color); border-radius: var(--r-md); background: var(--cat-tint); }
+  .hm-guide h2 { margin: 0 0 4px; font-size: 1rem; }
+  .hm-guide p { margin: 0; font-size: .88rem; line-height: 1.75; }
+  .hm-guide-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+  .hm-guide-links a { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-radius: var(--r-sm); background: var(--surface); color: var(--text); border: 1.5px solid var(--border-2); text-decoration: none; }
+  .hm-guide-links a:hover { border-color: var(--cat-color); }
+  .hm-guide-links strong { color: var(--cat-color); font-size: .9rem; }
+  .hm-guide-links span { font-size: .78rem; color: var(--text-muted); }
+
+  .hm-section { margin-top: 28px; }
+  .hm-section h2 { font-size: 1.15rem; }
+  .hm-section .data-table-wrap { margin-top: 14px; }
+  .hm-section > p { font-size: .9rem; line-height: 1.8; }
+
+  /* 当年一覧表 */
+  .hm-yearly th[scope="row"] { text-align: left; white-space: nowrap; }
+  .hm-yearly th[scope="row"] a { color: var(--cat-color); text-decoration: none; }
+  .hm-yearly th[scope="row"] a:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .hm-yearly tr.is-daisakkai { background: var(--danger-bg); }
+
+  /* 区分バッジ */
+  .hm-badge { display: inline-block; padding: 3px 9px; border-radius: var(--r-pill); font-size: .72rem; font-weight: var(--fw-bold); white-space: nowrap; }
+  .hm-badge-daisakkai { color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, #fff); }
+  .hm-badge-chusakkai, .hm-badge-shosakkai { color: var(--warning-text); background: var(--warning-bg); }
+  .hm-badge-kouchou { color: color-mix(in srgb, var(--cat-color) 62%, #000); background: var(--cat-tint); }
+
+  /* 6年マトリクス表 */
+  .hm-matrix { min-width: 780px; }
+  .hm-matrix th, .hm-matrix td { text-align: center; }
+  .hm-matrix th:first-child { text-align: left; }
+  .hm-matrix th[scope="row"] { white-space: nowrap; }
+  .hm-matrix th[scope="row"] a { color: var(--cat-color); text-decoration: none; }
+  .hm-matrix th[scope="row"] a:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .hm-matrix td { font-size: .9rem; font-weight: var(--fw-bold); }
+  .hm-cell-daisakkai { background: var(--danger-bg); color: var(--danger); border-radius: 0; }
+  .hm-cell-chusakkai, .hm-cell-shosakkai { background: var(--warning-bg); color: var(--warning-text); }
+  .hm-red-text { color: var(--danger); }
+
+  .hm-note { margin-top: 10px; font-size: .78rem; line-height: 1.7; color: var(--text-muted); }
+
+  @media (max-width: 640px) {
+    .hm-guide-links { grid-template-columns: 1fr; }
+  }
+</style>

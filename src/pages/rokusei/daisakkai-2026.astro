@@ -1,0 +1,220 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import { fortuneTable, fortuneTypes, fortuneZone } from '../../lib/rokusei.js';
+import { seirekiToWareki } from '../../lib/wareki.js';
+
+const slug = 'rokusei/daisakkai-2026';
+const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
+
+// このページは2026年の年運に特化した静的ページ（基準年を固定）。
+const YEAR = 2026;
+const WAREKI_LABEL = seirekiToWareki(YEAR).label; // 令和8年
+const typeSlug = new Map(fortuneTypes().map((t) => [t.type, t.slug]));
+
+// 2026年の12タイプ一覧と、大殺界（陰影・停止・減退）にあたるタイプ。
+// すべて lib（fortuneTable / fortuneZone）の計算結果から導出する。
+const currentTable = fortuneTable(YEAR);
+const daisakkaiRows = currentTable.filter((item) => item.category === '大殺界');
+const daisakkaiList = daisakkaiRows.map((item) => ({
+  ...item,
+  desc: fortuneZone(item.type, YEAR).desc,
+}));
+const daisakkaiSummary = daisakkaiList.map((item) => `${item.type}（${item.zone}）`).join('・');
+
+// 大殺界3ゾーン（陰影→停止→減退）の解説。2026年に各ゾーンを迎えるタイプを併記する。
+const PHASES = ['陰影', '停止', '減退'].map((zone) => {
+  const hit = daisakkaiList.find((item) => item.zone === zone);
+  return { zone, type: hit ? hit.type : '', desc: hit ? hit.desc : '' };
+});
+
+const title = '大殺界 2026｜何星人が大殺界？12タイプ早見表で即チェック';
+const description =
+  `2026年（${WAREKI_LABEL}）に大殺界を迎えるのは${daisakkaiSummary}の3タイプです。各タイプの運気と、2026年の12タイプすべての年運早見表をまとめました。自分の運命星は生年月日から無料で判定できます。`;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '大殺界 2026 早見表',
+  description,
+  applicationCategory: 'LifestyleApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: '六星占術 自動計算', item: new URL('/rokusei/', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: '大殺界 2026', item: canonicalUrl },
+  ],
+};
+
+const faqItems = [
+  {
+    q: '2026年に大殺界なのは何星人ですか？',
+    a: `2026年に大殺界（年運）を迎えるのは、${daisakkaiSummary}の3タイプです。各タイプとも大殺界の3年間（陰影・停止・減退）のいずれかの年になります。`,
+  },
+  {
+    q: '2026年以外にも大殺界の年はありますか？',
+    a: '六星占術の年運は12年周期で巡ります。各タイプに大殺界の3年間（陰影・停止・減退）が周期的にやってきます。自分の運命星の大殺界カレンダーは、六星占術 自動計算に生年月日を入力するとすぐ確認できます。',
+  },
+  {
+    q: '大殺界の3年間（陰影・停止・減退）はどう違いますか？',
+    a: `陰影は大殺界の入口、停止は大殺界の中央、減退は大殺界の終盤です。2026年では、陰影＝火星人マイナス、停止＝火星人プラス、減退＝天王星人マイナスです。`,
+  },
+  {
+    q: '大殺界と宿命大殺界は同じですか？',
+    a: '異なります。このページが扱うのは1年ごとに巡る「年運」の大殺界です。人生の特定期間を扱う宿命大殺界は別の考え方で、本ページの計算対象外です。',
+  },
+];
+---
+
+<ToolLayout title={title} description={description} slug={slug} current="rokusei" jsonld={jsonld} breadcrumb={breadcrumb} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/rokusei/">六星占術</a> ／ 大殺界 2026</div>
+    <h1>大殺界 2026｜今年は何星人が大殺界？</h1>
+    <p>
+      {YEAR}年（{WAREKI_LABEL}）に<strong>大殺界</strong>を迎えるのは<strong>{daisakkaiSummary}</strong>の3タイプです。それぞれの運気と、12タイプすべての年運を早見表で確認できます。
+    </p>
+  </div>
+
+  <section class="ds-answer" aria-labelledby="ds-answer-h">
+    <h2 id="ds-answer-h">{YEAR}年に大殺界を迎えるタイプ</h2>
+    <p>
+      六星占術の年運は12年周期で巡り、<strong>陰影 → 停止 → 減退</strong>の3年間が大殺界とされます。{YEAR}年は下の3タイプが、それぞれ大殺界のどの位置にあたる年かをまとめました。
+    </p>
+    <div class="ds-answer-grid">
+      {daisakkaiList.map((item) => (
+        <article class="ds-type-card">
+          <h3><a href={`/rokusei/${typeSlug.get(item.type)}/`}>{item.type}</a></h3>
+          <p class="ds-zone">{item.zone}</p>
+          <p class="ds-cat">大殺界</p>
+          <p class="ds-desc">{item.desc}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="ds-cta" aria-labelledby="ds-cta-h">
+    <h2 id="ds-cta-h">自分の運命星の大殺界を調べるには</h2>
+    <p>
+      大殺界は生まれ年で決まるタイプごとに巡ります。<strong>2027年以降の運気や、自分が今どこにあたるのか</strong>を知りたい場合は、生年月日からの自動計算で確認してください。
+    </p>
+    <div class="ds-cta-links">
+      <a href="/rokusei/"><strong>生年月日から運命星・大殺界を無料計算する</strong><span>今年の運勢と今後9年の大殺界カレンダー</span></a>
+      <a href="/rokusei/hayamihyou/"><strong>六星占術 早見表</strong><span>12タイプの運勢・大殺界を一覧で速見</span></a>
+    </div>
+  </section>
+
+  <section class="ds-table" aria-labelledby="ds-table-h">
+    <h2 id="ds-table-h">{YEAR}年（{WAREKI_LABEL}）の運勢 一覧（12タイプ）</h2>
+    <p>
+      {YEAR}年の全12タイプの運気をまとめました。大殺界の行を<strong class="ds-red-text">赤字でハイライト</strong>しています。
+    </p>
+    <div class="data-table-wrap">
+      <div class="data-table-scroll">
+        <table class="data-table ds-yearly">
+          <thead>
+            <tr>
+              <th scope="col">運命星タイプ</th>
+              <th scope="col">{YEAR}年の運気（ゾーン）</th>
+              <th scope="col">区分</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentTable.map((item) => (
+              <tr class:list={[item.category === '大殺界' && 'is-daisakkai']}>
+                <th scope="row"><a href={`/rokusei/${typeSlug.get(item.type)}/`}>{item.type}</a></th>
+                <td>{item.zone}</td>
+                <td><span class:list={['ds-badge', `ds-badge-${item.category === '大殺界' ? 'daisakkai' : item.category === '中殺界' || item.category === '小殺界' ? 'chusakkai' : 'kouchou'}`]}>{item.category}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="ds-note">
+      ※ この表は1年ごとに巡る「年運」の大殺界です。人生の特定期間を扱う「宿命大殺界」とは異なります。区分：大殺界＝陰影・停止・減退／中殺界＝乱気／小殺界＝健弱。
+    </p>
+  </section>
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>大殺界とは？3年間の順番と過ごし方</h2>
+    <p>
+      大殺界は、六星占術で<strong>運気が低調になる</strong>とされる3年間です。12年周期で必ず巡ってくるため「悪い年だから逃げられない」と身構えるより、「新しい挑戦や大きな決断を控え、現状を整える期間」と捉えるのが一般的な見方です。
+    </p>
+    <ol>
+      {PHASES.map((phase) => (
+        <li>
+          <strong>{phase.zone}</strong>
+          {phase.type && <span class="ds-phase-type">（{YEAR}年：{phase.type}）</span>}
+          — {phase.desc}
+        </li>
+      ))}
+    </ol>
+    <p>
+      大殺界の期間は、<strong>引っ越し・結婚・転職・大きな買い物・新規事業の開始</strong>などは控えめにし、健康管理と身の回りの整理に時間を使うとよいとされています。とはいえ、これらは占い上の目安です。実際の判断は現実の状況とご自身の計画を優先してください。
+    </p>
+    <h3>年運大殺界と宿命大殺界の違い</h3>
+    <p>
+      <strong>年運の大殺界</strong>は、12年周期で1年ごとに巡る「その年の運気」を指し、本ページや自動計算ツールが対象にしているものです。<strong>宿命大殺界</strong>は生まれ年によって人生の特定期間に設定される別の考え方で、混同されやすいため注意してください。
+    </p>
+    <div class="disclaimer">※ 六星占術は文化的な慣習・娯楽としての占いであり、科学的根拠や将来の出来事を保証するものではありません。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current="rokusei" />
+
+  <Faq items={faqItems} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<style>
+  /* 大殺界タイプの結論カード */
+  .ds-answer { margin-top: 18px; }
+  .ds-answer .data-table-wrap { margin-top: 14px; }
+  .ds-answer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .ds-type-card { display: flex; flex-direction: column; gap: 4px; padding: 18px; border: 1.5px solid var(--danger); border-radius: var(--r-md); background: var(--danger-bg); }
+  .ds-type-card h3 { margin: 0; font-size: 1rem; }
+  .ds-type-card h3 a { color: var(--text); text-decoration: none; }
+  .ds-type-card h3 a:hover { color: var(--danger); }
+  .ds-type-card .ds-zone { margin: 8px 0 0; font-size: 1.6rem; font-weight: var(--fw-bold); color: var(--danger); line-height: 1.2; }
+  .ds-type-card .ds-cat { align-self: flex-start; padding: 2px 10px; border-radius: var(--r-pill); font-size: .72rem; font-weight: var(--fw-bold); color: #fff; background: var(--danger); }
+  .ds-type-card .ds-desc { margin: 6px 0 0; font-size: .84rem; line-height: 1.75; color: var(--text); }
+
+  /* 自動計算・早見表への導線 */
+  .ds-cta { margin-top: 24px; padding: 18px 20px; border: 1px solid var(--cat-color); border-radius: var(--r-md); background: var(--cat-tint); }
+  .ds-cta h2 { margin: 0 0 4px; font-size: 1rem; }
+  .ds-cta p { margin: 0; font-size: .88rem; line-height: 1.75; }
+  .ds-cta-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+  .ds-cta-links a { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-radius: var(--r-sm); background: var(--surface); color: var(--text); border: 1.5px solid var(--border-2); text-decoration: none; }
+  .ds-cta-links a:hover { border-color: var(--cat-color); }
+  .ds-cta-links strong { color: var(--cat-color); font-size: .9rem; }
+  .ds-cta-links span { font-size: .78rem; color: var(--text-muted); }
+
+  .ds-table { margin-top: 28px; }
+  .ds-table h2 { font-size: 1.15rem; }
+  .ds-table .data-table-wrap { margin-top: 14px; }
+  .ds-yearly th[scope="row"] { text-align: left; white-space: nowrap; }
+  .ds-yearly th[scope="row"] a { color: var(--cat-color); text-decoration: none; }
+  .ds-yearly th[scope="row"] a:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .ds-yearly tr.is-daisakkai { background: var(--danger-bg); }
+  .ds-badge { display: inline-block; padding: 3px 9px; border-radius: var(--r-pill); font-size: .72rem; font-weight: var(--fw-bold); white-space: nowrap; }
+  .ds-badge-daisakkai { color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, #fff); }
+  .ds-badge-chusakkai, .ds-badge-shosakkai { color: var(--warning-text); background: var(--warning-bg); }
+  .ds-badge-kouchou { color: color-mix(in srgb, var(--cat-color) 62%, #000); background: var(--cat-tint); }
+  .ds-red-text { color: var(--danger); }
+
+  .ds-note { margin-top: 10px; font-size: .78rem; line-height: 1.7; color: var(--text-muted); }
+  .ds-phase-type { font-size: .84rem; font-weight: var(--fw-bold); color: var(--danger); }
+
+  @media (max-width: 860px) {
+    .ds-answer-grid, .ds-cta-links { grid-template-columns: 1fr; }
+  }
+</style>
