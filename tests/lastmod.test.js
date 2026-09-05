@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { lastModifiedISO, sourceFileForUrl } from '../src/lib/lastmod.js';
 
@@ -17,6 +18,16 @@ describe('lastModifiedISO', () => {
     const first = lastModifiedISO('package.json');
     const second = lastModifiedISO('package.json');
     expect(second).toBe(first);
+  });
+
+  it('prefers src/data/lastmod.json when it has an entry for the file', () => {
+    // scripts/update-lastmod.mjs を実行していない環境ではスキップ（manifest が無い）
+    const manifestPath = join(process.cwd(), 'src/data/lastmod.json');
+    if (!existsSync(manifestPath)) return;
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    if (!('package.json' in manifest)) return;
+    // manifest の値は生成時点の git log と同じ ISO なので、両者が一致する
+    expect(lastModifiedISO('package.json')).toBe(manifest['package.json']);
   });
 });
 
@@ -46,6 +57,10 @@ describe('sourceFileForUrl', () => {
 
   it('resolves hinodeiri city URLs to the dynamic [city].astro route', () => {
     expect(sourceFileForUrl(pagesDir, 'hinodeiri/tokyo')).toBe(join(pagesDir, 'hinodeiri/[city].astro'));
+  });
+
+  it('resolves jisa city URLs to the dynamic [city].astro route', () => {
+    expect(sourceFileForUrl(pagesDir, 'jisa/tokyo')).toBe(join(pagesDir, 'jisa/[city].astro'));
   });
 
   it('resolves rokusei type URLs to the dynamic [type].astro route', () => {

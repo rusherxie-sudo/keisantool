@@ -1,25 +1,51 @@
 // ページ「実際の最終更新日」を git コミット日時から取得する共有ロジック。
 // sitemap の lastmod（astro.config.mjs）と、各ページ JSON-LD の dateModified（ToolLayout.astro）の
-// 両方から参照する単一の実装。git が使えない場合のみファイルの mtime にフォールバックする。
+// 両方から参照する単一の実装。
+// 優先順位：① scripts/update-lastmod.mjs が生成する src/data/lastmod.json（manifest）
+// → ② git log → ③ ファイル mtime。
+// Cloudflare Pages の Git 統合ビルドは shallow clone（git 履歴が無い）のため、ビルド中に git log を
+// 引くと全ファイルが同じ「デプロイ日」になる。そこで完全な git 履歴のある手元で manifest を生成・
+// コミットしておき、まずそれを参照する（ローカルの git log と値は一致する）。
 import { execSync } from 'node:child_process';
-import { statSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { statSync, existsSync, readFileSync } from 'node:fs';
+import { join, relative, isAbsolute } from 'node:path';
 
 const dateCache = new Map();
+
+// scripts/update-lastmod.mjs が生成した「repo 相対パス → git 最終コミット ISO」のマップ。
+// モジュールレベルの変数に一度だけ読み込む（ビルド中に何百回も呼ばれるため）。
+let manifest = null;
+function loadManifest() {
+  if (manifest === null) {
+    try {
+      manifest = JSON.parse(
+        readFileSync(join(process.cwd(), 'src/data/lastmod.json'), 'utf8')
+      );
+    } catch {
+      manifest = {}; // 未生成・読めない場合は git log / mtime にフォールバック
+    }
+  }
+  return manifest;
+}
 
 export function lastModifiedISO(file) {
   if (dateCache.has(file)) return dateCache.get(file);
   let iso = null;
-  try {
-    // %cI = strict ISO 8601 のコミット日時
-    const out = execSync(`git log -1 --format=%cI -- "${file}"`, {
-      cwd: process.cwd(),
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-    }).trim();
-    iso = out || null;
-  } catch {
-    iso = null;
+  // ① コミット済み manifest を最優先で参照（絶対パスは repo 相対パスに直して引く）
+  const manifestKey = isAbsolute(file) ? relative(process.cwd(), file) : file;
+  iso = loadManifest()[manifestKey] || null;
+  if (!iso) {
+    try {
+      // %cI = strict ISO 8601 のコミット日時
+      const out = execSync(`git log -1 --format=%cI -- "${file}"`, {
+        cwd: process.cwd(),
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).trim();
+      iso = out || null;
+    } catch {
+      iso = null;
+    }
   }
   if (!iso && existsSync(file)) {
     try {
@@ -47,6 +73,8 @@ export function sourceFileForUrl(pagesDir, urlPath) {
   if (path.startsWith('umaredoshi/')) return join(pagesDir, 'umaredoshi/[year].astro');
   // 日の出・日の入りの都市別ページも動的ルート（全都市が同一テンプレ）
   if (path.startsWith('hinodeiri/')) return join(pagesDir, 'hinodeiri/[city].astro');
+  // 時差(JISA)の都市別ページも動的ルート（全都市が同一テンプレ）
+  if (path.startsWith('jisa/')) return join(pagesDir, 'jisa/[city].astro');
   // 六星占術の12タイプ別ページも動的ルート
   if (path.startsWith('rokusei/')) return join(pagesDir, 'rokusei/[type].astro');
   // 地域別最低賃金の47都道府県ページ：内容は src/lib/saitei.js のデータから生成されるため、
