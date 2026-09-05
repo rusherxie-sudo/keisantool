@@ -13,6 +13,11 @@
   - 提交 `b6000ea`，另 `f04dbc0` 建 PROJECT.md。已推 origin/main，CF Pages 自动部署。线上复检：sitemap lastmod 恢复真实日期分布（2026-06-16~08-29）、/zeizei/ dateModified=08-01、/saitei/tokyo/=08-29、/jisa/london/=07-31（12 城 now 有 lastmod）。
 - **本轮追加优化（同日）**：① 低 CTR 高曝光页 title/description 优化（`/nissu/` 0.17%→description 直接答案承诺；`/hayasa/` 0.1%→主词「速さ計算」前置；`/kinzoku-nensuu/` 0.6%→微调）。提交 `d304513` + `3f8b362`（两步提交刷新 manifest），已部署线上验证 title/lastmod 均生效。② GSC 已通过 Search Console API 重提交 sitemap（index+子 sitemap 均 HTTP 204，lastSubmitted 刷新 09-05），Bing IndexNow 全量 426 URL 返回 200。复查点：2-3 天后（约 09-08）看 GSC sitemap 报告 submitted 是否从 333 刷到 426。
 - **⚠️ 待办（下轮）**：① AdSense 已**暂时搁置**（owner 反馈申请不下来，忽略）；② /nenrei-hayami/ Google 化（内容，对冲单页依赖）；③ 六星占術 词群深挖扩量（pSEO，需新页）；④ www DNS + CF Pages NODE_VERSION=22（需 dashboard）；⑤ 7/28 天复盘（见下）。
+- **第 3 轮（同日，连续推进）**：
+  - ① /nenrei-hayami/ 补 schema.org Dataset JSON-LD（年表 159 行标记，temporalCoverage 1868/2026、variableMeasured 5 列）。title 经判断无需改（主词已在首位、Bing #1 页避免 churn、Google 0 点击是排名/收录问题非 CTR）。提交 `58dfde0`+`eea5b1a`。
+  - ② 六星占術扩量：seo 用 GSC(2998词)+Bing(635词) 深挖，头号机会「宿命大殺界 自動計算」（Google 88 点击/2511 曝光/33 词，现排 6~10，但 hub 页明写「計算対象外」）。已落地**两个复用现有数据的新页**：`/rokusei/hayamihyou/`（12タイプ×当年運勢+直近6年大殺界 matrix）与 `/rokusei/daisakkai-2026/`（2026 大殺界=火星人プラス・火星人マイナス・天王星人マイナス）。提交 `14e849c`+`bfa22d2`，构建 571→573 页。lastmod.js 加了两个静态页精确映射。
+  - ③ **宿命大殺界（头号机会）未落地——诚实卡点**：大运排列存在流派差异（senjutsu.jp 自己承认「立春边界 vs 元旦边界」两种口径）。实测：senjutsu.jp 示例「空亡寅卯 → 宿命大殺界 88~108 岁」，按标准四柱推命规则（月柱+1顺排、节气÷3起运）算出寅卯在 38~58 岁，差 50 年。lunar-javascript 能可靠算日柱空亡/月柱/节气，但**大运起法无唯一权威口径，无法可靠锚定**。故不硬编可能算错的算法上线（占い用户对「我的宿命大殺界是哪几年」敏感）。留作「需进一步算法口径调研」遗留项。
+  - ④ www DNS + NODE_VERSION：ops 确认无 CF 凭据（wrangler 未登录，唯一 token 在 host-admin profile 受限），已产出 owner dashboard 操作清单（附件见看板 t_fc598791）。属 P3/P4 低优先，非阻塞。
 - **⚠️ 新工作流约束**：以后任何页/数据更新 commit 后、部署前，需重跑 `node scripts/update-lastmod.mjs` 再提交（否则该文件 lastmod 会回退到 git/mtime 兜底）。已写进脚本头部注释。
 
 ## 2026-08-01 流量增长执行状态
