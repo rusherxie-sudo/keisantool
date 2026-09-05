@@ -11,7 +11,8 @@
 - **本轮已落地优化（1 项，低风险高价值）**：修复 sitemap lastmod / dateModified 失真。
   - 方案：提交式 manifest。新增 `scripts/update-lastmod.mjs`（完整 git 历史环境生成 `src/data/lastmod.json`，286 条「repo 相对路径 → git 提交 ISO」）；`src/lib/lastmod.js` 的 `lastModifiedISO` 改为 ①manifest → ②git log → ③mtime 三级，并补 `jisa/` 动态路由映射。测试 +2 项（95→1718）。
   - 提交 `b6000ea`，另 `f04dbc0` 建 PROJECT.md。已推 origin/main，CF Pages 自动部署。线上复检：sitemap lastmod 恢复真实日期分布（2026-06-16~08-29）、/zeizei/ dateModified=08-01、/saitei/tokyo/=08-29、/jisa/london/=07-31（12 城 now 有 lastmod）。
-- **⚠️ 待办（owner 决策 / 下轮）**：① AdSense 脚本部署需 owner 提供 ad unit ID 或确认重申请（最高价值，变现断链）；② GSC/Bing 重新提交 sitemap 以刷新 lastmod（seo 快件）；③ /hayasa/、/kinzoku-nensuu/、日数計算 低 CTR 页 title/description 微调；④ 年齢早見表 Google 化（内容）；⑤ www DNS + CF Pages NODE_VERSION=22（需 dashboard）。
+- **本轮追加优化（同日）**：① 低 CTR 高曝光页 title/description 优化（`/nissu/` 0.17%→description 直接答案承诺；`/hayasa/` 0.1%→主词「速さ計算」前置；`/kinzoku-nensuu/` 0.6%→微调）。提交 `d304513` + `3f8b362`（两步提交刷新 manifest），已部署线上验证 title/lastmod 均生效。② GSC 已通过 Search Console API 重提交 sitemap（index+子 sitemap 均 HTTP 204，lastSubmitted 刷新 09-05），Bing IndexNow 全量 426 URL 返回 200。复查点：2-3 天后（约 09-08）看 GSC sitemap 报告 submitted 是否从 333 刷到 426。
+- **⚠️ 待办（下轮）**：① AdSense 已**暂时搁置**（owner 反馈申请不下来，忽略）；② /nenrei-hayami/ Google 化（内容，对冲单页依赖）；③ 六星占術 词群深挖扩量（pSEO，需新页）；④ www DNS + CF Pages NODE_VERSION=22（需 dashboard）；⑤ 7/28 天复盘（见下）。
 - **⚠️ 新工作流约束**：以后任何页/数据更新 commit 后、部署前，需重跑 `node scripts/update-lastmod.mjs` 再提交（否则该文件 lastmod 会回退到 git/mtime 兜底）。已写进脚本头部注释。
 
 ## 2026-08-01 流量增长执行状态
