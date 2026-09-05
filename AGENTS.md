@@ -21,6 +21,7 @@ npm run build                         # 生产构建 → dist/
 ```
 
 部署采用 **GitHub → Cloudflare Pages**：推送到 `main` 后，由 GitHub Actions 执行测试/构建，Cloudflare Pages 的 Git 集成自动发布 `dist/`。本地改完先运行 `npm run check`，再提交并推送；不要默认执行 `wrangler pages deploy`。
+- ⚠️ **改任何页面/数据文件后、部署前，必须重跑 `node scripts/update-lastmod.mjs` 并提交生成的 `src/data/lastmod.json`**：CF Pages 构建是 shallow clone（无 git 历史），sitemap lastmod 与页面 JSON-LD dateModified 靠这份提交式 manifest 才能拿到真实提交日，否则会失真为「部署日」。
 
 ## 架构大图（需读多个文件才懂的部分）
 

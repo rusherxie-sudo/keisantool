@@ -1,6 +1,18 @@
 # keisantool 交接文档
 
-> 面向接手的新会话。读完这份 + `CLAUDE.md` 即可上手。最后更新：2026-08-31。
+> 面向接手的新会话。读完这份 + `CLAUDE.md` 即可上手。最后更新：2026-09-05。
+
+## 2026-09-05 manager 接手 + 全站审计 + lastmod 失真修复
+
+- 基线复核：96 工具全 live；95 测试文件 / 1718 项全绿；构建 571 页；sitemap 426 URL（144 个 seiza-aisho 组合页 noindex 排除）；本地 HEAD 与 origin/main 同步（现已推进到 f04dbc0）。部署链为 GitHub → CF Pages Git 集成，CI 仅 gate（test+build）。
+- 跨 Profile 专项（kanban 派发，tenant=keisantool）：
+  - **seo**（独立重读，不沿用旧数字）：GSC 28 天 294 点击 / 29,089 展示 / CTR 1.01% / 均位 17.74；GA4 30 天 6,085 activeUsers（organic 5,754，AI Assistant 仅 26）；Bing 77 天 5,976 点击 / 324,059 展示（**Bing 是绝对主力，约为 Google 20 倍**）。Semrush Authority Score=8、62 引荐域、自然流量 289/月。三大短板：① AdSense 广告脚本未部署（ads.txt 在线但页面无 adsbygoogle，收入 0）② 权威极低卡死 Google 排名 ③ 流量高度集中「年齢早見表」单页（占 Bing 点击 ~27%）+ Bing 单引擎。
+  - **ops**：线上 15 个代表 URL 全 200、sitemap 426 条零死链、6 条 301 全对、robots/ads/llms/IndexNow 验证文件 hash 与仓库一致、真 404 无 SPA 回退。发现 **P1（中）：CF Pages 构建环境无 git 历史 → 线上 sitemap lastmod 与 JSON-LD dateModified 全部失真为部署日**；P2（低）：12 个 /jisa/<city>/ 页漏 lastmod 映射；P3 www 无 DNS；P4 Node 版本漂移（本地 v26 vs CI 22）。
+- **本轮已落地优化（1 项，低风险高价值）**：修复 sitemap lastmod / dateModified 失真。
+  - 方案：提交式 manifest。新增 `scripts/update-lastmod.mjs`（完整 git 历史环境生成 `src/data/lastmod.json`，286 条「repo 相对路径 → git 提交 ISO」）；`src/lib/lastmod.js` 的 `lastModifiedISO` 改为 ①manifest → ②git log → ③mtime 三级，并补 `jisa/` 动态路由映射。测试 +2 项（95→1718）。
+  - 提交 `b6000ea`，另 `f04dbc0` 建 PROJECT.md。已推 origin/main，CF Pages 自动部署。线上复检：sitemap lastmod 恢复真实日期分布（2026-06-16~08-29）、/zeizei/ dateModified=08-01、/saitei/tokyo/=08-29、/jisa/london/=07-31（12 城 now 有 lastmod）。
+- **⚠️ 待办（owner 决策 / 下轮）**：① AdSense 脚本部署需 owner 提供 ad unit ID 或确认重申请（最高价值，变现断链）；② GSC/Bing 重新提交 sitemap 以刷新 lastmod（seo 快件）；③ /hayasa/、/kinzoku-nensuu/、日数計算 低 CTR 页 title/description 微调；④ 年齢早見表 Google 化（内容）；⑤ www DNS + CF Pages NODE_VERSION=22（需 dashboard）。
+- **⚠️ 新工作流约束**：以后任何页/数据更新 commit 后、部署前，需重跑 `node scripts/update-lastmod.mjs` 再提交（否则该文件 lastmod 会回退到 git/mtime 兜底）。已写进脚本头部注释。
 
 ## 2026-08-01 流量增长执行状态
 
