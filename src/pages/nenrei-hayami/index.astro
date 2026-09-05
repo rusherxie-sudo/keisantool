@@ -31,6 +31,31 @@ const jsonld = {
   operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
+
+const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
+
+// 年表（明治元年〜今年の159行）を Dataset としてマークアップする。
+// 行データは ItemList で列挙せず（159行は重すぎる）、カバー範囲・列構成・無料性だけを宣言する。
+const datasetJsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  '@id': `${canonicalUrl}#dataset`,
+  name: `${BASE_YEAR}年（${BASE_WAREKI}）版 年齢早見表データ（西暦・和暦・満年齢・数え年・干支）`,
+  description: `明治元年（1868年）から${BASE_YEAR}年（${BASE_WAREKI}）までの生まれ年 ${rows.length} 行ぶんについて、西暦・和暦・満年齢（${BASE_YEAR}年の誕生日を迎えた後）・数え年・干支をまとめた年齢早見表のデータです。`,
+  url: canonicalUrl,
+  inLanguage: 'ja',
+  isAccessibleForFree: true,
+  license: 'https://keisantool.com/terms/',
+  temporalCoverage: `${FROM_YEAR}/${BASE_YEAR}`,
+  keywords: ['年齢早見表', '満年齢', '数え年', '和暦', '干支'],
+  variableMeasured: [
+    { '@type': 'PropertyValue', name: '西暦', description: '生まれ年の西暦', unitText: '年' },
+    { '@type': 'PropertyValue', name: '和暦', description: '生まれ年の和暦表記（改元の年は旧元号／新元号を併記）' },
+    { '@type': 'PropertyValue', name: '満年齢', description: `${BASE_YEAR}年の誕生日を迎えた後の満年齢`, unitText: '歳' },
+    { '@type': 'PropertyValue', name: '数え年', description: '生まれた年を1歳とし、1月1日ごとに1歳加える数え方', unitText: '歳' },
+    { '@type': 'PropertyValue', name: '干支', description: '生まれ年の十二支（子・丑・寅など）' },
+  ],
+};
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
@@ -42,6 +67,8 @@ const jsonld = {
   </div>
 
   <section class="hayami-main">
+    <!-- 年表を Dataset として構造化データで宣言（行データは列挙しない） -->
+    <script type="application/ld+json" set:html={JSON.stringify(datasetJsonld)} />
     <div class="hayami-lead">
       <p class="hayami-note">
         表の<strong>満年齢は「{BASE_YEAR}年の誕生日を迎えた後」の年齢</strong>です。まだ誕生日が来ていない方は<strong>マイナス1歳</strong>してください。数え年は「生まれた年を1歳とし、1月1日ごとに1歳加える」数え方です。
