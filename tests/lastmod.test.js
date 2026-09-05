@@ -75,6 +75,10 @@ describe('sourceFileForUrl', () => {
     expect(sourceFileForUrl(pagesDir, 'rokusei/daisakkai-2026')).toBe(join(pagesDir, 'rokusei/daisakkai-2026.astro'));
   });
 
+  it('resolves rokusei shukumei-daisakkai to its own static flat file', () => {
+    expect(sourceFileForUrl(pagesDir, 'rokusei/shukumei-daisakkai')).toBe(join(pagesDir, 'rokusei/shukumei-daisakkai.astro'));
+  });
+
   it('resolves saitei prefecture URLs to the data file so lastmod tracks answer updates', () => {
     expect(sourceFileForUrl(pagesDir, 'saitei/tokyo')).toBe(join(process.cwd(), 'src/lib/saitei.js'));
   });

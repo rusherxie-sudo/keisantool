@@ -1,0 +1,223 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'rokusei/shukumei-daisakkai';
+const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
+
+const title = '宿命大殺界 自動計算｜生年月日から人生の20年間を無料判定';
+const description =
+  '生年月日と性別を入力するだけで、六星占術の「宿命大殺界」が人生のいつ来るかを自動計算。初起殺界・中起殺界・転起殺界の20年間と、日柱の空亡・大運の一覧も表示します。';
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '宿命大殺界 自動計算',
+  description,
+  applicationCategory: 'LifestyleApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: '六星占術 自動計算', item: new URL('/rokusei/', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: '宿命大殺界 自動計算', item: canonicalUrl },
+  ],
+};
+
+const faqItems = [
+  { q: '宿命大殺界と大殺界はどう違いますか？', a: '大殺界は12年周期で毎年の運気（陰影・停止・減退）を指します。宿命大殺界は、四柱推命の「大運」のうち日柱の空亡に該当する人生に一度の20年間（初起殺界5年→中起殺界10年→転起殺界5年）を指します。' },
+  { q: '宿命大殺界がない人もいますか？', a: 'はい。宿命大殺界が100歳を超えてから訪れる人は「実質的になし」とされます。晩年に来るほど、人生への影響は小さいとされています。' },
+  { q: '宿命大殺界の判定基準は？', a: '日柱の空亡（生まれた日の六十干支から求める2つの地支）を、四柱推命の大運の一覧から探し、そこに該当する連続2運（20年）を宿命大殺界としています。大運の起法や年の境界には流派差があります。' },
+  { q: '結果は信頼できますか？', a: '占いは文化的な慣習・娯楽を目的としたもので、科学的根拠や将来を保証するものではありません。結果はあくまで参考値です。' },
+];
+---
+
+<ToolLayout title={title} description={description} slug={slug} current="rokusei" jsonld={jsonld} breadcrumb={breadcrumb} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/rokusei/">六星占術</a> ／ 宿命大殺界</div>
+    <h1>宿命大殺界 自動計算</h1>
+    <p>生年月日と性別を入力するだけで、六星占術の<strong>宿命大殺界</strong>（人生に一度の20年間）がいつ来るかを自動判定。初起殺界・中起殺界・転起殺界の内訳と、日柱の空亡・大運の流れも確認できます。</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="wide-input">
+      <div class="form-group">
+        <label for="sd-date">生年月日</label>
+        <input type="date" id="sd-date" min="1900-01-01" max="2099-12-31" />
+      </div>
+      <div class="form-group">
+        <label>性別（宿命大殺界の計算に必要）</label>
+        <div class="radio-group">
+          <label><input type="radio" name="sd-gender" value="male" checked /><span>男性</span></label>
+          <label><input type="radio" name="sd-gender" value="female" /><span>女性</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-box" id="sd-result">
+      <div class="result-label">あなたの宿命大殺界</div>
+      <div class="result-main" id="sd-main">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">運命星</span><span class="value" id="sd-star">―</span></div>
+        <div class="result-row"><span class="label">陽陰</span><span class="value" id="sd-pol">―</span></div>
+        <div class="result-row"><span class="label">日柱の空亡</span><span class="value" id="sd-kong">―</span></div>
+        <div class="result-row"><span class="label">大運の起算</span><span class="value" id="sd-start">―</span></div>
+      </div>
+
+      <div class="sd-segments" id="sd-segments"></div>
+
+      <div class="sd-note" id="sd-note"></div>
+
+      <div class="sd-dayun">
+        <div class="result-label">大運の一覧（10年ごと・太字が宿命大殺界）</div>
+        <div class="data-table-wrap">
+          <div class="data-table-scroll">
+            <table class="data-table">
+              <thead><tr><th>年齢</th><th>大運（干支）</th><th>地支</th></tr></thead>
+              <tbody id="sd-dayun"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
+  <div class="ad-slot"></div>
+
+  <section class="howto">
+    <h2>宿命大殺界とは？判定のしかた</h2>
+    <p>
+      六星占術の<strong>宿命大殺界</strong>は、人生のうちで「不調期」とされる20年間を指します。毎年の運気を表す<a href="/rokusei/">年運の大殺界（3年間）</a>とは別の考え方で、四柱推命の「大運」と「日柱の空亡」から導き出します。
+    </p>
+    <ul>
+      <li><strong>初起殺界（最初の5年）</strong>：宿命大殺界の入口。大きな変化を控えめにする時期とされます。</li>
+      <li><strong>中起殺界（真ん中の10年）</strong>：宿命大殺界の中心。20年で最も慎重さが求められるとされます。</li>
+      <li><strong>転起殺界（最後の5年）</strong>：終盤。新しい動きを始めたくなりがちですが、慎重に締めくくる時期とされます。</li>
+    </ul>
+    <h3>判定基準（公開）</h3>
+    <p>
+      本ツールは次の標準的な口径で計算しています。① <strong>日柱の空亡</strong>＝生まれた日の六十干支から求まる2つの地支（例：戌亥）。② <strong>大運</strong>＝四柱推命の十年一運で、年干の陰陽と性別による順行・逆行、出生日から次の節（または前の節）までの日数÷3で起運年齢を決め、月柱の干支から順・逆に並べます。③ 大運のうち、地支が日柱の空亡に当たる連続2運（20年）を宿命大殺界とします。
+    </p>
+    <p class="sd-disclaimer-note">
+      ※ 大運の起法や年の境界（立春境界／元旦境界）は流派によって差異があります。本結果は上記の標準口径に基づく参考値です。
+    </p>
+    <div class="disclaimer">※ 六星占術は文化的な慣習・娯楽としての占いであり、科学的根拠や将来の出来事を保証するものではありません。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <RelatedTools current="rokusei" />
+
+  <Faq items={faqItems} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<!-- innerHTML 注入の要素は scoped style が効かないため global で定義 -->
+<style is:global>
+  #sd-segments .sd-seg { border-radius: var(--r-md); padding: 10px 14px; }
+  #sd-segments .sd-seg.shoki { background: var(--warning-bg); }
+  #sd-segments .sd-seg.chuki { background: var(--danger-bg); }
+  #sd-segments .sd-seg.tenki { background: var(--warning-bg); }
+  #sd-segments .sd-seg .sd-seg-head { font-weight: var(--fw-bold); font-size: .86rem; }
+  #sd-segments .sd-seg.shoki .sd-seg-head { color: var(--warning-text); }
+  #sd-segments .sd-seg.chuki .sd-seg-head { color: var(--danger); }
+  #sd-segments .sd-seg.tenki .sd-seg-head { color: var(--warning-text); }
+  #sd-segments .sd-seg .sd-seg-body { font-size: .8rem; color: var(--text); margin-top: 2px; }
+  #sd-dayun tr.is-kong { background: var(--danger-bg); }
+  #sd-dayun tr.is-kong td { font-weight: var(--fw-bold); color: var(--danger); }
+</style>
+
+<style>
+  .wide-input { display: grid; gap: 14px; }
+  @media (min-width: 560px) { .wide-input { grid-template-columns: 1fr 1fr; } }
+  /* 隠し radio は幅 1px にしないと form-group input の width:100% を継承して横に伸びる */
+  .radio-group input[type="radio"] { width: 1px; }
+  .radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+  .radio-group label { display: flex; align-items: center; gap: 6px; font-size: .9rem; cursor: pointer; }
+  .radio-group label span { order: 1; }
+  .radio-group input[type="radio"] { order: 0; width: 1px; height: 1px; opacity: 0; position: absolute; }
+  .radio-group label span::before {
+    content: ''; display: inline-block; width: 16px; height: 16px; margin-right: 6px;
+    border: 1.5px solid var(--border); border-radius: 50%; vertical-align: -3px; background: var(--surface);
+  }
+  .radio-group input:checked + span::before { border-color: var(--cat-color); background: radial-gradient(circle, var(--cat-color) 40%, transparent 42%); }
+
+  .sd-segments { display: grid; gap: 8px; margin-top: 16px; }
+  .sd-note { font-size: .8rem; color: var(--text-muted); margin-top: 12px; line-height: 1.7; }
+  .sd-dayun { margin-top: 18px; padding-top: 16px; border-top: 1.5px solid var(--border-2); }
+  .sd-dayun .result-label { margin-bottom: 10px; }
+  .sd-dayun th[scope="row"] { text-align: left; }
+  .sd-disclaimer-note { font-size: .78rem; color: var(--text-muted); margin-top: 12px; line-height: 1.7; }
+</style>
+
+<script>
+  import { shukumeiDaisakkai } from '../../lib/shukumei.js';
+
+  const $ = (id) => document.getElementById(id);
+  let hasTrackedResult = false;
+
+  function render() {
+    const date = $('sd-date').value;
+    const gender = document.querySelector('input[name="sd-gender"]:checked')?.value || 'male';
+    const box = $('sd-result');
+    if (!date) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
+    const [y, m, d] = date.split('-').map(Number);
+    const r = shukumeiDaisakkai(y, m, d, gender);
+    if (!r) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
+    box.classList.add('visible');
+    if (!hasTrackedResult) {
+      window.trackCalculatorResult?.('fortune');
+      hasTrackedResult = true;
+    }
+
+    $('sd-star').textContent = r.star;
+    $('sd-pol').textContent = r.polarity;
+    $('sd-kong').textContent = r.dayXunKong;
+    $('sd-start').textContent = `${r.startYears}歳${r.startMonths}ヶ月（${r.forward ? '順行' : '逆行'}・月柱${r.monthGZ}）`;
+
+    // 宿命大殺界の結論
+    if (r.hasShukumei) {
+      const s = r.shukumei;
+      $('sd-main').textContent = `${s.startAge}歳〜${s.endAge}歳（${s.startYear}年〜${s.endYear}年）`;
+      $('sd-segments').innerHTML = `
+        <div class="sd-seg shoki"><div class="sd-seg-head">初起殺界（最初の5年）</div><div class="sd-seg-body">${s.shoki.fromAge}歳〜${s.shoki.toAge}歳（${s.startYear}年〜${s.startYear + 5}年）</div></div>
+        <div class="sd-seg chuki"><div class="sd-seg-head">中起殺界（真ん中の10年）</div><div class="sd-seg-body">${s.chuki.fromAge}歳〜${s.chuki.toAge}歳（${s.startYear + 5}年〜${s.startYear + 15}年）</div></div>
+        <div class="sd-seg tenki"><div class="sd-seg-head">転起殺界（最後の5年）</div><div class="sd-seg-body">${s.tenki.fromAge}歳〜${s.tenki.toAge}歳（${s.startYear + 15}年〜${s.startYear + 20}年）</div></div>
+      `;
+      $('sd-note').textContent = 'この20年間が宿命大殺界です。新しい挑戦や大きな決断は控えめに、健康管理を心がける時期とされています。';
+    } else {
+      $('sd-main').textContent = '実質的になし';
+      $('sd-segments').innerHTML = '<div class="sd-seg chuki"><div class="sd-seg-head">宿命大殺界は晩年（100歳以降）</div><div class="sd-seg-body">宿命大殺界が100歳を超えてから訪れるため、実質的に影響を受けずに過ごせる方です。</div></div>';
+      $('sd-note').textContent = '';
+    }
+
+    // 大運表
+    $('sd-dayun').innerHTML = r.dayun
+      .map((yun) => {
+        const isKong = r.hasShukumei && yun.fromAge >= r.shukumei.startAge && yun.fromAge < r.shukumei.endAge;
+        return `<tr class="${isKong ? 'is-kong' : ''}"><td class="num">${yun.fromAge}〜${yun.toAge}歳</td><td>${yun.gz}</td><td>${yun.zhi}</td></tr>`;
+      })
+      .join('');
+
+    window.setResultShare?.(
+      '宿命大殺界\n' +
+        `運命星：${r.star}（${r.polarity}）\n` +
+        `日柱の空亡：${r.dayXunKong}\n` +
+        `宿命大殺界：${r.hasShukumei ? `${r.shukumei.startAge}歳〜${r.shukumei.endAge}歳` : '実質的になし'}`
+    );
+  }
+
+  $('sd-date').addEventListener('input', render);
+  $('sd-date').addEventListener('change', render);
+  document.querySelectorAll('input[name="sd-gender"]').forEach((radio) => {
+    radio.addEventListener('change', render);
+  });
+</script>

@@ -79,6 +79,7 @@ export function sourceFileForUrl(pagesDir, urlPath) {
   // 必ず startsWith('rokusei/') の判定より先に解決する（動的ルートに吸われないようにする）。
   if (path === 'rokusei/hayamihyou') return join(pagesDir, 'rokusei/hayamihyou.astro');
   if (path === 'rokusei/daisakkai-2026') return join(pagesDir, 'rokusei/daisakkai-2026.astro');
+  if (path === 'rokusei/shukumei-daisakkai') return join(pagesDir, 'rokusei/shukumei-daisakkai.astro');
   // 六星占術の12タイプ別ページも動的ルート
   if (path.startsWith('rokusei/')) return join(pagesDir, 'rokusei/[type].astro');
   // 地域別最低賃金の47都道府県ページ：内容は src/lib/saitei.js のデータから生成されるため、
