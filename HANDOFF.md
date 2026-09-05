@@ -16,7 +16,7 @@
 - **第 3 轮（同日，连续推进）**：
   - ① /nenrei-hayami/ 补 schema.org Dataset JSON-LD（年表 159 行标记，temporalCoverage 1868/2026、variableMeasured 5 列）。title 经判断无需改（主词已在首位、Bing #1 页避免 churn、Google 0 点击是排名/收录问题非 CTR）。提交 `58dfde0`+`eea5b1a`。
   - ② 六星占術扩量：seo 用 GSC(2998词)+Bing(635词) 深挖，头号机会「宿命大殺界 自動計算」（Google 88 点击/2511 曝光/33 词，现排 6~10，但 hub 页明写「計算対象外」）。已落地**两个复用现有数据的新页**：`/rokusei/hayamihyou/`（12タイプ×当年運勢+直近6年大殺界 matrix）与 `/rokusei/daisakkai-2026/`（2026 大殺界=火星人プラス・火星人マイナス・天王星人マイナス）。提交 `14e849c`+`bfa22d2`，构建 571→573 页。lastmod.js 加了两个静态页精确映射。
-  - ③ **宿命大殺界（头号机会）未落地——诚实卡点**：大运排列存在流派差异（senjutsu.jp 自己承认「立春边界 vs 元旦边界」两种口径）。实测：senjutsu.jp 示例「空亡寅卯 → 宿命大殺界 88~108 岁」，按标准四柱推命规则（月柱+1顺排、节气÷3起运）算出寅卯在 38~58 岁，差 50 年。lunar-javascript 能可靠算日柱空亡/月柱/节气，但**大运起法无唯一权威口径，无法可靠锚定**。故不硬编可能算错的算法上线（占い用户对「我的宿命大殺界是哪几年」敏感）。留作「需进一步算法口径调研」遗留项。
+  - ③ **宿命大殺界（头号机会）已落地（公开口径）**：因大运排列存在流派差异（senjutsu.jp 承认「立春边界 vs 元旦边界」），采用**标准四柱推命规则 + 页面公开判定基准 + 注明流派差**（相性系列先例）。新增 `src/lib/shukumei.js`（TDD：日柱空亡与 rokusei.js 共享、月柱顺逆+节气÷3起运、空亡地支连续20年=宿命大殺界，初起5/中起10/転起5）+ 页面 `/rokusei/shukumei-daisakkai/`（生年月日+性别输入）。同时把 hub `/rokusei/` 与 `/rokusei/daisakkai-2026/` 的「宿命大殺界は計算対象外」拒客文案改为引导到新页，承接 Google 88 点击/2511 曝光词群。提交 `7bf5c2f`+`bc1e2d6`+`f8df90b`+`eb57968`，测试 96 文件/1727 全绿、构建 574 页。⚠️ 已知口径差异：本算法算「空亡寅卯」宿命大殺界约 33~53 岁，senjutsu.jp 示例显示 88~108（其页面多示例被 innerText 混读 + 大运流派差异），页面已明确注明「结果仅供参考、流派有差异」。
   - ④ www DNS + NODE_VERSION：ops 确认无 CF 凭据（wrangler 未登录，唯一 token 在 host-admin profile 受限），已产出 owner dashboard 操作清单（附件见看板 t_fc598791）。属 P3/P4 低优先，非阻塞。
 - **⚠️ 新工作流约束**：以后任何页/数据更新 commit 后、部署前，需重跑 `node scripts/update-lastmod.mjs` 再提交（否则该文件 lastmod 会回退到 git/mtime 兜底）。已写进脚本头部注释。
 
