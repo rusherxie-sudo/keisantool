@@ -75,13 +75,10 @@ npm run dev         # 开发服务器
 npm run build       # 生产构建 → dist/
 ```
 
-部署（Owner 要求「改完直接部署」，不必每次问）：
-```bash
-npm run build
-npx wrangler pages deploy dist --project-name=keisantool
-```
-- CF Pages 项目名：`keisantool`，正式域名 keisantool.com，每次部署给一个 `xxxx.keisantool.pages.dev` 预览URL。
-- **注意**：本地 git 没有配置 remote（`origin` 不存在），所以 `git push` 会失败。部署走 wrangler，不走 git。commit 只是本地留痕。
+- 部署模式已切换为 **GitHub → Cloudflare Pages**：GitHub Actions（`.github/workflows/ci.yml`）负责 `npm test` 与 `npm run build`，Cloudflare Pages Git 集成监听 `main` 并自动发布 `dist/`。
+- CF Pages 项目名：`keisantool`，正式域名 keisantool.com；Cloudflare Pages 会生成对应的 `pages.dev` 预览地址。
+- 首次迁移需在 GitHub 创建仓库、配置 `origin`，并在 Cloudflare Pages 中绑定该仓库；本地仓库当前仍未配置 remote。
+- 日常流程：`npm run check` → `git commit` → `git push origin main`。不再把本机 `wrangler pages deploy` 作为默认部署路径。
 - **部署后顺手催 Bing 收录（IndexNow，2026-07-04 起）**：新增/改动页面 build+deploy 后，跑一次 `python3 scripts/indexnow-submit.py`（不传参数=提交 sitemap 全部 URL；也可传具体 URL 列表只推增量）。key 文件在 `public/bdddcbdf5763d849cfc0e7486c209c24.txt`，别删。背景：07-04 发现 Bing 14 天只有 1 click/24 impressions，几乎没收录，查出站点从没配置过 IndexNow——纯靠 Bing 被动爬 sitemap 太慢，尤其这几天密集加了两百多个程序化页。
 
 ## 3. 当前状态（2026-07-04）

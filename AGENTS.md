@@ -20,13 +20,7 @@ npm run dev                           # 开发服务器
 npm run build                         # 生产构建 → dist/
 ```
 
-部署（Owner 要求"改完直接部署，不必每次问"）：
-
-```bash
-npm run build && npx wrangler pages deploy dist --project-name=keisantool
-```
-
-- ⚠️ 本地 git **没有 remote**（`origin` 不存在），`git push` 会失败。部署走 wrangler，`git commit` 只是本地留痕。
+部署采用 **GitHub → Cloudflare Pages**：推送到 `main` 后，由 GitHub Actions 执行测试/构建，Cloudflare Pages 的 Git 集成自动发布 `dist/`。本地改完先运行 `npm run check`，再提交并推送；不要默认执行 `wrangler pages deploy`。
 
 ## 架构大图（需读多个文件才懂的部分）
 
@@ -65,7 +59,7 @@ npm run build && npx wrangler pages deploy dist --project-name=keisantool
 3. 写 `src/lib/<tool>.js` → 确认 **GREEN**。
 4. 建 `src/pages/<slug>/index.astro`：仿 `zeizei`/`wariai`/`moji`，SEO frontmatter 齐全。**工具专属样式写页面内 `<style>`**；只有全站级布局/卡片/导航才动 `global.css`。内容多就传 `wide`（见「架构大图」）。
 5. `npm run build` + 浏览器多尺寸验证 **1920 / 1440 / 768 / 375**（务必测超宽屏，两栏对齐问题只在宽屏暴露）。
-6. wrangler 部署。
+6. 提交并推送到 GitHub，由 Cloudflare Pages 自动部署；部署后抽查页面返回 200。
 
 ## 陷阱（已踩过，别重犯）
 
