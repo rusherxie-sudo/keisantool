@@ -6,9 +6,9 @@ import ResultShare from '../../components/ResultShare.astro';
 import Faq from '../../components/Faq.astro';
 
 const slug = 'kinzoku-nensuu';
-const title = '入社何年目・勤続年数計算｜入社日から何年何ヶ月を自動計算';
+const title = '入社何年目・勤続年数計算｜入社日から何年何ヶ月を即計算';
 const description =
-  '入社して何年目か、勤続年数が何年何ヶ月何日かを入社日から自動計算。入社年別の早見表、経過日数、次の周年、退職所得用年数、有給休暇の時期も確認できます。';
+  '入社日と基準日を入力するだけで、勤続年数が何年何ヶ月何日かと入社何年目を自動計算。退職所得用の勤続年数、有給休暇の付与目安、次の入社周年も確認できます。';
 const jstNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
 const tableYear = jstNow.getMonth() < 3 ? jstNow.getFullYear() - 1 : jstNow.getFullYear();
 const aprilEntryRows = Array.from({ length: 17 }, (_, index) => {
