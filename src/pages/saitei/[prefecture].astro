@@ -25,10 +25,10 @@ const proposedText = info.proposedWage ? `${info.proposedWage.toLocaleString('ja
 const slug = `saitei/${info.slug}`;
 const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
 const title = info.proposedWage
-  ? `${info.prefecture}の最低賃金 2026年答申は${proposedText}｜現行${info.wage.toLocaleString('ja-JP')}円・月給計算`
+  ? `${info.prefecture}最低賃金 2026年は${proposedText}（答申）｜現在${info.wage.toLocaleString('ja-JP')}円`
   : wageHistory.length
-  ? `${info.prefecture}の最低賃金は${info.wage.toLocaleString('ja-JP')}円【2026年現在】｜推移・月給計算`
-  : `${info.prefecture}の最低賃金は${info.wage.toLocaleString('ja-JP')}円【2026年現在】｜月給・時給計算`;
+  ? `${info.prefecture}最低賃金 2026年｜現在${info.wage.toLocaleString('ja-JP')}円・推移・月給計算`
+  : `${info.prefecture}最低賃金 2026年｜現在${info.wage.toLocaleString('ja-JP')}円・月給計算`;
 const description = info.proposedWage
   ? `${info.prefecture}の2026年度最低賃金は${proposedText}と地方審議会が答申。現在適用中は時給${info.wage.toLocaleString('ja-JP')}円です。発効前の違いと日給・月給を確認できます。`
   : cities.length
