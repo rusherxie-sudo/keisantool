@@ -1,44 +1,38 @@
 # keisantool
 
-> 日本語の計算・変換ツール大全（100+ 工具）。
+> 日本語の計算・変換ツール集。
 
 ## 核心信息
-- **域名**：https://keisantool.com
-- **用途**：日文计算/换算工具站（税、BMI、年龄、面积、电量、最低工资等 96 工具），浏览器端 Vanilla JS 计算（隐私卖点）
-- **北极星**：Google 日本自然搜索 → AdSense
-- **目标用户**：日本用户
-- **站点语言**：日语（页面，由 AI 生成，Owner 无法校对）；开发沟通用中文
-- **GitHub**：`rusherxie-sudo/keisantool`（main，public）
 
-## 技术栈
-- Astro 6（纯静态 SSG）+ Vanilla JS（无 TypeScript）+ vitest + marked + `@astrojs/sitemap`
-- 包管理器：npm
-- 单一数据源：`src/data/tools.js`（categories + tools）
-- 计算逻辑 TDD（先测试后实现），测试是唯一正确性保证
+- 域名：`https://keisantool.com`
+- 用户：日本语搜索用户
+- 技术：Astro 6 静态构建、Vanilla JS、Vitest、npm
+- 部署：GitHub `main` → GitHub Actions → Cloudflare Pages
+- 仓库：`rusherxie-sudo/keisantool`
+- 页面计算在浏览器端完成，无后端数据库
 
-## 部署
-- Cloudflare Pages（Git 集成，Build `npm run build`，Output `dist`，Node 22）
-- GitHub Actions `ci.yml`（npm ci + test + build）；不本地 `wrangler pages deploy`
+## 代码约定
 
-## 数据依赖
-- 无后端/数据库，纯静态
+- 工具元数据唯一来源：`src/data/tools.js`
+- 计算纯函数：`src/lib/`
+- 页面：`src/pages/`
+- 共通布局：`src/layouts/ToolLayout.astro`
+- 测试：`tests/`
+- 当前规则与陷阱：`CLAUDE.md`
+- 当前进度与历史状态：`HANDOFF.md`
 
-## 页面类型
-- 96 个工具页（`src/pages/<slug>/index.astro`）+ `blog/`（56 篇 content collection）+ 程序化页群（saitei 47 县 / umaredoshi 111 年 / seiza-aisho 144 组合 / rokuyo 48 月 / jisa 12 城 / rokusei 12 型 / hinodeiri 15 城 / shukujitsu 5 年）+ 8 分类页 + about/privacy/terms
+## 页面与 SEO
 
-## SEO 结构
-- sitemap-index.xml（真实 lastmod 用 git 提交日）、robots、canonical、JSON-LD（WebApplication）
-- 每页 h1/title/description/canonical/JSON-LD/lang=ja + 内链 ≥3
+- 工具页使用 `ToolLayout` 统一输出 title、description、canonical、JSON-LD、面包屑和页面更新日期。
+- 程序化页面包括出生年份、最低工资、六星占术、时差、日出日落、六曜、祝日、星座相性等页面群。
+- sitemap 使用 `src/data/lastmod.json` 提供提交式更新时间。
 
-## 权威文档
-- `HANDOFF.md`（24063 字滚动状态日志，最新状态看这里）、`CLAUDE.md`（稳定约定/陷阱）、`ONBOARDING.md`（完整交接快照）、`README.md`
-- `docs/`：design-brief、seo-growth-30d、superpowers specs
+## 验证命令
 
-## 当前状态（2026-09-05 复核）
-- 构建：571 页；测试 95 文件 / 1718 项全绿；sitemap 426 URL（144 个 seiza-aisho 组合页 noindex 排除）
-- 流量：Bing 为绝对主力（77 天 5,976 点击 / 324,059 展示），Google GSC 28 天 294 点击 / 29,089 展示 / CTR 1.01% / 均位 17.74；GA4 30 天 6,085 activeUsers
-- 变现断链：ads.txt 已上线（pub-1382715204285550），但页面 AdSense 广告脚本尚未部署（.ad-slot 为空占位），当前广告收入为 0 —— 待 owner 提供 ad unit / 重申请决策
-- 2026 最低賃金地方答申 41/47 县确认（剩余 6 县待官方答申）；saniku 育休賃金日額上限已更新至 16,540 円（令和8年8月）
+```bash
+npm test
+npm run build
+npm run check
+```
 
-## GA4
-- `G-XM8LC5MPHT`
+最近验证基线：96 个测试文件、1727 项测试全绿，生产构建约 573 页。实际状态以命令输出和 `HANDOFF.md` 最新记录为准。

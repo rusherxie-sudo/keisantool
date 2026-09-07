@@ -21,13 +21,13 @@ const statusText = current.category === '大殺界'
   ? `${CURRENT_YEAR}年は「${current.zone}」で、大殺界にあたります`
   : `${CURRENT_YEAR}年は「${current.zone}」で、${current.category}にあたります`;
 const daisakkaiYears = daisakkaiRows.map((row) => `${row.year}年（${row.zone}）`).join('・');
-const title = `${typeInfo.type}の${CURRENT_YEAR}年運勢は${current.zone}｜大殺界はいつ？早見表 | 計算ツール`;
-const description = `${typeInfo.type}の${CURRENT_YEAR}年は${current.zone}（${current.category}）です。${CURRENT_YEAR - 2}〜${CURRENT_YEAR + 9}年の運勢と大殺界を12年早見表で確認。生年月日の無料自動計算も案内します。`;
+const title = `${typeInfo.type}の${CURRENT_YEAR}年運勢・大殺界早見表｜${current.zone}はいつ？ | 計算ツール`;
+const description = `${typeInfo.type}の${CURRENT_YEAR}年は${current.zone}（${current.category}）です。${CURRENT_YEAR - 2}〜${CURRENT_YEAR + 9}年の運勢と大殺界を12年早見表で確認できます。生年月日からの無料自動計算も案内します。`;
 
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
-  name: `${typeInfo.type}の${CURRENT_YEAR}年運勢と大殺界早見表`,
+  name: title,
   description,
   url: canonicalUrl,
 };
