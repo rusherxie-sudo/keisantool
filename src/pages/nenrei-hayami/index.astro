@@ -84,6 +84,9 @@ const datasetJsonld = {
       </p>
       <button id="print-btn" class="print-btn" type="button">🖨 この早見表を印刷する</button>
     </div>
+    <p class="hayami-intent-note">
+      生まれ年を指定して確認したい場合は、<a href="/umaredoshi/1988/">1988年生まれは何歳？</a>のような個別ページをご利用ください。今日の年齢を生年月日から正確に求める場合は<a href="/nenrei/">年齢計算器</a>、入学年度や学年を確認する場合は<a href="/gakunen-hayami/">学年早見表</a>が便利です。
+    </p>
 
     <div class="data-table-wrap">
       <div class="data-table-scroll">
@@ -165,6 +168,8 @@ const datasetJsonld = {
   }
   .hayami-lead .hayami-note { flex: 1 1 320px; margin: 0; }
   .hayami-note { font-size: .82rem; color: var(--text-muted); margin: 8px 0 0; line-height: 1.7; }
+  .hayami-intent-note { margin: 8px 0 14px; font-size: .82rem; line-height: 1.7; color: var(--text-muted); }
+  .hayami-intent-note a { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
   .hayami-answer {
     flex: 0 1 210px;
     display: grid;
