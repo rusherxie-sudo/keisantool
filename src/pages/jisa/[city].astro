@@ -8,13 +8,14 @@ import {
   getJapanTimeProfile,
   buildJapanTimeTable,
 } from '../../lib/jisa.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 export function getStaticPaths() {
   return JAPAN_TIME_PAIRS.map((pair) => ({ params: { city: pair.slug }, props: { pair } }));
 }
 
 const { pair } = Astro.props;
-const YEAR = new Date().getFullYear();
+const { year: YEAR } = japanDateParts();
 const profile = getJapanTimeProfile(pair, YEAR);
 
 function hoursLabel(diff) {

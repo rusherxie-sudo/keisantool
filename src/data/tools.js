@@ -1046,16 +1046,34 @@ export function getColorByCategorySlug(catSlug) {
   return getColorByCategory(meta ? meta.name : '');
 }
 
-// 指定ツールの関連ツールを返す（同カテゴリ優先 → 不足分は他カテゴリで補充）。
-// 内部リンク用。SEO要件「各ページから3つ以上」を満たす。
+// 検索流入の多いページは、カテゴリ順ではなく利用者の次の作業に沿ってつなぐ。
+// 未指定ツールは従来どおり同カテゴリを優先する。
+const relatedJourneys = {
+  'nenrei-hayami': ['nenrei', 'gakunen-hayami', 'gakureki', 'wareki'],
+  'gakunen-hayami': ['nenrei-hayami', 'gakureki', 'nenrei', 'wareki'],
+  gakureki: ['gakunen-hayami', 'nenrei-hayami', 'kinzoku-nensuu', 'wareki'],
+  'kinzoku-nensuu': ['yukyu-nissu', 'nissu', 'gakureki', 'nenrei-hayami'],
+  'yukyu-nissu': ['kinzoku-nensuu', 'kyuyo', 'nissu', 'shakaihoken'],
+  saitei: ['kyuyo', 'shakaihoken', 'shotokuzei', 'juminzei'],
+  jisa: ['jikan', 'nissu', 'hinodeiri', 'wareki'],
+  hinodeiri: ['jisa', 'jikan', 'shukujitsu', 'rokuyo'],
+  rokusei: ['rokusei-aisho', 'tanjobi-aisho', 'suumijutsu', 'seiza'],
+  hayasa: ['kasokudo', 'ryuuryou', 'kaitensuu', 'tani'],
+  shukujitsu: ['rokuyo', 'nissu', 'jikan', 'gakunen-hayami'],
+  rokuyo: ['shukujitsu', 'nissu', 'yakudoshi', 'hinodeiri'],
+};
+
 export function getRelated(slug, count = 4) {
   const current = getTool(slug);
   if (!current) return tools.slice(0, count);
+  const explicit = (relatedJourneys[slug] || [])
+    .map((relatedSlug) => getTool(relatedSlug))
+    .filter((tool) => tool && tool.live !== false && tool.slug !== slug);
   const sameCategory = tools.filter(
-    (t) => t.slug !== slug && t.category === current.category
+    (t) => t.slug !== slug && t.category === current.category && !explicit.includes(t)
   );
   const others = tools.filter(
-    (t) => t.slug !== slug && t.category !== current.category
+    (t) => t.slug !== slug && t.category !== current.category && !explicit.includes(t)
   );
-  return [...sameCategory, ...others].slice(0, count);
+  return [...explicit, ...sameCategory, ...others].slice(0, count);
 }

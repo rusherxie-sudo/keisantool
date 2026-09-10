@@ -15,6 +15,7 @@ import {
 import { kazoedoshi } from '../../lib/nenrei.js';
 import { polarity } from '../../lib/rokusei.js';
 import { getColorByCategory } from '../../data/tools.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 export function getStaticPaths() {
   // 範囲は src/lib/hayami.js の UMAREDOSHI_FROM/TO（ハブ表のリンク範囲と共通）
@@ -26,7 +27,7 @@ export function getStaticPaths() {
 const year = Number(Astro.params.year);
 
 // 基準年はビルド時に固定（毎年1月1日の再ビルドで自動更新される）。
-const BASE_YEAR = new Date().getFullYear();
+const { year: BASE_YEAR } = japanDateParts();
 const BASE_WAREKI = warekiLabels(BASE_YEAR); // 例：令和8年
 
 const wareki = warekiLabels(year);

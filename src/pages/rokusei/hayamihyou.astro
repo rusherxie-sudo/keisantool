@@ -3,12 +3,13 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import { fortuneTable, fortuneTypes, forecast } from '../../lib/rokusei.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'rokusei/hayamihyou';
 const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
 
 // 基準年はビルド時に固定（毎年1月1日の再ビルドで自動更新される）。
-const BASE_YEAR = new Date().getFullYear();
+const { year: BASE_YEAR } = japanDateParts();
 const HORIZON = 6; // 直近6年（今年〜今年+5年）
 const END_YEAR = BASE_YEAR + HORIZON - 1;
 

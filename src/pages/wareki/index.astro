@@ -6,6 +6,7 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { eras } from '../../lib/wareki.js';
 import { hayamiTable } from '../../lib/hayami.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'wareki';
 const title =
@@ -16,7 +17,7 @@ const description =
 // SSR 用の静的早見表データ（明治元年〜今年の全年、西暦昇順）。
 // 改元年の併記（昭和64年／平成元年など）は hayami.js の warekiLabels() が
 // 一括で正しく処理するため、ここでは年ごとの分岐ロジックを持たない。
-const CURRENT_YEAR = new Date().getFullYear();
+const { year: CURRENT_YEAR } = japanDateParts();
 const TABLE_YEARS = hayamiTable(1868, CURRENT_YEAR, CURRENT_YEAR).map((r) => ({
   seireki: r.seireki,
   label: r.wareki,

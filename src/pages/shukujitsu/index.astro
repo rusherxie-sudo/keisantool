@@ -4,21 +4,19 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import ShukujitsuYearView from '../../components/ShukujitsuYearView.astro';
 import { holidays, renkyuList, calendarMonths } from '../../lib/shukujitsu.js';
+import { PUBLISHED_SHUKUJITSU_YEARS } from '../../lib/publishedRoutes.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'shukujitsu';
 
-// スポークページ（/shukujitsu/<year>/）の生成範囲と合わせる。
-const RANGE_YEARS_BACK = 1;
-const RANGE_YEARS_FORWARD = 3;
-
-const YEAR = new Date().getFullYear();
+const { year: YEAR } = japanDateParts();
 const hols = holidays(YEAR);
 const renkyu = renkyuList(YEAR);
 const months = calendarMonths(YEAR);
 const longestRenkyu = renkyu.reduce((max, r) => (r.length > (max?.length ?? 0) ? r : max), null);
 
-const hasPrev = YEAR - 1 >= YEAR - RANGE_YEARS_BACK;
-const hasNext = YEAR + 1 <= YEAR + RANGE_YEARS_FORWARD;
+const hasPrev = PUBLISHED_SHUKUJITSU_YEARS.includes(YEAR - 1);
+const hasNext = PUBLISHED_SHUKUJITSU_YEARS.includes(YEAR + 1);
 
 const eraLabel = `令和${YEAR - 2018}年`;
 const title = `${YEAR}年（${eraLabel}）カレンダー｜祝日一覧・連休 | 計算ツール`;

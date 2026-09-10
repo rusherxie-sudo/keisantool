@@ -97,3 +97,57 @@ export function sourceFileForUrl(pagesDir, urlPath) {
   if (existsSync(flat)) return flat;
   return null;
 }
+
+// ページの見た目だけでなく、回答を作る本文・データ・計算ロジックも更新日の依存元にする。
+// sourceFileForUrl は後方互換のため残し、sitemap と ToolLayout はこの複数依存版を使う。
+export function sourceFilesForUrl(pagesDir, urlPath) {
+  const path = urlPath.replace(/^\/+|\/+$/g, '');
+  const root = process.cwd();
+  let files;
+
+  if (/^blog\/[a-z0-9-]+$/.test(path)) {
+    files = [
+      join(pagesDir, 'blog/[slug].astro'),
+      join(root, `src/content/blog/${path.slice('blog/'.length)}.md`),
+    ];
+  } else if (/^saitei\/[a-z0-9-]+$/.test(path)) {
+    files = [join(pagesDir, 'saitei/[prefecture].astro'), join(root, 'src/lib/saitei.js')];
+  } else if (path === 'saitei') {
+    files = [join(pagesDir, 'saitei/index.astro'), join(root, 'src/lib/saitei.js')];
+  } else if (/^shukujitsu\/\d{4}$/.test(path)) {
+    files = [join(pagesDir, 'shukujitsu/[year].astro'), join(root, 'src/lib/shukujitsu.js')];
+  } else if (path === 'shukujitsu') {
+    files = [join(pagesDir, 'shukujitsu/index.astro'), join(root, 'src/lib/shukujitsu.js')];
+  } else if (/^rokuyo\/\d{4}-\d{2}$/.test(path)) {
+    files = [join(pagesDir, 'rokuyo/[month].astro'), join(root, 'src/lib/rokuyo.js')];
+  } else if (path === 'rokuyo') {
+    files = [join(pagesDir, 'rokuyo/index.astro'), join(root, 'src/lib/rokuyo.js')];
+  } else if (/^jisa\/[a-z0-9-]+$/.test(path)) {
+    files = [join(pagesDir, 'jisa/[city].astro'), join(root, 'src/lib/jisa.js')];
+  } else if (/^hinodeiri\/[a-z0-9-]+$/.test(path)) {
+    files = [join(pagesDir, 'hinodeiri/[city].astro'), join(root, 'src/lib/hinodeiri.js')];
+  } else if (/^umaredoshi\/\d{4}$/.test(path)) {
+    files = [
+      join(pagesDir, 'umaredoshi/[year].astro'),
+      join(root, 'src/lib/nenrei.js'),
+      join(root, 'src/lib/rokusei.js'),
+    ];
+  } else if (path === 'rokusei' || path.startsWith('rokusei/')) {
+    const primary = sourceFileForUrl(pagesDir, path);
+    files = [primary, join(root, 'src/lib/rokusei.js')];
+  } else {
+    files = [sourceFileForUrl(pagesDir, path)];
+  }
+
+  return [...new Set(files.filter((file) => file && existsSync(file)))];
+}
+
+export function lastModifiedForUrl(pagesDir, urlPath) {
+  const dates = sourceFilesForUrl(pagesDir, urlPath)
+    .map((file) => lastModifiedISO(file))
+    .filter(Boolean);
+  if (dates.length === 0) return null;
+  return dates.reduce((latest, date) =>
+    Date.parse(date) > Date.parse(latest) ? date : latest
+  );
+}

@@ -5,9 +5,10 @@ import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { fortuneTable, fortuneTypes } from '../../lib/rokusei.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'rokusei';
-const CURRENT_YEAR = new Date().getFullYear();
+const { year: CURRENT_YEAR } = japanDateParts();
 const yearlyFortunes = fortuneTable(CURRENT_YEAR);
 const daisakkaiTypes = yearlyFortunes.filter((item) => item.category === '大殺界');
 const typePages = fortuneTypes().map((item) => ({

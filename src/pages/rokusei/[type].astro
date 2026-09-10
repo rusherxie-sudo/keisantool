@@ -3,13 +3,14 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import { fortuneTypes, fortuneZone, forecast } from '../../lib/rokusei.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 export function getStaticPaths() {
   return fortuneTypes().map((typeInfo) => ({ params: { type: typeInfo.slug }, props: { typeInfo } }));
 }
 
 const { typeInfo } = Astro.props;
-const CURRENT_YEAR = new Date().getFullYear();
+const { year: CURRENT_YEAR } = japanDateParts();
 const current = fortuneZone(typeInfo.type, CURRENT_YEAR);
 const next = fortuneZone(typeInfo.type, CURRENT_YEAR + 1);
 const cycleRows = forecast(typeInfo.type, CURRENT_YEAR - 2, 12);

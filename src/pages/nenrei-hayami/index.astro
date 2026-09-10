@@ -5,11 +5,12 @@ import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import { hayamiTable, UMAREDOSHI_FROM, UMAREDOSHI_TO } from '../../lib/hayami.js';
 import { seirekiToWareki } from '../../lib/wareki.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'nenrei-hayami';
 
 // 基準年はビルド時に固定（毎年1月1日の再ビルドで自動更新される）。
-const BASE_YEAR = new Date().getFullYear();
+const { year: BASE_YEAR } = japanDateParts();
 const BASE_WAREKI = seirekiToWareki(BASE_YEAR).label; // 例：令和8年
 const FROM_YEAR = 1868; // 明治元年
 // 生まれ年の個別ページ（/umaredoshi/<year>/）がある範囲

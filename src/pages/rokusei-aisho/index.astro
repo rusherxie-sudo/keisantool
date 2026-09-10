@@ -4,9 +4,10 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'rokusei-aisho';
-const CURRENT_YEAR = new Date().getFullYear();
+const { year: CURRENT_YEAR } = japanDateParts();
 const title = `六星占術 相性診断｜2人の生年月日から地運を自動計算【${CURRENT_YEAR}年】`;
 const description =
   `2人の生年月日を入力するだけで、六星占術の運命星・プラス／マイナスと地運相性を無料診断。双方向の運命周期、相性度、${CURRENT_YEAR}年の双方の運気を自動計算します。`;

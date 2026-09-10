@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { lastModifiedISO, sourceFileForUrl } from '../src/lib/lastmod.js';
+import { lastModifiedISO, sourceFileForUrl, sourceFilesForUrl } from '../src/lib/lastmod.js';
 
 describe('lastModifiedISO', () => {
   it('returns an ISO 8601 date string for a file tracked by git', () => {
@@ -51,6 +51,13 @@ describe('sourceFileForUrl', () => {
     expect(sourceFileForUrl(pagesDir, 'blog/category/zeikin-kiso')).toBe(join(pagesDir, 'blog/category/[slug].astro'));
   });
 
+  it('tracks both the blog template and the article markdown', () => {
+    expect(sourceFilesForUrl(pagesDir, 'blog/bmi-kiso-chishiki')).toEqual([
+      join(pagesDir, 'blog/[slug].astro'),
+      join(process.cwd(), 'src/content/blog/bmi-kiso-chishiki.md'),
+    ]);
+  });
+
   it('resolves umaredoshi year URLs to the dynamic [year].astro route', () => {
     expect(sourceFileForUrl(pagesDir, 'umaredoshi/1990')).toBe(join(pagesDir, 'umaredoshi/[year].astro'));
   });
@@ -81,6 +88,24 @@ describe('sourceFileForUrl', () => {
 
   it('resolves saitei prefecture URLs to the data file so lastmod tracks answer updates', () => {
     expect(sourceFileForUrl(pagesDir, 'saitei/tokyo')).toBe(join(process.cwd(), 'src/lib/saitei.js'));
+  });
+
+  it('tracks both the saitei template and its data source', () => {
+    expect(sourceFilesForUrl(pagesDir, 'saitei/tokyo')).toEqual([
+      join(pagesDir, 'saitei/[prefecture].astro'),
+      join(process.cwd(), 'src/lib/saitei.js'),
+    ]);
+  });
+
+  it('tracks calendar templates and calculation data together', () => {
+    expect(sourceFilesForUrl(pagesDir, 'shukujitsu/2026')).toEqual([
+      join(pagesDir, 'shukujitsu/[year].astro'),
+      join(process.cwd(), 'src/lib/shukujitsu.js'),
+    ]);
+    expect(sourceFilesForUrl(pagesDir, 'rokuyo/2026-09')).toEqual([
+      join(pagesDir, 'rokuyo/[month].astro'),
+      join(process.cwd(), 'src/lib/rokuyo.js'),
+    ]);
   });
 
   it('resolves seiza-aisho pair URLs to the dynamic [pair].astro route', () => {

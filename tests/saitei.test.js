@@ -29,7 +29,7 @@ const CONFIRMED_ANSWERS = [
   ['ibaraki', 1074, 1136, 62, '2026-08-24'],
   ['tokyo', 1226, 1280, 54, '2026-08-05'],
   ['kanagawa', 1225, 1279, 54, '2026-08-04'],
-  ['osaka', 1177, 1231, 54, '2026-08-05'],
+  ['osaka', 1177, 1231, 54, '2026-08-07'],
   ['saitama', 1141, 1196, 55, '2026-08-05'],
   ['chiba', 1140, 1195, 55, '2026-08-05'],
   ['aichi', 1140, 1195, 55, '2026-08-05'],
@@ -63,12 +63,13 @@ const CONFIRMED_ANSWERS = [
   ['ehime', 1033, 1093, 60, '2026-08-21'],
   ['yamanashi', 1052, 1113, 61, '2026-08-28'],
   ['nagasaki', 1031, 1087, 56, '2026-08-28'],
+  ['saga', 1030, 1095, 65, '2026-09-01'],
 ];
 
 // 2026-08-29時点で答申額を確認できていない地域（審議中または未確認）。
 // 金額を推定・予測として書き込んではならない。
 const NOT_YET_CONFIRMED = [
-  'iwate', 'saga', 'kumamoto', 'oita', 'okinawa', 'kochi',
+  'iwate', 'kumamoto', 'oita', 'okinawa', 'kochi',
 ];
 
 describe('令和7年度の地域別最低賃金データ', () => {
@@ -83,6 +84,21 @@ describe('令和7年度の地域別最低賃金データ', () => {
 
   it('令和8年度の中央目安ベース全国加重平均を保持する', () => {
     expect(NATIONAL_WAGE_GUIDELINE_2026).toBe(1176);
+  });
+
+  it('高価値5地域の答申・決定・発効予定日を分けて保持する', () => {
+    expect(getMinimumWageInfo('tokyo')).toMatchObject({
+      revisionStatus: 'decided', revisionDecisionDate: '2026-09-01', revisionEffectiveDate: '2026-10-01',
+    });
+    expect(getMinimumWageInfo('osaka')).toMatchObject({
+      revisionStatus: 'decided', revisionDecisionDate: '2026-09-02', revisionEffectiveDate: '2026-10-01',
+    });
+    expect(getMinimumWageInfo('ibaraki')).toMatchObject({ revisionStatus: 'answered', revisionEffectiveDate: '2026-10-18' });
+    expect(getMinimumWageInfo('yamanashi')).toMatchObject({ revisionStatus: 'answered', revisionEffectiveDate: '2026-11-01' });
+    expect(getMinimumWageInfo('saga')).toMatchObject({ revisionStatus: 'answered', revisionEffectiveDate: '2026-11-15' });
+    for (const slug of ['tokyo', 'osaka', 'ibaraki', 'yamanashi', 'saga']) {
+      expect(getMinimumWageInfo(slug).proposedSource).toMatch(/^https:\/\/jsite\.mhlw\.go\.jp\//);
+    }
   });
 
   it('47都道府県を一意なslugと発効日つきで返す', () => {

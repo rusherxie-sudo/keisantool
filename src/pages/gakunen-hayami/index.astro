@@ -4,14 +4,12 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import { gakunenTable } from '../../lib/hayami.js';
 import { seirekiToWareki } from '../../lib/wareki.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'gakunen-hayami';
 
 // 基準学年度はビルド時に固定（4/2 を境に年度が切り替わる。毎年 4/2 以降に再ビルドすれば自動更新される）。
-const now = new Date();
-const y = now.getFullYear();
-const m = now.getMonth() + 1;
-const d = now.getDate();
+const { year: y, month: m, day: d } = japanDateParts();
 const BASE_SCHOOL_YEAR = m > 4 || (m === 4 && d >= 2) ? y : y - 1;
 const BASE_WAREKI = seirekiToWareki(BASE_SCHOOL_YEAR).label; // 例：令和8年
 

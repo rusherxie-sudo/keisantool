@@ -4,33 +4,29 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import ShukujitsuYearView from '../../components/ShukujitsuYearView.astro';
 import { holidays, renkyuList, calendarMonths, officialHolidayYearLimit } from '../../lib/shukujitsu.js';
-
-// ハブ（/shukujitsu/、今年）と合わせた生成範囲。
-const RANGE_YEARS_BACK = 1;
-const RANGE_YEARS_FORWARD = 3;
+import { PUBLISHED_SHUKUJITSU_YEARS } from '../../lib/publishedRoutes.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 export function getStaticPaths() {
-  const nowYear = new Date().getFullYear();
-  const paths = [];
-  for (let y = nowYear - 1; y <= nowYear + 3; y++) {
-    paths.push({ params: { year: String(y) } });
-  }
-  return paths;
+  return PUBLISHED_SHUKUJITSU_YEARS.map((year) => ({ params: { year: String(year) } }));
 }
 
 const YEAR = Number(Astro.params.year);
 const now = new Date();
-const isCurrentYear = YEAR === now.getFullYear();
+const japanToday = japanDateParts(now);
+const isCurrentYear = YEAR === japanToday.year;
 
 const hols = holidays(YEAR);
 const renkyu = renkyuList(YEAR);
 const months = calendarMonths(YEAR);
 const longestRenkyu = renkyu.reduce((max, r) => (r.length > (max?.length ?? 0) ? r : max), null);
-const officialThrough = officialHolidayYearLimit(now);
+const officialThrough = officialHolidayYearLimit(
+  `${japanToday.year}-${String(japanToday.month).padStart(2, '0')}-${String(japanToday.day).padStart(2, '0')}`,
+);
 const isOfficial = officialThrough !== null && YEAR <= officialThrough;
 
-const hasPrev = YEAR - 1 >= now.getFullYear() - RANGE_YEARS_BACK;
-const hasNext = YEAR + 1 <= now.getFullYear() + RANGE_YEARS_FORWARD;
+const hasPrev = PUBLISHED_SHUKUJITSU_YEARS.includes(YEAR - 1);
+const hasNext = PUBLISHED_SHUKUJITSU_YEARS.includes(YEAR + 1);
 
 // 今年は /shukujitsu/ が正規URL（重複コンテンツ防止のため canonical をハブへ向ける）。
 const slug = isCurrentYear ? 'shukujitsu' : `shukujitsu/${YEAR}`;

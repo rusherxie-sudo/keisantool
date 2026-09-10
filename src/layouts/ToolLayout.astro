@@ -5,7 +5,7 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import FloatingShare from '../components/FloatingShare.astro';
 import { getColorBySlug, getColorByCategorySlug, getTool, getCategorySlug } from '../data/tools.js';
-import { lastModifiedISO, sourceFileForUrl } from '../lib/lastmod.js';
+import { lastModifiedForUrl } from '../lib/lastmod.js';
 
 const { title, description, slug, current, jsonld, wide, breadcrumb, robots = 'index,follow' } = Astro.props;
 const canonical = new URL(slug ? `/${slug}/` : '/', Astro.site).href;
@@ -35,8 +35,7 @@ const jsonldWithAppDetails =
 // Astro のビルドは .astro を dist/.prerender/chunks/ にバンドルするため import.meta.url は使えない
 // （バンドル後のパスになり src/pages を指せない）。process.cwd() はビルド実行時のプロジェクトルート。
 const pagesDir = join(process.cwd(), 'src/pages');
-const sourceFile = sourceFileForUrl(pagesDir, slug ?? '');
-const dateModified = sourceFile ? lastModifiedISO(sourceFile) : null;
+const dateModified = lastModifiedForUrl(pagesDir, slug ?? '');
 const dateModifiedLabel = dateModified
   ? new Intl.DateTimeFormat('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(dateModified))
   : null;
@@ -157,7 +156,7 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
     })();
   </script>
 </head>
-<body data-tool-slug={current ?? ''}>
+<body data-tool-slug={slug ?? current ?? ''}>
   <SiteHeader current={current} />
   <slot name="hero" />
   <main class={wide ? 'page-wrapper wide' : 'page-wrapper'} style={themeStyle}>
@@ -165,7 +164,7 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   </main>
   {dateModifiedLabel && (
     <aside class="content-verification" aria-label="コンテンツの確認情報">
-      <span>最終確認日：<time datetime={dateModified}>{dateModifiedLabel}</time></span>
+      <span>最終更新日：<time datetime={dateModified}>{dateModifiedLabel}</time></span>
       <a href="/editorial-policy/">制作・検証方針</a>
     </aside>
   )}

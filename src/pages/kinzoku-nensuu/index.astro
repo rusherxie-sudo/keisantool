@@ -4,14 +4,14 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import Faq from '../../components/Faq.astro';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'kinzoku-nensuu';
-const jstNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
-const currentYear = jstNow.getFullYear();
+const { year: currentYear, month: currentMonth } = japanDateParts();
 const title = `入社何年目・勤続年数計算｜${currentYear}年対応・無料で自動計算`;
 const description =
   `入社日と基準日を入力するだけで、${currentYear}年時点の勤続年数（何年何ヶ月何日）と入社何年目を無料で自動計算。退職所得用の勤続年数、有給休暇の付与目安、次の入社周年も確認できます。`;
-const tableYear = jstNow.getMonth() < 3 ? jstNow.getFullYear() - 1 : jstNow.getFullYear();
+const tableYear = currentMonth < 4 ? currentYear - 1 : currentYear;
 const aprilEntryRows = Array.from({ length: 17 }, (_, index) => {
   const joinYear = tableYear - index;
   return { joinYear, serviceYear: tableYear - joinYear + 1, completedYears: tableYear - joinYear };

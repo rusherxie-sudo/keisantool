@@ -4,23 +4,21 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import Faq from '../../components/Faq.astro';
 import { listCities, cityYearTable, hinodeIri } from '../../lib/hinodeiri.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 export function getStaticPaths() {
   return listCities().map((city) => ({ params: { city: city.id }, props: { city } }));
 }
 
 const { city } = Astro.props;
-const YEAR = new Date().getFullYear();
+const { year: YEAR, month: todayMonth, day: todayDay } = japanDateParts();
+const tokyoToday = `${YEAR}-${String(todayMonth).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`;
 const cities = listCities();
 const rows = cityYearTable(YEAR, city.id);
 const otherCities = cities.filter((item) => item.id !== city.id);
 const january = rows.find((row) => row.month === 1 && row.day === 15);
 const july = rows.find((row) => row.month === 7 && row.day === 15);
-const tokyoToday = new Intl.DateTimeFormat('en-CA', {
-  timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit',
-}).format(new Date());
-const [todayYear, todayMonth, todayDay] = tokyoToday.split('-').map(Number);
-const todayResult = hinodeIri(todayYear, todayMonth, todayDay, city.id);
+const todayResult = hinodeIri(YEAR, todayMonth, todayDay, city.id);
 const slug = `hinodeiri/${city.id}`;
 const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
 const title = `${city.name}の日の出・日の入り時刻【${YEAR}年】指定日計算・年間早見表 | 計算ツール`;

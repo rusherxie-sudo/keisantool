@@ -4,16 +4,12 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import RokuyoCalendarGrid from '../../components/RokuyoCalendarGrid.astro';
 import { rokuyoMonthTable, rokuyoDesc } from '../../lib/rokuyo.js';
+import { PUBLISHED_ROKUYO_YEARS } from '../../lib/publishedRoutes.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'rokuyo';
 
-// スポークページ（/rokuyo/<year>-<month>/）の生成範囲と合わせる（前後月リンクの整合用）。
-const RANGE_YEARS_BACK = 1;
-const RANGE_YEARS_FORWARD = 2;
-
-const now = new Date();
-const YEAR = now.getFullYear();
-const MONTH = now.getMonth() + 1;
+const { year: YEAR, month: MONTH } = japanDateParts();
 const MONTH_LABEL = `${YEAR}年${MONTH}月`;
 
 const rows = rokuyoMonthTable(YEAR, MONTH);
@@ -24,8 +20,8 @@ let prevYear = YEAR, prevMonth = MONTH - 1;
 if (prevMonth < 1) { prevMonth = 12; prevYear -= 1; }
 let nextYear = YEAR, nextMonth = MONTH + 1;
 if (nextMonth > 12) { nextMonth = 1; nextYear += 1; }
-const hasPrev = prevYear >= YEAR - RANGE_YEARS_BACK;
-const hasNext = nextYear <= YEAR + RANGE_YEARS_FORWARD;
+const hasPrev = PUBLISHED_ROKUYO_YEARS.includes(prevYear);
+const hasNext = PUBLISHED_ROKUYO_YEARS.includes(nextYear);
 
 const ROKUYO_ORDER = ['先勝', '友引', '先負', '仏滅', '大安', '赤口'];
 const monthLinks = Array.from({ length: 12 }, (_, index) => {

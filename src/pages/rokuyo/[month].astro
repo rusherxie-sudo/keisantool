@@ -4,15 +4,12 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import RokuyoCalendarGrid from '../../components/RokuyoCalendarGrid.astro';
 import { rokuyoMonthTable, rokuyoDesc } from '../../lib/rokuyo.js';
-
-// ハブ（/rokuyo/、今月）と合わせた生成範囲。ここを変えたらハブ側の RANGE_YEARS_* も合わせて変更する。
-const RANGE_YEARS_BACK = 1;
-const RANGE_YEARS_FORWARD = 2;
+import { PUBLISHED_ROKUYO_YEARS } from '../../lib/publishedRoutes.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 export function getStaticPaths() {
-  const nowYear = new Date().getFullYear();
   const paths = [];
-  for (let y = nowYear - 1; y <= nowYear + 2; y++) {
+  for (const y of PUBLISHED_ROKUYO_YEARS) {
     for (let m = 1; m <= 12; m++) {
       paths.push({ params: { month: `${y}-${String(m).padStart(2, '0')}` } });
     }
@@ -25,8 +22,8 @@ const YEAR = Number(yStr);
 const MONTH = Number(mStr);
 const MONTH_LABEL = `${YEAR}年${MONTH}月`;
 
-const now = new Date();
-const isCurrentMonth = YEAR === now.getFullYear() && MONTH === now.getMonth() + 1;
+const japanToday = japanDateParts();
+const isCurrentMonth = YEAR === japanToday.year && MONTH === japanToday.month;
 
 const rows = rokuyoMonthTable(YEAR, MONTH);
 const taianDays = rows.filter((r) => r.rokuyo === '大安').map((r) => `${r.day}日`);
@@ -36,13 +33,13 @@ let prevYear = YEAR, prevMonth = MONTH - 1;
 if (prevMonth < 1) { prevMonth = 12; prevYear -= 1; }
 let nextYear = YEAR, nextMonth = MONTH + 1;
 if (nextMonth > 12) { nextMonth = 1; nextYear += 1; }
-const hasPrev = prevYear >= now.getFullYear() - RANGE_YEARS_BACK;
-const hasNext = nextYear <= now.getFullYear() + RANGE_YEARS_FORWARD;
+const hasPrev = PUBLISHED_ROKUYO_YEARS.includes(prevYear);
+const hasNext = PUBLISHED_ROKUYO_YEARS.includes(nextYear);
 
 const ROKUYO_ORDER = ['先勝', '友引', '先負', '仏滅', '大安', '赤口'];
 const monthLinks = Array.from({ length: 12 }, (_, index) => {
   const month = index + 1;
-  const currentYearMonth = YEAR === now.getFullYear() && month === now.getMonth() + 1;
+  const currentYearMonth = YEAR === japanToday.year && month === japanToday.month;
   return {
     month,
     href: currentYearMonth ? '/rokuyo/' : `/rokuyo/${YEAR}-${String(month).padStart(2, '0')}/`,
