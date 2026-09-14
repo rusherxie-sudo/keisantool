@@ -37,6 +37,11 @@ const jsonld = {
     </div>
   </div>
 
+  <nav class="service-task-links" aria-label="計算したいこと">
+    <a href="#service-tool">入社日から何年目か調べる</a>
+    <a href="#reverse-tool">今○年目から入社年を逆算する</a>
+  </nav>
+
   <div class="calc-card" id="service-tool">
     <div class="calc-panel active">
       <div class="service-date-grid">
@@ -95,6 +100,41 @@ const jsonld = {
   </div>
 
   <ResultShare />
+
+  <section class="calc-card reverse-tool" id="reverse-tool" aria-labelledby="reverse-title">
+    <h2 id="reverse-title">今5年目・6年目なら何年入社？入社年を逆算</h2>
+    <p>現在「何年目」かと基準日から、入社日の範囲を調べられます。満年数ではなく、入社した日を1年目とする数え方です。</p>
+    <form id="reverse-form">
+      <div class="reverse-fields">
+        <div class="form-group">
+          <label for="reverse-year">現在、入社何年目？</label>
+          <input id="reverse-year" type="number" min="1" max="100" step="1" inputmode="numeric" placeholder="例：5" required />
+          <small class="field-note">1〜100年目。「勤続満4年」は5年目。</small>
+        </div>
+        <div class="form-group">
+          <label for="reverse-reference">基準日</label>
+          <input id="reverse-reference" type="date" min="1900-01-01" max="9999-12-31" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="reverse-mode">入社月日はわかりますか？</label>
+        <select id="reverse-mode">
+          <option value="range">不明（範囲で表示）</option>
+          <option value="april-first">4月1日入社</option>
+        </select>
+      </div>
+      <button type="submit" class="reverse-submit">入社年を逆算する</button>
+    </form>
+    <p class="service-error" id="reverse-error" role="alert"></p>
+    <div id="reverse-result" class="service-result" hidden aria-live="polite">
+      <div class="result-heading">
+        <span id="reverse-result-label">入社日の範囲（両端を含む）</span>
+        <strong id="reverse-dates">—</strong>
+        <small id="reverse-note">—</small>
+      </div>
+    </div>
+    <p class="field-note">例：2026年9月14日時点で5年目なら、2021年9月15日〜2022年9月14日入社です。4月1日入社なら2022年入社です。会社が年度単位で「年目」を数える場合とは異なることがあります。</p>
+  </section>
   <div class="ad-slot"></div>
 
   <section class="howto">
@@ -149,6 +189,7 @@ const jsonld = {
   <RelatedTools current={slug} />
   <RelatedArticles toolSlug={slug} />
   <Faq items={[
+    { q: '今5年目なら何年入社ですか？', a: '基準日と入社月日で変わります。2026年9月14日時点で5年目の場合、入社日は2021年9月15日〜2022年9月14日の範囲です。4月1日入社なら2022年入社です。入社年の逆算機で基準日を指定して確認できます。' },
     { q: '2017年入社は2026年で何年目ですか？', a: '2017年入社の方は、2026年の入社周年を迎えると10年目（勤続満9年）です。たとえば2017年4月1日入社なら、2026年3月31日は9年目、4月1日から10年目になります。入社月日によって切り替わる日が異なるため、正確には入社日と基準日を入力して確認してください。' },
     { q: '2013年入社は2026年で何年目ですか？', a: '2013年入社の方は、2026年の入社周年を迎えると14年目（勤続満13年）です。たとえば2013年4月1日入社なら、2026年3月31日は13年目、4月1日から14年目になります。「勤続満13年」は完了した期間、「14年目」は現在進行中の年を表します。' },
     { q: '勤続年数はどうやって計算しますか？', a: '入社日から基準日までの実際の暦を使い、完了した年・月・日を順に数えます。本ツールはうるう年と月末も自動で処理します。' },
@@ -163,11 +204,12 @@ const jsonld = {
 </ToolLayout>
 
 <script>
-  import { calculateServicePeriod } from '../../lib/kinzoku-nensuu.js';
+  import { calculateServicePeriod, reverseServiceYear } from '../../lib/kinzoku-nensuu.js';
   import { weekdayJa } from '../../lib/nissu.js';
 
   const $ = (id) => document.getElementById(id);
   let hasTracked = false;
+  let hasReverseTracked = false;
 
   function localToday() {
     const now = new Date();
@@ -220,6 +262,33 @@ const jsonld = {
   }
 
   $('reference-date').value = localToday();
+  $('reverse-reference').value = localToday();
+  $('reverse-form').addEventListener('input', () => {
+    $('reverse-result').hidden = true;
+    $('reverse-error').textContent = '';
+  });
+  $('reverse-form').addEventListener('change', () => {
+    $('reverse-result').hidden = true;
+  });
+  $('reverse-form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const result = reverseServiceYear(Number($('reverse-year').value), $('reverse-reference').value, $('reverse-mode').value);
+    if (!result) {
+      $('reverse-result').hidden = true;
+      $('reverse-error').textContent = '1〜100の整数と、1900年以降の有効な基準日を入力してください。';
+      return;
+    }
+    const exact = result.mode === 'april-first';
+    $('reverse-result-label').textContent = exact ? '4月1日入社の場合の入社日' : '入社日の範囲（両端を含む）';
+    $('reverse-dates').textContent = exact ? formatDate(result.startDate) : `${formatDate(result.startDate)}〜${formatDate(result.endDate)}`;
+    $('reverse-note').textContent = `${formatDate(result.referenceDate)}時点で${result.serviceYear}年目（満${result.serviceYear - 1}年を経過）です。`;
+    $('reverse-error').textContent = '';
+    $('reverse-result').hidden = false;
+    if (!hasReverseTracked) {
+      window.trackCalculatorResult?.('entry-year-reverse');
+      hasReverseTracked = true;
+    }
+  });
   $('join-date').addEventListener('input', render);
   $('reference-date').addEventListener('input', render);
   $('today-button').addEventListener('click', () => {
@@ -229,6 +298,16 @@ const jsonld = {
 </script>
 
 <style>
+  .service-task-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 18px; }
+  .service-task-links a { padding: 9px 12px; border-radius: var(--r-md); background: var(--cat-tint); color: var(--cat-color); font-size: .85rem; font-weight: var(--fw-bold); }
+  #service-tool, #reverse-tool { scroll-margin-top: 90px; }
+  .reverse-tool { padding: 24px; }
+  .reverse-tool h2 { margin: 0 0 10px; font-size: 1.15rem; }
+  .reverse-tool > p { font-size: .85rem; line-height: 1.7; }
+  .reverse-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .reverse-fields > div { min-width: 0; }
+  .reverse-submit { padding: 12px 20px; border: 0; border-radius: var(--r-md); background: var(--cat-color); color: white; font: inherit; font-weight: var(--fw-bold); cursor: pointer; }
+  .reverse-tool .result-heading strong { font: var(--fw-bold) 1.2rem/1.7 var(--font-sans); overflow-wrap: anywhere; }
   .feature-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
   .feature-chips span { padding: 5px 10px; border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .75rem; font-weight: var(--fw-bold); }
   #service-tool .calc-panel { padding: 24px; }
@@ -263,6 +342,8 @@ const jsonld = {
   .source-list { display: grid; gap: 7px; padding-left: 1.2em; }
   .source-list a { color: var(--cat-color); font-weight: var(--fw-bold); }
   @media (max-width: 560px) {
+    .reverse-tool { padding: 18px; }
+    .reverse-fields { grid-template-columns: 1fr; gap: 0; }
     #service-tool .calc-panel { padding: 18px; }
     .service-date-grid { grid-template-columns: 1fr; gap: 0; }
     .date-arrow { min-height: 24px; transform: rotate(90deg); }

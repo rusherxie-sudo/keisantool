@@ -5,6 +5,39 @@ import { calendarDuration, daysBetween, shiftDateBy } from './nissu.js';
 
 const PAID_LEAVE_DAYS = [10, 11, 12, 14, 16, 18, 20];
 
+// 「現在N年目」から入社日の範囲を求める。周年日は正方向と同じ月末規則。
+export function reverseServiceYear(serviceYear, referenceDateInput, mode = 'range') {
+  const referenceDate = normalizeDate(referenceDateInput);
+  if (!Number.isInteger(serviceYear) || serviceYear < 1 || serviceYear > 100
+    || !referenceDate || referenceDate < '1900-01-01'
+    || !['range', 'april-first'].includes(mode)) return null;
+
+  const year = Number(referenceDate.slice(0, 4));
+  const earliest = `${year - serviceYear}-01-01`;
+  // 勤続年目は入社日が新しいほど小さくなる。境界を日単位で探索することで
+  // 2/29入社→翌年2/28周年も、単純な年の引き算と異なり正しく反転できる。
+  function firstDayAtMost(targetYear) {
+    let low = 0;
+    let high = daysBetween(earliest, referenceDate);
+    while (low < high) {
+      const middle = Math.floor((low + high) / 2);
+      const candidate = shiftDateBy(earliest, middle, 'day');
+      if (calendarDuration(candidate, referenceDate).years + 1 <= targetYear) high = middle;
+      else low = middle + 1;
+    }
+    return shiftDateBy(earliest, low, 'day');
+  }
+
+  const startDate = firstDayAtMost(serviceYear);
+  const endDate = serviceYear === 1 ? referenceDate : shiftDateBy(firstDayAtMost(serviceYear - 1), -1, 'day');
+  if (mode === 'april-first') {
+    const aprilYear = year - serviceYear + (referenceDate.slice(5) >= '04-01' ? 1 : 0);
+    const joinDate = `${aprilYear}-04-01`;
+    return { serviceYear, referenceDate, startDate: joinDate, endDate: joinDate, mode };
+  }
+  return { serviceYear, referenceDate, startDate, endDate, mode };
+}
+
 function normalizeDate(input) {
   if (typeof input !== 'string') return null;
   const normalized = shiftDateBy(input, 0, 'day');
