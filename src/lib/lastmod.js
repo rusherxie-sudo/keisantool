@@ -132,6 +132,10 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
       join(root, 'src/lib/nenrei.js'),
       join(root, 'src/lib/rokusei.js'),
     ];
+  } else if (path === 'bonus-tedori') {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/bonus-tedori.js'), join(root, 'src/data/bonus-rates-2026.js')];
+  } else if (path === 'seimei-hoken-kojo') {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/seimei-hoken-kojo.js')];
   } else if (path === 'rokusei' || path.startsWith('rokusei/')) {
     const primary = sourceFileForUrl(pagesDir, path);
     files = [primary, join(root, 'src/lib/rokusei.js')];

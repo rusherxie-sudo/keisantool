@@ -29,6 +29,14 @@ export const categoryColors = {
 
 export const tools = [
   {
+    slug: 'bonus-tedori', nav: '賞与の手取り', name: '賞与・ボーナス手取り計算', icon: '💴',
+    category: '税金・お金', short: '2026年の賞与税率・所得税・手取り', live: true,
+  },
+  {
+    slug: 'seimei-hoken-kojo', nav: '生命保険料控除', name: '生命保険料控除計算', icon: '📋',
+    category: '税金・お金', short: '新旧契約・所得税と住民税の控除額', live: true,
+  },
+  {
     slug: 'zeizei',
     nav: '消費税',
     name: '消費税計算ツール',
@@ -1049,6 +1057,11 @@ export function getColorByCategorySlug(catSlug) {
 // 検索流入の多いページは、カテゴリ順ではなく利用者の次の作業に沿ってつなぐ。
 // 未指定ツールは従来どおり同カテゴリを優先する。
 const relatedJourneys = {
+  'bonus-tedori': ['kyuyo', 'shakaihoken', 'nematsu', 'seimei-hoken-kojo'],
+  'seimei-hoken-kojo': ['nematsu', 'juminzei', 'bonus-tedori', 'shotokuzei'],
+  kyuyo: ['bonus-tedori', 'shakaihoken', 'jikan', 'saitei'],
+  shakaihoken: ['bonus-tedori', 'kyuyo', 'nematsu', 'seimei-hoken-kojo'],
+  nematsu: ['seimei-hoken-kojo', 'bonus-tedori', 'shotokuzei', 'juminzei'],
   'nenrei-hayami': ['nenrei', 'gakunen-hayami', 'gakureki', 'wareki'],
   'gakunen-hayami': ['nenrei-hayami', 'gakureki', 'nenrei', 'wareki'],
   gakureki: ['gakunen-hayami', 'nenrei-hayami', 'kinzoku-nensuu', 'wareki'],

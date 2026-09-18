@@ -286,6 +286,8 @@ const jsonld = {
     $('reverse-result').hidden = false;
     if (!hasReverseTracked) {
       window.trackCalculatorResult?.('entry-year-reverse');
+      // result_type未登録のGA4標準レポートでも反転機能だけを確認できる専用イベント。
+      window.gtag?.('event', 'entry_year_reverse_result', { tool_slug: 'kinzoku-nensuu' });
       hasReverseTracked = true;
     }
   });

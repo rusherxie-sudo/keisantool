@@ -1,0 +1,92 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import '../../styles/financial-tools.css';
+const slug = 'bonus-tedori';
+const title = '賞与・ボーナス手取り計算【2026年】所得税・控除の内訳';
+const description = '2026年の賞与・ボーナスの手取りを無料計算。賞与総額、社会保険料等、前月給与、扶養人数から国税庁の税率表で源泉所得税を求め、控除の内訳を表示。甲欄・乙欄に対応。';
+const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', name: '賞与・ボーナス手取り計算', description, applicationCategory: 'FinanceApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } };
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+ <div class="finance-tool">
+  <div class="page-hero">
+   <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 賞与の手取り</div>
+   <h1>賞与・ボーナス手取り計算</h1>
+   <p>額面から、実際に受け取る金額の目安へ。2026年の税率表で所得税と控除の内訳を確認できます。</p>
+  </div>
+  <p class="scope-note"><strong>2026年支給分・日本の居住者向け。</strong>社会保険料等は給与明細・会社の見込み額を入力してください。保険料の自動見積りは行いません。前月給与がない場合や、控除後の賞与が前月給与の10倍を超える場合は別計算となるため、結果を出さずご案内します。</p>
+  <section class="calc-card finance-card" aria-label="賞与の入力">
+   <form id="bonus-form">
+    <div class="finance-grid">
+     <div class="finance-field"><label for="bonus-gross">賞与の総支給額（円）</label><input id="bonus-gross" type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="例：500000" required /><p class="field-help">税金・保険料などを引く前の額面。</p></div>
+     <div class="finance-field"><label for="bonus-social">賞与から引く社会保険料等（円）</label><input id="bonus-social" type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="例：75000" required /><p class="field-help">健康保険・厚生年金・雇用保険等の合計。小規模企業共済等掛金も含む税法上の金額です。不明な場合は勤務先へ確認してください。</p></div>
+     <div class="finance-field"><label for="bonus-previous">前月の給与（社会保険料等を引いた後・円）</label><input id="bonus-previous" type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="例：300000" required /><p class="field-help">前月の賞与は除きます。所得税・住民税を引く前の金額で、銀行振込額とは異なります。</p></div>
+     <div class="finance-field"><label for="bonus-dependents">税額表に使う扶養親族等の数</label><select id="bonus-dependents">{Array.from({length: 8}, (_, n) => <option value={n}>{n === 7 ? '7人以上' : `${n}人`}</option>)}</select><p class="field-help">家族の人数そのものではありません。源泉控除対象配偶者・親族と、障害者等の加算を含め、勤務先の申告内容を確認してください。</p></div>
+    </div>
+    <div class="finance-field"><label for="bonus-class">扶養控除等申告書の提出状況</label><select id="bonus-class"><option value="kou">提出済み（甲欄）</option><option value="otsu">未提出・従たる給与（乙欄）</option></select></div>
+    <details><summary>その他の控除を入力する</summary><div class="finance-field"><label for="bonus-other">社内積立など、税額計算に含めない控除（円）</label><input id="bonus-other" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" required /><p class="field-help">税額を計算した後、手取りから差し引きます。</p></div></details>
+    <div class="finance-actions"><button class="finance-button" type="submit">手取りを計算する</button><button class="finance-button secondary" id="bonus-example" type="button">国税庁の例を入力</button></div>
+   </form>
+   <p id="bonus-error" class="finance-error" role="alert" hidden></p>
+  </section>
+  <section id="bonus-result" class="finance-result" hidden aria-live="polite">
+   <h2>賞与の手取り額</h2><p id="bonus-answer" class="answer"></p>
+   <dl>
+    <div><dt>賞与総支給額</dt><dd id="bonus-r-gross"></dd></div>
+    <div><dt>社会保険料等</dt><dd id="bonus-r-social"></dd></div>
+    <div><dt>税率を掛ける賞与額</dt><dd id="bonus-r-taxable"></dd></div>
+    <div><dt>適用税率（復興特別所得税込み）</dt><dd id="bonus-r-rate"></dd></div>
+    <div><dt>源泉所得税・復興特別所得税</dt><dd id="bonus-r-tax"></dd></div>
+    <div><dt>その他の控除</dt><dd id="bonus-r-other"></dd></div>
+   </dl>
+   <p class="field-help">源泉徴収は前払いの税額です。年末調整・確定申告によって年間の税額と差額が精算されることがあります。入力した社保等が概算なら、手取りも概算です。</p>
+   <div class="finance-actions"><button type="button" class="finance-button secondary" id="bonus-copy">結果をコピー</button><span id="bonus-copy-status" class="copy-status" role="status"></span></div>
+  </section>
+  <section class="howto">
+   <h2>ボーナスの手取りはどう計算する？</h2>
+   <p>基本式は「賞与総額 − 社会保険料等 − 源泉所得税等 − その他の控除」です。通常は、前月の給与から社会保険料等を引いた金額と、扶養親族等の数から賞与の税率を選びます。その率を社会保険料等控除後の賞与額に掛け、税額の1円未満を切り捨てます。</p>
+   <h2>国税庁の計算例：税額は7,954円</h2>
+   <p>2026年、前月給与（社会保険料等控除後）285,454円、賞与（同控除後）389,558円、扶養親族等3人の場合、甲欄の税率は2.042％です。389,558円 × 2.042％ ＝ 7,954円（1円未満切捨て）。他の控除がなければ、社保控除後の賞与から税額を引いた残額は381,604円です。</p>
+   <p>上の例ボタンは、すでに社保控除後の金額を総支給額欄に置き、社会保険料等を0円として、この公式税額を検算する入力例です。実際の賞与を調べるときは本来の総支給額と控除額に置き換えてください。</p>
+   <h2>前月給与がない・賞与が10倍を超える場合</h2>
+   <p>この場合は通常の賞与算出率表を使いません。賞与の計算期間が6か月以下か超えるかに応じて、月額表を用いる別の計算が必要です。本ツールでは適用外として案内します。月単位でない給与、非居住者への支給も対象外です。</p>
+   <h2>社会保険料と年末調整をあわせて確認</h2>
+   <p>月給の見込みは<a href="/kyuyo/">給与計算</a>、月額の保険料の目安は<a href="/shakaihoken/">社会保険料計算</a>へ。年末の控除を調べる場合は<a href="/seimei-hoken-kojo/">生命保険料控除計算</a>、精算の概算は<a href="/nematsu/">年末調整計算</a>をご利用ください。月給向けの保険料計算を賞与へそのまま適用することはできません。</p>
+   <h2>計算の根拠</h2><ul><li><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2523.htm" target="_blank" rel="noopener noreferrer">国税庁 No.2523「賞与に対する源泉徴収」</a></li><li><a href="https://www.nta.go.jp/publication/pamph/gensen/zeigakuhyo2026/01.htm" target="_blank" rel="noopener noreferrer">国税庁「令和8年分 源泉徴収税額表」</a></li></ul>
+   <p class="source-note">適用：2026年支給分。公式資料確認日：2026年9月18日。2027年以後の支給には使えません。計算はブラウザ内で行い、入力金額はアクセス解析へ送信しません。</p>
+  </section>
+ </div>
+ <RelatedTools current={slug} />
+ <Faq items={[
+  {q:'社会保険料も自動で計算しますか？',a:'このツールでは、勤務先や明細で確認した社会保険料等の合計を入力します。加入先・年度累計・同月の賞与等で変わるため、全国一律の率では推定していません。'},
+  {q:'扶養人数は子どもの人数ですか？',a:'税額表で使う扶養親族等の数です。源泉控除対象配偶者・親族の条件や障害者等の加算があるため、家族の人数をそのまま入力しないでください。'},
+  {q:'計算結果が給与明細と違うのはなぜ？',a:'社保等の入力額、その他の控除、扶養親族等の数、適用する甲欄・乙欄を確認してください。前月給与なし・控除後賞与が前月給与の10倍超などの特殊計算は対象外です。'},
+ ]} />
+</ToolLayout>
+<script>
+ import { calculateBonus } from '../../lib/bonus-tedori.js';
+ const $ = (id) => document.getElementById(id);
+ const yen = (n) => `${n.toLocaleString('ja-JP')}円`;
+ let copyText = '', tracked = false;
+ function clear() { $('bonus-result').hidden = true; $('bonus-error').hidden = true; $('bonus-copy-status').textContent = ''; copyText = ''; }
+ $('bonus-form').addEventListener('input', clear);
+ $('bonus-form').addEventListener('change', clear);
+ $('bonus-class').addEventListener('change', () => { $('bonus-dependents').disabled = $('bonus-class').value === 'otsu'; });
+ $('bonus-form').addEventListener('submit', (event) => {
+  event.preventDefault(); clear();
+  const r = calculateBonus({gross: Number($('bonus-gross').value), socialInsurance: Number($('bonus-social').value), previousSalary: Number($('bonus-previous').value), dependents: Number($('bonus-dependents').value), taxClass: $('bonus-class').value, otherDeductions: Number($('bonus-other').value)});
+  if (r.status !== 'ok') { $('bonus-error').textContent = r.message; $('bonus-error').hidden = false; return; }
+  $('bonus-answer').textContent = yen(r.takeHome);
+  for (const [id, val] of [['gross',r.gross],['social',r.socialInsurance],['taxable',r.taxableBonus],['tax',r.withholding],['other',r.otherDeductions]]) $('bonus-r-'+id).textContent=yen(val);
+  $('bonus-r-rate').textContent = `${r.rate.toFixed(3)}％（${r.taxClass === 'kou' ? '甲欄' : '乙欄'}）`;
+  copyText = `2026年 賞与の手取り\n総支給額：${yen(r.gross)}\n社会保険料等：${yen(r.socialInsurance)}\n源泉所得税等：${yen(r.withholding)}（${r.rate.toFixed(3)}％）\nその他の控除：${yen(r.otherDeductions)}\n手取り：${yen(r.takeHome)}\n${location.origin}${location.pathname}`;
+  $('bonus-result').hidden=false;
+  if (!tracked) { window.trackCalculatorResult?.('bonus-tedori'); tracked=true; }
+ });
+ $('bonus-example').addEventListener('click', () => {
+  clear(); for (const [id, value] of [['gross',389558],['social',0],['previous',285454],['dependents',3],['other',0],['class','kou']]) $('bonus-'+id).value=String(value);
+  $('bonus-dependents').disabled=false; $('bonus-form').requestSubmit();
+ });
+ $('bonus-copy').addEventListener('click', async () => { if (!copyText) return; try { await navigator.clipboard.writeText(copyText); $('bonus-copy-status').textContent='コピーしました'; } catch { $('bonus-copy-status').textContent='コピーできませんでした。結果を選択してコピーしてください。'; } });
+</script>

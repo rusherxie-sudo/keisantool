@@ -1,0 +1,85 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import '../../styles/financial-tools.css';
+const slug = 'seimei-hoken-kojo';
+const title = '生命保険料控除計算【2026年】新旧契約・所得税と住民税';
+const description = '一般生命・介護医療・個人年金の年間保険料から、所得税と住民税の控除額を別々に計算。新旧契約の有利な組合せ、合計上限、2026年の23歳未満の扶養親族がいる場合の特例に対応。';
+const fields = [{id:'generalNew',label:'一般生命保険料・新契約'},{id:'generalOld',label:'一般生命保険料・旧契約'},{id:'medical',label:'介護医療保険料（新契約）'},{id:'pensionNew',label:'個人年金保険料・新契約'},{id:'pensionOld',label:'個人年金保険料・旧契約'}];
+const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', name: '生命保険料控除計算', description, applicationCategory: 'FinanceApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } };
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+ <div class="finance-tool">
+  <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 生命保険料控除</div><h1>生命保険料控除計算</h1><p>保険料控除証明書の年額を入力。新旧契約を組み合わせ、所得税と住民税それぞれの控除額を確認できます。</p></div>
+  <p class="scope-note"><strong>2026年中に支払った保険料が対象。</strong>所得税は2026年分、住民税は2027年度分の所得控除を計算します。表示する控除額は、そのまま還付される税額ではありません。地震保険料・社会保険料の控除は別制度です。</p>
+  <section class="calc-card finance-card" aria-label="年間保険料の入力">
+   <form id="insurance-form">
+    <div class="finance-field"><label for="insurance-child">2026年末時点で23歳未満の扶養親族がいますか？</label><select id="insurance-child"><option value="no">いいえ</option><option value="yes">はい（特例を適用）</option></select><p class="field-help">税法上の扶養親族（16歳未満を含む）が対象で、単に同居している子どもの有無ではありません。年齢・所得・生計の条件を確認してください。特例は所得税の新契約一般生命保険料に適用し、住民税の控除上限は変わりません。</p></div>
+    <fieldset><legend>証明書の年間保険料（円）</legend><p class="field-help">配当金・割戻金を差し引いた申告額。同じ区分の証明書が複数あるときは合算してください。契約がない欄は0円のままで構いません。月額を入力しないでください。</p>
+     <div class="finance-grid">{fields.map((f) => <div class="finance-field"><label for={'insurance-'+f.id}>{f.label}</label><input id={'insurance-'+f.id} type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" required /></div>)}</div>
+    </fieldset>
+    <p class="field-help">新契約は原則2012年1月1日以後、旧契約は2011年12月31日以前。更新・転換等で変わる場合があるため、証明書に記載された区分を優先してください。</p>
+    <div class="finance-actions"><button type="submit" class="finance-button">控除額を計算する</button><button type="button" class="finance-button secondary" id="insurance-example">新旧契約の例を入力</button></div>
+   </form>
+   <p id="insurance-error" class="finance-error" role="alert" hidden></p>
+  </section>
+  <section id="insurance-result" class="finance-result" hidden aria-live="polite">
+   <h2>生命保険料控除の計算結果</h2>
+   <div class="tax-totals"><div><span>2026年分 所得税の所得控除</span><p id="insurance-income" class="answer"></p></div><div><span>2027年度 住民税の所得控除</span><p id="insurance-resident" class="answer"></p></div></div>
+   <p id="insurance-enhanced"></p>
+   <div class="table-scroll"><table><thead><tr><th>区分</th><th>所得税の控除</th><th>住民税の控除</th></tr></thead><tbody><tr><th>一般生命保険料</th><td id="insurance-income-general"></td><td id="insurance-resident-general"></td></tr><tr><th>介護医療保険料</th><td id="insurance-income-medical"></td><td id="insurance-resident-medical"></td></tr><tr><th>個人年金保険料</th><td id="insurance-income-pension"></td><td id="insurance-resident-pension"></td></tr><tr><th>上限適用前の合計</th><td id="insurance-income-subtotal"></td><td id="insurance-resident-subtotal"></td></tr></tbody></table></div>
+   <p class="field-help">所得税は全体で12万円、住民税は7万円が上限です。新旧契約がある区分は、新のみ・旧のみ・併用のうち最も大きい控除額を採用しています。計算上の1円未満は切り上げます。</p>
+   <details><summary>新旧それぞれの計算額を確認</summary><div id="insurance-breakdown"></div></details>
+   <p>この金額が課税所得から差し引かれます。還付・減税額は本人の所得、税率、他の控除等で変わり、この結果だけでは確定しません。</p>
+   <div class="finance-actions"><button type="button" class="finance-button secondary" id="insurance-copy">結果をコピー</button><span id="insurance-copy-status" class="copy-status" role="status"></span></div>
+  </section>
+  <section class="howto">
+   <h2>新契約・旧契約の控除額と上限</h2>
+   <p>一般生命保険料・個人年金保険料は、新旧を分けて年間の保険料を合算します。旧契約の医療保険・介護保険は原則として旧一般生命保険料に含め、証明書の区分に沿って入力してください。個人年金保険料控除は税制適格特約などの条件を満たす契約が対象です。</p>
+   <div class="table-scroll"><table><thead><tr><th>区分</th><th>所得税の上限</th><th>住民税の上限</th></tr></thead><tbody><tr><td>新契約（各区分）</td><td>40,000円</td><td>28,000円</td></tr><tr><td>旧契約（一般・個人年金の各区分）</td><td>50,000円</td><td>35,000円</td></tr><tr><td>新旧併用（通常の各区分）</td><td>40,000円</td><td>28,000円</td></tr><tr><td>2026年の子育て特例（一般生命・新契約を含む）</td><td>60,000円</td><td>上限の変更なし</td></tr><tr><td>3区分の合計</td><td>120,000円</td><td>70,000円</td></tr></tbody></table></div>
+   <h2>2026年の23歳未満の扶養親族がいる場合の特例</h2>
+   <p>対象となる扶養親族がいる場合、所得税の新契約一般生命保険料の控除額は、年間保険料3万円以下なら全額、3万円超6万円以下なら保険料×1/2＋15,000円、6万円超12万円以下なら保険料×1/4＋30,000円、12万円超なら60,000円です。新旧併用の一般生命保険料控除も最高6万円となります。介護医療・個人年金の個別上限、全体12万円の上限は変わりません。</p>
+   <h2>新旧契約があるときの計算例</h2>
+   <p>旧一般生命保険料90,000円、新一般生命保険料39,000円、介護医療保険料15,000円の場合、通常の所得税控除は62,500円、住民税控除は48,500円です。2026年の子育て特例に該当する場合、所得税控除は75,000円となり、住民税控除は48,500円のままです。生命保険文化センターの公表例で計算を確認できます。</p>
+   <h2>保険料控除申告書のどこに使う？</h2>
+   <p>所得税の一般生命・介護医療・個人年金の計算結果を、それぞれの控除額欄の確認に使います。証明書の会社名・契約者・受取人・新旧区分・申告額も必要です。会社の電子申告で保険料から自動計算される場合は、算出済み控除額ではなく証明書の保険料を入力するなど、その画面の指示に従ってください。</p>
+   <p><a href="/nematsu/">年末調整計算</a>は簡易版で扱う控除の範囲が異なります。ここで計算した控除額を「保険料」の欄に入力しないでください。給与からの引かれ方は<a href="/kyuyo/">給与計算</a>、ボーナスの源泉徴収税額は<a href="/bonus-tedori/">賞与の手取り計算</a>で確認できます。</p>
+   <h2>根拠資料と対象範囲</h2>
+   <ul><li><a href="https://www.nta.go.jp/taxes/tetsuzuki/shinsei/annai/gensen/pdf/2026bun_04.pdf" target="_blank" rel="noopener noreferrer">国税庁「令和8年分 保険料控除申告書」計算式・端数処理</a></li><li><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm" target="_blank" rel="noopener noreferrer">国税庁 No.1140「生命保険料控除」</a></li><li><a href="https://www.jili.or.jp/knows_learns/basic/tax/22.html" target="_blank" rel="noopener noreferrer">生命保険文化センター「生命保険料控除」制度・所得税と住民税の計算表</a></li><li><a href="https://www.jili.or.jp/knows_learns/q_a/tax/560.html" target="_blank" rel="noopener noreferrer">生命保険文化センター「新旧両制度で対象契約がある場合」計算例</a></li></ul>
+   <p class="source-note">公式・制度解説資料確認日：2026年9月18日。2026年分の生命保険料控除の目安です。実際の適用は証明書、年末調整の様式、税務署等で確認してください。保険料はブラウザ内で計算し、入力額をアクセス解析へ送信しません。</p>
+  </section>
+ </div>
+ <RelatedTools current={slug} />
+ <Faq items={[
+  {q:'保険に複数加入している場合は？',a:'証明書の一般生命・介護医療・個人年金と新旧の区分ごとに年間保険料を合算して入力します。保険料ごとに控除額を計算してから足す方法ではありません。'},
+  {q:'12万円がそのまま戻ってきますか？',a:'いいえ。生命保険料控除は税率を掛ける前の所得を減らす所得控除です。実際の減税額や還付額は本人の所得、税率、他の控除や源泉徴収税額等によって変わります。'},
+  {q:'2026年の特例で住民税も6万円控除になりますか？',a:'いいえ。23歳未満の扶養親族がいる場合の一般生命保険料控除6万円の特例は所得税についてのものです。住民税の新契約の各区分上限28,000円、全体上限70,000円は変わりません。'},
+ ]} />
+</ToolLayout>
+<script>
+ import { calculateLifeInsurance, PREMIUM_FIELDS } from '../../lib/seimei-hoken-kojo.js';
+ const $ = (id) => document.getElementById(id), yen = (n) => `${n.toLocaleString('ja-JP')}円`;
+ let copyText = '', tracked = false;
+ function clear() { $('insurance-result').hidden=true; $('insurance-error').hidden=true; $('insurance-copy-status').textContent=''; copyText=''; }
+ $('insurance-form').addEventListener('input',clear); $('insurance-form').addEventListener('change',clear);
+ $('insurance-form').addEventListener('submit',(event)=>{
+  event.preventDefault(); clear();
+  const r=calculateLifeInsurance({...Object.fromEntries(PREMIUM_FIELDS.map(f=>[f,Number($('insurance-'+f).value)])),under23Dependent:$('insurance-child').value==='yes'});
+  if(!r){$('insurance-error').textContent='年間保険料は0〜10億円の整数で入力してください。';$('insurance-error').hidden=false;return;}
+  $('insurance-income').textContent=yen(r.income.total);$('insurance-resident').textContent=yen(r.resident.total);
+  $('insurance-enhanced').textContent=r.enhanced?'23歳未満の扶養親族がいる場合の所得税の特例を適用しました。':'通常の控除額です。旧契約のみの場合、子育て特例による上限の引上げはありません。';
+  $('insurance-breakdown').replaceChildren();
+  for(const tax of ['income','resident']){
+   const t=r[tax];
+   for(const kind of ['general','medical','pension','subtotal']) $('insurance-'+tax+'-'+kind).textContent=yen(typeof t[kind]==='number'?t[kind]:t[kind].amount);
+   for(const [kind,label] of [['general','一般生命'],['pension','個人年金']]){
+    const b=t[kind],p=document.createElement('p');p.textContent=`${tax==='income'?'所得税':'住民税'}・${label}：新のみ ${yen(b.newAmount)} ／ 旧のみ ${yen(b.oldAmount)} ／ 併用（上限適用後）${yen(b.combined)} → 採用 ${yen(b.amount)}`;$('insurance-breakdown').append(p);
+   }
+  }
+  copyText=`2026年分 生命保険料控除\n所得税の所得控除：${yen(r.income.total)}\n2027年度住民税の所得控除：${yen(r.resident.total)}\n${$('insurance-enhanced').textContent}\n※還付・減税額そのものではありません。\n${location.origin}${location.pathname}`;
+  $('insurance-result').hidden=false;if(!tracked){window.trackCalculatorResult?.('seimei-hoken-kojo');tracked=true;}
+ });
+ $('insurance-example').addEventListener('click',()=>{clear();for(const f of PREMIUM_FIELDS)$('insurance-'+f).value='0';$('insurance-generalOld').value='90000';$('insurance-generalNew').value='39000';$('insurance-medical').value='15000';$('insurance-child').value='no';$('insurance-form').requestSubmit();});
+ $('insurance-copy').addEventListener('click',async()=>{if(!copyText)return;try{await navigator.clipboard.writeText(copyText);$('insurance-copy-status').textContent='コピーしました';}catch{$('insurance-copy-status').textContent='コピーできませんでした。結果を選択してコピーしてください。';}});
+</script>
