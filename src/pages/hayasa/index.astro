@@ -209,6 +209,7 @@ const jsonld = {
   .converter-inputs input, .converter-inputs select { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: var(--r-md); background: var(--surface); color: var(--text); font-family: var(--font-sans); }
   .converter-inputs input { font: var(--fw-bold) 1rem/1 var(--font-mono); }
   .converter-results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  .converter-results[hidden] { display: none; }
   .converter-results div { padding: 14px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
   .converter-results .is-primary { border-color: var(--cat-color); background: var(--cat-tint); }
   .converter-results span { display: block; margin-bottom: 3px; color: var(--text-muted); font-size: .7rem; }
