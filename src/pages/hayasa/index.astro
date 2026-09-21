@@ -6,8 +6,8 @@ import ResultShare from '../../components/ResultShare.astro';
 import { speedToMetersPerSecond } from '../../lib/hayasa.js';
 
 const slug = 'hayasa';
-const title = '速さ計算｜距離と時間から時速・秒速・分速を自動計算';
-const description = '距離と時間を入力すると時速・秒速・分速を自動計算。時速20kmは秒速5.56mなどの早見表、距離や所要時間の逆算、ランニングの1kmペースにも対応します。';
+const title = '時速・秒速の換算｜速さ・距離・時間を自動計算';
+const description = '時速20kmは秒速5.56m。時速・秒速・分速を入力するだけで相互換算できます。距離と時間から速さ、速さと時間から距離、所要時間や1kmペースの計算にも対応。';
 const kilometerSpeeds = [1, 5, 10, 15, 20, 25, 30, 36, 40, 50, 60, 80, 100];
 const speedConversions = kilometerSpeeds.map((kilometersPerHour) => ({
   kilometersPerHour,
@@ -28,12 +28,29 @@ const jsonld = {
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 速さ計算</div>
-    <h1>時速・距離・時間の計算ツール</h1>
-    <p>距離と時間から時速を計算。分かっている2つの値を入力すると、速さ・距離・所要時間を自動で求めます。</p>
+    <h1>時速・秒速の換算と速さ計算ツール</h1>
+    <p>時速・秒速・分速をすぐ換算。距離と時間から速さ、速さと時間から距離や所要時間も計算できます。</p>
     <div class="feature-chips" aria-label="対応する計算">
       <span>時速 km/h</span><span>秒速 m/s</span><span>分速 m/分</span><span>1kmペース</span>
     </div>
   </div>
+
+  <section class="calc-card converter-card" id="speed-converter" aria-labelledby="converter-title">
+    <div class="converter-heading">
+      <div><span class="converter-kicker">かんたん換算</span><h2 id="converter-title">時速・秒速・分速を換算</h2></div>
+      <p>例：時速20km ＝ 秒速約5.56m</p>
+    </div>
+    <div class="converter-inputs">
+      <div class="form-group"><label for="converter-value">速さ</label><input id="converter-value" type="number" min="0" step="any" value="20" inputmode="decimal" /></div>
+      <div class="form-group"><label for="converter-unit">入力単位</label><select id="converter-unit"><option value="kmh">km/h（時速）</option><option value="mps">m/s（秒速）</option><option value="mpm">m/分（分速）</option></select></div>
+    </div>
+    <p class="form-error" id="converter-error" role="alert" hidden>0より大きい速さを入力してください。</p>
+    <div class="converter-results" id="converter-results" aria-live="polite">
+      <div><span>時速</span><strong id="converter-kmh">20 km/h</strong></div>
+      <div class="is-primary"><span>秒速</span><strong id="converter-mps">5.5556 m/s</strong></div>
+      <div><span>分速</span><strong id="converter-mpm">333.333 m/分</strong></div>
+    </div>
+  </section>
 
   <div class="calc-card speed-card" id="speed-tool">
     <div class="speed-tabs" role="tablist" aria-label="計算したい項目">
@@ -120,7 +137,7 @@ const jsonld = {
       <div><span>距離を求める</span><strong>距離 ＝ 速さ × 時間</strong><small>60km/h × 1.5時間 ＝ 90km</small></div>
       <div><span>時間を求める</span><strong>時間 ＝ 距離 ÷ 速さ</strong><small>10km ÷ 20km/h ＝ 0.5時間</small></div>
     </div>
-    <p>時間だけを足し引きしたい場合は<a href="/jikan/">時間計算ツール</a>、km/hとm/sなどの換算だけをしたい場合は<a href="/tani/">単位変換器</a>、速度変化と時間からm/s²やGを求める場合は<a href="/kasokudo/">加速度計算ツール</a>をご利用ください。</p>
+    <p>時間だけを足し引きしたい場合は<a href="/jikan/">時間計算ツール</a>、長さ・重さなど別の単位も換算したい場合は<a href="/tani/">単位変換器</a>、速度変化と時間からm/s²やGを求める場合は<a href="/kasokudo/">加速度計算ツール</a>をご利用ください。</p>
   </section>
 
   <section class="howto">
@@ -152,7 +169,7 @@ const jsonld = {
         ))}
       </tbody>
     </table></div></div>
-    <p>より細かい値は、上の「速さを計算」タブで距離と時間を入力するか、<a href="/tani/">単位変換器</a>で時速・秒速を直接換算してください。</p>
+    <p>表にない値は、ページ上部の「時速・秒速・分速を換算」に数値を入力すると直接換算できます。</p>
   </section>
 
   <section class="howto">
@@ -183,6 +200,19 @@ const jsonld = {
 <style>
   .feature-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
   .feature-chips span { padding: 5px 10px; border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .72rem; font-weight: var(--fw-bold); }
+  .converter-card { margin-bottom: 20px; padding: 22px; }
+  .converter-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+  .converter-heading h2 { margin: 2px 0 0; font-size: 1.15rem; }
+  .converter-heading p { margin: 0; color: var(--text-muted); font-size: .78rem; }
+  .converter-kicker { color: var(--cat-color); font-size: .68rem; font-weight: var(--fw-bold); }
+  .converter-inputs { display: grid; grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr); gap: 12px; }
+  .converter-inputs input, .converter-inputs select { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--border-input); border-radius: var(--r-md); background: var(--surface); color: var(--text); font-family: var(--font-sans); }
+  .converter-inputs input { font: var(--fw-bold) 1rem/1 var(--font-mono); }
+  .converter-results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  .converter-results div { padding: 14px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface-sub); }
+  .converter-results .is-primary { border-color: var(--cat-color); background: var(--cat-tint); }
+  .converter-results span { display: block; margin-bottom: 3px; color: var(--text-muted); font-size: .7rem; }
+  .converter-results strong { font: var(--fw-bold) clamp(.9rem, 2.5vw, 1.15rem)/1.2 var(--font-mono); }
   .speed-card { overflow: hidden; }
   .speed-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
   .speed-tab { display: flex; flex-direction: column; gap: 2px; padding: 13px 8px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); font-size: .82rem; font-weight: var(--fw-bold); }
@@ -225,6 +255,9 @@ const jsonld = {
     .formula-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 480px) {
+    .converter-heading { display: block; }
+    .converter-heading p { margin-top: 5px; }
+    .converter-inputs, .converter-results { grid-template-columns: 1fr; }
     .speed-tab { padding: 11px 4px; font-size: .74rem; }
     .speed-panel { padding: 18px; }
     .distance-input, .time-input-grid { grid-template-columns: 1fr; }
@@ -234,7 +267,7 @@ const jsonld = {
 </style>
 
 <script>
-  import { calculateDistance, calculateSpeed, calculateTime } from '../../lib/hayasa.js';
+  import { calculateDistance, calculateSpeed, calculateTime, convertSpeed } from '../../lib/hayasa.js';
 
   const $ = (id) => document.getElementById(id);
   const number = (value, digits = 4) => new Intl.NumberFormat('ja-JP', { maximumFractionDigits: digits }).format(value);
@@ -244,6 +277,17 @@ const jsonld = {
     return `${Math.floor(rounded / 60)}分${String(rounded % 60).padStart(2, '0')}秒 /km`;
   };
   let activeMode = 'speed';
+
+  function updateConverter() {
+    const result = convertSpeed($('converter-value').value, $('converter-unit').value);
+    $('converter-error').hidden = Boolean(result);
+    $('converter-results').hidden = !result;
+    if (!result) return window.hideResultShare?.();
+    $('converter-kmh').textContent = `${number(result.kilometersPerHour)} km/h`;
+    $('converter-mps').textContent = `${number(result.metersPerSecond)} m/s`;
+    $('converter-mpm').textContent = `${number(result.metersPerMinute, 3)} m/分`;
+    window.setResultShare?.(`速さ換算\n時速：${number(result.kilometersPerHour)} km/h\n秒速：${number(result.metersPerSecond)} m/s`);
+  }
 
   function validity(mode, result) {
     $(`${mode}-error`).hidden = Boolean(result);
@@ -294,5 +338,7 @@ const jsonld = {
     updaters[activeMode]();
   }));
   document.querySelectorAll('#speed-tool input, #speed-tool select').forEach((input) => input.addEventListener('input', () => updaters[activeMode]()));
+  document.querySelectorAll('#speed-converter input, #speed-converter select').forEach((input) => input.addEventListener('input', updateConverter));
+  updateConverter();
   updateSpeed();
 </script>

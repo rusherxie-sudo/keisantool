@@ -3,6 +3,7 @@ import {
   calculateDistance,
   calculateSpeed,
   calculateTime,
+  convertSpeed,
   durationToSeconds,
   speedToMetersPerSecond,
 } from '../src/lib/hayasa.js';
@@ -30,6 +31,21 @@ describe('speedToMetersPerSecond', () => {
     expect(speedToMetersPerSecond(0, 'kmh')).toBeNull();
     expect(speedToMetersPerSecond('abc', 'kmh')).toBeNull();
     expect(speedToMetersPerSecond(10, 'mph')).toBeNull();
+  });
+});
+
+describe('convertSpeed', () => {
+  it('時速20kmを秒速・分速へ換算する', () => {
+    expect(convertSpeed(20, 'kmh')).toEqual({
+      kilometersPerHour: 20,
+      metersPerSecond: 50 / 9,
+      metersPerMinute: 1000 / 3,
+    });
+  });
+
+  it('秒速1mを時速3.6kmへ換算し、無効値を拒否する', () => {
+    expect(convertSpeed(1, 'mps')).toMatchObject({ kilometersPerHour: 3.6, metersPerMinute: 60 });
+    expect(convertSpeed(0, 'kmh')).toBeNull();
   });
 });
 

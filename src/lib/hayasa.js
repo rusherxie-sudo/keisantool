@@ -29,6 +29,16 @@ export function speedToMetersPerSecond(value, unit) {
   return null;
 }
 
+export function convertSpeed(value, unit) {
+  const metersPerSecond = speedToMetersPerSecond(value, unit);
+  if (metersPerSecond == null) return null;
+  return {
+    metersPerSecond,
+    kilometersPerHour: metersPerSecond * 3.6,
+    metersPerMinute: metersPerSecond * 60,
+  };
+}
+
 function durationParts(totalSeconds) {
   const rounded = Math.round(totalSeconds);
   const hours = Math.floor(rounded / 3600);
