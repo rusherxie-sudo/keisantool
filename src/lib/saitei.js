@@ -101,19 +101,40 @@ export const MINIMUM_WAGE_DATA = Object.fromEntries(
   MINIMUM_WAGE_PREFECTURES.map(({ prefecture, wage }) => [prefecture, wage]),
 );
 
-export function minimumWagePrefectures() {
-  return MINIMUM_WAGE_PREFECTURES.map((row) => ({ ...row }));
+function applicableWageRow(row, asOfDate) {
+  if (
+    typeof asOfDate === 'string'
+    && /^\d{4}-\d{2}-\d{2}$/.test(asOfDate)
+    && row.revisionStatus === 'decided'
+    && row.revisionEffectiveDate
+    && row.proposedWage
+    && asOfDate >= row.revisionEffectiveDate
+  ) {
+    return {
+      ...row,
+      previousWage: row.wage,
+      previousEffectiveDate: row.effectiveDate,
+      wage: row.proposedWage,
+      effectiveDate: row.revisionEffectiveDate,
+      isRevisionEffective: true,
+    };
+  }
+  return { ...row, isRevisionEffective: false };
 }
 
-export function getMinimumWageInfo(prefectureOrSlug) {
+export function minimumWagePrefectures(asOfDate) {
+  return MINIMUM_WAGE_PREFECTURES.map((row) => applicableWageRow(row, asOfDate));
+}
+
+export function getMinimumWageInfo(prefectureOrSlug, asOfDate) {
   const row = MINIMUM_WAGE_PREFECTURES.find(
     (item) => item.prefecture === prefectureOrSlug || item.slug === prefectureOrSlug,
   );
-  return row ? { ...row } : null;
+  return row ? applicableWageRow(row, asOfDate) : null;
 }
 
-export function getMinimumWage(prefectureOrSlug) {
-  return getMinimumWageInfo(prefectureOrSlug)?.wage ?? null;
+export function getMinimumWage(prefectureOrSlug, asOfDate) {
+  return getMinimumWageInfo(prefectureOrSlug, asOfDate)?.wage ?? null;
 }
 
 export function getMinimumWageHistory(prefectureOrSlug) {
@@ -130,29 +151,29 @@ export function getMinimumWageCities(prefectureOrSlug) {
   return info ? [...(MINIMUM_WAGE_CITIES[info.slug] ?? [])] : [];
 }
 
-export function dailyWage(prefectureOrSlug, hours = 8) {
-  const wage = getMinimumWage(prefectureOrSlug);
+export function dailyWage(prefectureOrSlug, hours = 8, asOfDate) {
+  const wage = getMinimumWage(prefectureOrSlug, asOfDate);
   const h = Number(hours);
   if (wage === null || !Number.isFinite(h) || h <= 0) return 0;
   return Math.floor(wage * h);
 }
 
-export function monthlyWage(prefectureOrSlug, dailyHours = 8, workDays = 22) {
-  const daily = dailyWage(prefectureOrSlug, dailyHours);
+export function monthlyWage(prefectureOrSlug, dailyHours = 8, workDays = 22, asOfDate) {
+  const daily = dailyWage(prefectureOrSlug, dailyHours, asOfDate);
   const days = Number(workDays);
   if (daily === 0 || !Number.isFinite(days) || days <= 0) return 0;
   return Math.floor(daily * days);
 }
 
-export function yearlyWage(prefectureOrSlug, dailyHours = 8, workDays = 22) {
-  return Math.floor(monthlyWage(prefectureOrSlug, dailyHours, workDays) * 12);
+export function yearlyWage(prefectureOrSlug, dailyHours = 8, workDays = 22, asOfDate) {
+  return Math.floor(monthlyWage(prefectureOrSlug, dailyHours, workDays, asOfDate) * 12);
 }
 
-export function calcSaitei(prefectureOrSlug, hoursPerDay, daysPerMonth) {
-  const info = getMinimumWageInfo(prefectureOrSlug);
+export function calcSaitei(prefectureOrSlug, hoursPerDay, daysPerMonth, asOfDate) {
+  const info = getMinimumWageInfo(prefectureOrSlug, asOfDate);
   if (!info) return null;
-  const daily = dailyWage(info.prefecture, hoursPerDay);
-  const monthly = monthlyWage(info.prefecture, hoursPerDay, daysPerMonth);
+  const daily = dailyWage(info.prefecture, hoursPerDay, asOfDate);
+  const monthly = monthlyWage(info.prefecture, hoursPerDay, daysPerMonth, asOfDate);
   return {
     prefecture: info.prefecture,
     hourlyWage: info.wage,
@@ -180,8 +201,8 @@ export function monthlyHourlyEquivalent(eligibleMonthlyWage, annualWorkDays, dai
   return (monthly * 12) / (days * hours);
 }
 
-export function checkMonthlyWage(prefectureOrSlug, eligibleMonthlyWage, annualWorkDays, dailyHours) {
-  const info = getMinimumWageInfo(prefectureOrSlug);
+export function checkMonthlyWage(prefectureOrSlug, eligibleMonthlyWage, annualWorkDays, dailyHours, asOfDate) {
+  const info = getMinimumWageInfo(prefectureOrSlug, asOfDate);
   const hourlyEquivalent = monthlyHourlyEquivalent(eligibleMonthlyWage, annualWorkDays, dailyHours);
   if (!info || hourlyEquivalent === null) return null;
   return {

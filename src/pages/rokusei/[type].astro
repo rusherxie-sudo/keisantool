@@ -2,7 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
-import { fortuneTypes, fortuneZone, forecast } from '../../lib/rokusei.js';
+import { fortuneTypes, fortuneZone, forecast, daisakkaiPeriod } from '../../lib/rokusei.js';
 import { japanDateParts } from '../../lib/japanDate.js';
 
 export function getStaticPaths() {
@@ -15,13 +15,14 @@ const current = fortuneZone(typeInfo.type, CURRENT_YEAR);
 const next = fortuneZone(typeInfo.type, CURRENT_YEAR + 1);
 const cycleRows = forecast(typeInfo.type, CURRENT_YEAR - 2, 12);
 const daisakkaiRows = cycleRows.filter((row) => row.category === '大殺界');
+const daisakkai = daisakkaiPeriod(typeInfo.type, CURRENT_YEAR);
 const otherTypes = fortuneTypes().filter((item) => item.slug !== typeInfo.slug);
 const slug = `rokusei/${typeInfo.slug}`;
 const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
 const statusText = current.category === '大殺界'
   ? `${CURRENT_YEAR}年は「${current.zone}」で、大殺界にあたります`
   : `${CURRENT_YEAR}年は「${current.zone}」で、${current.category}にあたります`;
-const daisakkaiYears = daisakkaiRows.map((row) => `${row.year}年（${row.zone}）`).join('・');
+const daisakkaiYears = `${daisakkai.startYear}年（陰影）・${daisakkai.startYear + 1}年（停止）・${daisakkai.endYear}年（減退）`;
 const title = `${typeInfo.type}の${CURRENT_YEAR}年運勢・大殺界早見表｜${current.zone}はいつ？ | 計算ツール`;
 const description = `${typeInfo.type}の${CURRENT_YEAR}年は${current.zone}（${current.category}）です。${CURRENT_YEAR - 2}〜${CURRENT_YEAR + 9}年の運勢と大殺界を12年早見表で確認できます。生年月日からの無料自動計算も案内します。`;
 
@@ -50,7 +51,7 @@ const faqItems = [
   },
   {
     q: `${typeInfo.type}の大殺界はいつですか？`,
-    a: `この12年早見表では、${daisakkaiYears}が大殺界です。陰影・停止・減退の3年間が順に巡ります。`,
+    a: `${daisakkai.status === 'current' ? '現在の' : '次回の'}大殺界は${daisakkai.startYear}年に始まり、${daisakkai.endYear}年に終わります。内訳は${daisakkaiYears}です。`,
   },
   {
     q: `自分が${typeInfo.type}かどうか調べるには？`,
@@ -79,7 +80,7 @@ const faqItems = [
     </div>
     <dl class="next-year">
       <div><dt>{CURRENT_YEAR + 1}年</dt><dd>{next.zone}（{next.category}）</dd></div>
-      <div><dt>この表の大殺界</dt><dd>{daisakkaiRows[0].year}〜{daisakkaiRows.at(-1).year}年</dd></div>
+      <div><dt>{daisakkai.status === 'current' ? '現在の大殺界' : '次回の大殺界'}</dt><dd>{daisakkai.startYear}〜{daisakkai.endYear}年</dd></div>
     </dl>
     <a class="calculator-link" href="/rokusei/">生年月日から自分の運命星を無料計算する →</a>
   </div>
@@ -88,7 +89,7 @@ const faqItems = [
 
   <section class="howto cycle-section">
     <h2>{typeInfo.type}の大殺界はいつ？12年早見表</h2>
-    <p>{typeInfo.type}の年運を{CURRENT_YEAR - 2}年から{CURRENT_YEAR + 9}年まで掲載しています。大殺界は<strong>陰影・停止・減退</strong>の3年間です。</p>
+    <p>{typeInfo.type}の{daisakkai.status === 'current' ? '現在の' : '次回の'}大殺界は、<strong>{daisakkai.startYear}年から{daisakkai.endYear}年まで</strong>です。陰影・停止・減退の順に3年間続きます。</p>
     <div class="data-table-wrap">
       <div class="data-table-scroll">
         <table class="data-table cycle-table">
@@ -105,7 +106,7 @@ const faqItems = [
         </table>
       </div>
     </div>
-    <p class="table-note">この範囲の大殺界：<strong>{daisakkaiYears}</strong></p>
+    <p class="table-note">{daisakkai.status === 'current' ? '現在の' : '次回の'}大殺界：<strong>{daisakkaiYears}</strong></p>
   </section>
 
   <section class="howto">

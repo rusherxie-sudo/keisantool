@@ -6,9 +6,12 @@ import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import { NATIONAL_WEIGHTED_AVERAGE, NATIONAL_WAGE_GUIDELINE_2026, NATIONAL_WAGE_HISTORY, minimumWagePrefectures } from '../../lib/saitei.js';
+import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'saitei';
-const prefectures = minimumWagePrefectures();
+const today = japanDateParts();
+const asOfDate = `${today.year}-${String(today.month).padStart(2, '0')}-${String(today.day).padStart(2, '0')}`;
+const prefectures = minimumWagePrefectures(asOfDate);
 const confirmedCount = prefectures.filter((row) => row.proposedWage).length;
 const decidedCount = prefectures.filter((row) => row.revisionStatus === 'decided').length;
 const notYetConfirmed = prefectures.filter((row) => !row.proposedWage).map((row) => row.prefecture).join('・');
@@ -55,7 +58,9 @@ const faqItems = [
           const revisionDate = row.revisionEffectiveDate
             ? row.revisionEffectiveDate.split('-').map(Number)
             : null;
-          const revisionLabel = row.revisionStatus === 'decided'
+          const revisionLabel = row.isRevisionEffective
+            ? '改正額・適用中'
+            : row.revisionStatus === 'decided'
             ? `改正決定・${revisionDate[1]}月${revisionDate[2]}日発効`
             : row.revisionStatus === 'answered' && revisionDate
             ? `地方答申・${revisionDate[1]}月${revisionDate[2]}日予定`

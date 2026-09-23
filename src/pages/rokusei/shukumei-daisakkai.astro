@@ -46,6 +46,13 @@ const faqItems = [
     <p>生年月日と性別を入力するだけで、六星占術の<strong>宿命大殺界</strong>（人生に一度の20年間）がいつ来るかを自動判定。初起殺界・中起殺界・転起殺界の内訳と、日柱の空亡・大運の流れも確認できます。</p>
   </div>
 
+  <nav class="sd-related-paths" aria-label="六星占術のほかの調べ方">
+    <a href="/rokusei/"><strong>年運の大殺界</strong><span>今年と今後9年を自動計算</span></a>
+    <a href="/rokusei/daisakkai-2026/"><strong>2026年は何星人？</strong><span>3年間の開始・終了を確認</span></a>
+    <a href="/rokusei/hayamihyou/"><strong>12タイプ早見表</strong><span>全タイプの年運を一覧表示</span></a>
+    <a href="/rokusei-aisho/"><strong>六星占術の相性</strong><span>ふたりの生年月日から診断</span></a>
+  </nav>
+
   <div class="calc-card">
     <div class="wide-input">
       <div class="form-group">
@@ -136,6 +143,10 @@ const faqItems = [
 </style>
 
 <style>
+  .sd-related-paths { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 18px; }
+  .sd-related-paths a { display: flex; flex-direction: column; gap: 2px; padding: 11px 12px; border: 1px solid var(--border-2); border-radius: var(--r-sm); color: var(--text); background: var(--surface); }
+  .sd-related-paths strong { color: var(--cat-color); font-size: .82rem; }
+  .sd-related-paths span { color: var(--text-muted); font-size: .72rem; line-height: 1.45; }
   .wide-input { display: grid; gap: 14px; }
   @media (min-width: 560px) { .wide-input { grid-template-columns: 1fr 1fr; } }
   /* 隠し radio は幅 1px にしないと form-group input の width:100% を継承して横に伸びる */
@@ -156,6 +167,7 @@ const faqItems = [
   .sd-dayun .result-label { margin-bottom: 10px; }
   .sd-dayun th[scope="row"] { text-align: left; }
   .sd-disclaimer-note { font-size: .78rem; color: var(--text-muted); margin-top: 12px; line-height: 1.7; }
+  @media (max-width: 720px) { .sd-related-paths { grid-template-columns: repeat(2, 1fr); } }
 </style>
 
 <script>

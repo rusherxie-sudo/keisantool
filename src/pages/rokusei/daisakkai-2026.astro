@@ -2,7 +2,7 @@
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
-import { fortuneTable, fortuneTypes, fortuneZone } from '../../lib/rokusei.js';
+import { fortuneTable, fortuneTypes, fortuneZone, daisakkaiPeriod } from '../../lib/rokusei.js';
 import { seirekiToWareki } from '../../lib/wareki.js';
 
 const slug = 'rokusei/daisakkai-2026';
@@ -20,6 +20,7 @@ const daisakkaiRows = currentTable.filter((item) => item.category === '大殺界
 const daisakkaiList = daisakkaiRows.map((item) => ({
   ...item,
   desc: fortuneZone(item.type, YEAR).desc,
+  period: daisakkaiPeriod(item.type, YEAR),
 }));
 const daisakkaiSummary = daisakkaiList.map((item) => `${item.type}（${item.zone}）`).join('・');
 
@@ -93,6 +94,7 @@ const faqItems = [
           <h3><a href={`/rokusei/${typeSlug.get(item.type)}/`}>{item.type}</a></h3>
           <p class="ds-zone">{item.zone}</p>
           <p class="ds-cat">大殺界</p>
+          <p class="ds-period">{item.period.startYear}年開始 → {item.period.endYear}年終了</p>
           <p class="ds-desc">{item.desc}</p>
         </article>
       ))}
@@ -186,6 +188,7 @@ const faqItems = [
   .ds-type-card h3 a:hover { color: var(--danger); }
   .ds-type-card .ds-zone { margin: 8px 0 0; font-size: 1.6rem; font-weight: var(--fw-bold); color: var(--danger); line-height: 1.2; }
   .ds-type-card .ds-cat { align-self: flex-start; padding: 2px 10px; border-radius: var(--r-pill); font-size: .72rem; font-weight: var(--fw-bold); color: #fff; background: var(--danger); }
+  .ds-type-card .ds-period { margin: 5px 0 0; font-size: .78rem; font-weight: var(--fw-bold); color: var(--danger); }
   .ds-type-card .ds-desc { margin: 6px 0 0; font-size: .84rem; line-height: 1.75; color: var(--text); }
 
   /* 自動計算・早見表への導線 */

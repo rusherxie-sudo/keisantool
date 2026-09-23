@@ -8,6 +8,7 @@ import {
   forecast,
   fortuneTable,
   fortuneTypes,
+  daisakkaiPeriod,
 } from '../src/lib/rokusei.js';
 
 // 検証の根拠となる公開例:
@@ -115,6 +116,31 @@ describe('forecast（向こう数年の運勢）', () => {
   it('12年で一周し種子に戻る', () => {
     const list = forecast('土星人プラス', 2025, 13);
     expect(list[0].zone).toBe(list[12].zone);
+  });
+});
+
+describe('daisakkaiPeriod（大殺界3年間の開始・終了）', () => {
+  it('大殺界の途中なら現在の3年間を返す', () => {
+    expect(daisakkaiPeriod('火星人プラス', 2026)).toEqual({
+      status: 'current', startYear: 2025, endYear: 2027, currentZone: '停止',
+    });
+  });
+
+  it('好調期なら次回の陰影から減退までを返す', () => {
+    expect(daisakkaiPeriod('土星人プラス', 2026)).toEqual({
+      status: 'next', startYear: 2029, endYear: 2031, currentZone: '再会',
+    });
+  });
+
+  it('12年表の端をまたぐタイプも連続した3年間として返す', () => {
+    expect(daisakkaiPeriod('天王星人プラス', 2026)).toEqual({
+      status: 'next', startYear: 2035, endYear: 2037, currentZone: '種子',
+    });
+  });
+
+  it('不正なタイプ・年はnullを返す', () => {
+    expect(daisakkaiPeriod('不明', 2026)).toBeNull();
+    expect(daisakkaiPeriod('土星人プラス', NaN)).toBeNull();
   });
 });
 

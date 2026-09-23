@@ -98,6 +98,14 @@ const STAR_PROFILES: StarProfile[] = [
   </section>
 
   <nav class="rk-intent-links" aria-label="六星占術の目的別ページ">
+    <a href="#rokusei-calculator">
+      <strong>運命星を自動計算</strong>
+      <span>生年月日から星人とプラス・マイナスを判定</span>
+    </a>
+    <a href="/rokusei/daisakkai-2026/">
+      <strong>{CURRENT_YEAR}年の大殺界</strong>
+      <span>何星人がいつ始まり、いつ終わるか確認</span>
+    </a>
     <a href="/rokusei/hayamihyou/">
       <strong>六星占術 早見表</strong>
       <span>12タイプの年運と大殺界を一覧で確認</span>
@@ -106,9 +114,13 @@ const STAR_PROFILES: StarProfile[] = [
       <strong>宿命大殺界 自動計算</strong>
       <span>生年月日から人生20年間を無料判定</span>
     </a>
+    <a href="/rokusei-aisho/">
+      <strong>六星占術の相性</strong>
+      <span>ふたりの生年月日から相性を自動診断</span>
+    </a>
   </nav>
 
-  <div class="calc-card">
+  <div class="calc-card" id="rokusei-calculator">
     <div class="wide-input">
       <div class="form-group">
         <label for="rk-date">生年月日</label>
@@ -286,7 +298,7 @@ const STAR_PROFILES: StarProfile[] = [
   .rk-current-answer h2 { margin: 0 0 5px; color: var(--text); font-size: 1rem; }
   .rk-current-answer p { margin: 0; color: var(--text); font-size: .86rem; line-height: 1.7; }
   .rk-current-answer strong { color: var(--cat-color); }
-  .rk-intent-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 0 0 16px; }
+  .rk-intent-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 0 16px; }
   .rk-intent-links a { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border: 1px solid var(--border-2); border-radius: var(--r-md); color: var(--text); background: var(--surface); }
   .rk-intent-links a:hover { border-color: var(--cat-color); background: var(--cat-tint); }
   .rk-intent-links strong { color: var(--cat-color); font-size: .88rem; }

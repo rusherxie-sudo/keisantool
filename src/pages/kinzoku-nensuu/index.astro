@@ -16,6 +16,8 @@ const aprilEntryRows = Array.from({ length: 17 }, (_, index) => {
   const joinYear = tableYear - index;
   return { joinYear, serviceYear: tableYear - joinYear + 1, completedYears: tableYear - joinYear };
 });
+const quickEntryYears = new Set([2013, 2017, 2020, 2024]);
+const quickEntryRows = aprilEntryRows.filter((row) => quickEntryYears.has(row.joinYear)).reverse();
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -41,6 +43,21 @@ const jsonld = {
     <a href="#service-tool">入社日から何年目か調べる</a>
     <a href="#reverse-tool">今○年目から入社年を逆算する</a>
   </nav>
+
+  <section class="entry-quick-answer" aria-labelledby="entry-quick-title">
+    <h2 id="entry-quick-title">{tableYear}年は入社何年目？よく調べられる入社年</h2>
+    <p>4月1日入社の場合は、入社年を1年目として数えます。「○年目」は進行中の年、「勤続○年」は完了した年数です。</p>
+    <div class="entry-quick-grid">
+      {quickEntryRows.map((row) => (
+        <div>
+          <span>{row.joinYear}年入社</span>
+          <strong>{row.serviceYear}年目</strong>
+          <small>勤続満{row.completedYears}年</small>
+        </div>
+      ))}
+    </div>
+    <p class="entry-quick-note">※ {tableYear}年4月1日時点。月日が異なる場合は、下の計算機に実際の入社日を入力してください。</p>
+  </section>
 
   <div class="calc-card" id="service-tool">
     <div class="calc-panel active">
@@ -302,6 +319,14 @@ const jsonld = {
 <style>
   .service-task-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 18px; }
   .service-task-links a { padding: 9px 12px; border-radius: var(--r-md); background: var(--cat-tint); color: var(--cat-color); font-size: .85rem; font-weight: var(--fw-bold); }
+  .entry-quick-answer { margin: 0 0 18px; padding: 16px 18px; border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--surface); }
+  .entry-quick-answer h2 { margin: 0; font-size: 1rem; }
+  .entry-quick-answer > p { margin: 5px 0 0; font-size: .8rem; line-height: 1.65; color: var(--text-muted); }
+  .entry-quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+  .entry-quick-grid div { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--surface-sub); }
+  .entry-quick-grid span, .entry-quick-grid small { font-size: .72rem; color: var(--text-muted); }
+  .entry-quick-grid strong { color: var(--cat-color); }
+  .entry-quick-answer .entry-quick-note { font-size: .72rem; }
   #service-tool, #reverse-tool { scroll-margin-top: 90px; }
   .reverse-tool { padding: 24px; }
   .reverse-tool h2 { margin: 0 0 10px; font-size: 1.15rem; }
@@ -312,6 +337,9 @@ const jsonld = {
   .reverse-tool .result-heading strong { font: var(--fw-bold) 1.2rem/1.7 var(--font-sans); overflow-wrap: anywhere; }
   .feature-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
   .feature-chips span { padding: 5px 10px; border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .75rem; font-weight: var(--fw-bold); }
+  @media (max-width: 640px) {
+    .entry-quick-grid { grid-template-columns: repeat(2, 1fr); }
+  }
   #service-tool .calc-panel { padding: 24px; }
   .service-date-grid { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); gap: 8px; align-items: end; }
   .date-arrow { display: grid; place-items: center; min-height: 48px; color: var(--cat-color); font-weight: var(--fw-bold); }

@@ -107,12 +107,16 @@ const prefectures = minimumWagePrefectures();
     const [year, month, day] = iso.split('-').map(Number);
     return `${year}年${month}月${day}日`;
   };
+  const localToday = () => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  };
 
   function renderMinimum() {
     const prefecture = root.querySelector('[data-role="prefecture"]').value;
     const hours = root.querySelector('[data-role="hours"]').value;
     const days = root.querySelector('[data-role="days"]').value;
-    const result = calcSaitei(prefecture, hours, days);
+    const result = calcSaitei(prefecture, hours, days, localToday());
     if (!result) return;
     root.querySelector('[data-output="hourly"]').textContent = yen(result.hourlyWage);
     root.querySelector('[data-output="effective"]').textContent = dateJa(result.effectiveDate);
@@ -127,7 +131,7 @@ const prefectures = minimumWagePrefectures();
     const monthly = root.querySelector('[data-role="eligible-monthly"]').value;
     const annualDays = root.querySelector('[data-role="annual-days"]').value;
     const hours = root.querySelector('[data-role="check-hours"]').value;
-    const result = checkMonthlyWage(prefecture, monthly, annualDays, hours);
+    const result = checkMonthlyWage(prefecture, monthly, annualDays, hours, localToday());
     if (!result) return;
     root.querySelector('[data-output="equivalent"]').textContent = decimalYen(result.hourlyEquivalent);
     const verdict = root.querySelector('[data-output="verdict"]');

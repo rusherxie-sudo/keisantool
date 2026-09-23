@@ -205,6 +205,38 @@ export function forecast(type, baseYear, count = 3) {
   return list;
 }
 
+// 指定年から見た大殺界3年間のまとまりを返す。
+// 12年早見表の端で「減退」と次周期の「陰影」が分断されても、
+// 開始年（陰影）と終了年（減退）を一続きの期間として扱う。
+export function daisakkaiPeriod(type, year) {
+  const current = fortuneZone(type, year);
+  if (!current) return null;
+
+  const phaseOffset = { '陰影': 0, '停止': 1, '減退': 2 };
+  if (current.zone in phaseOffset) {
+    const startYear = year - phaseOffset[current.zone];
+    return {
+      status: 'current',
+      startYear,
+      endYear: startYear + 2,
+      currentZone: current.zone,
+    };
+  }
+
+  for (let offset = 1; offset <= 12; offset += 1) {
+    if (fortuneZone(type, year + offset)?.zone === '陰影') {
+      const startYear = year + offset;
+      return {
+        status: 'next',
+        startYear,
+        endYear: startYear + 2,
+        currentZone: current.zone,
+      };
+    }
+  }
+  return null;
+}
+
 // 生年月日から運命星・陽陰・干支・空亡を総合判定。不正な日付は null。
 export function rokusei(year, month, day) {
   if (!validDate(year, month, day)) return null;

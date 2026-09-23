@@ -172,6 +172,29 @@ describe('地域別最低賃金の取得', () => {
   it('slugからも情報を取得できる', () => expect(getMinimumWageInfo('fukuoka').prefecture).toBe('福岡県'));
 });
 
+describe('改正決定額の発効日切り替え', () => {
+  it('発効日前は現行額を返す', () => {
+    expect(getMinimumWageInfo('tokyo', '2026-09-30')).toMatchObject({
+      wage: 1226, effectiveDate: '2025-10-03', isRevisionEffective: false,
+    });
+  });
+
+  it('発効日から東京・大阪の決定済み新額を返す', () => {
+    expect(getMinimumWageInfo('tokyo', '2026-10-01')).toMatchObject({
+      wage: 1280, effectiveDate: '2026-10-01', previousWage: 1226, isRevisionEffective: true,
+    });
+    expect(calcSaitei('osaka', 8, 22, '2026-10-01')).toMatchObject({
+      hourlyWage: 1231, dailyWage: 9848, monthlyWage: 216656,
+    });
+  });
+
+  it('答申段階の地域は予定日を過ぎても自動適用しない', () => {
+    expect(getMinimumWageInfo('ibaraki', '2026-10-18')).toMatchObject({
+      wage: 1074, isRevisionEffective: false, revisionStatus: 'answered',
+    });
+  });
+});
+
 describe('最低賃金の推移と主要都市', () => {
   it('検索需要の大きい地域は令和2〜7年度の公式推移を返す', () => {
     expect(getMinimumWageHistory('tokyo')).toEqual([
