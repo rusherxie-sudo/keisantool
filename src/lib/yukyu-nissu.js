@@ -84,3 +84,11 @@ export function calculatePaidLeave({
     fiveDayObligation: eligibleByAttendance && statutoryGrantDays >= 10,
   };
 }
+
+// Weekly prescribed schedule (annual-day schedules remain manually selectable).
+export function weeklyWorkPattern(hours, days) {
+  if (String(hours).trim() === '' || String(days).trim() === '') return null;
+  const h = Number(hours), d = Number(days);
+  if (!Number.isFinite(h) || h <= 0 || h > 168 || !Number.isInteger(d) || d < 1 || d > 7) return null;
+  return h >= 30 || d >= 5 ? 'regular' : [null, 'one-day', 'two-days', 'three-days', 'four-days'][d];
+}

@@ -1,0 +1,48 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import { businessMonth, BUSINESS_YEARS } from '../../lib/office-tools.js';
+import '../../styles/office-tools.css';
+const slug = 'eigyoubi';
+const title = '営業日数カレンダー 2026・2027年｜月別一覧・会社休日・CSV';
+const description = '2026年・2027年の月別営業日数を土日祝を除いて一覧表示。勤務曜日・会社独自の休日を指定し、日付別CSVを無料ダウンロードできます。';
+const annual = BUSINESS_YEARS.map(year => ({year, months:Array.from({length:12},(_,i)=>businessMonth(year,i+1))}));
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={{ '@context': 'https://schema.org', '@type': 'WebApplication', name: title, description, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } }}>
+  <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ 営業日数</div><h1>営業日数カレンダー・月別早見表</h1><p>土日と日本の祝日を除く営業日数を確認。勤務曜日と会社独自の休日を変えて、実際の予定表も作れます。</p></div>
+  <div class="calc-card office-tool">
+    <div class="office-fields"><div><label for="business-year">年</label><select id="business-year">{BUSINESS_YEARS.map(y=><option>{y}</option>)}</select></div><div><label for="business-month">月</label><select id="business-month">{Array.from({length:12},(_,i)=><option value={i+1}>{i+1}月</option>)}</select></div></div>
+    <fieldset class="weekdays"><legend>通常の勤務曜日</legend>{['日','月','火','水','木','金','土'].map((d,i)=><label><input type="checkbox" name="working-weekday" value={i} checked={i>0&&i<6}/>{d}</label>)}</fieldset>
+    <label for="company-holidays">会社独自の休日（1行に1日、YYYY-MM-DD）</label><textarea id="company-holidays" rows="3" placeholder="2026-12-29&#10;2026-12-30&#10;2026-12-31"></textarea>
+    <p class="office-note">祝日は勤務曜日に関係なく休みとして扱います。年末年始・お盆の会社休日は自動では除きません。入力した休日日付は、表示している月に含まれる場合だけ反映します。</p>
+    <p id="business-error" class="office-error" role="alert"></p><div id="business-result" class="office-summary" aria-live="polite"></div>
+    <div class="office-actions"><button id="business-csv" type="button">この月の日付別CSVをダウンロード</button></div>
+    <div class="office-scroll"><table class="office-table"><thead><tr><th>日付</th><th>曜日</th><th>区分</th></tr></thead><tbody id="business-days"></tbody></table></div>
+  </div>
+  {annual.map(({year,months})=><section class="howto"><h2>{year}年の月別営業日数一覧</h2><p>土日祝休みの場合、年間の営業日は<strong>{months.reduce((n,m)=>n+m.businessDays,0)}日</strong>です。会社独自の休日は含めていません。</p><div class="office-scroll"><table class="office-table"><thead><tr><th>月</th><th>暦日</th><th>営業日</th><th>土日祝の休日（重複除外）</th></tr></thead><tbody>{months.map(m=><tr><th>{m.month}月</th><td>{m.calendarDays}日</td><td>{m.businessDays}日</td><td>{m.calendarDays-m.businessDays}日</td></tr>)}</tbody></table></div></section>)}
+  <section class="howto"><h2>営業日の数え方と使い方</h2><p>各月の1日から末日までを両端を含めて数え、勤務曜日以外の日と国民の祝日・振替休日・国民の休日を除きます。祝日と日曜日が重なっても1日だけ差し引きます。</p><p>例：2026年9月は30日中、土日が8日、平日の休日が21〜23日の3日なので<strong>19営業日</strong>です。会社休日に9月1日を追加すると18営業日です。</p><p>公式資料：<a href="https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html" target="_blank" rel="noopener">内閣府「国民の祝日について」</a>。2026・2027年の公表日と照合した祝日データを使用しています。</p><nav class="office-links"><a href="/nissu/">任意の2日間・何営業日後を計算</a><a href="/kinmu-jikan/">月の勤務時間を集計</a><a href="/shukujitsu/2027/">2027年の祝日・連休</a></nav></section>
+  <RelatedTools current={slug}/><Faq items={[{q:'銀行営業日や会社の営業日と同じですか？',a:'土日と国民の祝日を除いた目安です。銀行の年末年始や会社独自の休業日は休日欄に追加してください。'},{q:'CSVには何が入りますか？',a:'選択月の全日付、曜日、営業日・休日の区分、祝日名をUTF-8形式で出力します。'}]}/>
+</ToolLayout>
+<script>
+import { businessMonth, downloadCsv } from '../../lib/office-tools.js';
+import { japanDateParts } from '../../lib/japanDate.js';
+const year = document.querySelector('#business-year'), month = document.querySelector('#business-month'), extra = document.querySelector('#company-holidays');
+const today = japanDateParts(); if ([2026,2027].includes(today.year)) {year.value=String(today.year);month.value=String(today.month);}
+let current = null, tracked = false;
+const weekday = ['日','月','火','水','木','金','土'];
+function rowsFor(result) {return result.days.map(d=>[d.date,weekday[d.weekday],d.working?'営業日':'休日',d.holiday||(d.companyHoliday?'会社休日':'')]);}
+function render(user=false) {
+  const dates=extra.value.split(/\s+/).filter(Boolean);
+  const valid=dates.every(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&!Number.isNaN(Date.parse(d+'T12:00:00Z'))&&new Date(d+'T12:00:00Z').toISOString().slice(0,10)===d);
+  current=valid?businessMonth(Number(year.value),Number(month.value),dates,[...document.querySelectorAll('[name=working-weekday]:checked')].map(e=>Number(e.value))):null;
+  document.querySelector('#business-error').textContent=valid?'':'休日は実在する日付をYYYY-MM-DD形式で入力してください。';
+  document.querySelector('#business-result').hidden=!current;document.querySelector('#business-csv').disabled=!current;
+  const body=document.querySelector('#business-days');body.replaceChildren();if(!current)return;
+  document.querySelector('#business-result').textContent=`${current.year}年${current.month}月：${current.businessDays}営業日 ／ ${current.calendarDays}日間`;
+  for(const row of rowsFor(current)){const tr=document.createElement('tr');for(const value of [row[0],row[1],row[3]?`${row[2]}（${row[3]}）`:row[2]]){const td=document.createElement('td');td.textContent=value;tr.append(td);}body.append(tr);}
+  if(user&&!tracked){window.trackCalculatorResult?.('business-calendar');tracked=true;}
+}
+document.querySelectorAll('.office-tool input,.office-tool select,.office-tool textarea').forEach(e=>e.addEventListener('input',()=>render(true)));
+document.querySelector('#business-csv').addEventListener('click',()=>{if(!current)return;downloadCsv(`eigyoubi-${current.year}-${current.month}.csv`,[['日付','曜日','区分','休日名'],...rowsFor(current)]);window.gtag?.('event','business_calendar_download',{tool_slug:'eigyoubi'});});render();
+</script>

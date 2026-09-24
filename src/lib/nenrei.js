@@ -78,8 +78,8 @@ export function schoolGrade(birth, ref) {
 
   // 生まれた「学年年度」：4/2〜翌4/1 が同じ年度。
   const birthSchoolYear = schoolYearOf(b);
-  // 基準日の「年度」：進級は 4/2 を境に切り替わる（4/1 は前年度、4/2 から新年度）。
-  const refSchoolYear = schoolYearOf(r);
+  // 基準日の学校年度は4月1日に切り替わる。出生コホートの区切りとは異なる。
+  const refSchoolYear = r.getUTCFullYear() - (r.getUTCMonth() < 3 ? 1 : 0);
 
   // 当年度に小1になるのは birthSchoolYear + 7 年度。
   // grade = 現年度 − 入学年度 + 1

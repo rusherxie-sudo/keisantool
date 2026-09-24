@@ -41,6 +41,16 @@ const scheduleRows = [
 
   <div class="calc-card" id="paid-leave-tool">
     <div class="calc-panel active">
+      <details class="pattern-helper">
+        <summary>パート・アルバイトの勤務区分を自動判定</summary>
+        <p class="field-note">契約上の週所定時間・日数を入力してください。残業は含めません。週ごとの日数が決まっていない場合は、下の年間所定日数の区分を選んでください。</p>
+        <div class="input-grid">
+          <div class="form-group"><label for="weekly-hours">週所定労働時間</label><input id="weekly-hours" type="number" min="0.1" max="168" step="any" value="20" /></div>
+          <div class="form-group"><label for="weekly-days">週所定労働日数</label><input id="weekly-days" type="number" min="1" max="7" step="1" value="4" /></div>
+        </div>
+        <button type="button" id="apply-pattern" class="today-button">判定して勤務区分に反映</button>
+        <p id="pattern-feedback" role="status" class="field-note"></p>
+      </details>
       <div class="input-grid">
         <div class="form-group">
           <label for="hire-date">入社日（雇入れ日）</label>
@@ -163,7 +173,7 @@ const scheduleRows = [
 </ToolLayout>
 
 <script>
-  import { calculatePaidLeave } from '../../lib/yukyu-nissu.js';
+  import { calculatePaidLeave, weeklyWorkPattern } from '../../lib/yukyu-nissu.js';
   import { weekdayJa } from '../../lib/nissu.js';
 
   const $ = (id) => document.getElementById(id);
@@ -235,6 +245,19 @@ const scheduleRows = [
     }
   }
 
+  $('apply-pattern').addEventListener('click', () => {
+    const pattern = weeklyWorkPattern($('weekly-hours').value, $('weekly-days').value);
+    if (!pattern) {
+      $('pattern-feedback').textContent = '時間は0より大きく168以下、日数は1〜7の整数で入力してください。勤務区分は変更していません。';
+      return;
+    }
+    $('work-pattern').value = pattern;
+    $('pattern-feedback').textContent = `反映済み：${$('work-pattern').selectedOptions[0].textContent}`;
+    render();
+  });
+  for (const id of ['weekly-hours', 'weekly-days', 'work-pattern']) {
+    $(id).addEventListener('input', () => { $('pattern-feedback').textContent = ''; });
+  }
   $('reference-date').value = localToday();
   for (const id of ['hire-date', 'reference-date', 'work-pattern', 'attendance-rate']) {
     $(id).addEventListener('input', render);
@@ -247,6 +270,9 @@ const scheduleRows = [
 </script>
 
 <style>
+  .pattern-helper { margin-bottom: 22px; padding: 16px; background: var(--surface-sub); border-radius: 10px; }
+  .pattern-helper summary { cursor: pointer; margin-bottom: 12px; font-weight: bold; }
+  .pattern-helper .field-note { margin: 10px 0; }
   .feature-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
   .feature-chips span { padding: 5px 10px; border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .75rem; font-weight: var(--fw-bold); }
   #paid-leave-tool .calc-panel { padding: 24px; }

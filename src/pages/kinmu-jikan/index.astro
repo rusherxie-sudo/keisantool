@@ -1,0 +1,53 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import '../../styles/office-tools.css';
+const slug='kinmu-jikan';
+const title='月の勤務時間計算｜出勤・退勤・休憩を集計してCSV出力';
+const description='1ヶ月の出退勤と休憩を入力し、実働時間・勤務日数・小数時間を無料で集計。日跨ぎ勤務に対応し、勤怠表をCSVで保存できます。';
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={{ '@context': 'https://schema.org', '@type': 'WebApplication', name: title, description, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } }} wide>
+<div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ 月の勤務時間</div><h1>月の勤務時間計算・勤怠表</h1><p>毎日の出勤・退勤・休憩を入力すると、1ヶ月の実働時間を分単位で合計します。</p></div>
+<div class="calc-card office-tool">
+ <label for="work-month">集計する月</label><input id="work-month" type="month" min="2020-01" max="2100-12"/>
+ <p class="office-note">日付をまたぐ勤務は「翌日」を選択してください。月を変更すると入力を消去します。入力は保存されないため、閉じる前にCSVをダウンロードしてください。</p>
+ <div class="office-actions"><button id="work-example" type="button">空欄の月〜金に9:00〜18:00・休憩60分を入力</button><button id="work-clear" type="button">入力をクリア</button><button id="work-export" type="button">勤怠表CSVをダウンロード</button></div>
+ <p class="office-error" id="work-error" role="alert"></p><div class="office-summary" id="work-summary" aria-live="polite">出退勤時刻を入力してください。</div>
+ <div class="office-scroll"><table class="office-table work-table"><thead><tr><th>日付</th><th>出勤</th><th>退勤</th><th>翌日</th><th>休憩（分）</th><th>実働</th></tr></thead><tbody id="work-rows"></tbody></table></div>
+</div>
+<section class="howto"><h2>勤務時間を集計する方法</h2><p>実働時間＝退勤時刻−出勤時刻−休憩時間です。9:00〜18:00で休憩60分なら8時間、22:00〜翌6:00で休憩45分なら7時間15分になります。</p><p>7時間30分は小数時間で7.5時間です。日ごとの小数時間を丸めて足すのではなく、分の合計を60で割るため、日々の丸めによる誤差を防げます。</p><p>出退勤が両方空欄の日は集計対象外です。片方だけ入力、休憩が拘束時間を超える、翌日指定のない逆順時刻などはエラーとなり、修正するまで月合計・CSVを表示しません。</p><p>この表は実働時間の単純集計です。法定時間外・深夜割増・変形労働時間制・給与の端数処理は計算しません。翌日勤務は開始日の属する月に全時間を計上します。</p><nav class="office-links"><a href="/eigyoubi/">月の営業日数を調べる</a><a href="/kyuyo/">時給・給与を計算</a><a href="/jikan/">時刻・時間を個別に計算</a></nav></section>
+<RelatedTools current={slug}/><Faq items={[{q:'入力した勤務時間は保存されますか？',a:'ページを閉じたり再読み込みすると消えます。CSVをダウンロードして保存してください。出退勤の入力値をサーバーに送信する機能はありません。'},{q:'夜勤や日付をまたぐ勤務を計算できますか？',a:'退勤日の「翌日」を選択すると24時間以内の日跨ぎ勤務を計算できます。月末の夜勤は開始日の月へ全時間を計上します。'}]}/>
+</ToolLayout>
+<style>.work-table input[type=time]{width:132px}.work-table input[type=number]{width:95px}#work-month{max-width:250px}.work-table td{padding:8px}</style>
+<script>
+import { sumWorkRows, downloadCsv } from '../../lib/office-tools.js';
+import { japanDateParts } from '../../lib/japanDate.js';
+const month=document.querySelector('#work-month'),body=document.querySelector('#work-rows');
+const now=japanDateParts();month.value=`${now.year}-${String(now.month).padStart(2,'0')}`;
+const timeText=m=>`${Math.floor(m/60)}時間${m%60}分`;
+let tracked=false, dates=[];
+function values(){return [...body.rows].map(tr=>({start:tr.querySelector('[data-start]').value,end:tr.querySelector('[data-end]').value,breakMinutes:tr.querySelector('[data-break]').value,nextDay:tr.querySelector('[data-next]').checked}));}
+function render(user=false){
+ const data=values(),r=sumWorkRows(data),bad=r.errors.length>0;
+ document.querySelector('#work-error').textContent=bad?`${r.errors.map(i=>i+1).join('・')}日の時刻・翌日指定・休憩を確認してください。`:'';
+ document.querySelector('#work-export').disabled=bad||!r.workedDays;
+ document.querySelector('#work-summary').textContent=bad?'入力エラーを修正すると合計が表示されます。':`${r.workedDays}日分：${timeText(r.totalMinutes)} ／ ${(r.totalMinutes/60).toFixed(2)}時間（小数）`;
+ [...body.rows].forEach((tr,i)=>tr.querySelector('[data-total]').textContent=r.errors.includes(i)?'要修正':r.values[i]===null?'—':timeText(r.values[i]));
+ if(user&&!bad&&r.workedDays&&!tracked){window.trackCalculatorResult?.('monthly-work');tracked=true;}
+ return {r,data};
+}
+function makeRows(){
+ body.replaceChildren();dates=[];
+ if(!/^\d{4}-\d{2}$/.test(month.value)||!month.checkValidity()){document.querySelector('#work-error').textContent='2020〜2100年の月を選んでください。';document.querySelector('#work-summary').textContent='月を選択してください。';document.querySelector('#work-export').disabled=true;return;}
+ const [y,m]=month.value.split('-').map(Number),n=new Date(Date.UTC(y,m,0)).getUTCDate();
+ for(let day=1;day<=n;day++){
+ const date=`${month.value}-${String(day).padStart(2,'0')}`,wd=new Date(Date.UTC(y,m-1,day)).getUTCDay();dates.push({date,wd});
+ const tr=document.createElement('tr');tr.innerHTML=`<th scope="row">${day}日（${'日月火水木金土'[wd]}）</th><td><input type="time" data-start aria-label="${day}日 出勤"/></td><td><input type="time" data-end aria-label="${day}日 退勤"/></td><td><input type="checkbox" data-next aria-label="${day}日 翌日退勤"/></td><td><input type="number" data-break min="0" max="1440" step="1" value="0" aria-label="${day}日 休憩分"/></td><td data-total>—</td>`;body.append(tr);
+ }render();
+}
+body.addEventListener('input',()=>render(true));month.addEventListener('change',makeRows);
+document.querySelector('#work-clear').addEventListener('click',()=>{if(confirm('入力をすべてクリアしますか？'))makeRows();});
+document.querySelector('#work-example').addEventListener('click',()=>{[...body.rows].forEach((tr,i)=>{if(dates[i].wd===0||dates[i].wd===6||tr.querySelector('[data-start]').value||tr.querySelector('[data-end]').value)return;tr.querySelector('[data-start]').value='09:00';tr.querySelector('[data-end]').value='18:00';tr.querySelector('[data-break]').value='60';});render(true);});
+document.querySelector('#work-export').addEventListener('click',()=>{const {r,data}=render();if(r.errors.length||!r.workedDays)return;downloadCsv(`kinmu-${month.value}.csv`,[['日付','出勤','退勤','翌日退勤','休憩分','実働分','実働時間'],...data.map((d,i)=>[dates[i].date,d.start,d.end,d.nextDay?'翌日':'',d.breakMinutes,r.values[i]??'',r.values[i]===null?'':timeText(r.values[i])]),['合計','','','','',r.totalMinutes,timeText(r.totalMinutes)]]);window.gtag?.('event','work_time_download',{tool_slug:'kinmu-jikan'});});makeRows();
+</script>

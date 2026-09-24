@@ -1,0 +1,18 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Faq from '../../components/Faq.astro';
+import { gakunenTable } from '../../lib/hayami.js';
+import '../../styles/office-tools.css';
+const slug='gakunen-hayami/2027';
+const title='2027年度（令和9年度）学年早見表｜小学校入学・生年月日一覧';
+const description='2027年度の小学1年生は2020年4月2日〜2021年4月1日生まれ。小中高校の学年・生年月日・入学卒業年を一覧で確認。4月1日と4月2日の境界も解説。';
+const rows=gakunenTable(2027).filter(r=>r.grade>=1&&r.grade<=12).reverse();
+---
+<ToolLayout title={title} description={description} slug={slug} current="gakunen-hayami">
+<div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/gakunen-hayami/">学年早見表</a> ／ 2027年度</div><h1>2027年度・令和9年度 学年早見表</h1><p>2027年4月1日〜2028年3月31日の学年です。進級・入学準備、名簿や申込書の確認に使えます。</p></div>
+<section class="howto"><h2>2027年に小学校へ入学するのは何年生まれ？</h2><p><strong>2020年4月2日〜2021年4月1日生まれ</strong>が2027年度の小学1年生です。2021年4月1日生まれは2027年入学、翌日の4月2日生まれは2028年入学になります。</p>
+<div class="office-scroll"><table class="office-table"><thead><tr><th>2027年度の学年</th><th>生年月日</th><th>2028年3月31日時点の満年齢</th></tr></thead><tbody>{rows.map(r=><tr><th>{r.label}</th><td>{r.cohortLabel}</td><td>{2027-r.cohortYear-1}〜{2027-r.cohortYear}歳</td></tr>)}</tbody></table></div></section>
+<section class="howto"><h2>2027年入学者の卒業予定年</h2><div class="office-scroll"><table class="office-table"><thead><tr><th>学校</th><th>入学</th><th>卒業予定</th></tr></thead><tbody><tr><th>小学校（6年）</th><td>2027年4月</td><td>2033年3月</td></tr><tr><th>中学校（3年）</th><td>2027年4月</td><td>2030年3月</td></tr><tr><th>高校（3年）</th><td>2027年4月</td><td>2030年3月</td></tr></tbody></table></div><p>一般的な修業年限で進級した場合の目安です。就学猶予、留年、編入などは反映していません。</p></section>
+<section class="howto"><h2>年度の始まりと誕生日の境界は別です</h2><p>学校年度は4月1日から始まります。同学年になる生年月日の範囲は4月2日〜翌年4月1日です。年齢の表示は誕生日によって差があるため、表では満年齢の範囲を記載しています。</p><p>出典：<a href="https://laws.e-gov.go.jp/law/322AC0000000026" target="_blank" rel="noopener">学校教育法（第17条）</a>、<a href="https://laws.e-gov.go.jp/law/322M40000080011" target="_blank" rel="noopener">学校教育法施行規則（第59条）</a>。具体的な就学手続きは自治体・学校の案内を確認してください。</p><nav class="office-links"><a href="/gakunen-hayami/">現在の学年早見表</a><a href="/gakureki/">入学・卒業年度を生年月日から計算</a><a href="/nenrei-hayami/">年齢早見表・PDF</a><a href="/shukujitsu/2027/">2027年の祝日</a></nav></section>
+<Faq items={[{q:'2027年度の小学1年生は何年生まれですか？',a:'2020年4月2日〜2021年4月1日生まれです。2021年4月2日生まれは翌2028年度に入学します。'},{q:'2027年度はいつからいつまでですか？',a:'2027年4月1日から2028年3月31日までです。生年月日の同学年区切りは4月2日〜翌4月1日です。'}]}/>
+</ToolLayout>

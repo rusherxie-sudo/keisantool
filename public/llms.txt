@@ -30,6 +30,9 @@
 
 ## 生活・日常
 
+- [営業日数カレンダー・CSV](https://keisantool.com/eigyoubi/): 月別営業日数・会社休日・2026/2027
+- [月の勤務時間計算・勤怠表](https://keisantool.com/kinmu-jikan/): 出退勤・休憩・夜勤・CSV出力
+- [ランニングペース・完走タイム計算](https://keisantool.com/running-pace/): キロ何分・時速・マラソン通過タイム
 - [偏差値計算器](https://keisantool.com/hensachi/): 得点から偏差値
 - [標準偏差計算ツール](https://keisantool.com/hyoujun-hensa/): データから平均・分散も自動計算
 - [平均値・中央値・最頻値計算ツール](https://keisantool.com/heikin-chuouchi/): 代表値・四分位数をまとめて計算

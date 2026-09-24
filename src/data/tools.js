@@ -28,6 +28,9 @@ export const categoryColors = {
 };
 
 export const tools = [
+  { slug: 'eigyoubi', nav: '営業日数', name: '営業日数カレンダー・CSV', icon: '📅', category: '生活・日常', short: '月別営業日数・会社休日・2026/2027', live: true },
+  { slug: 'kinmu-jikan', nav: '月の勤務時間', name: '月の勤務時間計算・勤怠表', icon: '🕒', category: '生活・日常', short: '出退勤・休憩・夜勤・CSV出力', live: true },
+  { slug: 'running-pace', nav: 'ランニングペース', name: 'ランニングペース・完走タイム計算', icon: '🏃', category: '生活・日常', short: 'キロ何分・時速・マラソン通過タイム', live: true },
   {
     slug: 'bonus-tedori', nav: '賞与の手取り', name: '賞与・ボーナス手取り計算', icon: '💴',
     category: '税金・お金', short: '2026年の賞与税率・所得税・手取り', live: true,
@@ -1057,6 +1060,11 @@ export function getColorByCategorySlug(catSlug) {
 // 検索流入の多いページは、カテゴリ順ではなく利用者の次の作業に沿ってつなぐ。
 // 未指定ツールは従来どおり同カテゴリを優先する。
 const relatedJourneys = {
+  eigyoubi: ['kinmu-jikan', 'nissu', 'shukujitsu', 'kyuyo'],
+  'kinmu-jikan': ['eigyoubi', 'jikan', 'kyuyo', 'yukyu-nissu'],
+  'running-pace': ['hayasa', 'jikan', 'calorie', 'bmi'],
+  nissu: ['eigyoubi', 'kinmu-jikan', 'kinzoku-nensuu', 'shukujitsu'],
+  jikan: ['kinmu-jikan', 'kyuyo', 'nissu', 'running-pace'],
   'bonus-tedori': ['kyuyo', 'shakaihoken', 'nematsu', 'seimei-hoken-kojo'],
   'seimei-hoken-kojo': ['nematsu', 'juminzei', 'bonus-tedori', 'shotokuzei'],
   kyuyo: ['bonus-tedori', 'shakaihoken', 'jikan', 'saitei'],
@@ -1071,7 +1079,7 @@ const relatedJourneys = {
   jisa: ['jikan', 'nissu', 'hinodeiri', 'wareki'],
   hinodeiri: ['jisa', 'jikan', 'shukujitsu', 'rokuyo'],
   rokusei: ['rokusei-aisho', 'tanjobi-aisho', 'suumijutsu', 'seiza'],
-  hayasa: ['kasokudo', 'ryuuryou', 'kaitensuu', 'tani'],
+  hayasa: ['running-pace', 'kasokudo', 'ryuuryou', 'tani'],
   shukujitsu: ['rokuyo', 'nissu', 'jikan', 'gakunen-hayami'],
   rokuyo: ['shukujitsu', 'nissu', 'yakudoshi', 'hinodeiri'],
 };

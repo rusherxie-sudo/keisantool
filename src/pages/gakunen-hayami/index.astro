@@ -8,9 +8,9 @@ import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'gakunen-hayami';
 
-// 基準学年度はビルド時に固定（4/2 を境に年度が切り替わる。毎年 4/2 以降に再ビルドすれば自動更新される）。
-const { year: y, month: m, day: d } = japanDateParts();
-const BASE_SCHOOL_YEAR = m > 4 || (m === 4 && d >= 2) ? y : y - 1;
+// 学年度は4月1日に切り替わる。生年月日の同学年境界（4月2日）とは区別する。
+const { year: y, month: m } = japanDateParts();
+const BASE_SCHOOL_YEAR = m >= 4 ? y : y - 1;
 const BASE_WAREKI = seirekiToWareki(BASE_SCHOOL_YEAR).label; // 例：令和8年
 
 const rows = gakunenTable(BASE_SCHOOL_YEAR);
@@ -41,9 +41,10 @@ const jsonld = {
     </p>
   </div>
 
+  <nav class="gakunen-note"><a href="/gakunen-hayami/2027/">2027年度（令和9年度）の学年・入学卒業予定を見る →</a></nav>
   <section class="gakunen-main">
     <p class="gakunen-note">
-      学年は<strong>4月2日〜翌年4月1日生まれ</strong>を1つの区切りとします（早生まれの子は前の年度生まれと同学年）。満年齢は{BASE_SCHOOL_YEAR}年4月2日時点の年齢です。
+      学年は<strong>4月2日〜翌年4月1日生まれ</strong>を1つの区切りとします（早生まれの子は前の年度生まれと同学年）。満年齢は{BASE_SCHOOL_YEAR}年4月2日時点の範囲です。
     </p>
 
     <div class="data-table-wrap">
@@ -57,7 +58,7 @@ const jsonld = {
               <tr>
                 <td>{r.label}</td>
                 <td class="num--sub">{r.cohortLabel}</td>
-                <td class="num">{r.age}歳</td>
+                <td class="num">{r.age - 1}〜{r.age}歳</td>
               </tr>
             ))}
           </tbody>

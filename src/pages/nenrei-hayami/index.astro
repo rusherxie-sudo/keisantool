@@ -83,6 +83,12 @@ const datasetJsonld = {
       <p class="hayami-note">
         表の<strong>満年齢は「{BASE_YEAR}年の誕生日を迎えた後」の年齢</strong>です。まだ誕生日が来ていない方は<strong>マイナス1歳</strong>してください。数え年は「生まれた年を1歳とし、1月1日ごとに1歳加える」数え方です。
       </p>
+      <div class="pdf-downloads">
+        <strong>年齢早見表PDF（A4横・1枚／0〜100歳）</strong>
+        <p>各年の誕生日後の年齢です。誕生日前は1歳引いてください。未出生の方は対象外です。</p>
+        <a href="/downloads/nenrei-hayami-2026.pdf" download data-pdf-year="2026">2026年版PDFをダウンロード</a>
+        <a href="/downloads/nenrei-hayami-2027.pdf" download data-pdf-year="2027">2027年版PDFをダウンロード</a>
+      </div>
       <button id="print-btn" class="print-btn" type="button">🖨 この早見表を印刷する</button>
     </div>
     <p class="hayami-intent-note">
@@ -154,10 +160,18 @@ const datasetJsonld = {
 </ToolLayout>
 
 <script>
+  document.querySelectorAll('[data-pdf-year]').forEach(link => link.addEventListener('click', () => {
+    window.gtag?.('event', 'age_table_pdf_download', { tool_slug: 'nenrei-hayami', year: link.dataset.pdfYear });
+  }));
   document.getElementById('print-btn')?.addEventListener('click', () => window.print());
 </script>
 
 <style>
+  .pdf-downloads { margin: 16px 0; padding: 16px; background: var(--surface-sub); border-radius: 10px; }
+  .pdf-downloads p { font-size: .8rem; }
+  .pdf-downloads a { display: inline-block; margin: 8px 16px 0 0; color: var(--cat-color); text-decoration: underline; }
+  @media print { .pdf-downloads { display: none; } }
+
   .hayami-main { max-width: 880px; width: 100%; margin: 0 auto; }
   .hayami-lead {
     display: flex;

@@ -132,6 +132,13 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
       join(root, 'src/lib/nenrei.js'),
       join(root, 'src/lib/rokusei.js'),
     ];
+  } else if (['eigyoubi', 'kinmu-jikan', 'running-pace'].includes(path)) {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/office-tools.js')];
+    if (path === 'eigyoubi') files.push(join(root, 'src/lib/shukujitsu.js'));
+  } else if (path === 'gakunen-hayami' || path.startsWith('gakunen-hayami/')) {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/hayami.js'), join(root, 'src/lib/nenrei.js')];
+  } else if (path === 'yukyu-nissu') {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/yukyu-nissu.js')];
   } else if (path === 'bonus-tedori') {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/bonus-tedori.js'), join(root, 'src/data/bonus-rates-2026.js')];
   } else if (path === 'seimei-hoken-kojo') {

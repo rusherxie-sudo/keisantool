@@ -1,0 +1,45 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import { runningResult, durationText } from '../../lib/office-tools.js';
+import '../../styles/office-tools.css';
+const slug='running-pace';
+const title='ランニングペース計算｜キロ何分・時速・マラソン完走タイム';
+const description='1kmあたりのペース、時速、距離と完走タイムを相互換算。5km・10km・ハーフ・フルマラソンの早見表と1kmごとの通過タイムを無料表示。';
+const paces=[240,270,300,330,360,390,420,450,480];
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={{ '@context': 'https://schema.org', '@type': 'WebApplication', name: title, description, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } }}>
+<div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ ランニングペース</div><h1>ランニングペース・完走タイム計算</h1><p>「キロ6分は時速何km？」「フルを4時間で走るペースは？」を相互換算。一定ペースの通過タイムも確認できます。</p></div>
+<div class="calc-card office-tool">
+ <div class="office-fields"><div><label for="pace-mode">分かっている値</label><select id="pace-mode"><option value="pace">1kmあたりのペース</option><option value="speed">時速</option><option value="time">完走タイム</option></select></div><div><label for="pace-distance">距離（km）</label><input type="number" id="pace-distance" value="10" min="0.001" max="1000" step="any"/></div></div>
+ <div class="office-actions">{[5,10,21.0975,42.195].map(d=><button type="button" data-distance={d}>{d===21.0975?'ハーフ':d===42.195?'フル':`${d}km`}</button>)}</div>
+ <div class="office-fields" id="pace-inputs"><div><label for="pace-minutes">ペース（分/km）</label><input id="pace-minutes" type="number" min="0" max="120" step="1" value="6"/></div><div><label for="pace-seconds">秒</label><input id="pace-seconds" type="number" min="0" max="59" step="1" value="0"/></div></div>
+ <div id="speed-inputs" hidden><label for="pace-speed">時速（km/h）</label><input id="pace-speed" type="number" min="0.001" step="any" value="10"/></div>
+ <div class="office-fields" id="time-inputs" hidden><div><label for="finish-hours">完走タイム（時間）</label><input id="finish-hours" type="number" min="0" max="1000" step="1" value="4"/></div><div><label for="finish-minutes">分</label><input id="finish-minutes" type="number" min="0" max="59" step="1" value="0"/></div><div><label for="finish-seconds">秒</label><input id="finish-seconds" type="number" min="0" max="59" step="1" value="0"/></div></div>
+ <p class="office-error" id="pace-error" role="alert"></p><div id="pace-result" class="office-summary" aria-live="polite"></div>
+ <details><summary>1kmごとの通過タイム</summary><div class="office-scroll"><table class="office-table"><thead><tr><th>距離</th><th>通過タイム</th></tr></thead><tbody id="pace-splits"></tbody></table></div></details>
+</div>
+<section class="howto"><h2>ランニングペースと完走タイムの早見表</h2><p>一定のペースで走った場合の計算値です。給水・休憩・高低差による時間は含みません。</p><div class="office-scroll"><table class="office-table"><thead><tr><th>1kmのペース</th><th>時速</th><th>5km</th><th>10km</th><th>ハーフ</th><th>フル</th></tr></thead><tbody>{paces.map(p=><tr><th>{durationText(p)}</th><td>{(3600/p).toFixed(2)}km/h</td>{[5,10,21.0975,42.195].map(d=><td>{durationText(runningResult('pace',p,d).totalSeconds)}</td>)}</tr>)}</tbody></table></div></section>
+<section class="howto"><h2>キロ6分は時速10km、フルでは4時間13分10秒</h2><p>時速＝3,600÷1kmあたりの秒数、完走タイム＝1kmあたりの秒数×距離で計算します。キロ6分なら3,600÷360＝時速10km、42.195kmでは15,190.2秒です。</p><h2>フルマラソン4時間のペースは？</h2><p>14,400秒÷42.195km＝約341.27秒/km、つまり<strong>約5分41秒/km</strong>です。表示は秒単位に丸めますが、通過タイムは丸める前の値から計算します。これは等速換算であり、走力に基づく予測ではありません。</p><nav class="office-links"><a href="/hayasa/">速度・距離・時間の一般換算</a><a href="/jikan/">時間の足し算・引き算</a></nav></section>
+<RelatedTools current={slug}/><Faq items={[{q:'ハーフ・フルマラソンの距離はいくつですか？',a:'ハーフは21.0975km、フルは42.195kmとして計算します。距離欄に任意のkm数を入力することもできます。'},{q:'キロ5分は時速何kmですか？',a:'1kmを300秒で走るので、3,600÷300＝時速12kmです。10kmなら50分になります。'}]}/>
+</ToolLayout>
+<style>[hidden]{display:none!important}</style>
+<script>
+import { runningResult,durationText } from '../../lib/office-tools.js';
+const $=id=>document.getElementById(id);let tracked=false;
+function render(user=false){
+ const mode=$('pace-mode').value;for(const [id,m] of [['pace-inputs','pace'],['speed-inputs','speed'],['time-inputs','time']])$(id).hidden=mode!==m;
+ const ids=mode==='pace'?['pace-minutes','pace-seconds']:mode==='speed'?['pace-speed']:['finish-hours','finish-minutes','finish-seconds'];
+ const valid=[...ids,'pace-distance'].every(id=>$(id).value!==''&&$(id).checkValidity());
+ const value=mode==='pace'?Number($('pace-minutes').value)*60+Number($('pace-seconds').value):mode==='speed'?Number($('pace-speed').value):Number($('finish-hours').value)*3600+Number($('finish-minutes').value)*60+Number($('finish-seconds').value);
+ const distance=Number($('pace-distance').value),r=valid?runningResult(mode,value,distance):null;
+ $('pace-error').textContent=r?'':'0より大きい距離とペース・速度・時間を入力してください。秒と完走タイムの分は0〜59です。';$('pace-result').hidden=!r;$('pace-splits').replaceChildren();if(!r)return;
+ $('pace-result').textContent=`ペース ${durationText(r.paceSeconds)}/km ／ 時速 ${r.speedKmh.toFixed(2)}km/h ／ 完走 ${durationText(r.totalSeconds)}`;
+ const points=Array.from({length:Math.floor(distance)},(_,i)=>i+1);if(!Number.isInteger(distance))points.push(distance);
+ for(const km of points){const tr=document.createElement('tr');for(const text of [`${km}km`,durationText(r.paceSeconds*km)]){const td=document.createElement('td');td.textContent=text;tr.append(td);}$('pace-splits').append(tr);}
+ if(user&&!tracked){window.trackCalculatorResult?.('running-pace');tracked=true;}
+}
+document.querySelectorAll('.office-tool input,.office-tool select').forEach(e=>e.addEventListener('input',()=>render(true)));
+document.querySelectorAll('[data-distance]').forEach(b=>b.addEventListener('click',()=>{$('pace-distance').value=b.dataset.distance;render(true);}));render();
+</script>
