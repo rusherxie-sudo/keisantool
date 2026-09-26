@@ -16,6 +16,7 @@ const description='1ヶ月の出退勤と休憩を入力し、実働時間・勤
  <p class="office-error" id="work-error" role="alert"></p><div class="office-summary" id="work-summary" aria-live="polite">出退勤時刻を入力してください。</div>
  <div class="office-scroll"><table class="office-table work-table"><thead><tr><th>日付</th><th>出勤</th><th>退勤</th><th>翌日</th><th>休憩（分）</th><th>実働</th></tr></thead><tbody id="work-rows"></tbody></table></div>
 </div>
+<section class="howto"><h2>編集して保存できるExcel勤怠表</h2><p>毎月の入力を手元に保存するなら、<a href="/kinmu-jikan/template/">2026・2027年の無料勤怠管理Excelテンプレート</a>をご利用ください。12ヶ月分・翌日勤務対応・マクロなしです。</p></section>
 <section class="howto"><h2>勤務時間を集計する方法</h2><p>実働時間＝退勤時刻−出勤時刻−休憩時間です。9:00〜18:00で休憩60分なら8時間、22:00〜翌6:00で休憩45分なら7時間15分になります。</p><p>7時間30分は小数時間で7.5時間です。日ごとの小数時間を丸めて足すのではなく、分の合計を60で割るため、日々の丸めによる誤差を防げます。</p><p>出退勤が両方空欄の日は集計対象外です。片方だけ入力、休憩が拘束時間を超える、翌日指定のない逆順時刻などはエラーとなり、修正するまで月合計・CSVを表示しません。</p><p>この表は実働時間の単純集計です。法定時間外・深夜割増・変形労働時間制・給与の端数処理は計算しません。翌日勤務は開始日の属する月に全時間を計上します。</p><nav class="office-links"><a href="/eigyoubi/">月の営業日数を調べる</a><a href="/kyuyo/">時給・給与を計算</a><a href="/jikan/">時刻・時間を個別に計算</a></nav></section>
 <RelatedTools current={slug}/><Faq items={[{q:'入力した勤務時間は保存されますか？',a:'ページを閉じたり再読み込みすると消えます。CSVをダウンロードして保存してください。出退勤の入力値をサーバーに送信する機能はありません。'},{q:'夜勤や日付をまたぐ勤務を計算できますか？',a:'退勤日の「翌日」を選択すると24時間以内の日跨ぎ勤務を計算できます。月末の夜勤は開始日の月へ全時間を計上します。'}]}/>
 </ToolLayout>

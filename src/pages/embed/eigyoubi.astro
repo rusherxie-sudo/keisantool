@@ -1,0 +1,15 @@
+---
+import { businessMonth } from '../../lib/office-tools.js';
+import { japanDateParts } from '../../lib/japanDate.js';
+const today=japanDateParts();
+const year=[2026,2027].includes(today.year)?today.year:2026;
+const month=[2026,2027].includes(today.year)?today.month:1;
+const initial=businessMonth(year,month);
+---
+<!doctype html><html lang="ja"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex,follow"/><title>営業日数カレンダー｜計算ツール</title><style>body{font:16px/1.6 system-ui,sans-serif;color:#21344b;margin:0;padding:18px;background:#fff}*{box-sizing:border-box}h1{font-size:18px;margin:0 0 12px}.fields{display:flex;gap:12px;flex-wrap:wrap}select{font:inherit;padding:6px;border:1px solid #aebdce;border-radius:5px}label{display:flex;gap:6px;align-items:center}#result{background:#eef5ff;padding:12px;border-radius:8px;font-weight:700;margin:14px 0}p{margin:8px 0;font-size:13px}a{color:#155fba}</style></head><body><h1>月の営業日数</h1><div class="fields"><label>年<select id="year">{[2026,2027].map(y=><option selected={y===year}>{y}</option>)}</select></label><label>月<select id="month">{Array.from({length:12},(_,i)=><option value={i+1} selected={i+1===month}>{i+1}月</option>)}</select></label></div><div id="result" aria-live="polite">{year}年{month}月：{initial.businessDays}営業日</div><p>土日・日本の祝日を除く日数。会社独自の休日は含みません。</p><p><a href="https://keisantool.com/eigyoubi/?utm_source=embed&utm_medium=referral&utm_campaign=business_calendar" target="_blank" rel="noopener">会社休日の設定・日付別CSVはこちら</a></p><p>提供：<a href="https://keisantool.com/eigyoubi/" target="_blank" rel="noopener">計算ツール</a></p></body></html>
+<script>
+import { businessMonth } from '../../lib/office-tools.js';
+const year=document.querySelector('#year'),month=document.querySelector('#month');
+function render(){const r=businessMonth(Number(year.value),Number(month.value));document.querySelector('#result').textContent=`${r.year}年${r.month}月：${r.businessDays}営業日 ／ ${r.calendarDays}日間`;}
+[year,month].forEach(e=>e.addEventListener('change',render));
+</script>

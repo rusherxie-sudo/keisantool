@@ -78,6 +78,7 @@ export function sourceFileForUrl(pagesDir, urlPath) {
   // 六星占術の早見表・大殺界2026 は flat な静的ページ（[type].astro のタイプ別ページではない）。
   // 必ず startsWith('rokusei/') の判定より先に解決する（動的ルートに吸われないようにする）。
   if (path === 'rokusei/hayamihyou') return join(pagesDir, 'rokusei/hayamihyou.astro');
+  if (path === 'rokusei/daisakkai-2027') return join(pagesDir, 'rokusei/daisakkai-2027.astro');
   if (path === 'rokusei/daisakkai-2026') return join(pagesDir, 'rokusei/daisakkai-2026.astro');
   if (path === 'rokusei/shukumei-daisakkai') return join(pagesDir, 'rokusei/shukumei-daisakkai.astro');
   // 六星占術の12タイプ別ページも動的ルート

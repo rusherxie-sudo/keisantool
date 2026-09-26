@@ -1,0 +1,15 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Faq from '../../components/Faq.astro';
+import '../../styles/office-tools.css';
+const slug='kinmu-jikan/template';
+const title='勤怠管理エクセルテンプレート無料｜2026・2027年・夜勤対応';
+const description='2026年・2027年の勤怠表Excelを無料ダウンロード。各年12ヶ月分、出退勤・休憩・翌日勤務から実働時間を自動集計。マクロなし、編集・社内配布・A4印刷に対応。';
+---
+<ToolLayout title={title} description={description} slug={slug} current="kinmu-jikan" jsonld={{'@context':'https://schema.org','@type':'WebPage',name:title,description}}>
+<div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/kinmu-jikan/">勤務時間計算</a> ／ Excelテンプレート</div><h1>勤怠管理Excelテンプレート・無料ダウンロード</h1><p>1年分の勤怠表を手元で編集できます。各月の出勤・退勤・休憩と翌日勤務を入力すると、月の実働時間・小数時間・勤務日数を計算します。</p></div>
+<section class="calc-card office-tool"><h2>2026年・2027年版を選ぶ</h2><div class="office-actions">{[2026,2027].map(year=><a href={`/downloads/kinmu-template-${year}.xlsx`} download data-template-year={year}>{year}年版Excelをダウンロード</a>)}</div><p>無料・登録不要・マクロなし。各ファイルに「使い方」と1〜12月のシートが入っています。黄色の入力セルを編集してください。</p><p class="office-note">数式はExcelなどの表計算ソフトで開くと再計算されます。ブラウザ内で計算したい場合は<a href="/kinmu-jikan/">月の勤務時間計算</a>をご利用ください。</p></section>
+<section class="howto"><h2>入力方法と計算例</h2><ol><li>対象年のファイルを保存し、入力する月のシートを開きます。</li><li>出勤・退勤に「09:00」のように時刻を入力します。</li><li>当日退勤は「翌日」に0、夜勤など翌日退勤なら1を入力します。</li><li>休憩は分単位の整数で入力します。月合計を確認し、必要なら印刷します。</li></ol><div class="office-scroll"><table class="office-table"><thead><tr><th>出勤</th><th>退勤</th><th>翌日</th><th>休憩</th><th>実働</th></tr></thead><tbody><tr><td>09:00</td><td>18:00</td><td>0</td><td>60分</td><td>8:00</td></tr><tr><td>22:00</td><td>06:00</td><td>1</td><td>45分</td><td>7:15</td></tr></tbody></table></div><p>この2日分なら合計15時間15分、小数時間では15.25時間です。「7:30」は7時間30分であり、7.30時間ではありません。</p><h2>入力ミスと集計のルール</h2><p>出退勤が両方空欄の日は対象外です。片方だけの入力、休憩が拘束時間を超える場合、翌日の指定漏れなどは「要修正」となり、修正するまで月合計を表示しません。24時間を超える勤務には対応していません。時刻は分単位で入力してください。</p><h2>印刷・編集・共有</h2><p>各月はA4用紙1枚に収まる印刷設定です。実際の改ページと文字サイズは、使用する表計算ソフトの印刷プレビューで確認してください。個人利用、編集、社内配布は無料です。Web上で紹介する場合は、このページへのリンクを添えると最新ファイルを案内できます。</p><h2>計算しないもの</h2><p>法定時間外・深夜割増・給与・変形労働時間制・法定休憩の判定は含みません。月末の翌日勤務は開始日の月へ全時間を計上します。会社指定の勤怠様式がある場合はそちらを優先してください。</p><nav class="office-links"><a href="/kinmu-jikan/">ブラウザで計算・CSV出力</a><a href="/eigyoubi/">営業日カレンダー</a><a href="/yukyu-nissu/">有給休暇の法定日数を計算</a></nav></section>
+<Faq items={[{q:'テンプレートは無料ですか？',a:'無料です。登録不要でダウンロードし、編集・個人利用・社内配布できます。'},{q:'夜勤や24時間を超える合計に対応しますか？',a:'1回の勤務は翌日指定で24時間以内に対応します。月の合計は24時間を超えて表示できます。'},{q:'給与や残業代も計算しますか？',a:'計算しません。実働時間を分単位で集計する勤怠表です。給与の条件や端数処理は別途確認してください。'}]}/>
+</ToolLayout>
+<script>document.querySelectorAll('[data-template-year]').forEach(link=>link.addEventListener('click',()=>window.gtag?.('event','work_template_download',{tool_slug:'kinmu-jikan',year:link.dataset.templateYear})));</script>
