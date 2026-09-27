@@ -22,6 +22,7 @@ export function convertArea(value, fromUnit) {
   if (number === null || factor === undefined) return null;
 
   const m2 = number * factor;
+  if (![m2, m2 / TSUBO_M2, m2 / JO_M2].every(Number.isFinite)) return null;
   return {
     m2,
     tsubo: m2 / TSUBO_M2,

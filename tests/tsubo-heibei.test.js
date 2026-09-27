@@ -76,3 +76,5 @@ describe('calculateTsuboPrice — 総額と面積から坪単価を計算', () =
     expect(calculateTsuboPrice(10_000_000, 30, 'jo')).toBeNull();
   });
 });
+
+it('rejects area conversion overflow', () => { expect(convertArea(1e308, 'tsubo')).toBeNull(); });

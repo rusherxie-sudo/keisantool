@@ -25,3 +25,10 @@ describe('直方体と画面サイズ', () => {
     expect(screenFromDiagonal({ diagonalInch: 50, aspectWidth: 0, aspectHeight: 9 })).toBeNull();
   });
 });
+
+it('does not emit infinite dimensions for overflowing inputs', () => {
+  expect(solveRectangle({target:'width',diagonal:1e308,height:1})).toBeNull();
+  expect(solveCuboid({width:1.7e308,height:1.7e308,depth:1.7e308})).toBeNull();
+  expect(screenFromDiagonal({diagonalInch:1e308})).toBeNull();
+  expect(screenFromDimensions({widthCm:1.7e308,heightCm:1.7e308})).toBeNull();
+});

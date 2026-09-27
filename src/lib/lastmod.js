@@ -140,6 +140,8 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/hayami.js'), join(root, 'src/lib/nenrei.js')];
   } else if (path === 'yukyu-nissu') {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/yukyu-nissu.js')];
+  } else if (['tsubo-heibei', 'taikakusen'].includes(path)) {
+    files = [sourceFileForUrl(pagesDir, path), join(root, `src/lib/${path}.js`)];
   } else if (path === 'bonus-tedori') {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/bonus-tedori.js'), join(root, 'src/data/bonus-rates-2026.js')];
   } else if (path === 'seimei-hoken-kojo') {

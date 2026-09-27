@@ -24,13 +24,14 @@ const commonRows = [1, 5, 10, 20, 30, 40, 50, 60, 100].map((tsubo) => ({
   tsubo,
   ...convertArea(tsubo, 'tsubo'),
 }));
+const metricRows = [10, 20, 30, 40, 50, 60, 70, 80, 100, 120].map(m2 => convertArea(m2, 'm2'));
 const formatStatic = (value, digits = 2) => value.toLocaleString('ja-JP', { maximumFractionDigits: digits });
 ---
 
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/henkan/">変換・ツール</a> ／ 坪・平米換算</div>
-    <h1>坪・平米（㎡）換算ツール</h1>
+    <h1>1坪は何㎡？坪・平米・畳の換算ツール</h1>
     <p><strong>1坪＝400/121㎡（約3.305785㎡）、1㎡＝0.3025坪</strong>。坪・平米・畳の換算、縦×横の面積、坪単価を入力だけで計算します。</p>
   </div>
 
@@ -46,7 +47,7 @@ const formatStatic = (value, digits = 2) => value.toLocaleString('ja-JP', { maxi
         <div class="input-grid input-grid--convert">
           <div class="form-group">
             <label for="areaValue">面積</label>
-            <input type="number" id="areaValue" min="0" step="any" inputmode="decimal" value="30" />
+            <input type="number" id="areaValue" min="0" step="any" inputmode="decimal" value="1" />
           </div>
           <div class="form-group">
             <label for="areaUnit">入力単位</label>
@@ -57,13 +58,14 @@ const formatStatic = (value, digits = 2) => value.toLocaleString('ja-JP', { maxi
             </select>
           </div>
         </div>
+        <div class="area-presets" aria-label="よく使う面積">{[{value:1,unit:'tsubo',label:'1坪'},{value:10,unit:'tsubo',label:'10坪'},{value:30,unit:'tsubo',label:'30坪'},{value:50,unit:'m2',label:'50㎡'},{value:100,unit:'m2',label:'100㎡'},{value:6,unit:'jo',label:'6帖'}].map(p=><button type="button" data-area-preset={p.value} data-area-unit={p.unit}>{p.label}</button>)}</div>
         <p class="form-error" id="convertError" hidden>0以上の面積を入力してください。</p>
         <div class="area-result" id="convertResult" aria-live="polite">
-          <div class="result-ticket"><span>平方メートル（㎡）</span><strong id="convertM2">―</strong><small>法定の面積単位</small></div>
-          <div class="result-ticket result-ticket--accent"><span>坪</span><strong id="convertTsubo">―</strong><small>参考換算</small></div>
-          <div class="result-ticket"><span>帖・畳</span><strong id="convertJo">―</strong><small>1帖＝1.62㎡の表示基準</small></div>
+          <div class="result-ticket"><span>平方メートル（㎡）</span><strong id="convertM2">3.305785㎡</strong><small>法定の面積単位</small></div>
+          <div class="result-ticket result-ticket--accent"><span>坪</span><strong id="convertTsubo">1坪</strong><small>参考換算</small></div>
+          <div class="result-ticket"><span>帖・畳</span><strong id="convertJo">2.04帖</strong><small>1帖＝1.62㎡の表示基準</small></div>
         </div>
-        <p class="formula-line" id="convertFormula">―</p>
+        <p class="formula-line" id="convertFormula">1坪 ＝ 約3.305785㎡</p><p class="formula-line" id="squareSide">同じ面積の正方形なら、1辺は約1.818mです。</p>
       </section>
 
       <section class="tsubo-mode" id="dimensionsPanel" hidden>
@@ -132,6 +134,7 @@ const formatStatic = (value, digits = 2) => value.toLocaleString('ja-JP', { maxi
     <p>長さ・重さ・温度など、ほかの単位もまとめて変換する場合は<a href="/tani/">単位変換器</a>をご利用ください。</p>
   </section>
 
+  <section class="howto"><h2>平米から坪・畳へ逆引きする早見表</h2><p>マンションや部屋の面積が㎡で書かれている場合は、㎡×0.3025で坪数に換算します。帖は1帖＝1.62㎡として計算した参考値です。</p><div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table conversion-table"><thead><tr><th>平米（㎡）</th><th>坪</th><th>帖・畳の目安</th></tr></thead><tbody>{metricRows.map(row=><tr><td>{row.m2}㎡</td><td>{formatStatic(row.tsubo)}坪</td><td>{formatStatic(row.jo,1)}帖</td></tr>)}</tbody></table></div></div><h2>1坪は縦横何メートル？</h2><p>面積だけでは縦と横は一意に決まりません。正方形と仮定すると、1辺は√(400/121)＝20/11m、約1.818mです。1m×約3.306mの長方形でも同じ1坪になります。</p><p>「1坪＝2畳」は慣用的な目安です。不動産表示の1帖＝1.62㎡で換算すると約2.04帖となり、実際の畳の枚数とは一致しない場合があります。部屋の斜めの長さは<a href="/taikakusen/">対角線計算</a>で確認できます。</p></section>
   <section class="howto source-box">
     <h2>換算基準と公式情報</h2>
     <ul>
@@ -156,6 +159,9 @@ const formatStatic = (value, digits = 2) => value.toLocaleString('ja-JP', { maxi
 </ToolLayout>
 
 <style>
+  .tsubo-card [hidden] { display:none!important; }
+  .area-presets { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .area-presets button { padding:8px 14px; border:1px solid var(--cat-color); border-radius:8px; background:var(--cat-tint); color:var(--cat-color); cursor:pointer; }
   .tsubo-card { overflow: hidden; }
   .tsubo-tabs { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--border-2); background: var(--surface-sub); }
   .tsubo-tab { display: flex; flex-direction: column; gap: 2px; padding: 14px 8px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--text-muted); cursor: pointer; font-family: var(--font-sans); }
@@ -232,20 +238,22 @@ const formatStatic = (value, digits = 2) => value.toLocaleString('ja-JP', { maxi
     $(`${prefix}Jo`).textContent = `${fmt(result.jo, 2)}帖`;
   }
 
-  function renderConvert() {
+  function renderConvert(user = false) {
     const result = convertArea($('areaValue').value, $('areaUnit').value);
     $('convertError').hidden = Boolean(result);
     $('convertResult').hidden = !result;
     $('convertFormula').hidden = !result;
+    $('squareSide').hidden = !result;
     if (!result) return updateShare();
     setAreaResult('convert', result);
     const labels = { tsubo: '坪', m2: '㎡', jo: '帖' };
     $('convertFormula').textContent = `${fmt(Number($('areaValue').value))}${labels[$('areaUnit').value]} ＝ ${fmt(result.m2)}㎡ ＝ ${fmt(result.tsubo)}坪`;
-    trackOnce('convert');
+    $('squareSide').textContent = `同じ面積の正方形なら、1辺は約${fmt(Math.sqrt(result.m2), 3)}mです。`;
+    if (user) trackOnce('convert');
     updateShare();
   }
 
-  function renderDimensions() {
+  function renderDimensions(user = false) {
     const result = areaFromDimensions($('lengthValue').value, $('widthValue').value, $('dimensionUnit').value);
     $('dimensionsError').hidden = Boolean(result);
     $('dimensionsResult').hidden = !result;
@@ -254,11 +262,11 @@ const formatStatic = (value, digits = 2) => value.toLocaleString('ja-JP', { maxi
     setAreaResult('dimensions', result);
     const unit = $('dimensionUnit').value;
     $('dimensionsFormula').textContent = `${fmt(Number($('lengthValue').value))}${unit} × ${fmt(Number($('widthValue').value))}${unit} ＝ ${fmt(result.m2)}㎡`;
-    trackOnce('dimensions');
+    if (user) trackOnce('dimensions');
     updateShare();
   }
 
-  function renderPrice() {
+  function renderPrice(user = false) {
     const totalYen = Number($('totalPrice').value) * 10000;
     const result = calculateTsuboPrice(totalYen, $('priceArea').value, $('priceAreaUnit').value);
     $('priceError').hidden = Boolean(result);
@@ -269,7 +277,7 @@ const formatStatic = (value, digits = 2) => value.toLocaleString('ja-JP', { maxi
     $('pricePerTsuboMan').textContent = `約${fmt(result.pricePerTsubo / 10000, 1)}万円／坪`;
     $('pricePerM2').textContent = `${result.pricePerM2.toLocaleString('ja-JP')}円／㎡`;
     $('priceFormula').textContent = `${fmt(Number($('totalPrice').value), 2)}万円 ÷ ${fmt(result.area.tsubo)}坪（1円未満切捨て）`;
-    trackOnce('price');
+    if (user) trackOnce('price');
     updateShare();
   }
 
@@ -300,5 +308,11 @@ const formatStatic = (value, digits = 2) => value.toLocaleString('ja-JP', { maxi
   ['areaValue', 'areaUnit'].forEach((id) => { $(id).addEventListener('input', renderConvert); $(id).addEventListener('change', renderConvert); });
   ['lengthValue', 'widthValue', 'dimensionUnit'].forEach((id) => { $(id).addEventListener('input', renderDimensions); $(id).addEventListener('change', renderDimensions); });
   ['totalPrice', 'priceArea', 'priceAreaUnit'].forEach((id) => { $(id).addEventListener('input', renderPrice); $(id).addEventListener('change', renderPrice); });
+  document.querySelectorAll('[data-area-preset]').forEach(button => button.addEventListener('click', () => {
+    $('areaValue').value = button.dataset.areaPreset;
+    $('areaUnit').value = button.dataset.areaUnit;
+    setMode('convert');
+    renderConvert(true);
+  }));
   renderConvert();
 </script>

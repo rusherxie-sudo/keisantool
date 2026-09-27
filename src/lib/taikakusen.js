@@ -9,24 +9,26 @@ export function solveRectangle({ target, width, height, diagonal } = {}) {
   if (target === 'diagonal') { if (!w || !h) return null; d = Math.hypot(w, h); }
   if (target === 'width') { if (!d || !h || d <= h) return null; w = Math.sqrt(d ** 2 - h ** 2); }
   if (target === 'height') { if (!d || !w || d <= w) return null; h = Math.sqrt(d ** 2 - w ** 2); }
-  return { width: w, height: h, diagonal: d };
+  return [w,h,d].every(Number.isFinite) ? { width: w, height: h, diagonal: d } : null;
 }
 
 export function solveCuboid({ width, height, depth } = {}) {
   const w = positive(width), h = positive(height), z = positive(depth);
-  return w && h && z ? { width: w, height: h, depth: z, diagonal: Math.hypot(w, h, z) } : null;
+  const diagonal = Math.hypot(w, h, z);
+  return w && h && z && Number.isFinite(diagonal) ? { width: w, height: h, depth: z, diagonal } : null;
 }
 
 export function screenFromDiagonal({ diagonalInch, aspectWidth = 16, aspectHeight = 9 } = {}) {
   const inch = positive(diagonalInch), aw = positive(aspectWidth), ah = positive(aspectHeight);
   if (!inch || !aw || !ah) return null;
   const diagonalCm = inch * 2.54, scale = diagonalCm / Math.hypot(aw, ah);
-  return { diagonalInch: inch, diagonalCm, widthCm: aw * scale, heightCm: ah * scale, aspectWidth: aw, aspectHeight: ah };
+  const widthCm = aw * scale, heightCm = ah * scale;
+  return [diagonalCm,widthCm,heightCm].every(Number.isFinite) && widthCm > 0 && heightCm > 0 ? { diagonalInch: inch, diagonalCm, widthCm, heightCm, aspectWidth: aw, aspectHeight: ah } : null;
 }
 
 export function screenFromDimensions({ widthCm, heightCm } = {}) {
   const w = positive(widthCm), h = positive(heightCm);
   if (!w || !h) return null;
   const diagonalCm = Math.hypot(w, h);
-  return { widthCm: w, heightCm: h, diagonalCm, diagonalInch: diagonalCm / 2.54 };
+  return Number.isFinite(diagonalCm) ? { widthCm: w, heightCm: h, diagonalCm, diagonalInch: diagonalCm / 2.54 } : null;
 }

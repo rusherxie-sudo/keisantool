@@ -1060,6 +1060,8 @@ export function getColorByCategorySlug(catSlug) {
 // 検索流入の多いページは、カテゴリ順ではなく利用者の次の作業に沿ってつなぐ。
 // 未指定ツールは従来どおり同カテゴリを優先する。
 const relatedJourneys = {
+  taikakusen: ['tsubo-heibei', 'heihoukon', 'sankakkei-menseki', 'tani'],
+  'tsubo-heibei': ['taikakusen', 'tani', 'shukushaku', 'sankakkei-menseki'],
   eigyoubi: ['kinmu-jikan', 'nissu', 'shukujitsu', 'kyuyo'],
   'kinmu-jikan': ['eigyoubi', 'jikan', 'kyuyo', 'yukyu-nissu'],
   'running-pace': ['hayasa', 'jikan', 'calorie', 'bmi'],
