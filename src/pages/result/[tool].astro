@@ -1,0 +1,34 @@
+---
+import '../../styles/global.css';
+import '../../styles/office-tools.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import { SHARE_TOOLS } from '../../lib/shared-results.js';
+export function getStaticPaths(){return Object.entries(SHARE_TOOLS).map(([tool,name])=>({params:{tool},props:{name}}));}
+const {tool}=Astro.params;const {name}=Astro.props;
+const title=`${name}の共有結果｜計算ツール`;
+---
+<!doctype html><html lang="ja"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>{title}</title><meta name="description" content="共有された条件と計算結果を確認できます。自分の条件で再計算することもできます。"/><meta name="robots" content="noindex,follow"/><meta name="referrer" content="no-referrer"/><link rel="canonical" href={`https://keisantool.com/${tool}/`}/><meta property="og:title" content={title}/><meta property="og:description" content="リンクを開いて計算条件と結果を確認できます。"/><meta property="og:image" content="https://keisantool.com/og.png"/></head><body>
+<SiteHeader current={tool}/><main class="page-wrapper" data-result-tool={tool} style="--cat-color:#2563eb;--cat-tint:#eef4ff">
+<div class="page-hero"><div class="crumb"><a href={`/${tool}/`}>{name}</a> ／ 共有結果</div><h1>{name}の共有結果</h1><p>リンクに指定された条件の結果です。日付や条件を固定して確認できます。</p></div>
+<noscript><p class="office-error">共有結果の表示にはJavaScriptを有効にしてください。</p></noscript>
+<p id="shared-error" class="office-error" role="alert">結果を読み込んでいます。リンク全体がコピーされているか確認してください。</p>
+<section id="shared-result" class="howto" hidden aria-live="polite"><h2 id="shared-heading"></h2><dl id="shared-facts"></dl><p id="shared-note" class="office-note"></p><details id="shared-calendar" hidden><summary>日付ごとの予定を見る</summary><div class="office-scroll"><table class="office-table"><thead><tr><th>日付</th><th>曜日</th><th>区分</th></tr></thead><tbody id="shared-days"></tbody></table></div></details></section>
+<ResultShare/><nav class="office-links"><a href={`/${tool}/?from=shared-result`}>自分の条件で計算する</a><a href="/resources/">関連する無料資料</a></nav><p class="office-note">このURLを知る人は条件と結果を確認できます。共有結果は編集・確認用の参考値で、会社や公的機関が承認した書類ではありません。</p>
+</main><SiteFooter/>
+<script>
+import { readSharedResult,sharedResultUrl } from '../../lib/shared-results.js';
+const tool=document.querySelector('[data-result-tool]').dataset.resultTool;
+function render(){
+ const r=readSharedResult(tool,location.hash);document.querySelector('#shared-result').hidden=!r;document.querySelector('#shared-error').hidden=!!r;window.hideResultShare?.();
+ if(!r){document.querySelector('#shared-error').textContent='結果を表示できません。共有リンク全体をコピーするか、元の計算器でリンクを作り直してください。';return;}
+ document.querySelector('#shared-heading').textContent=r.title;document.querySelector('#shared-note').textContent=r.note;
+ const dl=document.querySelector('#shared-facts');dl.replaceChildren();for(const [k,v] of r.facts){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=k;dd.textContent=v;dl.append(dt,dd);}
+ document.querySelector('#shared-calendar').hidden=!r.days;const rows=document.querySelector('#shared-days');rows.replaceChildren();
+ for(const d of r.days||[]){const tr=document.createElement('tr');for(const s of [d.date,'日月火水木金土'[d.weekday],d.working?(tool==='taishoku-yukyu'&&r.input.balance?'有給休暇':'出勤予定'):d.holiday||(d.companyHoliday?'会社休日':'休日')]){const td=document.createElement('td');td.textContent=s;tr.append(td);}rows.append(tr);}
+ window.setResultShare?.(r.title,{url:sharedResultUrl(tool,r.input,location.origin)});
+}
+render();window.addEventListener('hashchange',render);
+</script><style>dl{display:grid;grid-template-columns:minmax(110px,1fr) minmax(0,2fr);gap:10px 15px}dt{font-weight:700}dd{margin:0;overflow-wrap:anywhere}#shared-result[hidden],#shared-error[hidden]{display:none}@media(max-width:500px){dl{grid-template-columns:1fr}dd{margin-bottom:8px}}</style>
+</body></html>

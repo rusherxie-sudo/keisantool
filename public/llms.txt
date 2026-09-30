@@ -30,6 +30,8 @@
 
 ## 生活・日常
 
+- [退職前の有給消化・最終出勤日計算](https://keisantool.com/taishoku-yukyu/): 退職日・残日数から予定を逆算・結果URL
+- [年末年始の会社休日・出勤予定](https://keisantool.com/nenmatsu-nenshi/): 会社休日・年をまたぐ日程・結果URL
 - [営業日数カレンダー・CSV](https://keisantool.com/eigyoubi/): 月別営業日数・会社休日・2026/2027
 - [月の勤務時間計算・勤怠表](https://keisantool.com/kinmu-jikan/): 出退勤・休憩・夜勤・CSV出力
 - [ランニングペース・完走タイム計算](https://keisantool.com/running-pace/): キロ何分・時速・マラソン通過タイム

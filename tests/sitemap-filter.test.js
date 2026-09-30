@@ -4,6 +4,8 @@ import { shouldIncludeInSitemap } from '../src/lib/sitemap.js';
 const now = new Date('2026-09-10T12:00:00Z');
 
 describe('shouldIncludeInSitemap', () => {
+  it('excludes shared result routes',()=>{expect(shouldIncludeInSitemap('https://keisantool.com/result/hayasa/',now)).toBe(false);});
+
   it('excludes noindex zodiac pairs', () => {
     expect(shouldIncludeInSitemap('https://keisantool.com/seiza-aisho/ohitsuji-oushi/', now)).toBe(false);
   });

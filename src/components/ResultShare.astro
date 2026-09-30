@@ -2,7 +2,7 @@
 /*
   結果区シェアモジュール（設計§5.1）。計算結果が出た後に各ページの JS が
   window.setResultShare('結果サマリー') を呼ぶと表示される。
-  コピー/共有内容は「結果サマリー + ページURL」（URL だけではない）。
+  コピー/共有内容は「結果サマリー + ページURL」（URL だけではない。対応ツールは第二引数 {url} で共有結果ページを指定する）。
   モバイル優先：LINE / システム共有（navigator.share）/ コピー。
   ページ末尾の ShareButtons より視覚的に主役（こちらが結果直下の主導線）。
 */
@@ -10,48 +10,60 @@
 <section class="rshare" id="result-share" hidden aria-label="計算結果をシェア">
   <div class="rshare__text">
     <span class="rshare__title">結果をシェア</span>
-    <span class="rshare__hint">家族や同僚に送る・あとで見返す</span>
+    <span class="rshare__hint" id="result-share-hint">家族や同僚に送る・あとで見返す</span>
   </div>
   <div class="rshare__btns">
     <button type="button" class="rshare__btn rshare__btn--line" data-act="line">LINEで送る</button>
     <button type="button" class="rshare__btn rshare__btn--sys" data-act="sys">共有</button>
     <button type="button" class="rshare__btn rshare__btn--copy" data-act="copy">コピー</button>
+    <a class="rshare__btn rshare__btn--copy" id="result-page-link" hidden target="_blank" rel="noopener">結果ページを開く</a>
   </div>
+  <textarea id="result-share-fallback" hidden readonly aria-label="手動コピー用の共有内容" style="width:100%;max-width:100%;min-height:80px"></textarea>
 </section>
 
 <script>
   (function () {
     const sec = document.getElementById('result-share');
     if (!sec) return;
-    const pageUrl = () => location.origin + location.pathname;
+    let resultUrl = '';
+    const pageUrl = () => resultUrl || location.origin + location.pathname;
     let summary = '';
-    const full = () => (summary ? summary + '\n' : '') + pageUrl();
+    const full = () => resultUrl ? resultUrl : (summary ? summary + '\n' : '') + pageUrl();
 
     // 各ツールページが結果描画後に呼ぶ
-    window.setResultShare = (text) => {
+    window.setResultShare = (text, options = {}) => {
+      resultUrl = '';
+      if (options.url) { try { const u = new URL(options.url, location.origin); if (u.origin === location.origin && /^\/result\/[a-z-]+\/$/.test(u.pathname)) resultUrl = u.href; } catch {} }
+      const link = document.getElementById('result-page-link');link.hidden = !resultUrl;link.href = resultUrl || '#';
+      sec.querySelector('[data-act="copy"]').textContent = resultUrl ? '結果URLをコピー' : 'コピー';
+      document.getElementById('result-share-hint').textContent = resultUrl ? 'リンクを開くと同じ条件・結果を確認できます' : '家族や同僚に送る・あとで見返す';
+      document.getElementById('result-share-fallback').hidden = true;
       summary = (text || '').trim();
       sec.hidden = false;
+      window.dispatchEvent(new Event('result-share-change'));
     };
-    window.hideResultShare = () => { sec.hidden = true; };
+    window.hideResultShare = () => { sec.hidden = true;window.dispatchEvent(new Event('result-share-change')); };
+    window.getResultShareUrl = () => sec.hidden ? '' : resultUrl;
 
     const sysBtn = sec.querySelector('[data-act="sys"]');
     if (!navigator.share) sysBtn.hidden = true;
 
     sec.addEventListener('click', async (e) => {
-      const btn = e.target.closest('.rshare__btn');
+      const btn = e.target.closest('button.rshare__btn');
       if (!btn) return;
       const act = btn.dataset.act;
+      const track = () => { if(resultUrl) window.gtag?.('event','result_url_share',{tool_slug:document.body.dataset.toolSlug || '',method:act}); };
       if (act === 'line') {
-        window.open('https://line.me/R/share?text=' + encodeURIComponent(full()), '_blank', 'noopener');
+        window.open('https://line.me/R/share?text=' + encodeURIComponent(full()), '_blank', 'noopener');track();
       } else if (act === 'sys') {
-        try { await navigator.share({ title: document.title, text: summary, url: pageUrl() }); } catch (err) {}
+        try { await navigator.share({ title: document.title, text: summary, url: pageUrl() });track(); } catch (err) {}
       } else if (act === 'copy') {
         try {
-          await navigator.clipboard.writeText(full());
+          await navigator.clipboard.writeText(full());track();
           const orig = btn.textContent;
           btn.textContent = 'コピーしました';
           setTimeout(() => { btn.textContent = orig; }, 1500);
-        } catch (err) {}
+        } catch (err) {const field=document.getElementById('result-share-fallback');field.value=full();field.hidden=false;field.focus();field.select();}
       }
     });
   })();
@@ -115,7 +127,7 @@
     border-color: var(--cat-color);
     color: color-mix(in srgb, var(--cat-color) 62%, #000);
   }
-  .rshare__btn[hidden] { display: none; }
+  .rshare__btn[hidden], #result-share-fallback[hidden] { display: none; }
 
   @media (max-width: 560px) {
     .rshare { padding: 14px 16px; }

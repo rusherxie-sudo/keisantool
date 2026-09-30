@@ -1,0 +1,18 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import WorkScheduleFields from '../../components/WorkScheduleFields.astro';
+import WorkPlanResult from '../../components/WorkPlanResult.astro';
+import { holidayPlan } from '../../lib/work-plans.js';
+import '../../styles/office-tools.css';
+const slug='nenmatsu-nenshi';const title='年末年始休み 2026〜2027年｜会社休日・出勤予定を計算';
+const description='2026〜2027年の年末年始は何連休？土日祝と会社独自の休業日を指定し、日付別の休日・出勤予定を確認。12月29日〜1月3日休業の例と、予定を共有する結果URLに対応。';
+const sample=holidayPlan('2026-12-26','2027-01-05',[1,2,3,4,5],['2026-12-29','2026-12-30','2026-12-31','2027-01-01','2027-01-02','2027-01-03']);
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug}>
+<div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ 年末年始の予定</div><h1>2026〜2027年 年末年始の会社休日・出勤予定</h1><p>会社ごとに違う休業日を設定し、年をまたぐ予定を確認できます。結果URLを共有すれば、同じ日付と条件で確認できます。</p></div>
+<form id="plan-form" data-plan-tool={slug} class="calc-card office-tool"><div class="office-fields"><div><label for="plan-start">開始日（含む）</label><input id="plan-start" type="date" value="2026-12-26" min="2026-01-01" max="2027-12-31" required/></div><div><label for="plan-end">終了日（含む）</label><input id="plan-end" type="date" value="2027-01-05" min="2026-01-01" max="2027-12-31" required/></div></div><WorkScheduleFields/><p class="office-note">2026・2027年の62日以内の期間に対応。会社休日を入力しない場合、12月29〜31日は平日のため出勤予定として数えます。</p><div class="office-actions"><button type="submit">休日・出勤予定を計算</button><button id="yearend-example" type="button">12/29〜1/3休業の例を入力</button></div><p id="plan-error" class="office-error" role="alert"></p></form>
+<WorkPlanResult/><ResultShare/>
+<section class="howto"><h2>2026〜2027年の年末年始は何連休？</h2><p>元日を除き、12月29〜31日や1月2〜3日がすべて国民の祝日になるわけではありません。会社の休業日により連休日数は変わります。<strong>12月29日〜1月3日を休業とする会社なら、6連休</strong>の例になります。12月28日も休みにすると、土日から続く12月26日〜1月3日の9連休です。</p><h2>12月29日〜1月3日休業・月〜金勤務の例</h2><p>以下は会社休日を指定した例で、一般の会社に同じ休みを保証するものではありません。期間全体では出勤予定{sample.workingDays}日、休日{sample.offDays}日です。期間内の休日合計と連休日数は異なります。</p><div class="office-scroll"><table class="office-table"><thead><tr><th>日付</th><th>曜日</th><th>この例の予定</th></tr></thead><tbody>{sample.days.map(d=><tr><td>{d.date}</td><td>{'日月火水木金土'[d.weekday]}</td><td>{d.working?'出勤予定':d.holiday||(d.companyHoliday?'会社休日':'休日')}</td></tr>)}</tbody></table></div><h2>会社の案内と照合して共有する</h2><p>休業日の案内を見て入力したあと、計算結果の「結果URLをコピー」からリンクを送れます。確認相手は入力した会社休日も確認できます。銀行の窓口・ATMや自治体の開庁日は、この会社予定表から判断せず各機関の案内を確認してください。</p><p>祝日の出典：<a href="https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html" target="_blank" rel="noopener">内閣府「国民の祝日について」</a>。2026・2027年の公表済み祝日を利用しています。</p><nav class="office-links"><a href="/eigyoubi/">月ごとの営業日数・年間一覧</a><a href="/shukujitsu/2027/">2027年の祝日</a><a href="/taishoku-yukyu/">退職前の有給開始日を逆算</a></nav></section><RelatedTools current={slug}/>
+</ToolLayout><script>import '../../scripts/work-plan-form.js';</script>

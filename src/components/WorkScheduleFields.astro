@@ -1,0 +1,2 @@
+<fieldset class="weekdays"><legend>通常の勤務曜日</legend>{['日','月','火','水','木','金','土'].map((d,i)=><label><input type="checkbox" name="plan-weekday" value={i} checked={i>0&&i<6}/>{d}</label>)}</fieldset>
+<label for="plan-extra">会社独自の休日（1行に1日、YYYY-MM-DD・40日まで）</label><textarea id="plan-extra" rows="4" placeholder="2026-12-29&#10;2026-12-30&#10;2026-12-31"></textarea><p class="office-note">勤務曜日外の日、日本の国民の祝日、ここで指定した日を休日として扱います。祝日に勤務するシフトには対応していません。</p>

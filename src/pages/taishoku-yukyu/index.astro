@@ -1,0 +1,19 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import WorkScheduleFields from '../../components/WorkScheduleFields.astro';
+import WorkPlanResult from '../../components/WorkPlanResult.astro';
+import '../../styles/office-tools.css';
+const slug='taishoku-yukyu';
+const title='退職前の有給消化計算｜開始日・最終出勤日を退職日から逆算';
+const description='退職日と確認済みの有給残日数から、有給消化の開始日・最終出勤日を逆算。土日祝、勤務曜日、会社休日に対応。日付別の予定と同じ条件の結果URLを共有できます。';
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug}>
+<div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ 有給消化の予定</div><h1>退職前の有給消化・最終出勤日計算</h1><p>退職日から有給をまとめて使う場合の予定を逆算します。残日数は勤務先で確認した数を入力してください。</p></div>
+<form id="plan-form" data-plan-tool={slug} class="calc-card office-tool"><div class="office-fields"><div><label for="plan-retire">退職日（この日を含む）</label><input id="plan-retire" type="date" value="2026-12-31" min="2026-01-01" max="2027-12-31" required/></div><div><label for="plan-balance">確認済みの有給残日数</label><input id="plan-balance" type="number" min="0" max="120" step="1" value="20" required/></div></div><WorkScheduleFields/><p class="office-note">対象は2026・2027年。全日有給を退職日直前の勤務日に連続して使う予定です。引継ぎ日、半日・時間単位の休暇、追加付与、失効は含みません。</p><div class="office-actions"><button type="submit">有給開始日・最終出勤日を計算</button></div><p id="plan-error" class="office-error" role="alert"></p></form>
+<WorkPlanResult/><ResultShare/>
+<section class="howto"><h2>退職日・最終出勤日・有給開始日は別です</h2><p>退職日は雇用関係が終わる日、最終出勤日は最後に勤務する日です。有給消化の開始日から退職日までに、指定した数の勤務日を割り当てます。休日は有給を1日使った扱いにはしません。</p><h2>計算例：2026年10月30日退職、有給5日</h2><p>月〜金勤務、土日祝休み、会社休日なしの場合、有給は<strong>10月26日（月）〜10月30日（金）の5日</strong>、最終出勤日は<strong>10月23日（金）</strong>です。退職日が土日でも、雇用終了日そのものを前の金曜日へ変更しません。</p><h2>まず残日数を確認してください</h2><p><a href="/yukyu-nissu/">法定付与日数の計算</a>は付与の目安で、実際の残日数ではありません。勤怠システムや担当者に、取得済み日数、繰越分、有効期限を確認してください。<a href="/kinzoku-nensuu/">勤続年数の確認</a>も別にできます。</p><h2>引継ぎと申請に使う</h2><p>この結果は予定のたたき台です。引継ぎ完了日や就業規則の申請手続きと照合し、勤務先と調整してください。リンクで共有すると、受け取った人も退職日・勤務曜日・会社休日と結果を確認できます。</p><p>制度の参考：<a href="https://www.check-roudou.mhlw.go.jp/qa/roudousya/yukyu/q1.html" target="_blank" rel="noopener">厚生労働省「年次有給休暇をとる条件」</a>（2026年10月1日確認）。本ツールは休暇取得の法的可否や退職届の期限を判断しません。</p><nav class="office-links"><a href="/nenmatsu-nenshi/">年末年始の会社休日を予定</a><a href="/eigyoubi/">月の営業日数</a></nav></section>
+<RelatedTools current={slug}/><Faq items={[{q:'有給の付与日数をそのまま入力してよいですか？',a:'勤務先で確認した残日数を入力してください。付与日数から取得済み日数や失効分を差し引いた残日数とは異なります。'},{q:'退職日が土日ならどう計算しますか？',a:'退職日は変更せず、そこから前の勤務日へ有給を割り当てます。最終出勤日は有給開始日前の勤務日です。'},{q:'半休・時間休や祝日に働くシフトは使えますか？',a:'全日有給のみで、祝日は休日として扱います。半休・時間休・祝日勤務のシフトには対応していません。'}]}/>
+</ToolLayout><script>import '../../scripts/work-plan-form.js';</script>

@@ -4,6 +4,7 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import Faq from '../../components/Faq.astro';
+import { seirekiToWareki } from '../../lib/wareki.js';
 import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'kinzoku-nensuu';
@@ -165,7 +166,7 @@ const jsonld = {
       <table>
         <thead><tr><th>入社年月</th><th>{tableYear}年4月1日現在</th><th>完了した勤続年数</th></tr></thead>
         <tbody>{aprilEntryRows.map((row) => (
-          <tr><td>{row.joinYear}年4月入社</td><td><strong>{row.serviceYear}年目</strong></td><td>{row.completedYears}年</td></tr>
+          <tr><td>{row.joinYear}年4月入社（{seirekiToWareki(row.joinYear,4,1).label}）</td><td><strong>{row.serviceYear}年目</strong></td><td>{row.completedYears}年</td></tr>
         ))}</tbody>
       </table>
     </div>
@@ -203,6 +204,7 @@ const jsonld = {
     <div class="disclaimer">※ 有給休暇の表示は一般労働者の法定付与日数の参考値であり、出勤率、比例付与、前倒し付与、休職・再雇用などは反映していません。計算結果はあくまで参考値です。</div>
   </section>
 
+  <section class="howto"><h2>退職前の有給消化を予定する</h2><p>勤続年数から確認した付与日数は、残日数とは異なります。会社で残日数を確認してから、<a href="/taishoku-yukyu/">退職日から有給開始日・最終出勤日を逆算</a>できます。</p></section>
   <RelatedTools current={slug} />
   <RelatedArticles toolSlug={slug} />
   <Faq items={[
@@ -223,6 +225,7 @@ const jsonld = {
 <script>
   import { calculateServicePeriod, reverseServiceYear } from '../../lib/kinzoku-nensuu.js';
   import { weekdayJa } from '../../lib/nissu.js';
+  import { sharedResultUrl } from '../../lib/shared-results.js';
 
   const $ = (id) => document.getElementById(id);
   let hasTracked = false;
@@ -271,7 +274,7 @@ const jsonld = {
 
     $('service-error').textContent = '';
     $('service-result').hidden = false;
-    window.setResultShare?.(`勤続年数計算\n${formatDate(joinDate)}から${formatDate(referenceDate)}\n${durationText}（現在${result.serviceYear}年目）`);
+    window.setResultShare?.(`勤続年数計算\n${formatDate(joinDate)}から${formatDate(referenceDate)}\n${durationText}（現在${result.serviceYear}年目）`,{url:sharedResultUrl('kinzoku-nensuu',{join:joinDate,reference:referenceDate},location.origin)});
     if (!hasTracked) {
       window.trackCalculatorResult?.('kinzoku-nensuu');
       hasTracked = true;

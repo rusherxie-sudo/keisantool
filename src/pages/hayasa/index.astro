@@ -44,6 +44,7 @@ const jsonld = {
       <div class="form-group"><label for="converter-value">速さ</label><input id="converter-value" type="number" min="0" step="any" value="20" inputmode="decimal" /></div>
       <div class="form-group"><label for="converter-unit">入力単位</label><select id="converter-unit"><option value="kmh">km/h（時速）</option><option value="mps">m/s（秒速）</option><option value="mpm">m/分（分速）</option></select></div>
     </div>
+    <div class="speed-presets" aria-label="よく調べられる時速">{[20,30,80].map(v=><button type="button" data-speed-preset={v}>時速{v}キロ→秒速</button>)}</div>
     <p class="form-error" id="converter-error" role="alert" hidden>0より大きい速さを入力してください。</p>
     <div class="converter-results" id="converter-results" aria-live="polite">
       <div><span>時速</span><strong id="converter-kmh">20 km/h</strong></div>
@@ -202,6 +203,7 @@ const jsonld = {
   .feature-chips span { padding: 5px 10px; border-radius: 999px; background: var(--cat-tint); color: var(--cat-color); font-size: .72rem; font-weight: var(--fw-bold); }
   .converter-card { margin-bottom: 20px; padding: 22px; }
   .converter-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+  .speed-presets {display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.speed-presets button {padding:8px 10px;border:1px solid var(--border-input);border-radius:8px;background:var(--cat-tint);color:var(--text);cursor:pointer}
   .converter-heading h2 { margin: 2px 0 0; font-size: 1.15rem; }
   .converter-heading p { margin: 0; color: var(--text-muted); font-size: .78rem; }
   .converter-kicker { color: var(--cat-color); font-size: .68rem; font-weight: var(--fw-bold); }
@@ -269,6 +271,7 @@ const jsonld = {
 
 <script>
   import { calculateDistance, calculateSpeed, calculateTime, convertSpeed } from '../../lib/hayasa.js';
+  import { sharedResultUrl } from '../../lib/shared-results.js';
 
   const $ = (id) => document.getElementById(id);
   const number = (value, digits = 4) => new Intl.NumberFormat('ja-JP', { maximumFractionDigits: digits }).format(value);
@@ -277,7 +280,8 @@ const jsonld = {
     const rounded = Math.round(seconds);
     return `${Math.floor(rounded / 60)}分${String(rounded % 60).padStart(2, '0')}秒 /km`;
   };
-  let activeMode = 'speed';
+  let activeMode = 'speed', hasTrackedResult = false;
+  function trackValidResult(valid){if(valid&&!hasTrackedResult){window.trackCalculatorResult?.('speed');hasTrackedResult=true;}}
 
   function updateConverter() {
     const result = convertSpeed($('converter-value').value, $('converter-unit').value);
@@ -287,7 +291,7 @@ const jsonld = {
     $('converter-kmh').textContent = `${number(result.kilometersPerHour)} km/h`;
     $('converter-mps').textContent = `${number(result.metersPerSecond)} m/s`;
     $('converter-mpm').textContent = `${number(result.metersPerMinute, 3)} m/分`;
-    window.setResultShare?.(`速さ換算\n時速：${number(result.kilometersPerHour)} km/h\n秒速：${number(result.metersPerSecond)} m/s`);
+    window.setResultShare?.(`速さ換算\n時速：${number(result.kilometersPerHour)} km/h\n秒速：${number(result.metersPerSecond)} m/s`,{url:sharedResultUrl('hayasa',{mode:'convert',value:Number($('converter-value').value),unit:$('converter-unit').value},location.origin)});
   }
 
   function validity(mode, result) {
@@ -304,7 +308,7 @@ const jsonld = {
     $('speed-mps').textContent = `${number(result.metersPerSecond)} m/s`;
     $('speed-mpm').textContent = `${number(result.metersPerMinute, 3)} m/分`;
     $('speed-pace').textContent = paceText(result.paceSecondsPerKm);
-    window.setResultShare?.(`速さ計算\n結果：${number(result.kilometersPerHour)} km/h\n秒速：${number(result.metersPerSecond)} m/s`);
+    window.setResultShare?.(`速さ計算\n結果：${number(result.kilometersPerHour)} km/h\n秒速：${number(result.metersPerSecond)} m/s`,{url:sharedResultUrl('hayasa',{mode:'speed',distance:Number($('speed-distance').value),distanceUnit:$('speed-distance-unit').value,hours:Number($('speed-hours').value),minutes:Number($('speed-minutes').value),seconds:Number($('speed-seconds').value)},location.origin)});
   }
 
   function updateDistance() {
@@ -314,7 +318,7 @@ const jsonld = {
     $('distance-km').textContent = `${number(result.distanceKilometers)} km`;
     $('distance-m').textContent = `${number(result.distanceMeters, 2)} m`;
     $('distance-mps').textContent = `${number(result.metersPerSecond)} m/s`;
-    window.setResultShare?.(`距離計算\n結果：${number(result.distanceKilometers)} km`);
+    window.setResultShare?.(`距離計算\n結果：${number(result.distanceKilometers)} km`,{url:sharedResultUrl('hayasa',{mode:'distance',value:Number($('distance-speed').value),unit:$('distance-speed-unit').value,hours:Number($('distance-hours').value),minutes:Number($('distance-minutes').value),seconds:Number($('distance-seconds').value)},location.origin)});
   }
 
   function updateTime() {
@@ -324,7 +328,7 @@ const jsonld = {
     $('time-duration').textContent = durationText(result.hours, result.minutes, result.seconds);
     $('time-total-minutes').textContent = `${number(result.durationSeconds / 60, 2)}分`;
     $('time-total-seconds').textContent = `${number(result.durationSeconds, 2)}秒`;
-    window.setResultShare?.(`所要時間計算\n結果：${durationText(result.hours, result.minutes, result.seconds)}`);
+    window.setResultShare?.(`所要時間計算\n結果：${durationText(result.hours, result.minutes, result.seconds)}`,{url:sharedResultUrl('hayasa',{mode:'time',distance:Number($('time-distance').value),distanceUnit:$('time-distance-unit').value,value:Number($('time-speed').value),unit:$('time-speed-unit').value},location.origin)});
   }
 
   const updaters = { speed: updateSpeed, distance: updateDistance, time: updateTime };
@@ -336,10 +340,11 @@ const jsonld = {
       item.setAttribute('aria-selected', String(active));
     });
     document.querySelectorAll('.speed-mode').forEach((panel) => { panel.hidden = panel.dataset.panel !== activeMode; });
-    updaters[activeMode]();
+    updaters[activeMode]();trackValidResult($(`${activeMode}-error`).hidden);
   }));
-  document.querySelectorAll('#speed-tool input, #speed-tool select').forEach((input) => input.addEventListener('input', () => updaters[activeMode]()));
-  document.querySelectorAll('#speed-converter input, #speed-converter select').forEach((input) => input.addEventListener('input', updateConverter));
+  document.querySelectorAll('#speed-tool input, #speed-tool select').forEach((input) => input.addEventListener('input', () => {updaters[activeMode]();trackValidResult($(`${activeMode}-error`).hidden);}));
+  document.querySelectorAll('#speed-converter input, #speed-converter select').forEach((input) => input.addEventListener('input',()=>{updateConverter();trackValidResult($('converter-error').hidden);}));
+  document.querySelectorAll('[data-speed-preset]').forEach(btn=>btn.addEventListener('click',()=>{$('converter-value').value=btn.dataset.speedPreset;$('converter-unit').value='kmh';updateConverter();trackValidResult(true);window.gtag?.('event','speed_conversion_preset',{tool_slug:'hayasa',preset:btn.dataset.speedPreset});}));
   updateConverter();
   updateSpeed();
 </script>

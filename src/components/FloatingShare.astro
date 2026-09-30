@@ -33,14 +33,16 @@ const hatena = 'https://b.hatena.ne.jp/entry/s/' + url.replace(/^https?:\/\//, '
   const menu = document.getElementById('fshare-menu');
   const copyBtn = document.getElementById('fshare-copy');
 
+  const currentShareUrl = () => window.getResultShareUrl?.() || url;
+  const refreshLinks = () => {const u=encodeURIComponent(currentShareUrl());menu.querySelector('.x').href='https://twitter.com/intent/tweet?url='+u+'&text='+encodeURIComponent(title);menu.querySelector('.line').href='https://social-plugins.line.me/lineit/share?url='+u;menu.querySelector('.fb').href='https://www.facebook.com/sharer/sharer.php?u='+u;menu.querySelector('.hatena').hidden=!!window.getResultShareUrl?.();};
   const closeMenu = () => { menu.hidden = true; fab.setAttribute('aria-expanded', 'false'); };
-  const openMenu = () => { menu.hidden = false; fab.setAttribute('aria-expanded', 'true'); };
+  const openMenu = () => { refreshLinks();menu.hidden = false; fab.setAttribute('aria-expanded', 'true'); };
 
   fab.addEventListener('click', async (e) => {
     e.stopPropagation();
     if (navigator.share) {
       try {
-        await navigator.share({ title, url });
+        await navigator.share({ title, url:currentShareUrl() });
         return;
       } catch (err) {
         if (err && err.name === 'AbortError') return; // ユーザーがキャンセル
@@ -51,12 +53,14 @@ const hatena = 'https://b.hatena.ne.jp/entry/s/' + url.replace(/^https?:\/\//, '
 
   copyBtn.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(currentShareUrl());
       const orig = copyBtn.textContent;
       copyBtn.textContent = 'コピーしました';
       setTimeout(() => { copyBtn.textContent = orig; }, 1500);
     } catch (e) {}
   });
+
+  window.addEventListener('result-share-change',()=>{closeMenu();refreshLinks();});
 
   // メニュー外クリック・Escで閉じる
   document.addEventListener('click', (e) => {
@@ -81,6 +85,7 @@ const hatena = 'https://b.hatena.ne.jp/entry/s/' + url.replace(/^https?:\/\//, '
 </script>
 
 <style>
+  .fshare-item[hidden] { display:none; }
   .fshare {
     position: fixed;
     right: 20px;

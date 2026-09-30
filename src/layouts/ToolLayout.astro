@@ -173,6 +173,9 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   <script is:inline>
     // 計算器の「結果表示」と関連ツール遷移を、入力値を送らずに計測する。
     // 自動計算は入力のたびに再描画されるため、各ページ側で初回表示だけを送信する。
+    if(new URLSearchParams(location.search).get('from')==='shared-result') {
+      window.gtag?.('event','shared_result_return',{tool_slug:document.body.dataset.toolSlug || 'unknown'});
+    }
     window.trackCalculatorResult = function(resultType) {
       if (typeof window.gtag !== 'function') return;
       window.gtag('event', 'calculator_result_view', {

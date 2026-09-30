@@ -28,6 +28,8 @@ export const categoryColors = {
 };
 
 export const tools = [
+  { slug: 'taishoku-yukyu', nav: '退職前の有給消化', name: '退職前の有給消化・最終出勤日計算', icon: '📅', category: '生活・日常', short: '退職日・残日数から予定を逆算・結果URL', live: true },
+  { slug: 'nenmatsu-nenshi', nav: '年末年始の休業予定', name: '年末年始の会社休日・出勤予定', icon: '📅', category: '生活・日常', short: '会社休日・年をまたぐ日程・結果URL', live: true },
   { slug: 'eigyoubi', nav: '営業日数', name: '営業日数カレンダー・CSV', icon: '📅', category: '生活・日常', short: '月別営業日数・会社休日・2026/2027', live: true },
   { slug: 'kinmu-jikan', nav: '月の勤務時間', name: '月の勤務時間計算・勤怠表', icon: '🕒', category: '生活・日常', short: '出退勤・休憩・夜勤・CSV出力', live: true },
   { slug: 'running-pace', nav: 'ランニングペース', name: 'ランニングペース・完走タイム計算', icon: '🏃', category: '生活・日常', short: 'キロ何分・時速・マラソン通過タイム', live: true },
@@ -1062,6 +1064,8 @@ export function getColorByCategorySlug(catSlug) {
 const relatedJourneys = {
   taikakusen: ['tsubo-heibei', 'heihoukon', 'sankakkei-menseki', 'tani'],
   'tsubo-heibei': ['taikakusen', 'tani', 'shukushaku', 'sankakkei-menseki'],
+  'taishoku-yukyu': ['kinzoku-nensuu','yukyu-nissu','eigyoubi','nenmatsu-nenshi'],
+  'nenmatsu-nenshi': ['eigyoubi','shukujitsu','taishoku-yukyu','kinmu-jikan'],
   eigyoubi: ['kinmu-jikan', 'nissu', 'shukujitsu', 'kyuyo'],
   'kinmu-jikan': ['eigyoubi', 'jikan', 'kyuyo', 'yukyu-nissu'],
   'running-pace': ['hayasa', 'jikan', 'calorie', 'bmi'],
