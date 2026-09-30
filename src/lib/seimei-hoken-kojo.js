@@ -1,4 +1,4 @@
-// 国税庁No.1140、生命保険文化センター新旧制度表（2026-09-18確認）。
+// 国税庁No.1140、生命保険文化センター新旧制度表（No.1140は2026-09-30再確認：令和8年分以降）。
 // 入力は証明書の年間保険料（配当・割戻金控除後）、同じ区分を合算した整数円。
 export const PREMIUM_FIELDS = ['generalNew', 'generalOld', 'medical', 'pensionNew', 'pensionOld'];
 const validYen = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000_000;
@@ -18,7 +18,7 @@ function selectDeduction(newAmount, oldAmount, cap) {
 
 export function calculateLifeInsurance(input = {}) {
   const { year = 2026, under23Dependent = false } = input;
-  if (year !== 2026 || typeof under23Dependent !== 'boolean') return null;
+  if (![2026, 2027].includes(year) || typeof under23Dependent !== 'boolean') return null;
   const premiums = Object.fromEntries(PREMIUM_FIELDS.map((field) => [field, input[field] ?? 0]));
   if (!Object.values(premiums).every(validYen)) return null;
   const { generalNew, generalOld, medical, pensionNew, pensionOld } = premiums;

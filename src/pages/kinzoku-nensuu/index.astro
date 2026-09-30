@@ -16,7 +16,7 @@ const aprilEntryRows = Array.from({ length: 17 }, (_, index) => {
   const joinYear = tableYear - index;
   return { joinYear, serviceYear: tableYear - joinYear + 1, completedYears: tableYear - joinYear };
 });
-const quickEntryYears = new Set([2013, 2017, 2020, 2024]);
+const quickEntryYears = new Set([2017, 2018, 2019, 2022]);
 const quickEntryRows = aprilEntryRows.filter((row) => quickEntryYears.has(row.joinYear)).reverse();
 const jsonld = {
   '@context': 'https://schema.org',

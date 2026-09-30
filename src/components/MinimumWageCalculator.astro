@@ -99,6 +99,7 @@ const prefectures = minimumWagePrefectures();
 
 <script>
   import { calcSaitei, checkMonthlyWage } from '../lib/saitei.js';
+  import { japanDateParts } from '../lib/japanDate.js';
 
   const root = document.querySelector('.saitei-calculator');
   const yen = (value) => `${Math.floor(value).toLocaleString('ja-JP')}円`;
@@ -108,8 +109,8 @@ const prefectures = minimumWagePrefectures();
     return `${year}年${month}月${day}日`;
   };
   const localToday = () => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const { year, month, day } = japanDateParts();
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   };
 
   function renderMinimum() {

@@ -33,7 +33,7 @@ const breadcrumb = {
 
 const faqItems = [
   { q: '宿命大殺界と大殺界はどう違いますか？', a: '大殺界は12年周期で毎年の運気（陰影・停止・減退）を指します。宿命大殺界は、四柱推命の「大運」のうち日柱の空亡に該当する人生に一度の20年間（初起殺界5年→中起殺界10年→転起殺界5年）を指します。' },
-  { q: '宿命大殺界がない人もいますか？', a: 'はい。宿命大殺界が100歳を超えてから訪れる人は「実質的になし」とされます。晩年に来るほど、人生への影響は小さいとされています。' },
+  { q: '宿命大殺界がない人もいますか？', a: 'このツールは最初の10運（約100年間）で、空亡の2支が連続する20年間を探します。見つからない場合は「計算範囲内に該当なし」と表示します。人生全体に存在しないことを意味しません。' },
   { q: '宿命大殺界の判定基準は？', a: '日柱の空亡（生まれた日の六十干支から求める2つの地支）を、四柱推命の大運の一覧から探し、そこに該当する連続2運（20年）を宿命大殺界としています。大運の起法や年の境界には流派差があります。' },
   { q: '結果は信頼できますか？', a: '占いは文化的な慣習・娯楽を目的としたもので、科学的根拠や将来を保証するものではありません。結果はあくまで参考値です。' },
 ];
@@ -120,6 +120,7 @@ const faqItems = [
     <div class="disclaimer">※ 六星占術は文化的な慣習・娯楽としての占いであり、科学的根拠や将来の出来事を保証するものではありません。計算結果はあくまで参考値です。</div>
   </section>
 
+  <section class="howto"><h2>結果の読み方・他のサイトと違う理由</h2><p>起運の端数を整数歳に丸める方式と、歳・月に分ける方式では表示がずれることがあります。節の日時、年の境界、生まれた時刻を扱う方法にも違いがあります。</p><p><a href="/rokusei/shukumei-guide/">宿命大殺界の調べ方・計算例と口径の違い</a> ／ <a href="/rokusei/daisakkai-2027/">2027年の大殺界一覧</a></p></section>
   <RelatedTools current="rokusei" />
 
   <Faq items={faqItems} />
@@ -204,10 +205,10 @@ const faqItems = [
         <div class="sd-seg chuki"><div class="sd-seg-head">中起殺界（真ん中の10年）</div><div class="sd-seg-body">${s.chuki.fromAge}歳〜${s.chuki.toAge}歳（${s.startYear + 5}年〜${s.startYear + 15}年）</div></div>
         <div class="sd-seg tenki"><div class="sd-seg-head">転起殺界（最後の5年）</div><div class="sd-seg-body">${s.tenki.fromAge}歳〜${s.tenki.toAge}歳（${s.startYear + 15}年〜${s.startYear + 20}年）</div></div>
       `;
-      $('sd-note').textContent = 'この20年間が宿命大殺界です。新しい挑戦や大きな決断は控えめに、健康管理を心がける時期とされています。';
+      $('sd-note').textContent = 'この口径による20年間の目安です。年齢表示は起運の月数を省略し、西暦は生年に整数歳を足した概算です。占いの結果だけで生活上の判断を決めないでください。';
     } else {
-      $('sd-main').textContent = '実質的になし';
-      $('sd-segments').innerHTML = '<div class="sd-seg chuki"><div class="sd-seg-head">宿命大殺界は晩年（100歳以降）</div><div class="sd-seg-body">宿命大殺界が100歳を超えてから訪れるため、実質的に影響を受けずに過ごせる方です。</div></div>';
+      $('sd-main').textContent = '計算範囲内に該当なし';
+      $('sd-segments').innerHTML = '<div class="sd-seg chuki"><div class="sd-seg-head">最初の10運に連続する20年間はありません</div><div class="sd-seg-body">表の端に空亡の1支だけがある場合も、20年間とは判定しません。計算範囲外の時期や人生への影響は、この結果から判断できません。</div></div>';
       $('sd-note').textContent = '';
     }
 
@@ -223,7 +224,7 @@ const faqItems = [
       '宿命大殺界\n' +
         `運命星：${r.star}（${r.polarity}）\n` +
         `日柱の空亡：${r.dayXunKong}\n` +
-        `宿命大殺界：${r.hasShukumei ? `${r.shukumei.startAge}歳〜${r.shukumei.endAge}歳` : '実質的になし'}`
+        `宿命大殺界：${r.hasShukumei ? `${r.shukumei.startAge}歳〜${r.shukumei.endAge}歳` : '計算範囲内に該当なし'}`
     );
   }
 

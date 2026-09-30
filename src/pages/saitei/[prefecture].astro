@@ -81,6 +81,7 @@ const faqItems = [
     <strong>{info.wage.toLocaleString('ja-JP')}<small>円／時間</small></strong>
     <p>発効日：{effectiveText}</p>
   </div>
+  <p>本文・早見表の基準日：{asOfDate}。計算器は日本時間の利用日を基準に、改正決定済みの発効日から新額で計算します。</p>
   <aside class="status-note">
     {revisionIsEffective ? <><strong>令和8年度の改正額{info.wage.toLocaleString('ja-JP')}円が適用中です</strong><p>{effectiveText}から新額で表示・計算しています。<a href={info.proposedSource} target="_blank" rel="nofollow noopener">都道府県労働局の発表を確認</a></p></> : info.proposedWage ? <><strong>令和8年度は{proposedText}（現行比+{info.proposedIncrease}円）{revisionIsDecided ? 'に改正決定' : 'と地方答申'}</strong><p>{revisionIsDecided ? `${revisionEffectiveText}から新額が適用されます。` : `${info.proposedDate.replaceAll('-', '年').replace(/年(\d{2})年(\d{2})$/, '年$1月$2日')}の地方最低賃金審議会答申で、発効日は${revisionEffectiveText ?? '未確認'}の予定です。`} 発効日前は現在適用中の{info.wage.toLocaleString('ja-JP')}円で計算します。<a href={info.proposedSource} target="_blank" rel="nofollow noopener">都道府県労働局の発表を確認</a></p></> : <><strong>令和8年度は+{guidelineIncrease}円の中央引上げ目安が答申済み</strong><p>2026年7月28日の中央目安です。当サイトで{info.prefecture}の地方答申額を確認できるまでは、現在適用中の確定額だけを表示・計算します。</p></>}
   </aside>

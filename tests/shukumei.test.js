@@ -53,3 +53,25 @@ describe('shukumeiDaisakkai', () => {
     expect(r.startMonths).toBeLessThanOrEqual(11);
   });
 });
+
+// Independently observed public calculator results, 2026-09-30.
+// https://www.senjutsu.jp/labo_6sei/keisan (not lunar-javascript).
+// Only whole-year starting ages agree exactly; its rounded ages/approximate
+// solar terms differ from our floor+months and astronomical terms.
+describe('independent shukumei anchors and pair boundaries', () => {
+  it.each([[1974,10,30,'male',33,53],[1974,10,30,'female',67,87],[1990,7,15,'male',8,28],[1958,2,24,'male',73,93]])('reference %i-%i-%i %s', (y,m,d,g,start,end) => {
+    const r = shukumeiDaisakkai(y,m,d,g);
+    expect(r.shukumei.startAge).toBe(start);
+    expect(r.shukumei.endAge).toBe(end);
+  });
+  it('does not pair a lone first empty branch with an ordinary branch', () => {
+    const r = shukumeiDaisakkai(2000,1,1,'female');
+    expect(r.hasShukumei).toBe(false);
+    expect(r.shukumei).toBeUndefined();
+  });
+  it('does not treat a pair outside the generated range as proved absence', () => {
+    const r = shukumeiDaisakkai(1990,7,15,'female');
+    expect(r.hasShukumei).toBe(false);
+    expect(r.shukumei).toBeUndefined();
+  });
+});

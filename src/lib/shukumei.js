@@ -104,7 +104,7 @@ export function shukumeiDaisakkai(year, month, day, gender) {
   }
 
   // 宿命大殺界 = 空亡地支（連続2支）に該当する連続2運 = 20年
-  const firstKong = dayun.findIndex((y) => kongZhi.includes(y.zhi));
+  const firstKong = dayun.findIndex((y, i) => kongZhi.includes(y.zhi) && i + 1 < dayun.length && kongZhi.includes(dayun[i + 1].zhi));
   if (firstKong < 0 || firstKong + 1 >= dayun.length) {
     return {
       star,

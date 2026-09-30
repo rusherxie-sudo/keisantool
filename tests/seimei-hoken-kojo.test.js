@@ -25,5 +25,7 @@ describe('生命保険料控除2026',()=>{
  it('少額の新旧契約は併用が有利',()=>{const r=calc({generalNew:10000,generalOld:10000});expect(r.income.general.amount).toBe(20000);expect(r.resident.general.amount).toBe(20000);});
  it('0円は0円控除',()=>{expect(calc().income.total).toBe(0);expect(calc().resident.total).toBe(0);});
  it.each([-1,1.1,NaN,Infinity,1000000001,'10000'])('不正金額 %s',p=>expect(calc({generalNew:p})).toBeNull());
- it('未対応年・不正な扶養指定は計算しない',()=>{expect(calc({year:2027})).toBeNull();expect(calc({under23Dependent:'yes'})).toBeNull();});
+ it('未対応年・不正な扶養指定は計算しない',()=>{expect(calc({year:2028})).toBeNull();expect(calc({under23Dependent:'yes'})).toBeNull();});
 });
+
+it('2027年分は公表済みの令和8年分以降の式で計算し住民税年度を繰り上げる',()=>{const r=calc({year:2027,generalNew:120000,under23Dependent:true});expect(r.year).toBe(2027);expect(r.residentYear).toBe(2028);expect(r.income.total).toBe(60000);expect(r.resident.total).toBe(28000);});
