@@ -19,7 +19,6 @@ const SPOKE_TO = UMAREDOSHI_TO;
 
 // 新しい年が上（今年 → 明治元年）の表データ
 const rows = hayamiTable(FROM_YEAR, BASE_YEAR, BASE_YEAR).reverse();
-const currentRow = rows.find((row) => row.seireki === BASE_YEAR);
 
 const title = `年齢早見表【${BASE_YEAR}年（${BASE_WAREKI}）版】西暦・和暦・満年齢・数え年・干支 | 計算ツール`;
 const description = `${BASE_YEAR}年（${BASE_WAREKI}）版の年齢早見表。明治・大正・昭和・平成・令和の生まれ年ごとに、西暦・和暦・満年齢・数え年・干支をひと目で確認できます。印刷にも対応し、確定申告や履歴書など書類記入時の年齢確認にそのまま使えます。`;
@@ -62,38 +61,29 @@ const datasetJsonld = {
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 年齢早見表</div>
-    <p><a href="/nenrei-hayami/2027/">2027年（令和9年）の年齢早見表・PDFはこちら</a></p>
     <h1>年齢早見表【{BASE_YEAR}年・{BASE_WAREKI}版】</h1>
     <p>
-      {BASE_YEAR}年（{BASE_WAREKI}）時点の年齢早見表です。明治元年（1868年）から今年まで、生まれ年ごとの<strong>西暦・和暦・満年齢・数え年・干支</strong>を一覧できます。確定申告や履歴書・公的書類の記入、数え年の確認にご利用ください。
+      生まれ年から<strong>西暦・和暦・満年齢・数え年・干支</strong>を確認できます。
     </p>
   </div>
 
   <section class="hayami-main">
     <!-- 年表を Dataset として構造化データで宣言（行データは列挙しない） -->
     <script type="application/ld+json" set:html={JSON.stringify(datasetJsonld)} />
-    <div class="hayami-lead">
-      {currentRow && (
-        <aside class="hayami-answer" aria-label={`${BASE_YEAR}年の年齢早見表の結論`}>
-          <div class="hayami-answer__label">{BASE_YEAR}年生まれ</div>
-          <strong>{currentRow.age}歳</strong>
-          <span>誕生日後の満年齢</span>
-          <small>誕生日前は {Math.max(0, currentRow.age - 1)}歳・数え年は {currentRow.kazoe}歳</small>
-        </aside>
-      )}
-      <p class="hayami-note">
-        表の<strong>満年齢は「{BASE_YEAR}年の誕生日を迎えた後」の年齢</strong>です。まだ誕生日が来ていない方は<strong>マイナス1歳</strong>してください。数え年は「生まれた年を1歳とし、1月1日ごとに1歳加える」数え方です。
-      </p>
-      <div class="pdf-downloads">
-        <strong>年齢早見表PDF（A4横・1枚／0〜100歳）</strong>
-        <p>各年の誕生日後の年齢です。誕生日前は1歳引いてください。未出生の方は対象外です。</p>
-        <a href="/downloads/nenrei-hayami-2026.pdf" download data-pdf-year="2026">2026年版PDFをダウンロード</a>
-        <a href="/downloads/nenrei-hayami-2027.pdf" download data-pdf-year="2027">2027年版PDFをダウンロード</a>
+    <nav class="hayami-actions" aria-label="年齢表の切り替え・保存">
+      <a href="/nenrei-hayami/2027/">2027年版を見る</a>
+      <a href="#age-downloads">PDF・印刷</a>
+    </nav>
+    <div class="hayami-lookup" hidden>
+      <label for="birth-year-search">生まれ年を探す（西暦・和暦）</label>
+      <div class="hayami-search-controls">
+        <input id="birth-year-search" type="search" placeholder="例：1988、昭和63、平成元年" autocomplete="off" aria-controls="age-table-body" aria-describedby="age-search-status" />
+        <button id="clear-year-search" type="button">全件表示</button>
       </div>
-      <button id="print-btn" class="print-btn" type="button">🖨 この早見表を印刷する</button>
+      <p id="age-search-status" role="status">{rows.length}年分を表示</p>
     </div>
-    <p class="hayami-intent-note">
-      生まれ年を指定して確認したい場合は、<a href="/umaredoshi/1988/">1988年生まれは何歳？</a>のような個別ページをご利用ください。今日の年齢を生年月日から正確に求める場合は<a href="/nenrei/">年齢計算器</a>、入学年度や学年を確認する場合は<a href="/gakunen-hayami/">学年早見表</a>が便利です。
+    <p class="hayami-note">
+      満年齢は<strong>{BASE_YEAR}年の誕生日を迎えた後</strong>の年齢です。誕生日前は<strong>1歳引いて</strong>ください。生まれる前は対象外です。
     </p>
 
     <div class="data-table-wrap">
@@ -102,9 +92,9 @@ const datasetJsonld = {
           <thead>
             <tr><th>西暦</th><th>和暦</th><th>満年齢</th><th>数え年</th><th>干支</th></tr>
           </thead>
-          <tbody>
+          <tbody id="age-table-body">
             {rows.map((r) => (
-              <tr class={r.seireki === BASE_YEAR ? 'is-hit' : undefined}>
+              <tr data-birth-year={r.seireki} data-year-label={`${r.seireki}年 ${r.wareki} ${r.wareki.replaceAll('元年', '1年')}`}>
                 <td class="num">
                   {r.seireki >= SPOKE_FROM && r.seireki <= SPOKE_TO ? (
                     <a href={`/umaredoshi/${r.seireki}/`} title={`${r.seireki}年生まれの年齢・干支・厄年`}>{r.seireki}年</a>
@@ -128,6 +118,20 @@ const datasetJsonld = {
   </section>
 
   <div class="ad-slot"></div>
+
+  <section class="howto" id="age-downloads" aria-label="年齢早見表の保存">
+      <div class="pdf-downloads">
+        <strong>年齢早見表PDF（A4横・1枚／0〜100歳）</strong>
+        <p>各年の誕生日後の年齢です。誕生日前は1歳引いてください。未出生の方は対象外です。</p>
+        <a href="/downloads/nenrei-hayami-2026.pdf" download data-pdf-year="2026">2026年版PDFをダウンロード</a>
+        <a href="/downloads/nenrei-hayami-2027.pdf" download data-pdf-year="2027">2027年版PDFをダウンロード</a>
+      </div>
+    <button id="print-btn" class="print-btn" type="button">この早見表を印刷する</button>
+    <p class="hayami-intent-note">
+      生まれ年を指定して確認したい場合は、<a href="/umaredoshi/1988/">1988年生まれは何歳？</a>のような個別ページをご利用ください。今日の年齢を生年月日から正確に求める場合は<a href="/nenrei/">年齢計算器</a>、入学年度や学年を確認する場合は<a href="/gakunen-hayami/">学年早見表</a>が便利です。
+    </p>
+
+  </section>
 
   <section class="howto">
     <h2>年齢早見表の見方</h2>
@@ -161,6 +165,32 @@ const datasetJsonld = {
 </ToolLayout>
 
 <script>
+  const search = document.querySelector('#birth-year-search');
+  const tableRows = [...document.querySelectorAll('#age-table-body tr')];
+  const status = document.querySelector('#age-search-status');
+  const normalize = value => value.normalize('NFKC').replace(/\s+/g, '');
+  let trackedLookup = false;
+  function filterYears() {
+    const query = normalize(search.value);
+    let count = 0;
+    for (const row of tableRows) {
+      row.hidden = !normalize(row.dataset.yearLabel).includes(query);
+      if (!row.hidden) count++;
+    }
+    status.textContent = count ? `${count}年分を表示` : '該当する生まれ年がありません。西暦または和暦で入力してください。';
+    // Only record successful use; never send the entered birth year.
+    if (query && count === 1 && !trackedLookup) {
+      window.gtag?.('event', 'age_table_lookup', { tool_slug: 'nenrei-hayami' });
+      trackedLookup = true;
+    }
+  }
+  search.addEventListener('input', filterYears);
+  document.querySelector('#clear-year-search').addEventListener('click', () => {
+    search.value = '';
+    filterYears();
+    search.focus();
+  });
+  document.querySelector('.hayami-lookup').hidden = false;
   document.querySelectorAll('[data-pdf-year]').forEach(link => link.addEventListener('click', () => {
     window.gtag?.('event', 'age_table_pdf_download', { tool_slug: 'nenrei-hayami', year: link.dataset.pdfYear });
   }));
@@ -174,31 +204,16 @@ const datasetJsonld = {
   @media print { .pdf-downloads { display: none; } }
 
   .hayami-main { max-width: 880px; width: 100%; margin: 0 auto; }
-  .hayami-lead {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-  }
-  .hayami-lead .hayami-note { flex: 1 1 320px; margin: 0; }
-  .hayami-note { font-size: .82rem; color: var(--text-muted); margin: 8px 0 0; line-height: 1.7; }
-  .hayami-intent-note { margin: 8px 0 14px; font-size: .82rem; line-height: 1.7; color: var(--text-muted); }
-  .hayami-intent-note a { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
-  .hayami-answer {
-    flex: 0 1 210px;
-    display: grid;
-    gap: 2px;
-    padding: 12px 16px;
-    border: 1.5px solid color-mix(in srgb, var(--cat-color) 32%, var(--border));
-    border-radius: var(--r-md);
-    background: var(--cat-tint);
-  }
-  .hayami-answer__label { color: var(--text-muted); font-size: .78rem; font-weight: var(--fw-bold); }
-  .hayami-answer strong { color: var(--cat-color); font-size: 1.7rem; line-height: 1.1; }
-  .hayami-answer span, .hayami-answer small { color: var(--text-muted); font-size: .75rem; }
-  .hayami-answer small { margin-top: 2px; }
+  .hayami-actions { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 12px; font-size: .85rem; }
+  .hayami-actions a, .hayami-intent-note a { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
+  .hayami-lookup { margin-bottom: 10px; }
+  .hayami-lookup label { display: block; margin-bottom: 6px; font-size: .85rem; font-weight: var(--fw-bold); }
+  .hayami-search-controls { display: flex; gap: 8px; }
+  .hayami-search-controls input { min-width: 0; flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: var(--r-md); font-size: 16px; color: var(--text); background: var(--surface); }
+  .hayami-search-controls button { flex: none; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); color: var(--text); cursor: pointer; }
+  #age-search-status { font-size: .78rem; color: var(--text-muted); margin: 4px 0 0; }
+  .hayami-note { font-size: .82rem; color: var(--text-muted); margin: 8px 0 12px; line-height: 1.7; }
+  .hayami-intent-note { margin: 12px 0; font-size: .82rem; line-height: 1.7; color: var(--text-muted); }
 
   .print-btn {
     flex: none;
@@ -223,7 +238,7 @@ const datasetJsonld = {
      site-footer / fshare などレイアウト側の要素も隠すため is:global（header/ad は global.css 側で対応済み） -->
 <style is:global>
   @media print {
-    .site-footer, .fshare, .print-btn, .hayami-answer, .howto, .faq, .related, .ad-slot,
+    .site-footer, .fshare, .print-btn, .hayami-lookup, .hayami-actions, .howto, .faq, .related, .ad-slot,
     .page-hero .crumb, .page-hero p { display: none !important; }
     .page-hero { margin-bottom: 6px; }
     .page-hero h1 { font-size: 14pt; }
@@ -234,5 +249,6 @@ const datasetJsonld = {
     .hayami-main .hayami-table td a { color: inherit; text-decoration: none; }
     .hayami-main .hayami-table thead { display: table-header-group; }
     .hayami-main .hayami-table tr { break-inside: avoid; }
+    .hayami-main .hayami-table tr[hidden] { display: table-row !important; }
   }
 </style>
