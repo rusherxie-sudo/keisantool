@@ -1,0 +1,16 @@
+---
+import WorkCalendarGrid from '../../components/WorkCalendarGrid.astro';
+import { businessMonth } from '../../lib/office-tools.js';
+const calendar=businessMonth(2027,1);
+---
+<!doctype html><html lang="ja"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex,follow"/><link rel="canonical" href="https://keisantool.com/eigyoubi/"/><title>営業日カレンダー｜計算ツール</title><style>body{font:14px/1.6 system-ui,sans-serif;color:#20332f;background:#fff;margin:0;padding:14px}*{box-sizing:border-box}h1{font-size:17px;margin:0 0 10px}.fields{display:flex;gap:12px;flex-wrap:wrap}select{font:inherit;padding:5px;border:1px solid #bccdc7;border-radius:5px}label{display:flex;align-items:center;gap:6px}#widget-summary{font-weight:700;margin:10px 0}p{font-size:12px;margin:8px 0}a{color:#19665b}</style></head><body><h1>営業日カレンダー</h1><div class="fields"><label>年<select id="widget-year"><option>2026</option><option selected>2027</option></select></label><label>月<select id="widget-month">{Array.from({length:12},(_,i)=><option value={i+1}>{i+1}月</option>)}</select></label></div><p id="widget-summary" aria-live="polite">2027年1月：19営業日 ／ 土日祝12休日</p><WorkCalendarGrid calendar={calendar}/><p>会社の年末年始・お盆休業は含みません。</p><p><a id="widget-source" href="https://keisantool.com/eigyoubi/2027/01/?utm_source=embed&utm_medium=referral&utm_campaign=work_calendar" target="_blank" rel="noopener">月の明細・会社休日の設定｜計算ツール</a></p></body></html>
+<script>
+import {businessMonth} from '../../lib/office-tools.js';
+import {monthPath} from '../../lib/office-calendar.js';
+const year=document.querySelector('#widget-year'),month=document.querySelector('#widget-month');
+const params=new URLSearchParams(location.search);
+if(['2026','2027'].includes(params.get('year')))year.value=params.get('year');
+const m=Number(params.get('month'));if(Number.isInteger(m)&&m>=1&&m<=12)month.value=String(m);
+function render(){const y=Number(year.value),m=Number(month.value),c=businessMonth(y,m);document.querySelector('#widget-summary').textContent=`${y}年${m}月：${c.businessDays}営業日 ／ 土日祝${c.calendarDays-c.businessDays}休日`;document.querySelector('.work-month-grid caption').textContent=`${y}年${m}月の営業日カレンダー`;const body=document.querySelector('.work-month-grid tbody');body.replaceChildren();const cells=[...Array(c.days[0].weekday).fill(null),...c.days];while(cells.length%7)cells.push(null);for(let i=0;i<cells.length;i+=7){const tr=document.createElement('tr');for(const d of cells.slice(i,i+7)){const td=document.createElement('td');if(d){td.classList.toggle('is-off',!d.working);td.classList.toggle('is-holiday',!!d.holiday);const time=document.createElement('time');time.dateTime=d.date;time.textContent=String(d.day);td.append(time);if(d.holiday){const small=document.createElement('small');small.textContent=d.holiday;td.append(small);}}tr.append(td);}body.append(tr);}document.querySelector('#widget-source').href=`https://keisantool.com${monthPath(y,m)}${params.get('preview')==='1'?'':'?utm_source=embed&utm_medium=referral&utm_campaign=work_calendar'}`;}
+[year,month].forEach(e=>e.addEventListener('change',render));render();
+</script>

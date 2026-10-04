@@ -92,6 +92,8 @@ export function sourceFileForUrl(pagesDir, urlPath) {
   if (/^rokuyo\/\d{4}-\d{2}$/.test(path)) return join(pagesDir, 'rokuyo/[month].astro');
   // 祝日・連休カレンダーの年別スポークページも動的ルート
   if (/^shukujitsu\/\d{4}$/.test(path)) return join(pagesDir, 'shukujitsu/[year].astro');
+  if (/^eigyoubi\/\d{4}\/\d{2}$/.test(path)) return join(pagesDir, 'eigyoubi/[year]/[month].astro');
+  if (/^eigyoubi\/\d{4}$/.test(path)) return join(pagesDir, 'eigyoubi/[year]/index.astro');
   const nested = join(pagesDir, path, 'index.astro'); // <slug>/index.astro
   if (existsSync(nested)) return nested;
   const flat = join(pagesDir, `${path}.astro`); // <slug>.astro
@@ -133,6 +135,9 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
       join(root, 'src/lib/nenrei.js'),
       join(root, 'src/lib/rokusei.js'),
     ];
+  } else if (/^eigyoubi\/\d{4}(\/\d{2})?$/.test(path) || ['2027','renkyu/2027','embed/work-calendar'].includes(path)) {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/office-calendar.js'), join(root, 'src/lib/office-tools.js'), join(root, 'src/lib/shukujitsu.js'), join(root, 'src/data/office-holiday-reference.json'), join(root, 'src/components/OfficeYearLinks.astro')];
+    if (/^eigyoubi\/\d{4}\/\d{2}$/.test(path) || path === 'embed/work-calendar') files.push(join(root, 'src/components/WorkCalendarGrid.astro'), join(root, 'src/data/office-month-notes.js'));
   } else if (['eigyoubi', 'kinmu-jikan', 'running-pace'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/office-tools.js')];
     if (path === 'eigyoubi') files.push(join(root, 'src/lib/shukujitsu.js'));

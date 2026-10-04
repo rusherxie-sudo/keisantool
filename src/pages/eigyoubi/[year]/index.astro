@@ -1,0 +1,27 @@
+---
+import ToolLayout from '../../../layouts/ToolLayout.astro';
+import Faq from '../../../components/Faq.astro';
+import OfficeYearLinks from '../../../components/OfficeYearLinks.astro';
+import { workYear, monthPath, OFFICE_SOURCE, OFFICE_REVIEWED } from '../../../lib/office-calendar.js';
+import { BUSINESS_YEARS } from '../../../lib/office-tools.js';
+import '../../../styles/office-growth.css';
+export function getStaticPaths(){return BUSINESS_YEARS.map(year=>({params:{year:String(year)}}));}
+const year=Number(Astro.params.year), data=workYear(year), slug=`eigyoubi/${year}`;
+const title=`${year}年の営業日数は${data.businessDays}日｜月別・年間休日・CSV`;
+const description=`${year}年の土日祝を除く営業日数は${data.businessDays}日、年間休日は${data.offDays}日。月別営業日、8時間勤務の所定時間目安、日付別CSV・JSON、祝日ICSを無料で確認できます。会社独自の休日は含みません。`;
+const base=`https://keisantool.com/${slug}/`;
+const dataset={'@context':'https://schema.org','@type':'Dataset',name:`${year}年 営業日カレンダー`,description,url:base,isAccessibleForFree:true,inLanguage:'ja',temporalCoverage:`${year}-01-01/${year}-12-31`,citation:OFFICE_SOURCE,distribution:['csv','json'].map(ext=>({'@type':'DataDownload',encodingFormat:ext==='csv'?'text/csv':'application/json',contentUrl:`https://keisantool.com/downloads/work-calendar-${year}.${ext}`}))};
+---
+<ToolLayout title={title} description={description} slug={slug} current="eigyoubi" wide breadcrumb={{'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{name:'ホーム',item:'https://keisantool.com/'},{name:'営業日数',item:'https://keisantool.com/eigyoubi/'},{name:`${year}年`,item:base}].map((item,i)=>({'@type':'ListItem',position:i+1,...item}))}}>
+<div class="office-growth">
+<div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/eigyoubi/">営業日数</a> ／ {year}年</div><h1>{year}年の営業日数・年間休日一覧</h1><p>月〜金勤務・土日祝休みの場合、年間<strong>{data.businessDays}営業日</strong>。会社独自の年末年始・お盆休みは含めません。</p></div>
+<script type="application/ld+json" set:html={JSON.stringify(dataset)}/>
+<div class="growth-kpis"><div><span>年間の営業日</span><strong>{data.businessDays}日</strong></div><div><span>土日祝の休日</span><strong>{data.offDays}日</strong></div><div><span>1日8時間の合計</span><strong>{data.businessDays*8}時間</strong></div></div>
+<OfficeYearLinks year={year}/>
+<section class="howto"><h2>{year}年の月別営業日数・勤務時間</h2><div class="growth-scroll"><table class="growth-table"><thead><tr><th>月</th><th>営業日</th><th>土日祝休み</th><th>8時間/日</th><th>個別設定</th></tr></thead><tbody>{data.months.map(m=><tr><th>{monthPath(year,m.month)!==`/${slug}/`?<a href={monthPath(year,m.month)}>{m.month}月の明細</a>:`${m.month}月`}</th><td>{m.businessDays}日</td><td>{m.calendarDays-m.businessDays}日</td><td>{m.businessDays*8}時間</td><td><a href={`/eigyoubi/?year=${year}&month=${m.month}`}>会社休日を設定</a></td></tr>)}</tbody><tfoot><tr><th>年間合計</th><td>{data.businessDays}日</td><td>{data.offDays}日</td><td>{data.businessDays*8}時間</td><td>土日祝休み</td></tr></tfoot></table></div><p class="growth-note">時間は「営業日数×1日8時間」の単純な積上げです。実労働時間・残業時間や法定労働時間の上限を示すものではありません。</p></section>
+<section class="howto" id="downloads"><h2>{year}年カレンダーデータをダウンロード</h2><p>日付別CSVはExcelの勤務日一覧に、JSONは業務システムへの取り込みに使えます。ICSは国民の祝日・休日だけを予定表へ取り込むファイルです。</p><div class="growth-links"><a class="growth-button" href={`/downloads/work-calendar-${year}.csv`} download data-calendar-download="csv">日付別CSV</a><a class="growth-button" href={`/downloads/work-calendar-${year}.json`} download data-calendar-download="json">JSONデータ</a><a class="growth-button" href={`/downloads/holidays-${year}.ics`} download data-calendar-download="ics">祝日ICS</a><a href={`/downloads/eigyoubi-${year}.pdf`} download data-calendar-download="pdf">年間PDF</a></div><p class="growth-note">ICSは自動更新の購読ではなく、ファイルの取り込みです。祝日の変更時には最新データを確認してください。JSONの日付はYYYY-MM-DD、weekdayは日曜0〜土曜6、isBusinessDayは標準条件での営業日判定です。</p></section>
+<section class="howto"><h2>会社の年間休日と違うのはなぜ？</h2><p>ここでいう{data.offDays}日は土曜日・日曜日・日本の祝日を重複なく数えた日数です。12月29〜31日やお盆は、祝日でない平日なら営業日になります。会社の年間休日表、銀行・役所の休業日とは一致しない場合があります。</p><p><a href="/nenmatsu-nenshi/">会社の年末年始休業を設定する</a> ／ <a href="/kinmu-jikan/">実際の月間勤務時間を集計する</a></p></section>
+<div class="growth-source">祝日出典：<a href={OFFICE_SOURCE}>内閣府「国民の祝日について」</a>。{year}年の公表日と照合済み（確認日 {OFFICE_REVIEWED}）。日付別データは同じ祝日情報から算出しています。</div>
+<Faq items={[{q:`${year}年の営業日は年間何日ですか？`,a:`月〜金勤務で日本の土日祝を休む場合は${data.businessDays}日です。会社独自の休日は別途差し引いてください。`},{q:'年末年始やお盆休みも除いていますか？',a:'会社独自の休日は除いていません。元日など国民の祝日と土日だけを除外しています。'},{q:'カレンダーデータを社内で使えますか？',a:'CSV・JSON・ICSは無料で保存し、社内の予定作成や集計に利用できます。適用条件と最新の会社休日を照合してください。'}]}/>
+</div></ToolLayout>
+<script>document.querySelectorAll('[data-calendar-download]').forEach(a=>a.addEventListener('click',()=>window.gtag?.('event','calendar_data_download',{tool_slug:'eigyoubi-year',format:a.dataset.calendarDownload})));</script>

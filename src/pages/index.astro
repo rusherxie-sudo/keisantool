@@ -55,6 +55,7 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
     </div>
   </div>
 
+  <section class="annual-entry" aria-label="2027年の準備"><a href="/2027/"><strong>2027年の仕事・暮らしを準備</strong><span>営業日・有給でつなぐ連休・年齢・学年・カレンダーデータ →</span></a></section>
   <!-- よく使われるツール -->
   <section class="home-featured">
     <div class="home-h2-row">
@@ -205,3 +206,5 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
     .home-value__grid { grid-template-columns: 1fr; }
   }
 </style>
+
+<style>.annual-entry{margin:20px 0;padding:18px 22px;border:1px solid var(--border);border-radius:12px;background:var(--surface)}.annual-entry a{display:block;color:var(--text);text-decoration:none}.annual-entry strong{font-size:1.1rem}.annual-entry span{display:block;color:var(--text-muted);font-size:.85rem;margin-top:6px}</style>

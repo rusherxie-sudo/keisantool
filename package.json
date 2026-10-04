@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "node scripts/generate-llms.mjs",
+    "prebuild": "node scripts/generate-llms.mjs && node scripts/generate-work-calendar.mjs",
     "build": "astro build",
     "check": "npm test && npm run build && git diff --check",
     "preview": "astro preview",

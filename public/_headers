@@ -7,3 +7,20 @@
 
 /favicon.ico
   Cache-Control: public, max-age=86400
+
+# Public calendar data can be fetched by other websites.
+/downloads/work-calendar-2026.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
+/downloads/work-calendar-2026.csv
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
+/downloads/work-calendar-2027.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
+/downloads/work-calendar-2027.csv
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600

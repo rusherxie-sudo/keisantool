@@ -1,0 +1,10 @@
+---
+const { year=2027 }=Astro.props;
+---
+<nav class="growth-links" aria-label="年度の関連情報">
+  {year===2027&&<a href="/2027/">2027年の仕事・暮らし</a>}
+  <a href={`/eigyoubi/${year}/`}>{year}年の営業日数一覧</a>
+  <a href={`/shukujitsu/${year}/`}>祝日一覧</a>
+  {year===2027&&<a href="/renkyu/2027/">有給でつなぐ連休</a>}
+  <a href="/widgets/">ブログにカレンダーを掲載</a>
+</nav>

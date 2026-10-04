@@ -1,0 +1,39 @@
+---
+import ToolLayout from '../../../layouts/ToolLayout.astro';
+import Faq from '../../../components/Faq.astro';
+import WorkCalendarGrid from '../../../components/WorkCalendarGrid.astro';
+import OfficeYearLinks from '../../../components/OfficeYearLinks.astro';
+import { publishedWorkMonths,monthPath,OFFICE_SOURCE,OFFICE_REVIEWED } from '../../../lib/office-calendar.js';
+import { businessMonth } from '../../../lib/office-tools.js';
+import { officeMonthNotes } from '../../../data/office-month-notes.js';
+import '../../../styles/office-growth.css';
+export function getStaticPaths(){return publishedWorkMonths.map(({year,month})=>({params:{year:String(year),month:String(month).padStart(2,'0')}}));}
+const year=Number(Astro.params.year),month=Number(Astro.params.month),calendar=businessMonth(year,month);
+const slug=`eigyoubi/${year}/${String(month).padStart(2,'0')}`;
+const title=`${year}年${month}月の営業日数は${calendar.businessDays}日｜土日祝・勤務時間`;
+const description=`${year}年${month}月は土日祝休みなら${calendar.businessDays}営業日、休日${calendar.calendarDays-calendar.businessDays}日。営業日カレンダー、祝日一覧、初日・最終営業日、7・7.5・8時間勤務の目安と日付別CSVを確認できます。`;
+const working=calendar.days.filter(d=>d.working), weekend=calendar.days.filter(d=>[0,6].includes(d.weekday)).length;
+const weekdayHolidays=calendar.days.filter(d=>d.holiday&&![0,6].includes(d.weekday));
+const note=year===2027&&month===12?{...officeMonthNotes[month],link:'/eigyoubi/?year=2027&month=12',label:'2027年12月の会社休日を設定'}:officeMonthNotes[month];
+const index=publishedWorkMonths.findIndex(p=>p.year===year&&p.month===month);
+const adjacent=[publishedWorkMonths[index-1],publishedWorkMonths[index+1]].filter(Boolean);
+---
+<ToolLayout title={title} description={description} slug={slug} current="eigyoubi" wide>
+<div class="office-growth" data-office-year={year} data-office-month={month}>
+<div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href={`/eigyoubi/${year}/`}>{year}年の営業日</a> ／ {month}月</div><h1>{year}年{month}月の営業日数は{calendar.businessDays}日</h1><p>月〜金勤務・土日祝休みで計算。会社独自の休日や銀行の休業日は含めていません。</p></div>
+<div class="growth-kpis"><div><span>営業日</span><strong>{calendar.businessDays}日</strong></div><div><span>土日祝の休日</span><strong>{calendar.calendarDays-calendar.businessDays}日</strong></div><div><span>1日8時間の合計</span><strong>{calendar.businessDays*8}時間</strong></div></div>
+<div class="growth-links"><a class="growth-button" href={`/eigyoubi/?year=${year}&month=${month}`} data-customize-month>この月の会社休日を設定</a><button class="growth-button" id="month-csv" type="button">日付別CSVをダウンロード</button></div>
+<WorkCalendarGrid calendar={calendar}/>
+<section class="howto"><h2>{year}年{month}月の営業日数の数え方</h2><p>{calendar.calendarDays}暦日 − 土日{weekend}日 − 平日の祝日{weekdayHolidays.length}日 ＝ <strong>{calendar.businessDays}営業日</strong>です。祝日と土日が重なる日は二重に引きません。</p><p>月の最初の営業日は<strong>{working[0].date}（{'日月火水木金土'[working[0].weekday]}）</strong>、最終営業日は<strong>{working.at(-1).date}（{'日月火水木金土'[working.at(-1).weekday]}）</strong>です。銀行・会社ごとの休業日は、この判定に含みません。</p><h3>{note.heading}</h3><p>{note.text}</p>{note.link&&<p><a href={note.link}>{note.label}</a></p>}
+<h3>1日の勤務時間から月の目安を計算</h3><div class="growth-scroll"><table class="growth-table"><thead><tr><th>1日の所定時間</th><th>営業日数</th><th>月の単純合計</th></tr></thead><tbody>{[7,7.5,8].map(hours=><tr><th>{hours}時間</th><td>{calendar.businessDays}日</td><td>{hours*calendar.businessDays}時間</td></tr>)}</tbody></table></div><p class="growth-note">休憩を除いた所定時間を掛けた目安です。残業や法定上限の判定ではありません。実際の出退勤と休憩は<a href="/kinmu-jikan/">勤務時間計算</a>で集計できます。</p></section>
+<section class="howto"><h2>{year}年{month}月の日付別営業日一覧</h2><div class="growth-scroll"><table class="growth-table"><thead><tr><th>日付</th><th>曜日</th><th>区分</th><th>祝日・休日名</th></tr></thead><tbody>{calendar.days.map(d=><tr><th>{d.date}</th><td>{'日月火水木金土'[d.weekday]}</td><td>{d.working?'営業日':'休日'}</td><td>{d.holiday||'—'}</td></tr>)}</tbody></table></div></section>
+<nav class="growth-links" aria-label="前後の月">{adjacent.map(p=><a href={monthPath(p.year,p.month)}>{p.year}年{p.month}月の営業日数</a>)}</nav><OfficeYearLinks year={year}/>
+<div class="growth-source">祝日出典：<a href={OFFICE_SOURCE}>内閣府「国民の祝日について」</a>。公表日との確認日：{OFFICE_REVIEWED}。会社独自の休日は上の「会社休日を設定」から追加してください。</div>
+<Faq items={[{q:`${year}年${month}月の営業日は何日ですか？`,a:`土日と国民の祝日を除くと${calendar.businessDays}日です。会社独自の休業日は別途除いてください。`},{q:`${year}年${month}月の8時間勤務は合計何時間ですか？`,a:`${calendar.businessDays}営業日×8時間で${calendar.businessDays*8}時間です。毎日の所定時間を積み上げた目安で、法定労働時間や実労働時間を示すものではありません。`}]}/>
+</div></ToolLayout>
+<script>
+import {businessMonth,downloadCsv} from '../../../lib/office-tools.js';
+const root=document.querySelector('[data-office-year]');const year=Number(root.dataset.officeYear),month=Number(root.dataset.officeMonth);
+document.querySelector('#month-csv').addEventListener('click',()=>{const c=businessMonth(year,month);downloadCsv(`eigyoubi-${year}-${String(month).padStart(2,'0')}.csv`,[['日付','曜日','区分','祝日名'],...c.days.map(d=>[d.date,'日月火水木金土'[d.weekday],d.working?'営業日':'休日',d.holiday])]);window.gtag?.('event','calendar_data_download',{tool_slug:'eigyoubi-month',format:'csv'});});
+document.querySelector('[data-customize-month]').addEventListener('click',()=>window.gtag?.('event','office_month_customize',{tool_slug:'eigyoubi-month'}));
+</script>

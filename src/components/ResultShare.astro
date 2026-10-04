@@ -33,7 +33,7 @@
     // 各ツールページが結果描画後に呼ぶ
     window.setResultShare = (text, options = {}) => {
       resultUrl = '';
-      if (options.url) { try { const u = new URL(options.url, location.origin); if (u.origin === location.origin && /^\/result\/[a-z-]+\/$/.test(u.pathname)) resultUrl = u.href; } catch {} }
+      if (options.url) { try { const u = new URL(options.url, location.origin); if (u.origin === location.origin && (/^\/result\/[a-z-]+\/$/.test(u.pathname) || (u.pathname === '/renkyu/2027/' && !u.search && /^#leave=[0-3]$/.test(u.hash)))) resultUrl = u.href; } catch {} }
       const link = document.getElementById('result-page-link');link.hidden = !resultUrl;link.href = resultUrl || '#';
       sec.querySelector('[data-act="copy"]').textContent = resultUrl ? '結果URLをコピー' : 'コピー';
       document.getElementById('result-share-hint').textContent = resultUrl ? 'リンクを開くと同じ条件・結果を確認できます' : '家族や同僚に送る・あとで見返す';

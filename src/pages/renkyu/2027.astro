@@ -1,0 +1,27 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import ResultShare from '../../components/ResultShare.astro';
+import OfficeYearLinks from '../../components/OfficeYearLinks.astro';
+import { leavePlans,OFFICE_SOURCE,OFFICE_REVIEWED } from '../../lib/office-calendar.js';
+import '../../styles/office-growth.css';
+const groups=[0,1,2,3].map(budget=>({budget,plans:leavePlans(2027,budget)}));
+const title='2027年の連休・有給カレンダー｜GWは有給1日で7連休';
+const description='2027年の有給休暇を1日・2日・3日使う連休プランを比較。GWは4月30日の有給で7連休、3日なら11連休。必要な休暇日、通常の土日祝連休、共有URLを確認できます。';
+---
+<ToolLayout title={title} description={description} slug="renkyu/2027" current="eigyoubi" wide>
+<div class="office-growth"><div class="page-hero"><div class="crumb"><a href="/2027/">2027年の準備</a> ／ 有給・連休計画</div><h1>2027年の連休・有給休暇カレンダー</h1><p>土日祝休みなら、GWは<strong>4月30日を休むと7連休</strong>、さらに5月6日・7日も休むと<strong>11連休</strong>。会社の休暇承認と予定を確認しながら計画できます。</p></div>
+<p class="growth-note">2027年内の土日祝をつなぐ候補です。会社休日・シフト勤務・年をまたぐ連休は含みません。有給休暇を取得できることを保証するものではありません。</p>
+<div class="leave-controls" hidden><label for="leave-budget">1回の連休につなげる有給日数</label> <select id="leave-budget">{groups.map(g=><option value={g.budget} selected={g.budget===1}>{g.budget===0?'有給なし':`${g.budget}日以内`}</option>)}</select><p id="leave-status" role="status" class="growth-note"></p></div>
+<ResultShare/>
+{groups.map(g=><section data-leave-budget={g.budget} class="howto"><h2>{g.budget===0?'土日祝だけ':`有給${g.budget}日以内`}でつなぐ2027年の連休</h2><p>各期間で長く休める案を優先し、重なる候補を省いています。以下の日数は年間の有給合計ではなく、各プランに必要な日数です。</p><div class="growth-grid">{g.plans.map(p=><article class="growth-card" data-plan-start={p.start}><h3>{p.start.slice(5).replace('-','/')}〜{p.end.slice(5).replace('-','/')}：{p.length}連休</h3><p><strong>必要な有給：{p.leaveDates.length}日</strong></p><p>{p.leaveDates.length?p.leaveDates.map(d=>`${d.slice(5).replace('-','/')}（${'日月火水木金土'[new Date(d+'T00:00:00Z').getUTCDay()]}）`).join('・'):'有給を使わず、土日祝だけで休める期間です。'}</p><p class="growth-note">含まれる祝日：{p.holidays.join('・')}</p><a href={`/eigyoubi/2027/${p.start.slice(5,7)}/`}>この月の勤務日を見る</a></article>)}</div></section>)}
+<section class="howto"><h2>連休プランの計算条件</h2><p>土曜日・日曜日と日本の祝日を休日とし、その間の平日に有給を充てた場合を計算しています。祝日を含む3日以上の連休が対象です。同じ祝日周辺で候補が重なる場合は、連休が長い案、必要な有給が少ない案を優先します。</p><p>休暇の残日数は<a href="/yukyu-nissu/">有給休暇付与日数</a>だけで判断せず、勤務先の残日数と取得条件を確認してください。年をまたぐ予定は<a href="/nenmatsu-nenshi/">2026〜2027年の年末年始計画</a>をご利用ください。</p></section>
+<OfficeYearLinks/><div class="growth-source">祝日出典：<a href={OFFICE_SOURCE}>内閣府「国民の祝日について」</a>。2027年の公表日と照合（確認日 {OFFICE_REVIEWED}）。</div></div>
+</ToolLayout>
+<script>
+const select=document.querySelector('#leave-budget');
+let tracked=false;
+function render(){const budget=select.value;document.querySelectorAll('[data-leave-budget]').forEach(section=>{section.hidden=section.dataset.leaveBudget!==budget;});document.querySelector('#leave-status').textContent=budget==='0'?'有給なしの連休を表示しています。':`1回につき有給${budget}日以内でつなぐ連休を表示しています。`;window.setResultShare?.('2027年の有給・連休プラン',{url:`${location.origin}/renkyu/2027/#leave=${budget}`});}
+function restore(){const value=new URLSearchParams(location.hash.slice(1)).get('leave');select.value=['0','1','2','3'].includes(value)?value:'1';render();}
+select.addEventListener('change',()=>{history.replaceState(null,'',`#leave=${select.value}`);render();if(!tracked){window.gtag?.('event','leave_plan_view',{tool_slug:'renkyu-2027'});tracked=true;}});
+window.addEventListener('hashchange',restore);document.querySelector('.leave-controls').hidden=false;restore();
+</script>

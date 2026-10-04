@@ -10,6 +10,9 @@ const initial=businessMonth(year,month);
 <script>
 import { businessMonth } from '../../lib/office-tools.js';
 const year=document.querySelector('#year'),month=document.querySelector('#month');
-function render(){const r=businessMonth(Number(year.value),Number(month.value));document.querySelector('#result').textContent=`${r.year}年${r.month}月：${r.businessDays}営業日 ／ ${r.calendarDays}日間`;}
-[year,month].forEach(e=>e.addEventListener('change',render));
+const params=new URLSearchParams(location.search);
+if(['2026','2027'].includes(params.get('year')))year.value=params.get('year');
+const presetMonth=Number(params.get('month'));if(Number.isInteger(presetMonth)&&presetMonth>=1&&presetMonth<=12)month.value=String(presetMonth);
+function render(){const r=businessMonth(Number(year.value),Number(month.value));document.querySelector('#result').textContent=`${r.year}年${r.month}月：${r.businessDays}営業日 ／ ${r.calendarDays}日間`;document.querySelector('a').href=`https://keisantool.com/eigyoubi/?year=${r.year}&month=${r.month}${params.get('preview')==='1'?'':'&utm_source=embed&utm_medium=referral&utm_campaign=business_calendar'}`;}
+[year,month].forEach(e=>e.addEventListener('change',render));render();
 </script>

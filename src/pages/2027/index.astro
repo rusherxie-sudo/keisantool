@@ -1,0 +1,24 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { workYear,monthPath } from '../../lib/office-calendar.js';
+import '../../styles/office-growth.css';
+const year=2027, data=workYear(year);
+const title='2027年の仕事・暮らし早見表｜営業日・連休・年齢・学年';
+const description='2027年（令和9年）の準備に。年間245営業日・土日祝120休日、月別勤務カレンダー、有給でつなぐ連休、年齢・学年早見表、勤怠Excelと予定表データをまとめて確認できます。';
+const tasks=[
+{title:'勤務カレンダーを作る',text:'月別営業日数と勤務時間の目安。会社独自の休日を反映した予定表も作れます。',links:[['/eigyoubi/2027/','2027年の年間・月別営業日数'],['/kinmu-jikan/template/','2027年の勤怠Excel'],['/kinmu-jikan/','月間勤務時間を計算']]},
+{title:'休暇・連休を計画する',text:'祝日の連休と、有給を1〜3日使ってつなぐ連休を区別。必要な休暇日を日付で確認できます。',links:[['/renkyu/2027/','2027年の有給・連休計画'],['/shukujitsu/2027/','2027年の祝日・年間カレンダー'],['/nenmatsu-nenshi/','2026〜2027年の年末年始休み']]},
+{title:'年齢・学年・履歴を確認する',text:'令和9年の年齢と2027年度の学年は基準日が異なります。書類の用途に合う表で確認してください。',links:[['/nenrei-hayami/2027/','2027年の年齢早見表'],['/gakunen-hayami/2027/','2027年度の学年・入学卒業'],['/gakureki/','履歴書の入学・卒業年を計算'],['/kinzoku-nensuu/','勤続年数・入社何年目']]},
+{title:'社内・ブログで共有する',text:'日付別CSV、JSON、祝日ICS、サイトに掲載できる小型カレンダー。条件と出典も確認できます。',links:[['/eigyoubi/2027/#downloads','2027年カレンダーデータ'],['/widgets/','無料カレンダーの掲載コード'],['/resources/','PDF・Excel資料と利用案内']]},
+];
+---
+<ToolLayout title={title} description={description} slug="2027" current="eigyoubi" wide>
+<div class="office-growth">
+<div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ 2027年の準備</div><h1>2027年の仕事・暮らし早見表</h1><p>令和9年の勤務予定、休暇、年齢・学年をまとめて確認。必要な表から、そのまま計算・保存できます。</p></div>
+<div class="growth-kpis"><div><span>土日祝を除く営業日</span><strong>{data.businessDays}日</strong></div><div><span>土日祝の休日</span><strong>{data.offDays}日</strong></div><div><span>和暦</span><strong>令和9年</strong></div></div>
+<p class="growth-note">営業日・休日は月〜金勤務の標準条件です。会社独自の年末年始・お盆休業は含めません。</p>
+<div class="growth-grid">{tasks.map(t=><section class="growth-card"><h2>{t.title}</h2><p>{t.text}</p><ul>{t.links.map(([href,label])=><li><a href={href}>{label}</a></li>)}</ul></section>)}</div>
+<section class="howto"><h2>2027年の月別営業日数から予定を立てる</h2><div class="growth-grid">{data.months.map(m=><a class="growth-card month-entry" href={monthPath(year,m.month)}><strong>{m.month}月：{m.businessDays}営業日</strong><span>土日祝の休日{m.calendarDays-m.businessDays}日・日付別明細を見る →</span></a>)}</div></section>
+<section class="howto"><h2>年・年度・会社カレンダーの違い</h2><p>営業日一覧は2027年1月1日〜12月31日、学年表は2027年4月からの年度を扱います。年齢表は2027年の誕生日後の年齢を示し、誕生日前なら1歳引きます。用途ごとの基準日を確認してください。</p><h2>2027年の給与・税金を確認するとき</h2><p>年間の勤務時間から給与の目安を出す場合も、社会保険料・源泉徴収・最低賃金は適用時点の制度を確認する必要があります。2026年版の数値を一律に2027年版へ読み替えないでください。<a href="/seimei-hoken-kojo/">生命保険料控除</a>は公表済みの適用範囲を明示しています。</p></section>
+</div></ToolLayout>
+<style>.growth-card ul{padding-left:1.2em;margin:10px 0 0}.growth-card li{margin:10px 0;font-size:.9rem}.month-entry{display:block;text-decoration:none}.month-entry span{display:block;margin-top:8px;font-size:.8rem;color:var(--text-muted)}.month-entry:hover{border-color:var(--calendar-accent)}</style>

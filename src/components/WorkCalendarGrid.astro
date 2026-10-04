@@ -1,0 +1,15 @@
+---
+const { calendar } = Astro.props;
+const cells=[...Array(calendar.days[0].weekday).fill(null),...calendar.days];
+while(cells.length%7)cells.push(null);
+const weeks=Array.from({length:cells.length/7},(_,i)=>cells.slice(i*7,i*7+7));
+---
+<table class="work-month-grid">
+  <caption>{calendar.year}年{calendar.month}月の営業日カレンダー</caption>
+  <thead><tr>{[...'日月火水木金土'].map(w=><th scope="col">{w}</th>)}</tr></thead>
+  <tbody>{weeks.map(week=><tr>{week.map(d=><td class:list={{'is-off':d&&!d.working,'is-holiday':d?.holiday}}>{d&&<><time datetime={d.date}>{d.day}</time>{d.holiday&&<small>{d.holiday}</small>}</>}</td>)}</tr>)}</tbody>
+</table>
+<p class="work-grid-key">色付き：土日・祝日の休日 ／ 白：営業日（会社休日を除く前）</p>
+<style is:global>
+.work-month-grid{width:100%;table-layout:fixed;border-collapse:collapse;background:#fff;color:#20332f;font:inherit}.work-month-grid caption{text-align:left;padding:12px 0;font-weight:700;font-size:1rem}.work-month-grid th{font-size:.8rem;background:#edf4f1;padding:8px;border:1px solid #dce6e0}.work-month-grid td{height:70px;vertical-align:top;padding:7px;border:1px solid #dce6e0}.work-month-grid time{font-weight:700}.work-month-grid small{display:block;font-size:.65rem;line-height:1.4;overflow-wrap:anywhere;margin-top:3px}.work-month-grid .is-off{background:#f4f6f8;color:#6a5965}.work-month-grid .is-holiday{background:#fff1ee;color:#aa3023}.work-grid-key{font-size:.75rem;color:var(--text-muted,#586b65);margin:8px 0 16px}@media(max-width:500px){.work-month-grid td{height:66px;padding:5px 3px}.work-month-grid small{font-size:.58rem}}
+</style>
