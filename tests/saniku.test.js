@@ -11,14 +11,14 @@ import {
 } from '../src/lib/saniku.js';
 
 describe('calcSanzenStart(dueDate, isMultiple) — 産前休業開始日', () => {
-  it('単胎: 予定日 2027-03-21 → 42日前 = 2027-02-07', () => {
-    expect(calcSanzenStart('2027-03-21')).toBe('2027-02-07');
+  it('単胎: 予定日 2027-03-21 → 予定日を含む42日 = 2027-02-08', () => {
+    expect(calcSanzenStart('2027-03-21')).toBe('2027-02-08');
   });
-  it('多胎: 予定日 2027-03-21 → 98日前 = 2026-12-13', () => {
-    expect(calcSanzenStart('2027-03-21', true)).toBe('2026-12-13');
+  it('多胎: 予定日 2027-03-21 → 予定日を含む98日 = 2026-12-14', () => {
+    expect(calcSanzenStart('2027-03-21', true)).toBe('2026-12-14');
   });
-  it('月をまたぐ計算: 2026-03-10 → 42日前 = 2026-01-27', () => {
-    expect(calcSanzenStart('2026-03-10')).toBe('2026-01-27');
+  it('月をまたぐ計算: 2026-03-10 → 予定日を含む42日 = 2026-01-28', () => {
+    expect(calcSanzenStart('2026-03-10')).toBe('2026-01-28');
   });
   it('空文字 → null', () => {
     expect(calcSanzenStart('')).toBeNull();
@@ -59,14 +59,14 @@ describe('calcIkukyuEnd(birthDate, extendMonths) — 育休終了日', () => {
 });
 
 describe('calcShussanTeate(standardDailyAmount, days) — 出産手当金', () => {
-  it('標準報酬日額10000円 × 98日 → floor(10000×2/3×98) = 653333円', () => {
-    expect(calcShussanTeate(10000, 98)).toBe(653333);
+  it('標準報酬日額10000円 × 98日 → round(10000×2/3)×98 = 653366円', () => {
+    expect(calcShussanTeate(10000, 98)).toBe(653366);
   });
-  it('標準報酬日額5000円 × 42日 → floor(5000×2/3×42) = 140000円', () => {
-    expect(calcShussanTeate(5000, 42)).toBe(140000);
+  it('標準報酬日額5000円 × 42日 → round(5000×2/3)×42 = 139986円', () => {
+    expect(calcShussanTeate(5000, 42)).toBe(139986);
   });
-  it('端数切り捨て: 日額1000円 × 1日 → floor(666.6...) = 666円', () => {
-    expect(calcShussanTeate(1000, 1)).toBe(666);
+  it('日額の1円未満四捨五入: 日額1000円 × 1日 → floor(666.6...) = 667円', () => {
+    expect(calcShussanTeate(1000, 1)).toBe(667);
   });
   it('standardDailyAmount=0 → null', () => {
     expect(calcShussanTeate(0, 98)).toBeNull();
@@ -98,9 +98,9 @@ describe('calcIkukyuKyuufu(dailyWage, totalDays) — 育児休業給付金', () 
     expect(r.firstDays).toBe(100);
     expect(r.restDays).toBe(0);
   });
-  it('端数切り捨て: 日額1500円 × 1日 → floor(1005) = 1005円', () => {
+  it('端数切り捨て: 下限未満の日額は3061円に補正', () => {
     const r = calcIkukyuKyuufu(1500, 1);
-    expect(r.total).toBe(1005);
+    expect(r.total).toBe(2050);
   });
   it('dailyWage=0 → null', () => {
     expect(calcIkukyuKyuufu(0, 300)).toBeNull();
@@ -168,3 +168,5 @@ describe('calcShusseigoShien(出生後休業支援給付金・賃金日額×13%�
     expect(calcShusseigoShien(10000, 0)).toBeNull();
   });
 });
+
+it("協会けんぽ公式例: 平均17万円 → 標準日額5670円 → 支給日額3780円", () => { expect(calcShussanTeate(170000 / 30, 1)).toBe(3780); });

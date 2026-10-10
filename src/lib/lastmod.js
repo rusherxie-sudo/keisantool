@@ -145,6 +145,15 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/hayami.js'), join(root, 'src/lib/nenrei.js')];
   } else if (path === 'yukyu-nissu') {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/yukyu-nissu.js')];
+  } else if (['ikuji', 'saniku', 'shussan', 'calorie'].includes(path)) {
+    files = [sourceFileForUrl(pagesDir, path), join(root, `src/lib/${path}.js`)];
+    if (path === 'saniku') files.push(join(root, 'src/lib/ikuji.js'));
+  } else if (['inu-gohan', 'neko-gohan'].includes(path)) {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/pet-food.js')];
+  } else if (path === 'loan') {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/loan.js')];
+  } else if (['inu-vaccine', 'neko-vaccine'].includes(path)) {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/pet-vaccine.js')];
   } else if (['tsubo-heibei', 'taikakusen'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, `src/lib/${path}.js`)];
   } else if (['shotokuzei', 'nematsu', 'kyuyo', 'shakaihoken', 'juminzei', 'kokuho'].includes(path)) {

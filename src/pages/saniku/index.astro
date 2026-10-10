@@ -8,7 +8,7 @@ import ResultShare from '../../components/ResultShare.astro';
 const slug = 'saniku';
 const title = '産休・育休計算器 — 休業期間・出産手当金・育児休業給付金を自動計算 | 計算ツール';
 const description =
-  '出産予定日から産前・産後休業と育休終了日を自動計算。月給から出産手当金・育児休業給付金・2025年新設の出生後休業支援給付金の概算も確認できる無料ツール。';
+  '出産予定日から産前・産後休業と育休終了日を自動計算。標準報酬と休業前賃金を分けて出産手当金・育児休業給付金・2025年新設の出生後休業支援給付金の概算も確認できる無料ツール。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -96,37 +96,48 @@ const jsonld = {
         <div class="field-group__title"><span class="field-group__title-text">給付金の計算条件</span></div>
         <div class="field-grid">
           <div class="field">
-            <label class="field__label" for="monthly-wage">標準報酬月額</label>
+            <label class="field__label" for="monthly-wage">平均標準報酬月額（出産手当金用）</label>
             <div class="field__box">
               <input type="number" id="monthly-wage" inputmode="numeric" placeholder="例：300000" min="0" />
               <span class="field__suffix">円</span>
             </div>
-            <span class="field__hint">額面の月給に近い額。残業代等で変動します</span>
+            <span class="field__hint">出産手当金用：支給開始日前12か月の標準報酬月額の平均。給与の額面そのものではありません</span>
           </div>
           <div class="field">
-            <label class="field__label" for="ikukyu-days">育休取得日数</label>
+            <label class="field__label" for="leave-monthly-wage">休業前6か月の平均賃金月額（育休給付用）</label>
+            <div class="field__box"><input type="number" id="leave-monthly-wage" min="1" inputmode="numeric" placeholder="例：300000" /><span class="field__suffix">円</span></div>
+            <span class="field__hint">賞与を除く額面賃金の6か月合計÷6。標準報酬とは別に入力</span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="ikukyu-days">育休給付の支給日数合計</label>
             <div class="field__box">
-              <input type="number" id="ikukyu-days" inputmode="numeric" placeholder="例：309" min="0" max="730" />
+              <input type="number" id="ikukyu-days" inputmode="numeric" placeholder="例：300" min="1" step="1" max="730" />
               <span class="field__suffix">日</span>
             </div>
-            <span class="field__hint">空欄なら1歳まで約309日で試算</span>
+            <span class="field__hint">暦日数ではなく各支給単位期間の日数を合算。通常1期間30日、最終期間は日割り</span>
           </div>
         </div>
         <label class="shien-check field--full">
           <input type="checkbox" id="shien-toggle" />
-          <span>夫婦ともに14日以上の育休を取得（出生後休業支援給付金 +13% を加算）</span>
+          <span>出生後休業支援給付金の資格・対象期間を公式資料で確認済み（13%を試算）</span>
         </label>
+        <div class="form-group">
+          <label for="shien-days">出生後休業支援給付の対象日数（加算する場合のみ）</label>
+          <input id="shien-days" type="number" min="14" max="28" step="1" value="28" />
+        </div>
+        <p>無給で、最初の180支給日を67%、残りを50%と仮定する簡易比較です。暦上の180日境界を自動判定する計算ではありません。出生時育児休業給付の取得済日数、分割取得、途中の限度額改定は反映しません。給与が出る場合の30日分は<a href="/ikuji/">育児休業給付金計算器</a>へ。</p>
+        <p id="benefit-error" role="status"></p>
       </div>
 
       <div class="result-box" id="kyuufu-result">
         <div class="result-label">給付金の概算</div>
         <div class="result-rows">
           <div class="result-row">
-            <span class="label">標準報酬日額（月給÷30）</span>
+            <span class="label">標準報酬日額（出産手当金用）</span>
             <span class="value" id="daily-amount">¥0</span>
           </div>
           <div class="result-row">
-            <span class="label">出産手当金（産前産後98日分）</span>
+            <span class="label">出産手当金（単胎・予定日出産・98日無給）</span>
             <span class="value" id="shussan-teate">¥0</span>
           </div>
         </div>
@@ -148,7 +159,7 @@ const jsonld = {
             <span class="value green" id="shien-amount">¥0</span>
           </div>
           <div class="result-row" style="padding-top:8px;border-top:1px dashed color-mix(in srgb, var(--cat-color) 28%, transparent);margin-top:4px">
-            <span class="label" style="font-weight:600;color:var(--navy)">給付金 総合計</span>
+            <span class="label" style="font-weight:600;color:var(--navy)">出産手当金＋育休給付＋対象の支援給付</span>
             <span class="value" id="grand-total">¥0</span>
           </div>
         </div>
@@ -163,14 +174,21 @@ const jsonld = {
   <section class="howto">
     <h2>使い方</h2>
     <ul>
-      <li><strong>休業期間タブ</strong>：出産予定日を入力すると、産前・産後休業の開始/終了日と育休終了日を自動表示します。産休は「予定日の6週間前（多胎は14週間前）」から取得可能です。育休終了日は1歳/1歳6ヶ月/2歳から選べます。</li>
-      <li><strong>給付金計算タブ</strong>：月給（標準報酬月額）を入力すると出産手当金と育児休業給付金の概算を計算します。</li>
+      <li><strong>休業期間タブ</strong>：出産予定日を入力すると、産前・産後休業の開始/終了日と育休終了日を自動表示します。産前休業は予定日を含む42日（多胎98日）です。産後と育休終了日は予定日に出産した場合を表示します。育休終了日は1歳/1歳6ヶ月/2歳から選べます。延長には保育所に入れない等の要件があり、この計算で延長資格は判断できません。休業終了日と雇用保険給付の支給終了日は必ずしも一致しません。</li>
+      <li><strong>給付金計算タブ</strong>：出産手当金用の平均標準報酬月額と、育休給付用の平均賃金月額を別々に入力します。</li>
     </ul>
     <p>
-      <strong>出産手当金：</strong>健康保険から支給。標準報酬日額（標準報酬月額÷30）の3分の2が、産前42日＋産後56日＝計98日分支給されます。<br />
-      <strong>育児休業給付金：</strong>雇用保険から支給。休業開始時賃金日額（休業前6ヶ月の賃金÷180＝月額一定なら月給÷30）の67%が最初の180日、以降50%が支給されます。賃金日額には上限（令和8年8月改定で16,540円）があり、高収入の方は頭打ちになります。<br />
-      <strong>出生後休業支援給付金（2025年4月新設）：</strong>子の出生後一定期間に夫婦ともに14日以上の育休を取得すると、最大28日分の賃金日額13%が上乗せされ、育休給付67%と合わせて実質80%になります。さらに育休中は社会保険料（健康保険・厚生年金）が免除されるため、手取りベースでは休業前の約10割相当になる場合があります。
+      <strong>出産手当金：</strong>健康保険から支給。支給開始前12か月の平均標準報酬月額÷30（10円未満四捨五入）×2/3（1円未満四捨五入）で日額を求めます。本試算は加入12か月以上・単胎・予定日に出産・98日無給の場合です。加入12か月未満、多胎、予定日との差、休業中の給与調整は対象外です。<br />
+      <strong>育児休業給付金：</strong>雇用保険から支給。休業開始時賃金日額（休業前6ヶ月の賃金÷180＝月額一定なら月給÷30）の67%が最初の180日、以降50%が支給されます。賃金日額は令和8年8月改定の3,061〜16,540円を適用します。この画面では支給日数と暦日数の違いや180日目をまたぐ期間を再現せず、支給率ごとに合算して切り捨てるため、実際の支給額とは差が出ます。正確な期間別金額は支給決定通知書で確認してください。<br />
+      <strong>出生後休業支援給付金（2025年4月新設）：</strong>対象期間内に14日以上の休業などの条件を満たすと、最大28日分の賃金日額13%が加算されます。配偶者に関する要件と例外もあるため、<a href="https://www.mhlw.go.jp/stf/syussyougo_kanishindan_00001.html" target="_blank" rel="noopener noreferrer">厚生労働省の資格確認</a>で確かめてください。チェックだけで受給資格を確定するものではありません。
     </p>
+    <h2>確認資料</h2>
+    <p>2026年10月10日、日数の数え方・出産手当金の端数処理・育休給付率と限度額を確認しました。</p>
+    <ul>
+      <li><a href="https://www.kyoukaikenpo.or.jp/benefit/childbirth/001/" target="_blank" rel="noopener noreferrer">協会けんぽ：出産手当金（平均17万円→日額3,780円の算例）</a></li>
+      <li><a href="https://www.mhlw.go.jp/content/11600000/001461102.pdf" target="_blank" rel="noopener noreferrer">厚生労働省：育児休業等給付の内容と支給申請手続</a></li>
+      <li><a href="https://www.bosei-navi.mhlw.go.jp/senmon/senmon24.html" target="_blank" rel="noopener noreferrer">厚生労働省：育児休業の期間</a></li>
+    </ul>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の給付額は加入している健康保険組合・ハローワークの審査、標準報酬月額の等級、賃金日額の上下限により異なります。詳細は職場の担当部署または各機関にお問い合わせください。</div>
   </section>
 
@@ -277,32 +295,33 @@ const jsonld = {
   // --- 給付金タブ ---
   function renderKyuufu() {
     const monthlyWage = parseFloat($('monthly-wage').value);
-    const inputDays   = parseFloat($('ikukyu-days').value);
+    const inputDays = Number($('ikukyu-days').value);
+    const leaveMonthlyWage = Number($('leave-monthly-wage').value);
+    const shienDays = Number($('shien-days').value);
+    const shienOn = $('shien-toggle').checked;
 
     const box = $('kyuufu-result');
-    if (!Number.isFinite(monthlyWage) || monthlyWage <= 0) {
+    if (!Number.isFinite(monthlyWage) || monthlyWage <= 0 || !Number.isFinite(leaveMonthlyWage) || leaveMonthlyWage <= 0 || !Number.isInteger(inputDays) || inputDays < 1 || inputDays > 730 || (shienOn && (!Number.isInteger(shienDays) || shienDays < 14 || shienDays > 28 || shienDays > inputDays))) {
+      $('benefit-error').textContent = '2種類の月額と整数の支給日数を入力してください。支援給付は14〜28日、かつ育休給付日数以内です。';
       box.classList.remove('visible');
       window.hideResultShare?.();
       return;
     }
 
-    // 標準報酬日額・賃金日額はいずれも 月給÷30（賃金日額は6ヶ月賃金÷180と一致）
-    const dailyAmount = dailyWageFromMonthly(monthlyWage);
-    const teate = calcShussanTeate(dailyAmount, 98);
-    const totalDays = (Number.isFinite(inputDays) && inputDays > 0) ? inputDays : 309;
-    const kyuufu = calcIkukyuKyuufu(dailyAmount, totalDays);
-
-    // 出生後休業支援給付金（夫婦ともに14日以上育休を取得した場合・最大28日13%上乗せ）
-    const shienOn = $('shien-toggle').checked;
-    const shien = shienOn ? calcShusseigoShien(dailyAmount, 28) : null;
-    const grandTotal = (kyuufu?.total ?? 0) + (shien?.amount ?? 0);
+    $('benefit-error').textContent = '';
+    const standardDaily = Math.round(monthlyWage / 30 / 10) * 10;
+    const dailyAmount = dailyWageFromMonthly(leaveMonthlyWage);
+    const teate = calcShussanTeate(standardDaily, 98);
+    const kyuufu = calcIkukyuKyuufu(dailyAmount, inputDays);
+    const shien = shienOn ? calcShusseigoShien(dailyAmount, shienDays) : null;
+    const grandTotal = (teate ?? 0) + (kyuufu?.total ?? 0) + (shien?.amount ?? 0);
 
     box.classList.add('visible');
     if (!hasTrackedBenefit) {
       window.trackCalculatorResult?.('benefit_estimate');
       hasTrackedBenefit = true;
     }
-    $('daily-amount').textContent = yen(dailyAmount);
+    $('daily-amount').textContent = yen(standardDaily);
     $('shussan-teate').textContent = yen(teate ?? 0);
     $('ikukyu-first').textContent  = yen(kyuufu?.first ?? 0);
     $('ikukyu-rest').textContent   = yen(kyuufu?.rest ?? 0);
@@ -311,11 +330,11 @@ const jsonld = {
     $('shien-amount').textContent = yen(shien?.amount ?? 0);
     $('grand-total').textContent = yen(grandTotal);
     window.setResultShare?.(
-      `産休・育休計算器\n給付金 総合計：${$('grand-total').textContent}\n出産手当金（産前産後98日分）：${$('shussan-teate').textContent}\n育児休業給付金 合計：${$('ikukyu-total').textContent}`
+      `産休・育休計算器\n出産手当金＋育休給付＋対象の支援給付：${$('grand-total').textContent}\n出産手当金（単胎・予定日出産・98日無給）：${$('shussan-teate').textContent}\n育児休業給付金 合計：${$('ikukyu-total').textContent}`
     );
   }
 
-  ['monthly-wage', 'ikukyu-days'].forEach((id) => $(id).addEventListener('input', renderKyuufu));
+  ['monthly-wage', 'leave-monthly-wage', 'ikukyu-days', 'shien-days'].forEach((id) => $(id).addEventListener('input', renderKyuufu));
   $('shien-toggle').addEventListener('change', renderKyuufu);
 
   // タブ切り替え

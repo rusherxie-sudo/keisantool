@@ -5,6 +5,10 @@ import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
+import { equalPayment, equalPrincipal } from '../../lib/loan.js';
+const examplePayment = equalPayment(30000000, 1, 35);
+const examplePrincipal = equalPrincipal(30000000, 1, 35);
+const yenExample = (value) => value.toLocaleString('ja-JP') + '円';
 const slug = 'loan';
 const title = '住宅ローン返済シミュレーター - 毎月返済額・総返済額・総利息を自動計算 | 計算ツール';
 const description =
@@ -105,7 +109,7 @@ const jsonld = {
     <ul>
       <li>返済当初の返済額が高いが、徐々に減っていく</li>
       <li>元金の減りが早いので、総利息が少なくて済む</li>
-      <li>返済期間が短いほど、総利息の差が大きくなる</li>
+      <li>総利息の比較は、借入額・利率・期間を同じ条件に揃える</li>
     </ul>
 
     <h3>どちらの返済方式を選ぶべきか</h3>
@@ -120,10 +124,10 @@ const jsonld = {
       例えば、借入額3000万円、金利1%、返済期間35年の場合：
     </p>
     <ul>
-      <li>元利均等返済：毎月約8.9万円、総利息約1210万円</li>
-      <li>元金均等返済：初回約10.5万円、総利息約1060万円</li>
+      <li>元利均等返済：毎月{yenExample(examplePayment.monthly)}、総利息{yenExample(examplePayment.interest)}</li>
+      <li>元金均等返済：初回{yenExample(examplePrincipal.firstMonthly)}、総利息{yenExample(examplePrincipal.interest)}</li>
     </ul>
-    <p>元金均等返済の方が総利息が約150万円少なくなりますが、最初の返済額が約1.6万円高くなります。</p>
+    <p>この仮定では元金均等返済の総利息が{yenExample(examplePayment.interest - examplePrincipal.interest)}少なく、初回返済額は{yenExample(examplePrincipal.firstMonthly - examplePayment.monthly)}高くなります。上の算例も計算器と同じ式で生成しています。</p>
 
     <h3>固定金利と変動金利</h3>
     <p>
@@ -143,10 +147,11 @@ const jsonld = {
     <h3>注意点</h3>
     <ul>
       <li>本ツールは元本と利息のみのシンプルな試算です。実際のローンには保証料、団信保険料、手数料などが含まれる場合があります。</li>
-      <li>返済期間が長いほど総利息が多くなります。できるだけ短い期間で返済することをおすすめします。</li>
+      <li>返済期間が長いほど総利息が多くなります。期間を短くすると月々の負担が増えるため、生活費・予備費も含めて比較してください。</li>
       <li>借入額は購入物件の価格から頭金を差し引いた額になります。頭金が多いほど総利息が少なくなります。</li>
     </ul>
 
+    <p>返済方式の出典：<a href="https://www.flat35.com/loan/lineup/kinto/index.html" target="_blank" rel="noopener noreferrer">住宅金融支援機構「元利均等返済・元金均等返済」</a>。2026年10月10日に方式の説明と上の数値例を確認しました。本ツールは各表示額を円未満切り捨てとし、最終回の残高精算を再現しないため金融機関の返済予定表とは差が出ます。</p>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の返済額は金融機関の計算方法・端数処理・保証料・団信・手数料等により異なります。</div>
   </section>
 

@@ -13,7 +13,7 @@ export default defineConfig({
   integrations: [
     sitemap({
       // 相性組み合わせページは少数の判定モデルから展開する補助ページ。
-      // AdSense 再審査中は検索インデックスの品質比率を優先し、ハブだけを掲載する。
+      // 独立した回答の重複を抑えるため、検索の入口はハブにまとめる。
       filter(page) {
         return shouldIncludeInSitemap(page);
       },
