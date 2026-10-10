@@ -125,7 +125,7 @@ def main():
     rows=audit(args.dist,args.gsc_pages,args.bing_pages)
     args.output.mkdir(parents=True,exist_ok=True)
     with (args.output/'inventory.csv').open('w',newline='') as f:
-        writer=csv.DictWriter(f,fieldnames=list(rows[0]));writer.writeheader();writer.writerows(rows)
+        writer=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator="\n");writer.writeheader();writer.writerows(rows)
     groups=collections.defaultdict(list)
     for row in rows:groups[row['number_normalized_hash']].append(row['url'])
     summary={'html':len(rows),'sitemap':sum(r['in_sitemap'] for r in rows),'noindex':sum(r['noindex'] for r in rows),'families':dict(collections.Counter(r['family'] for r in rows)),'numeric_template_clusters':[v for v in groups.values() if len(v)>1],'flags':[{'url':r['url'],'flags':r['flags']} for r in rows if r['flags']], 'note':'Structural signals are not quality scores; normalized similarity is not plagiarism or a reason to noindex. Missing search rows do not establish zero demand.'}
