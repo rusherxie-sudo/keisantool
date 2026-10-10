@@ -84,12 +84,12 @@ export function pregnancyMonths(weeks) {
   return Math.floor(weeks / 4) + 1;
 }
 
-// 産休目安：開始 = 出産予定日 − 42日（6週前）、終了 = 出産日（予定日）+ 56日（8週後）。
+// 産休目安：開始 = 出産予定日を含む42日、終了 = 出産日（予定日）+ 56日（8週後）。
 export function maternityLeave(due) {
   const d = toDate(due);
   if (!d) return null;
   return {
-    leaveStart: toISO(addDays(d, -42)),
+    leaveStart: toISO(addDays(d, -41)),
     leaveEnd: toISO(addDays(d, 56)),
   };
 }

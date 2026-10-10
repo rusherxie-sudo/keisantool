@@ -1,6 +1,8 @@
+import { IKUKYU_DAILY_CAP, clampIkujiDaily } from './ikuji.js';
+export { IKUKYU_DAILY_CAP };
 // 産休・育休の日程と給付金を計算する純関数（DOM非依存）。
 // 日付は UTC 正午基準で扱い、タイムゾーン・夏時間による日付ズレを回避する。
-// 金額の端数は Math.floor で切り捨て（CLAUDE.md 規約）。
+// 出産手当金と雇用保険では端数処理が異なる。各制度の公式算例に合わせる。
 
 function toDate(input) {
   if (input == null || input === '') return null;
@@ -35,11 +37,11 @@ function addMonths(d, months) {
   return new Date(Date.UTC(y, mo, d.getUTCDate(), 12, 0, 0));
 }
 
-// 産前休業開始日 = 出産予定日 − 42日（多胎は98日）。
+// 産前休業開始日 = 出産予定日を含め42日（多胎は98日）。
 export function calcSanzenStart(dueDate, isMultiple = false) {
   const d = toDate(dueDate);
   if (!d) return null;
-  return toISO(addDays(d, isMultiple ? -98 : -42));
+  return toISO(addDays(d, isMultiple ? -97 : -41));
 }
 
 // 産後休業終了日 = 出産日 + 56日（産後8週）。
@@ -58,33 +60,27 @@ export function calcIkukyuEnd(birthDate, extendMonths = 0) {
   return toISO(addDays(anniversary, -1));
 }
 
-// 休業開始時賃金日額の上限（令和8年8月1日改定、賃金月額上限496,200円÷30）。
-// これを超える分は給付計算に反映されない。上限値は毎年8月に改定されるため、更新時はこの定数を変える。
-export const IKUKYU_DAILY_CAP = 16540;
-
-// 月給（標準報酬月額）→ 賃金日額（= 月給 ÷ 30、整数円に切り捨て）。
-// 育児休業給付金の「休業開始時賃金日額」も、月額一定なら 6ヶ月賃金÷180 = 月給÷30 に一致する。
-// 出産手当金の「標準報酬日額」も同じ算式。両者で共通利用する。
+// 休業前の平均賃金月額から雇用保険の賃金日額を概算。健康保険の標準報酬とは別。
 export function dailyWageFromMonthly(monthly) {
   const m = Number(monthly);
   if (!Number.isFinite(m) || m <= 0) return 0;
   return Math.floor(m / 30);
 }
 
-// 出産手当金 = 標準報酬日額 × 2/3 × 日数（切り捨て）。
+// 出産手当金: 平均標準報酬月額÷30は10円未満四捨五入、2/3後は1円未満四捨五入。
 // 標準報酬日額 = 標準報酬月額 ÷ 30。
 export function calcShussanTeate(standardDailyAmount, days) {
   if (!Number.isFinite(standardDailyAmount) || standardDailyAmount <= 0) return null;
-  if (!Number.isFinite(days) || days <= 0) return null;
-  return Math.floor(standardDailyAmount * (2 / 3) * days);
+  if (!Number.isInteger(days) || days <= 0) return null;
+  return Math.round(Math.round(standardDailyAmount / 10) * 10 * 2 / 3) * days;
 }
 
 // 育児休業給付金 = 最初180日は日額×67%、181日目以降は日額×50%（各切り捨て）。
 // 賃金日額は IKUKYU_DAILY_CAP（上限）で頭打ち。
 export function calcIkukyuKyuufu(dailyWage, totalDays) {
   if (!Number.isFinite(dailyWage) || dailyWage <= 0) return null;
-  if (!Number.isFinite(totalDays) || totalDays <= 0) return null;
-  const capped = Math.min(dailyWage, IKUKYU_DAILY_CAP);
+  if (!Number.isInteger(totalDays) || totalDays <= 0 || totalDays > 730) return null;
+  const capped = clampIkujiDaily(dailyWage);
   const firstDays = Math.min(totalDays, 180);
   const restDays = Math.max(0, totalDays - 180);
   const first = Math.floor(capped * 0.67 * firstDays);
@@ -93,13 +89,13 @@ export function calcIkukyuKyuufu(dailyWage, totalDays) {
 }
 
 // 出生後休業支援給付金（2025年4月新設）= 賃金日額 × 13% × 日数（最大28日・切り捨て）。
-// 子の出生後一定期間に夫婦ともに14日以上の育休を取得した場合に上乗せ。
+// 資格・対象期間の要件は別途確認（配偶者に関する要件には例外もある）。
 // 既存の育休給付67%と合算で実質80%（社会保険料免除込みで手取り約10割）。
 // 賃金日額は IKUKYU_DAILY_CAP（上限）で頭打ち。
 export function calcShusseigoShien(dailyWage, days) {
   if (!Number.isFinite(dailyWage) || dailyWage <= 0) return null;
-  if (!Number.isFinite(days) || days <= 0) return null;
-  const capped = Math.min(dailyWage, IKUKYU_DAILY_CAP);
+  if (!Number.isInteger(days) || days <= 0) return null;
+  const capped = clampIkujiDaily(dailyWage);
   const targetDays = Math.min(days, 28);
   return { amount: Math.floor(capped * 0.13 * targetDays), days: targetDays };
 }

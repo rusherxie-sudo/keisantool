@@ -120,10 +120,10 @@ describe('pfcBalance(PFCバランス)', () => {
     expect(pfcBalance(-2000, 65)).toEqual({ p: 0, f: 0, c: 0 });
   });
 
-  it('炭水化物が負になる場合は0で下限を取る', () => {
+  it('総カロリーを超える配分は表示しない', () => {
     // 体重が極端に大きくタンパク質+脂質がオーバーする想定
     const res = pfcBalance(1000, 200);
-    expect(res.c).toBeGreaterThanOrEqual(0);
+    expect(res).toBeNull();
   });
 });
 
@@ -163,5 +163,14 @@ describe('calcAll(統合・カロリーは整数に丸める)', () => {
   it('不正な入力では全て0を返す', () => {
     const r = calcAll({ sex: 'male', age: 0, height: 170, weight: 65, activity: 1.55, goal: 'maintain' });
     expect(r).toEqual({ bmr: 0, tdee: 0, target: 0, pfc: { p: 0, f: 0, c: 0 } });
+  });
+});
+
+describe('利用対象と不成立な条件', () => {
+  it('子供と対象年代外に成人用の食事計算を出さない', () => {
+    for (const age of [5, 19, 80, Infinity]) expect(calcAll({ sex: 'male', age, height: 170, weight: 65, activity: 1.55, goal: 'lose' }).tdee).toBe(0);
+  });
+  it('小さい消費量から負の摂取量を出さない', () => {
+    expect(targetCalories(300, 'lose')).toBe(0);
   });
 });

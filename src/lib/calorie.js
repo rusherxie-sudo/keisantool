@@ -55,7 +55,7 @@ export function tdee(bmrValue, factor) {
 export function targetCalories(tdeeValue, goal) {
   const t = posNum(tdeeValue);
   if (t === null) return 0;
-  if (goal === 'lose') return t - 500;
+  if (goal === 'lose') return Math.max(0, t - 500);
   if (goal === 'gain') return t + 500;
   return t; // maintain（不正値も維持扱い）
 }
@@ -70,7 +70,8 @@ export function pfcBalance(totalKcal, weight) {
   const pKcal = pGram * 4;
   const fKcal = total * 0.25;
   const fGram = fKcal / 9;
-  const cKcal = Math.max(0, total - pKcal - fKcal);
+  if (pKcal + fKcal > total) return null; // この配分例は総カロリー内に収まらない
+  const cKcal = total - pKcal - fKcal;
   const cGram = cKcal / 4;
   return {
     p: Math.round(pGram),
@@ -82,6 +83,9 @@ export function pfcBalance(totalKcal, weight) {
 // 一括計算。表示用にカロリーは整数へ丸める。
 // formula: 'ganpule'（既定・国立健康栄養研究所の式）/ 'harris'（ハリス＝ベネディクト改定式）。
 export function calcAll({ sex, age, height, weight, activity, goal, formula = 'ganpule' }) {
+  const empty = { bmr: 0, tdee: 0, target: 0, pfc: { p: 0, f: 0, c: 0 } };
+  // この画面はGanpule式の対象年代に揃え、20〜79歳の比較に限定する。
+  if (!Number.isFinite(Number(age)) || Number(age) < 20 || Number(age) >= 80) return empty;
   const rawBmr =
     formula === 'harris'
       ? bmr(sex, age, height, weight)
@@ -94,6 +98,7 @@ export function calcAll({ sex, age, height, weight, activity, goal, formula = 'g
     return { bmr: Math.round(rawBmr), tdee: 0, target: 0, pfc: { p: 0, f: 0, c: 0 } };
   }
   const rawTarget = targetCalories(rawTdee, goal);
+  if (rawTarget <= 0) return empty;
   const target = Math.round(rawTarget);
   return {
     bmr: Math.round(rawBmr),

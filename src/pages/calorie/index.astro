@@ -8,7 +8,7 @@ import ResultShare from '../../components/ResultShare.astro';
 const slug = 'calorie';
 const title = 'カロリー・基礎代謝計算器 - TDEE・PFC計算 | 計算ツール';
 const description =
-  '性別・年齢・身長・体重と活動レベルから、基礎代謝（BMR）と1日の総消費カロリー（TDEE）を計算。維持・減量・増量の目標別メンテナンスカロリーと、たんぱく質・脂質・炭水化物のPFCバランス（g）まで瞬時に算出する無料ツールです。';
+  '性別・年齢・身長・体重と活動レベルから、基礎代謝（BMR）と1日の総消費カロリー（TDEE）を計算。20〜79歳を対象に、維持と±500kcalの比較、PFC配分例を確認できます。食事量の処方ではありません。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -23,10 +23,11 @@ const jsonld = {
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/kenko/">健康・身体</a> ／ カロリー計算</div>
     <h1>カロリー・基礎代謝計算器</h1>
-    <p>基礎代謝（BMR）と1日の総消費カロリー（TDEE）、目標別メンテナンスカロリーとPFCバランスをまとめて計算します。</p>
+    <p>基礎代謝（BMR）と1日の総消費カロリー（TDEE）、設定した増減量の比較とPFC配分例をまとめて計算します。</p>
   </div>
 
   <div class="calc-card">
+    <p>20〜79歳の一般成人向けの推定です。妊娠・授乳中、成長期、治療中の方の食事計画には使えません。</p>
     <div class="field-group">
       <div class="field-group__title"><span class="field-group__title-text">基本情報</span></div>
 
@@ -44,7 +45,7 @@ const jsonld = {
         <label class="field">
           <span class="field__label">年齢</span>
           <span class="field__box">
-            <input type="number" id="age" inputmode="numeric" placeholder="例：30" />
+            <input type="number" id="age" min="20" max="79" inputmode="numeric" placeholder="例：30" />
             <span class="field__suffix">歳</span>
           </span>
         </label>
@@ -68,7 +69,7 @@ const jsonld = {
         <label>計算式</label>
         <div class="radio-group radio-group-wrap">
           <input type="radio" name="formula" id="formula-ganpule" value="ganpule" checked />
-          <label for="formula-ganpule">国立健康・栄養研究所の式（推奨）</label>
+          <label for="formula-ganpule">国立健康・栄養研究所の式（既定）</label>
           <input type="radio" name="formula" id="formula-harris" value="harris" />
           <label for="formula-harris">ハリス・ベネディクト式</label>
         </div>
@@ -98,25 +99,27 @@ const jsonld = {
         <label>目標</label>
         <div class="radio-group">
           <input type="radio" name="goal" id="goal-lose" value="lose" />
-          <label for="goal-lose">減量</label>
+          <label for="goal-lose">−500 kcalの比較</label>
           <input type="radio" name="goal" id="goal-maintain" value="maintain" checked />
           <label for="goal-maintain">維持</label>
           <input type="radio" name="goal" id="goal-gain" value="gain" />
-          <label for="goal-gain">増量</label>
+          <label for="goal-gain">＋500 kcalの比較</label>
         </div>
       </div>
     </div>
 
+    <p id="calorie-error" role="status"></p>
     <div class="result-box" id="result">
       <div class="result-label">1日の総消費カロリー（メンテナンスカロリー）</div>
       <div class="result-main" id="tdee">0 kcal</div>
       <div class="result-rows result__rows--2col">
         <div class="result-row"><span class="label">基礎代謝（BMR）</span><span class="value" id="bmr">0 kcal</span></div>
-        <div class="result-row"><span class="label">目標カロリー</span><span class="value red" id="target">0 kcal</span></div>
+        <div class="result-row"><span class="label">設定条件での計算値</span><span class="value red" id="target">0 kcal</span></div>
         <div class="result-row"><span class="label">たんぱく質（P）</span><span class="value green" id="pfc-p">0 g</span></div>
         <div class="result-row"><span class="label">脂質（F）</span><span class="value green" id="pfc-f">0 g</span></div>
         <div class="result-row"><span class="label">炭水化物（C）</span><span class="value green" id="pfc-c">0 g</span></div>
       </div>
+      <p id="pfc-note">PFCは固定条件の配分例です。個人の必要量や推奨量ではありません。</p>
     </div>
   </div>
 
@@ -128,13 +131,16 @@ const jsonld = {
     <h2>使い方</h2>
     <p>性別を選び、年齢・身長・体重を入力すると、基礎代謝（BMR）と1日の総消費カロリー（TDEE）が自動で表示されます。活動レベルと目標を切り替えるだけで結果がその場で更新されるので、ボタンを押す必要はありません。</p>
     <ul>
-      <li><strong>基礎代謝（BMR）</strong>：何もせずじっとしていても消費される、生命維持に必要な最低限のカロリーです。本ツールでは日本人のデータをもとに作られた「国立健康・栄養研究所の式（Ganpuleの式）」を既定で用いて算出します。日本人にはこちらがより適しているとされますが、「ハリス・ベネディクト式」に切り替えて比較することもできます。</li>
+      <li><strong>基礎代謝（BMR）</strong>：何もせずじっとしていても消費される、生命維持に必要な最低限のカロリーです。本ツールでは日本人のデータをもとに作られた「国立健康・栄養研究所の式（Ganpuleの式）」を既定で用いて算出します。この式は20〜70歳代の日本人の測定データから作られた推定式です。「ハリス・ベネディクト式」に切り替えて比較することもできます。</li>
       <li><strong>総消費カロリー（TDEE）</strong>：BMRに日々の活動量を掛け合わせた、1日に消費する総カロリーです。これがいわゆる<strong>メンテナンスカロリー</strong>（体重を維持できる摂取量の目安）になります。</li>
       <li><strong>活動レベル</strong>：デスクワーク中心なら「ほぼ運動なし（×1.2）」、週数回の運動なら「中程度（×1.55）」など、生活スタイルに近いものを選びます。</li>
-      <li><strong>目標カロリー</strong>：減量なら維持カロリーから−500kcal、増量なら+500kcalが目安です。1日500kcalの差は1か月で体重約2kgの増減に相当します。</li>
-      <li><strong>PFCバランス</strong>：目標カロリーをたんぱく質（P）・脂質（F）・炭水化物（C）に振り分けたグラム数です。たんぱく質は体重1kgあたり2g、脂質は総カロリーの25%、残りを炭水化物として計算しています。</li>
+      <li><strong>設定条件での計算値</strong>：この画面では維持推定値と、そこから500kcal増減した仮定を比較します。500kcalの差をすべての人に勧めるものではなく、一定期間の体重変化も保証できません。</li>
+      <li><strong>PFCバランス</strong>：設定条件での計算値をたんぱく質（P）・脂質（F）・炭水化物（C）に振り分けたグラム数です。たんぱく質は体重1kgあたり2g、脂質は総カロリーの25%、残りを炭水化物として計算する固定の配分例です。国の一律の推奨量ではありません。配分が総カロリーを超える条件では表示しません。</li>
     </ul>
     <p>計算結果のカロリーは小数点以下を四捨五入して表示しています。基礎代謝や消費カロリーは体組成・筋肉量・生活習慣によって個人差があり、本ツールの数値はあくまで一般的な目安です。</p>
+    <h2>計算の根拠と限界</h2>
+    <p><a href="https://www.nibn.go.jp/eiken/hn/modules/kisotaisya/" target="_blank" rel="noopener noreferrer">国立健康・栄養研究所：基礎代謝量の推定</a>のGanpule式を使用しています。2026年10月10日に式と対象年代を確認しました。出典が扱うのは基礎代謝で、この画面の活動係数1.2〜1.9、±500kcal、PFC配分例を推奨する資料ではありません。</p>
+    <p>例えば男性30歳・170cm・70kgならGanpule式の基礎代謝は約1,555kcal/日です。活動係数は生活を単純化した仮定であり、実測した消費量ではありません。体重推移・体調・実際の食事を見ながら、必要量は医師や管理栄養士と確認してください。</p>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。減量・増量や食事管理を行う際は、体調を考慮し、必要に応じて医師・管理栄養士などの専門家にご相談ください。</div>
   </section>
 
@@ -145,7 +151,7 @@ const jsonld = {
   <Faq items={[
     { q: '基礎代謝はどう計算しますか？', a: '本ツールは国立健康・栄養研究所の式（Ganpule式）を標準に、ハリス・ベネディクト式にも切り替えできます。年齢・性別・身長・体重から計算します。' },
     { q: '1日の消費カロリー（TDEE）とは？', a: '基礎代謝に活動レベル係数を掛けた、1日の総消費エネルギーです。ダイエットや増量の目安になります。' },
-    { q: 'PFCバランスも分かりますか？', a: '目標カロリーをタンパク質・脂質・炭水化物に配分したPFCの目安を表示します。' },
+    { q: 'PFCバランスも分かりますか？', a: '設定条件での計算値をタンパク質・脂質・炭水化物に配分したPFCの目安を表示します。' },
   ]} />
 
   <div class="ad-slot"></div>
@@ -181,6 +187,7 @@ const jsonld = {
 
     const r = calcAll({ sex, age, height, weight, activity, goal, formula });
     const box = $('result');
+    $('calorie-error').textContent = r.tdee > 0 ? '' : '20〜79歳の年齢と正の身長・体重を入力してください。計算が成立しない条件では結果を表示しません。';
     if (r.tdee <= 0) {
       box.classList.remove('visible');
       window.hideResultShare?.();
@@ -190,14 +197,15 @@ const jsonld = {
     $('tdee').textContent = kcal(r.tdee);
     $('bmr').textContent = kcal(r.bmr);
     $('target').textContent = kcal(r.target);
-    $('pfc-p').textContent = gram(r.pfc.p);
-    $('pfc-f').textContent = gram(r.pfc.f);
-    $('pfc-c').textContent = gram(r.pfc.c);
+    $('pfc-p').textContent = r.pfc ? gram(r.pfc.p) : '—';
+    $('pfc-f').textContent = r.pfc ? gram(r.pfc.f) : '—';
+    $('pfc-c').textContent = r.pfc ? gram(r.pfc.c) : '—';
+    $('pfc-note').textContent = r.pfc ? 'PFCは固定条件の配分例です。個人の必要量や推奨量ではありません。' : 'この条件では固定のPFC配分が総カロリーを超えるため、配分例を表示できません。';
     window.setResultShare?.(
       `カロリー・基礎代謝計算器\n` +
       `総消費カロリー（TDEE）：${$('tdee').textContent}\n` +
       `基礎代謝（BMR）：${$('bmr').textContent}\n` +
-      `目標カロリー：${$('target').textContent}\n` +
+      `設定条件での計算値：${$('target').textContent}\n` +
       `PFC：P ${$('pfc-p').textContent} / F ${$('pfc-f').textContent} / C ${$('pfc-c').textContent}`
     );
   }

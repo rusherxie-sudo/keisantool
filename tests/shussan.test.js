@@ -101,10 +101,10 @@ describe('pregnancyStage(妊娠時期区分: 週数から判定)', () => {
   });
 });
 
-describe('maternityLeave(産休目安: 開始=予定日−42日, 終了=出産日+56日)', () => {
-  it('予定日 2027-03-21 → 産休開始 2027-02-07', () => {
+describe('maternityLeave(産休目安: 開始=予定日を含む42日, 終了=出産日+56日)', () => {
+  it('予定日 2027-03-21 → 産休開始 2027-02-08', () => {
     const r = maternityLeave('2027-03-21');
-    expect(r.leaveStart).toBe('2027-02-07');
+    expect(r.leaveStart).toBe('2027-02-08');
   });
 
   it('予定日を出産日とみなした産休終了 = 予定日+56日 → 2027-05-16', () => {
@@ -114,7 +114,7 @@ describe('maternityLeave(産休目安: 開始=予定日−42日, 終了=出産�
 
   it('Date オブジェクトでも同じ', () => {
     const r = maternityLeave(new Date('2027-03-21T00:00:00'));
-    expect(r.leaveStart).toBe('2027-02-07');
+    expect(r.leaveStart).toBe('2027-02-08');
     expect(r.leaveEnd).toBe('2027-05-16');
   });
 
