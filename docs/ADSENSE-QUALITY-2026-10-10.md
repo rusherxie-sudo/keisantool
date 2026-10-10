@@ -70,3 +70,16 @@
 最高优先级是确认生产修订实际可访问后，再用更新后的站点申请审核；后续依据真实使用及官方制度更新维护高价值入口，不继续批量生成相似文章。
 
 政策参照：[Google AdSense 内容和用户体验](https://support.google.com/adsense/answer/10015918)、[Google 发布商政策](https://support.google.com/adsense/answer/10502938)。
+
+## 发布与生产验收
+
+[PR #1](https://github.com/rusherxie-sudo/keisantool/pull/1) 已合并，代码发布提交为 `6ae56e550bb0c5634922c85dbac0ffefbab3e43e`。GitHub Actions 的 PR 检查与 main 检查均通过，Cloudflare Pages 生产部署 `19ac59ef-a070-4b69-996b-d025c6bb72da` 成功。
+
+2026-10-10 已实际访问正式域名复验：
+
+- 首页、about、privacy、editorial-policy、contact、所得税、国保、所得税文章、robots.txt、ads.txt、sitemap-0.xml 共 11 个入口均返回 200，包含预期内容；规范 sitemap 为 460 条。
+- 浏览器复现所得税 43,903、社保 104,687、年末调整税额 44,600 / 退款 95,400、练马双人国保 416,509；饮水参考结果、手机布局和文章目录均正常。
+- 线上文章显示适用年、出典确认日和确认范围，无缺失目录锚点；本次交互未观察到页面脚本异常。
+- 线上 GA4 页面和参照 URL 已去掉查询参数与片段，没有加载百度脚本。联系页面能显示并点击现有邮箱；这仍不等于验证收信。
+
+AdSense 复审尚未提交，没有访问广告账号。
