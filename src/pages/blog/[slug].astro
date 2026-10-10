@@ -11,6 +11,14 @@ import { getBlogCategory, getBlogCategoryColor } from '../../data/blog.js';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
+  for (const post of posts) {
+    if (post.data.reviewedDate && post.data.sources.length === 0) {
+      throw new Error(`${post.id}: 出典確認日には確認資料が必要です。`);
+    }
+    if (['kakutei-shinkoku','nematsu-chosei','shakai-hoken','zeikin-kiso','health','pet'].includes(post.data.category) && post.data.sources.length === 0) {
+      throw new Error(`${post.id}: 制度・健康記事には根拠資料が必要です。`);
+    }
+  }
   return posts.map((post) => ({
     params: { slug: post.id },
     props: { post },
@@ -18,8 +26,8 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { id: slug, data, body } = post;
-const { Content } = await render(post);
+const { id: slug, data } = post;
+const { Content, headings: renderedHeadings } = await render(post);
 const cat = getBlogCategory(data.category);
 const themeColor = getBlogCategoryColor(data.category);
 const pageSlug = `blog/${slug}`;
@@ -28,34 +36,7 @@ const canonical = new URL(`/blog/${slug}/`, Astro.site).href;
 const pubDate = new Date(data.pubDate);
 const updatedDate = data.updatedDate ? new Date(data.updatedDate) : null;
 
-function extractHeadings(markdown) {
-  const lines = markdown.split('\n');
-  const headings = [];
-  let inCodeBlock = false;
-  for (const line of lines) {
-    if (line.trim().startsWith('```')) {
-      inCodeBlock = !inCodeBlock;
-      continue;
-    }
-    if (inCodeBlock) continue;
-    const match = line.match(/^(#{2,4})\s+(.+)$/);
-    if (match) {
-      const depth = match[1].length;
-      const text = match[2].trim().replace(/`([^`]+)`/g, '$1');
-      const slug = text
-        .toLowerCase()
-        .replace(/[ぁ-んァ-ン一-龥々ーa-z0-9]/g, (m) => m)
-        .replace(/\s+/g, '-')
-        .replace(/[^\wぁ-んァ-ン一-龥々ー-]/g, '')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-      headings.push({ depth, text, slug: slug || text });
-    }
-  }
-  return headings;
-}
-
-const headings = extractHeadings(body);
+const headings = renderedHeadings.filter(h => h.depth >= 2 && h.depth <= 4);
 
 const jsonld = {
   '@context': 'https://schema.org',
@@ -115,6 +96,12 @@ const disclaimerText = data.category === 'health'
       <h1>{data.title}</h1>
       <p class="blog-article__desc">{data.description}</p>
       <AuthorBox name={data.author} date={pubDate} updatedDate={updatedDate} />
+      {(data.applicableYear || data.reviewedDate || data.reviewScope) && <aside class="blog-review" aria-label="情報の対象と確認範囲">
+        {data.applicableYear && <p><strong>対象年：</strong>{data.applicableYear}年（年分・年度の違いは本文を参照）</p>}
+        {data.reviewedDate && <p><strong>出典確認日：</strong>{new Date(data.reviewedDate).toISOString().slice(0, 10)}</p>}
+        {data.reviewScope && <p><strong>確認範囲：</strong>{data.reviewScope}</p>}
+        {data.sources.length > 0 && <a href="#article-sources">確認に使った資料を見る</a>}
+      </aside>}
     </div>
 
     <div class="blog-article__card">
@@ -142,7 +129,7 @@ const disclaimerText = data.category === 'health'
       </div>
 
       {data.sources.length > 0 && (
-        <section class="blog-article__sources" aria-label="情報の出典">
+        <section class="blog-article__sources" id="article-sources" aria-label="情報の出典">
           <h2>情報の出典</h2>
           <ul>
             {data.sources.map((source) => <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.name}</a></li>)}
@@ -305,7 +292,13 @@ const disclaimerText = data.category === 'health'
   }
   .blog-article__sources h2 { font-size: 1rem; margin: 0 0 10px; }
   .blog-article__sources ul { margin: 0; padding-left: 20px; }
+  .blog-review { margin-top:18px; padding:16px; border:1px solid var(--border); border-radius:12px; font-size:.85rem; line-height:1.7; }
+  .blog-review p { margin:0 0 6px; }
+  .blog-article__sources { scroll-margin-top:88px; }
   .blog-article__body table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
     width: 100%;
     border-collapse: collapse;
     margin: 18px 0 22px;

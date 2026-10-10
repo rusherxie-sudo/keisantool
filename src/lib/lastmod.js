@@ -147,6 +147,10 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/yukyu-nissu.js')];
   } else if (['tsubo-heibei', 'taikakusen'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, `src/lib/${path}.js`)];
+  } else if (['shotokuzei', 'nematsu', 'kyuyo', 'shakaihoken', 'juminzei', 'kokuho'].includes(path)) {
+    files = [sourceFileForUrl(pagesDir, path), join(root, `src/lib/${path}.js`), join(root, 'src/lib/japan-tax-2026.js')];
+    if (['kyuyo', 'shakaihoken'].includes(path)) files.push(join(root, 'src/lib/japan-social-2026.js'));
+    if (['kyuyo', 'kokuho'].includes(path)) files.push(join(root, 'src/lib/juminzei.js'));
   } else if (path === 'bonus-tedori') {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/bonus-tedori.js'), join(root, 'src/data/bonus-rates-2026.js')];
   } else if (path === 'seimei-hoken-kojo') {

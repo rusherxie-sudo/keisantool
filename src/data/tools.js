@@ -110,7 +110,7 @@ export const tools = [
     name: '所得税計算器',
     icon: '📊',
     category: '税金・お金',
-    short: '年収から所得税を精算',
+    short: '2026年分の所得税を概算',
     live: true,
   },
   {
@@ -578,7 +578,7 @@ export const tools = [
     name: '水分摂取量計算器',
     icon: '💧',
     category: '健康・身体',
-    short: '体重から1日の推奨水分量',
+    short: '体重と係数で水分量を試算',
     live: true,
   },
   {

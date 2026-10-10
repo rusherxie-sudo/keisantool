@@ -71,7 +71,7 @@ describe('takeHomePay(手取り精算)', () => {
     const result = takeHomePay(300000);
     expect(result.yearlyIncome).toBe(3600000);
     expect(result.salaryDeduction).toBe(Math.floor(3600000 * 0.3 + 80000));
-    expect(result.taxableIncome).toBe(1560000);
+    expect(result.taxableIncome).toBe(870000);
     expect(result.socialInsurance.health).toBe(Math.floor(300000 * 0.0495));
     expect(result.socialInsurance.pension).toBe(Math.floor(300000 * 0.0915));
     expect(result.socialInsurance.employment).toBe(Math.floor(300000 * 0.005));
@@ -230,11 +230,11 @@ describe('overtimeBreakdown(分類別の残業代を一括計算)', () => {
 });
 
 describe('salaryDeduction(給与所得控除)', () => {
-  it('162.5万超〜180万は改正後の段階式', () => {
-    expect(salaryDeduction(1800000)).toBe(650000);
-    expect(salaryDeduction(1900000)).toBe(650000);
+  it('2026年分の低所得給与控除は74万円', () => {
+    expect(salaryDeduction(1800000)).toBe(740000);
+    expect(salaryDeduction(1900000)).toBe(740000);
   });
-  it('年収190万超〜360万 → 控除 = 収入×30%+8万', () => {
+  it('年収220万以上〜360万 → 控除 = 収入×30%+8万', () => {
     expect(salaryDeduction(2500000)).toBe(Math.floor(2500000 * 0.3 + 80000));
     expect(salaryDeduction(3600000)).toBe(Math.floor(3600000 * 0.3 + 80000));
   });
@@ -297,8 +297,8 @@ describe('healthInsurance(健康保険料)', () => {
   it('標準報酬月額 × 4.95%', () => {
     expect(healthInsurance(300000)).toBe(Math.floor(300000 * 0.0495));
   });
-  it('上限650,000円', () => {
-    expect(healthInsurance(700000)).toBe(Math.floor(650000 * 0.0495));
+  it('月70万円の健康保険等級は71万円', () => {
+    expect(healthInsurance(700000)).toBe(35145);
     expect(healthInsurance(620000)).toBe(Math.floor(620000 * 0.0495));
   });
   it('不正な入力 → 0', () => {
@@ -312,7 +312,7 @@ describe('pensionInsurance(厚生年金保険料)', () => {
   it('標準報酬月額 × 9.15%', () => {
     expect(pensionInsurance(300000)).toBe(Math.floor(300000 * 0.0915));
   });
-  it('上限650,000円', () => {
+  it('月70万円の健康保険等級は71万円', () => {
     expect(pensionInsurance(700000)).toBe(Math.floor(650000 * 0.0915));
   });
   it('不正な入力 → 0', () => {
@@ -351,7 +351,7 @@ describe('takeHomePay(手取り精算)', () => {
     const result = takeHomePay(300000, { premiumBase: 300000 });
     expect(result.yearlyIncome).toBe(3600000);
     expect(result.salaryDeduction).toBe(Math.floor(3600000 * 0.3 + 80000));
-    expect(result.taxableIncome).toBe(1560000);
+    expect(result.taxableIncome).toBe(870000);
     expect(result.socialInsurance.health).toBe(Math.floor(300000 * 0.0495));
     expect(result.socialInsurance.pension).toBe(Math.floor(300000 * 0.0915));
     expect(result.socialInsurance.employment).toBe(Math.floor(300000 * 0.005));

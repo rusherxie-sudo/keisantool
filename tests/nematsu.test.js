@@ -41,8 +41,8 @@ describe('earthquakeInsuranceDeduction(地震保険料控除)', () => {
 });
 
 describe('medicalExpenseDeduction(医療費控除)', () => {
-  it('医療費10万 → 確定申告用の控除額を返す', () => {
-    expect(medicalExpenseDeduction(100000)).toBe(Math.floor(100000 * 0.95));
+  it('所得300万円・医療費10万円では控除0', () => {
+    expect(medicalExpenseDeduction(100000, 3000000)).toBe(0);
   });
   it('医療費0 → 0', () => {
     expect(medicalExpenseDeduction(0)).toBe(0);
@@ -64,7 +64,7 @@ describe('calcNematsu(年末調整精算)', () => {
     });
     expect(result.yearlySalary).toBe(3600000);
     expect(result.salaryDeduction).toBeGreaterThan(0);
-    expect(result.taxableIncome).toBe(1035000);
+    expect(result.taxableIncome).toBe(875000);
     expect(result.baseIncomeTax).toBe(incomeTax(result.taxableIncome));
     expect(result.refund + result.additional).toBe(Math.abs(result.withheldTax - result.actualTax));
   });

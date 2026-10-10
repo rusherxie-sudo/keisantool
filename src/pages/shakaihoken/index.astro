@@ -28,25 +28,27 @@ const jsonld = {
 
   <div class="calc-card">
     <div class="form-group">
-      <label for="monthly-salary">月収（円）</label>
+      <label for="monthly-salary">報酬月額（通勤手当等を含む・円）</label>
       <input type="number" id="monthly-salary" inputmode="numeric" placeholder="例：300000" />
     </div>
     <div class="form-group">
       <label for="age">年齢</label>
-      <input type="number" id="age" inputmode="numeric" placeholder="例：30" />
+      <input type="number" id="age" min="16" max="69" inputmode="numeric" placeholder="例：30" />
     </div>
 
+    <p>16〜69歳の被用者保険加入者向け。年齢と報酬を入力してください。</p>
     <div class="result-box" id="result-box">
       <div class="result-label">社会保険料合計（月額）</div>
       <div class="result-main" id="result-total">¥0</div>
       <div class="result-rows">
-        <div class="result-row"><span class="label">標準報酬月額</span><span class="value" id="row-base">¥0</span></div>
+        <div class="result-row"><span class="label">厚生年金の標準報酬月額</span><span class="value" id="row-base">¥0</span></div>
+        <div class="result-row"><span class="label">健康保険の標準報酬月額</span><span class="value" id="row-health-base">¥0</span></div>
         <div class="result-row"><span class="label">健康保険料（4.95%）</span><span class="value" id="row-health">¥0</span></div>
         <div class="result-row"><span class="label">厚生年金保険料（9.15%）</span><span class="value" id="row-pension">¥0</span></div>
         <div class="result-row"><span class="label">雇用保険料（一般事業 0.5%）</span><span class="value" id="row-employment">¥0</span></div>
         <div class="result-row"><span class="label">子ども・子育て支援金（本人負担0.115%）</span><span class="value" id="row-childcare">¥0</span></div>
         <div class="result-row"><span class="label">介護保険料（40〜64歳・本人負担0.81%）</span><span class="value" id="row-nursing">¥0</span></div>
-        <div class="result-row"><span class="label">社会保険料合計（年額）</span><span class="value" id="row-yearly">¥0</span></div>
+        <div class="result-row"><span class="label">現在の月額 × 12（参考）</span><span class="value" id="row-yearly">¥0</span></div>
       </div>
     </div>
   </div>
@@ -56,109 +58,23 @@ const jsonld = {
   <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>使い方</h2>
-    <p>月収と年齢を入力すると、各種社会保険料が自動計算されます。標準報酬月額は月収から自動推定します。</p>
-
-    <h2>社会保険の基礎知識</h2>
-    <p>
-      社会保険は、国民の生活を保障するための制度です。会社員の場合は勤務先を通じて加入し、月々の保険料を負担します。社会保険には以下の4つの制度があります。
-    </p>
-
-    <h3>社会保険の種類</h3>
-    <ul>
-      <li><strong>健康保険</strong>：病気やけがの治療費を助ける制度</li>
-      <li><strong>厚生年金保険</strong>：退職後の年金を支給する制度</li>
-      <li><strong>雇用保険</strong>：失業時の生活を保障する制度</li>
-      <li><strong>介護保険</strong>：高齢者の介護を支援する制度（40歳以上のみ）</li>
-    </ul>
-
-    <h3>社会保険料の料率（2025年度現在）</h3>
-    <p>
-      社会保険料は「標準報酬月額 × 料率」で計算されます。会社員の場合は保険料の半分を会社が負担し、残りの半分を自分が負担します。
-    </p>
-    <ul>
-      <li><strong>健康保険料</strong>：全国平均の本人負担4.95%を使う概算（実額は加入支部で異なります）</li>
-      <li><strong>厚生年金保険料</strong>：公式の標準報酬月額等級 × 9.15%（令和8年度は上限650,000円）</li>
-      <li><strong>雇用保険料</strong>：一般事業の本人負担0.5%（業種により異なります）</li>
-      <li><strong>介護保険料</strong>：40〜64歳のみ。本人負担0.81%の概算</li>
-    </ul>
-
-    <h3>標準報酬月額とは</h3>
-    <p>
-      標準報酬月額は、社会保険料の計算基準となる金額です。給与に応じて定められた段階の金額（報酬月額表）を用います。例えば、月収295,000円の場合、最も近い段階の290,000円が標準報酬月額となります。
-    </p>
-    <p>
-      厚生年金の標準報酬月額は88,000円から650,000円までの公式等級です。本ツールは月収から該当する等級を推定します。
-    </p>
-
-    <h3>健康保険</h3>
-    <p>
-      健康保険は、病気やけがの治療費を助ける制度です。健康保険に加入すると、医療費の一部を負担するだけで治療を受けられます（原則3割負担）。
-    </p>
-    <p>特徴：</p>
-    <ul>
-      <li>加入者本人だけでなく、家族も保険の対象になる</li>
-      <li>出産時には出産手当金が支給される</li>
-      <li>傷病手当金制度があり、長期の療養期間中の生活を支援する</li>
-    </ul>
-
-    <h3>厚生年金保険</h3>
-    <p>
-      厚生年金保険は、退職後の年金を支給する制度です。厚生年金に加入している期間に応じて、老齢年金が支給されます。
-    </p>
-    <p>特徴：</p>
-    <ul>
-      <li>加入期間が長いほど、受け取れる年金額が多くなる</li>
-      <li>65歳から老齢年金を受け取れる（定年が60歳の場合は60歳から受け取れる場合もある）</li>
-      <li>障害年金や遺族年金の制度もある</li>
-    </ul>
-
-    <h3>雇用保険</h3>
-    <p>
-      雇用保険は、失業時の生活を保障する制度です。解雇や契約終了などで失業した場合に、失業給付金が支給されます。
-    </p>
-    <p>離職前の月給から受給額を試算する場合は、<a href="/shitsugyou-teate/">失業手当計算シミュレーション</a>で基本手当日額・給付日数・総支給額を確認できます。</p>
-    <p>特徴：</p>
-    <ul>
-      <li>失業給付金は、過去の給与に応じて計算される</li>
-      <li>給付期間は加入期間に応じて変わる（最長で330日）</li>
-      <li>職業訓練を受ける際の支援制度もある</li>
-    </ul>
-
-    <h3>介護保険</h3>
-    <p>
-      介護保険は、高齢者の介護を支援する制度です。40歳以上の方が加入し、65歳以上になって介護が必要になった場合に利用できます。
-    </p>
-    <p>特徴：</p>
-    <ul>
-      <li>40歳以上の方が保険料を負担する</li>
-      <li>介護サービスの利用料を助けてくれる（原則1割または2割負担）</li>
-      <li>在宅介護と施設介護の両方を支援する</li>
-    </ul>
-
-    <h3>社会保険料の負担割合</h3>
-    <p>
-      会社員の社会保険料は、原則として会社と個人が半分ずつ負担します。ただし、雇用保険料は会社が多く負担する場合があります。
-    </p>
-    <ul>
-      <li><strong>健康保険料</strong>：会社50% ／ 個人50%</li>
-      <li><strong>厚生年金保険料</strong>：会社50% ／ 個人50%</li>
-      <li><strong>雇用保険料</strong>：会社70% ／ 個人30%</li>
-      <li><strong>介護保険料</strong>：会社50% ／ 個人50%</li>
-    </ul>
-
-    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の保険料は保険証や給与明細書で確認してください。料率は年度ごとに改定される場合があります。</div>
+    <h2>2026年度・4月分以降の本人負担を試算</h2>
+    <p>加入済みの会社員等を対象に、報酬月額から等級を推定します。健康保険は協会けんぽの全国平均9.90%の半分、厚生年金は9.15%、一般事業の雇用保険は賃金の0.5%、子ども・子育て支援金は0.115%で計算します。40〜64歳には介護保険0.81%を加えます。支部・健康保険組合・業種が違えば料率も変わります。</p>
+    <h3>健康保険と年金では上限が違います</h3>
+    <p>健康保険は58,000〜1,390,000円、厚生年金は88,000〜650,000円の標準報酬月額を使います。報酬295,000円なら両方300,000円、700,000円なら健康保険710,000円・厚生年金650,000円です。実際の等級は定時決定・随時改定などで決まるため、毎月の支給額と一致するとは限りません。</p>
+    <h3>月30万円・30歳の例</h3>
+    <p>健康保険14,850円＋厚生年金27,450円＋雇用保険1,500円＋支援金345円＝44,145円。40歳なら介護保険2,430円を加え46,575円です。</p>
+    <p>円未満は概算上切り捨てます。実務では控除時の端数処理や労使の特約で差が出ます。賞与、育休中の免除、任意継続、70歳以上は対象外です。65〜69歳の市区町村の介護保険料も含みません。「月額×12」は2026年1〜12月の実際の合計ではありません。</p>
+    <h3>出典・確認範囲</h3>
+    <p>2026年10月10日に等級・適用月・料率を照合：<a href="https://www.kyoukaikenpo.or.jp/g7/cat330/sb3150/">協会けんぽ保険料額表</a>、<a href="https://www.kyoukaikenpo.or.jp/assets/R8_44oita.pdf">等級表（大分支部・PDF。支部料率は本概算と異なる）</a>、<a href="https://www.mhlw.go.jp/content/001692566.pdf">厚生労働省・2026年度雇用保険料率</a>。</p>
+    <p>給与全体の目安は<a href="/kyuyo/">手取り計算</a>、退職後は<a href="/kokuho/">国保料計算</a>で比較できます。</p>
   </section>
 
   <RelatedTools current={slug} />
 
   <RelatedArticles toolSlug={slug} />
 
-  <Faq items={[
-    { q: '社会保険料はどう計算されますか？', a: '標準報酬月額と料率で計算します。健康保険料率は加入支部で、雇用保険料率は業種で異なるため、本ツールは一般的な目安を表示します。' },
-    { q: '介護保険料は誰が支払うのですか？', a: '健康保険に加入する40〜64歳の方が対象です。65歳以降は原則として年金からの特別徴収など別の方法になります。' },
-    { q: '標準報酬月額とは何ですか？', a: '社会保険料の計算基準となる給与区分です。厚生年金は令和8年度に88,000円から650,000円までの等級が適用されます。' },
-  ]} />
+  <Faq items={[{ q: '加入できるかも判定できますか？', a: '加入資格の判定は行いません。既に加入する方の保険料目安です。勤務時間・契約期間・事業所等の条件は勤務先で確認してください。' }, { q: '年齢で何が変わりますか？', a: '40〜64歳は健康保険と合わせて徴収する介護保険を加算します。65歳以降の自治体の介護保険料は別途必要です。' }]} />
 
   <div class="ad-slot"></div>
 </ToolLayout>
@@ -177,13 +93,15 @@ const jsonld = {
     const salary = $('monthly-salary').value;
     const age = $('age').value;
     
+    if (age === '' || Number(age) < 16 || Number(age) > 69) return hide(box);
     const result = calcShakaihoken(salary, age);
     
     if (result.premiumBase === 0) return hide(box);
     
     show(box);
     $('result-total').textContent = yen(result.total);
-    $('row-base').textContent = yen(result.premiumBase);
+    $('row-base').textContent = yen(result.pensionPremiumBase);
+    $('row-health-base').textContent = yen(result.healthPremiumBase);
     $('row-health').textContent = yen(result.health);
     $('row-pension').textContent = yen(result.pension);
     $('row-employment').textContent = yen(result.employment);
