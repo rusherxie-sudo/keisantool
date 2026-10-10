@@ -2,6 +2,8 @@
 // 医療費控除は年末調整の対象外のため、確定申告へ案内する。
 import {
   incomeTaxBeforeSurtax,
+  salaryIncome,
+  basicDeduction,
   incomeTaxWithSurtax,
   salaryDeduction,
   taxableIncomeFromSalary,
@@ -31,9 +33,11 @@ export function earthquakeInsuranceDeduction(premium) {
 }
 
 // 互換用に残すが、calcNematsu では使用しない（確定申告の対象）。
-export function medicalExpenseDeduction(totalExpense) {
-  const amount = Number(totalExpense);
-  return Number.isFinite(amount) && amount > 0 ? Math.max(0, Math.floor(amount - Math.min(100000, amount * 0.05))) : 0;
+export function medicalExpenseDeduction(totalExpense, totalIncome = 2000000, compensation = 0) {
+  const safe = (v) => Number.isFinite(Number(v)) ? Math.max(0, Number(v)) : 0;
+  // 補填額は、その補填対象の医療費を超えない額を入力する。
+  const threshold = Math.min(100000, safe(totalIncome) * 0.05);
+  return Math.min(2000000, Math.max(0, Math.floor(safe(totalExpense) - safe(compensation) - threshold)));
 }
 
 export function smallBusinessDeduction(premium) {
@@ -49,8 +53,12 @@ export function calcNematsu(yearlySalary, withheldTax, deductions = {}) {
   }
   const salaryDeductionAmount = salaryDeduction(salary);
   const breakdown = {
-    socialInsurance: socialInsuranceDeduction(deductions.socialInsurance),
-    lifeInsurance: lifeInsuranceDeduction(deductions.lifeInsurance),
+    socialInsurance: deductions.annualSocialInsurance == null
+      ? socialInsuranceDeduction(deductions.socialInsurance)
+      : smallBusinessDeduction(deductions.annualSocialInsurance),
+    lifeInsurance: deductions.lifeDeduction == null
+      ? lifeInsuranceDeduction(deductions.lifeInsurance)
+      : Math.min(120000, smallBusinessDeduction(deductions.lifeDeduction)),
     earthquakeInsurance: earthquakeInsuranceDeduction(deductions.earthquakeInsurance),
     medicalExpense: 0,
     smallBusiness: smallBusinessDeduction(deductions.smallBusiness),
@@ -58,14 +66,14 @@ export function calcNematsu(yearlySalary, withheldTax, deductions = {}) {
   const additionalDeductions = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
   const taxableIncome = taxableIncomeFromSalary(salary, additionalDeductions);
   const baseIncomeTax = incomeTaxBeforeSurtax(taxableIncome);
-  const actualTax = incomeTaxWithSurtax(taxableIncome);
+  const actualTax = Math.floor(incomeTaxWithSurtax(taxableIncome) / 100) * 100;
   const normalizedWithheld = Number.isFinite(withheld) && withheld > 0 ? Math.floor(withheld) : 0;
   return {
     yearlySalary: Math.floor(salary), salaryDeduction: salaryDeductionAmount,
     // 基礎控除を含む控除総額を表示用に返す。
-    totalDeductions: Math.floor(salary - salaryDeductionAmount - taxableIncome),
+    totalDeductions: basicDeduction(salaryIncome(salary)) + additionalDeductions,
     taxableIncome, actualTax, baseIncomeTax,
-    reconstructionSurtax: actualTax - baseIncomeTax,
+    reconstructionSurtax: incomeTaxWithSurtax(taxableIncome) - baseIncomeTax,
     withheldTax: normalizedWithheld,
     refund: Math.max(0, normalizedWithheld - actualTax),
     additional: Math.max(0, actualTax - normalizedWithheld),

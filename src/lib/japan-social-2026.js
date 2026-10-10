@@ -13,6 +13,23 @@ const PENSION_BRACKETS = [
   [575000, 560000], [605000, 590000], [635000, 620000], [Infinity, 650000],
 ];
 
+// 健康保険の50等級。協会けんぽ令和8年度表（厚生年金と上下限が異なる）。
+// https://www.kyoukaikenpo.or.jp/assets/R8_44oita.pdf
+const HEALTH_BRACKETS = [
+  [63000, 58000], [73000, 68000], [83000, 78000],
+  ...PENSION_BRACKETS.slice(0, -1), [665000, 650000],
+  [695000, 680000], [730000, 710000], [770000, 750000], [810000, 790000],
+  [855000, 830000], [905000, 880000], [955000, 930000], [1005000, 980000],
+  [1055000, 1030000], [1115000, 1090000], [1175000, 1150000], [1235000, 1210000],
+  [1295000, 1270000], [1355000, 1330000], [Infinity, 1390000],
+];
+
+export function estimateHealthPremiumBase(monthlyRemuneration) {
+  const amount = Number(monthlyRemuneration);
+  if (!Number.isFinite(amount) || amount <= 0) return 0;
+  return HEALTH_BRACKETS.find(([upper]) => amount < upper)[1];
+}
+
 export function estimatePensionPremiumBase(monthlyRemuneration) {
   const amount = Number(monthlyRemuneration);
   if (!Number.isFinite(amount) || amount <= 0) return 0;
@@ -20,7 +37,7 @@ export function estimatePensionPremiumBase(monthlyRemuneration) {
 }
 
 export function employeeHealthInsurance(monthlyRemuneration) {
-  const base = estimatePensionPremiumBase(monthlyRemuneration);
+  const base = estimateHealthPremiumBase(monthlyRemuneration);
   return Math.floor(base * 0.0495);
 }
 
@@ -35,21 +52,22 @@ export function employeeEmploymentInsurance(monthlyWage) {
 }
 
 export function employeeChildcareSupport(monthlyRemuneration) {
-  return Math.floor(estimatePensionPremiumBase(monthlyRemuneration) * 0.00115);
+  return Math.floor(estimateHealthPremiumBase(monthlyRemuneration) * 0.00115);
 }
 
 export function employeeNursingInsurance(monthlyRemuneration, age) {
   const parsedAge = Number(age);
   if (!Number.isFinite(parsedAge) || parsedAge < 40 || parsedAge >= 65) return 0;
-  return Math.floor(estimatePensionPremiumBase(monthlyRemuneration) * 0.0081);
+  return Math.floor(estimateHealthPremiumBase(monthlyRemuneration) * 0.0081);
 }
 
 export function calculateEmployeeSocialInsurance(monthlyRemuneration, age) {
   const premiumBase = estimatePensionPremiumBase(monthlyRemuneration);
+  const healthPremiumBase = estimateHealthPremiumBase(monthlyRemuneration);
   const health = employeeHealthInsurance(monthlyRemuneration);
   const pension = pensionInsurance(monthlyRemuneration);
   const employment = employeeEmploymentInsurance(monthlyRemuneration);
   const childcare = employeeChildcareSupport(monthlyRemuneration);
   const nursing = employeeNursingInsurance(monthlyRemuneration, age);
-  return { premiumBase, health, pension, employment, childcare, nursing, total: health + pension + employment + childcare + nursing };
+  return { premiumBase, pensionPremiumBase: premiumBase, healthPremiumBase, health, pension, employment, childcare, nursing, total: health + pension + employment + childcare + nursing };
 }

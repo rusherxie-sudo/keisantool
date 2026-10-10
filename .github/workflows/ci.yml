@@ -20,4 +20,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      # postbuild also validates generated links, article anchors and sitemap.
       - run: npm run build

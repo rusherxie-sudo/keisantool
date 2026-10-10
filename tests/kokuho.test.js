@@ -7,7 +7,7 @@ import {
 } from '../src/lib/kokuho.js';
 
 describe('CITIES（自治体の料率表）', () => {
-  it('東京23区と大阪市が含まれる', () => {
+  it('練馬区と大阪市が含まれる', () => {
     const keys = CITIES.map((c) => c.key);
     expect(keys).toContain('tokyo23');
     expect(keys).toContain('osaka');
@@ -114,68 +114,37 @@ describe('reductionRate（均等割の軽減判定）', () => {
   });
 });
 
-describe('calcKokuho（保険料の総合計算）', () => {
-  const tokyo = 'tokyo23';
-
-  it('所得なし・1人・40歳未満 → 均等割のみ・7割軽減適用', () => {
-    const r = calcKokuho({ income: 0, members: 1, hasCare: false, city: tokyo });
-    expect(r.total).toBeGreaterThan(0);
-    expect(r.reduction).toBe(0.7);
-    expect(r.care).toBe(0); // 介護対象でない
-    // 所得割は0（所得43万未満）
-    expect(r.medical).toBe(r.medicalPerCapita); // 均等割のみ
+describe('2026 full-year household corrections, Nerima / Osaka official rates', () => {
+  it('deducts 430,000 separately and charges care only for the 45-year-old', () => {
+    const r = calcKokuho({ city:'tokyo23', people:[{income:2000000, ageGroup:'care'}, {income:1000000, ageGroup:'adult'}], reduction:0 });
+    expect(r).toMatchObject({ taxableBase:2140000, medical:255914, support:95120, care:55951, childcare:9524, total:416509 });
   });
-
-  it('40〜64歳ありで介護分が加算される', () => {
-    const noCare = calcKokuho({ income: 3000000, members: 1, hasCare: false, city: tokyo });
-    const withCare = calcKokuho({ income: 3000000, members: 1, hasCare: true, city: tokyo });
-    expect(noCare.care).toBe(0);
-    expect(withCare.care).toBeGreaterThan(0);
-    expect(withCare.total).toBeGreaterThan(noCare.total);
+  it('Osaka includes both household levies and child support', () => {
+    expect(calcKokuho({ city:'osaka', people:[{income:2000000, ageGroup:'adult'}], reduction:0 }))
+      .toMatchObject({ medical:218048, support:70078, care:0, childcare:6237, total:294363 });
   });
-
-  it('金額は全て整数（Math.floor）', () => {
-    const r = calcKokuho({ income: 3210987, members: 2, hasCare: true, city: tokyo });
-    expect(Number.isInteger(r.total)).toBe(true);
-    expect(Number.isInteger(r.medical)).toBe(true);
-    expect(Number.isInteger(r.support)).toBe(true);
-    expect(Number.isInteger(r.care)).toBe(true);
+  it('preschool child gets half fixed medical/support and no child-support fixed levy', () => {
+    expect(calcKokuho({ city:'tokyo23', people:[{income:0, ageGroup:'adult'}, {income:0, ageGroup:'preschool'}], reduction:0.7 }))
+      .toMatchObject({ medical:21420, support:7920, care:0, childcare:561, total:29901 });
   });
-
-  it('高所得では賦課限度額が適用される', () => {
-    const r = calcKokuho({ income: 20000000, members: 1, hasCare: true, city: tokyo });
-    const t = CITIES.find((c) => c.key === tokyo).rates;
-    expect(r.medical).toBe(t.medical.cap);
-    expect(r.support).toBe(t.support.cap);
-    expect(r.care).toBe(t.care.cap);
-    expect(r.total).toBe(t.medical.cap + t.support.cap + t.care.cap);
+  it('does not infer low-income relief without head-of-household income etc.', () => {
+    expect(calcKokuho({ city:'tokyo23', people:[{income:0, ageGroup:'adult'}] }).reduction).toBe(0);
   });
-
-  it('所得割 = (所得-43万)×率（軽減なし・限度額未満の範囲で検算）', () => {
-    const income = 2000000;
-    const members = 1;
-    const r = calcKokuho({ income, members, hasCare: false, city: tokyo });
-    const t = CITIES.find((c) => c.key === tokyo).rates;
-    const base = income - 430000;
-    const expMedical = Math.floor(
-      Math.floor(base * t.medical.incomeRate) + t.medical.perCapita * members
-    );
-    expect(r.medical).toBe(expMedical);
+  it('empty household and invalid input are rejected', () => {
+    expect(calcKokuho({ city:'tokyo23', people:[] }).total).toBe(0);
+    expect(() => calcKokuho({ city:'unknown', people:[{income:0, ageGroup:'adult'}] })).toThrow();
+    expect(() => calcKokuho({ city:'osaka', people:[{income:-1, ageGroup:'adult'}] })).toThrow();
   });
+});
 
-  it('都市が違えば料率が違い結果も変わる', () => {
-    const a = calcKokuho({ income: 3000000, members: 2, hasCare: true, city: 'tokyo23' });
-    const b = calcKokuho({ income: 3000000, members: 2, hasCare: true, city: 'osaka' });
-    expect(a.total).not.toBe(b.total);
+// Municipal caps differ: do not replace them with a single national total.
+describe('2026 municipal household caps', () => {
+  it('Nerima care-age household is capped at 1,130,000 yen', () => {
+    expect(calcKokuho({ city:'tokyo23', people:[{income:30000000, ageGroup:'care'}] }))
+      .toMatchObject({medical:670000, support:260000, care:170000, childcare:30000, total:1130000});
   });
-
-  it('不正な都市キー → tokyo23 にフォールバック', () => {
-    const r = calcKokuho({ income: 3000000, members: 1, hasCare: false, city: 'unknown' });
-    expect(r.total).toBeGreaterThan(0);
-  });
-
-  it('世帯人数0や不正入力 → 安全に0または最小値', () => {
-    const r = calcKokuho({ income: NaN, members: 0, hasCare: false, city: tokyo });
-    expect(r.total).toBe(0);
+  it('Osaka adult household excludes care and is capped at 950,000 yen', () => {
+    expect(calcKokuho({ city:'osaka', people:[{income:30000000, ageGroup:'adult'}] }))
+      .toMatchObject({medical:660000, support:260000, care:0, childcare:30000, total:950000});
   });
 });

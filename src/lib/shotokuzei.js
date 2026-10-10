@@ -2,6 +2,8 @@
 // 年度別の控除・税率表は japan-tax-2026.js に集約する。
 import {
   incomeTaxBeforeSurtax,
+  salaryIncome,
+  basicDeduction,
   incomeTaxWithSurtax,
   salaryDeduction,
   taxableIncomeFromSalary,
@@ -34,18 +36,19 @@ export function incomeTaxBreakdown(taxableIncome) {
   };
 }
 
-// 年収のみを入力する概算。基礎控除は反映するが、社会保険料・扶養等は別途必要。
-export function calcShotokuzei(yearlySalary) {
+// 2026年分の給与のみ。追加所得控除は利用者が計算済み額を入力する。
+export function calcShotokuzei(yearlySalary, additionalDeductions = 0) {
   const salary = Number(yearlySalary);
   if (!Number.isFinite(salary) || salary <= 0) {
     return { yearlySalary: 0, salaryDeduction: 0, taxableIncome: 0, incomeTax: 0, monthlyTax: 0 };
   }
   const deduction = salaryDeduction(salary);
-  const taxableIncome = taxableIncomeFromSalary(salary);
+  const taxableIncome = taxableIncomeFromSalary(salary, additionalDeductions);
   const baseIncomeTax = incomeTax(taxableIncome);
   const incomeTaxWithReconstruction = incomeTaxWithSurtax(taxableIncome);
   return {
     yearlySalary: Math.floor(salary), salaryDeduction: deduction, taxableIncome,
+    basicDeduction: basicDeduction(salaryIncome(salary)),
     incomeTax: incomeTaxWithReconstruction, baseIncomeTax,
     reconstructionSurtax: incomeTaxWithReconstruction - baseIncomeTax,
     monthlyTax: Math.floor(incomeTaxWithReconstruction / 12),

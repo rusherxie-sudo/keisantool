@@ -99,7 +99,11 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-XM8LC5MPHT');
+    // 共有URLの入力値を解析イベントのURLに含めない。
+    const analyticsPage = window.location.origin + window.location.pathname;
+    let analyticsReferrer = '';
+    try { const ref = new URL(document.referrer); analyticsReferrer = ref.origin + ref.pathname; } catch {}
+    gtag('config', 'G-XM8LC5MPHT', { page_location: analyticsPage, page_referrer: analyticsReferrer });
   </script>
   <title>{title}</title>
   <meta name="description" content={description} />
@@ -145,16 +149,6 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   {jsonldFinal && <script type="application/ld+json" set:html={JSON.stringify(jsonldFinal)} />}
   <script type="application/ld+json" set:html={JSON.stringify(webPageJsonld)} />
   {breadcrumbJsonld && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonld)} />}
-  <!-- 百度统计代码 -->
-  <script is:inline>
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?d84361ca34153f1c434c38b9cb0e0bb5";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
 </head>
 <body data-tool-slug={slug ?? current ?? ''}>
   <SiteHeader current={current} />

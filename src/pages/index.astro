@@ -56,10 +56,10 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
   </div>
 
   <section class="annual-entry" aria-label="2027年の準備"><a href="/2027/"><strong>2027年の仕事・暮らしを準備</strong><span>営業日・有給でつなぐ連休・年齢・学年・カレンダーデータ →</span></a></section>
-  <!-- よく使われるツール -->
+  <!-- すぐ使える計算ツール -->
   <section class="home-featured">
     <div class="home-h2-row">
-      <h2 class="home-h2">よく使われるツール</h2>
+      <h2 class="home-h2">すぐ使える計算ツール</h2>
     </div>
     <div class="featured-grid">
       {featured.map((t) => (
@@ -74,6 +74,16 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
     </div>
   </section>
 
+  <section class="home-tasks" aria-labelledby="task-title">
+    <h2 id="task-title" class="home-h2">いま確認したいことから探す</h2>
+    <div class="task-grid">
+      <article><h3>給与と税金を確認する</h3><p>額面と手取り、年末の還付、保険料の内訳。</p><nav><a href="/kyuyo/">手取り</a><a href="/nematsu/">年末調整</a><a href="/kokuho/">退職後の国保</a></nav></article>
+      <article><h3>書類に年齢・日付を記入する</h3><p>生年月日から年齢を調べ、和暦や学年へ。</p><nav><a href="/nenrei-hayami/">年齢早見表</a><a href="/wareki/">和暦変換</a><a href="/gakunen-hayami/">学年</a></nav></article>
+      <article><h3>仕事の予定を立てる</h3><p>締切までの日数や入社からの経過を確認。</p><nav><a href="/nissu/">日数</a><a href="/kinzoku-nensuu/">勤続年数</a><a href="/2027/">2027年の準備</a></nav></article>
+      <article><h3>日々の支払いを分ける</h3><p>税込額、割り勘、移動にかかる燃料費。</p><nav><a href="/zeizei/">消費税</a><a href="/warikai/">割り勘</a><a href="/gasoline/">ガソリン代</a></nav></article>
+    </div>
+  </section>
+  <div class="home-search"><label for="tool-filter">ツール名・用途で絞り込む</label><input id="tool-filter" type="search" placeholder="例：年齢、給与、PDF" autocomplete="off" /><p id="filter-status" role="status" aria-live="polite"></p></div>
   <!-- 工作台：左 rail + 右 矩阵 -->
   <div class="workbench" id="all-tools">
     <aside class="cat-rail" aria-label="カテゴリ">
@@ -96,7 +106,7 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
           </div>
           <div class="tool-cards">
             {cat.items.map((t) => (
-              <a href={`/${t.slug}/`} class="tool-card2">
+              <a href={`/${t.slug}/`} class="tool-card2" data-search={`${t.name} ${t.nav} ${t.short} ${t.category}`}>
                 <span class="tool-card2__ic"><Icon name={t.slug} size={22} /></span>
                 <span class="tool-card2__body">
                   <span class="tool-card2__name">{t.name}</span>
@@ -156,6 +166,21 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
 </ToolLayout>
 
 <script>
+  const filter = document.getElementById('tool-filter');
+  const toolCards = [...document.querySelectorAll('.tool-card2')];
+  filter.addEventListener('input', () => {
+    const query = filter.value.normalize('NFKC').toLowerCase().trim();
+    let matches = 0;
+    for (const card of toolCards) {
+      card.hidden = !card.dataset.search.normalize('NFKC').toLowerCase().includes(query);
+      if (!card.hidden) matches++;
+    }
+    document.querySelectorAll('.cat-block').forEach(block => {
+      block.hidden = ![...block.querySelectorAll('.tool-card2')].some(card => !card.hidden);
+    });
+    document.getElementById('filter-status').textContent = query ? `${matches}件のツール${matches === 0 ? '。別の言葉でお試しください。' : ''}` : '';
+  });
+
   // rail スクロールスパイ（現在見えているカテゴリをハイライト）
   const railItems = Array.from(document.querySelectorAll('.rail-item'));
   const blocks = Array.from(document.querySelectorAll('.cat-block'));
@@ -177,6 +202,20 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
 </script>
 
 <style>
+  .home-tasks { margin:32px 0; }
+  .task-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:16px; }
+  .task-grid article { padding:20px; border:1px solid var(--border); border-radius:16px; background:var(--surface); }
+  .task-grid h3 { margin:0 0 8px; font-size:1rem; }
+  .task-grid p { margin:0 0 12px; color:var(--text-3); font-size:.9rem; }
+  .task-grid nav { display:flex; flex-wrap:wrap; gap:8px 16px; }
+  .task-grid a { color:var(--brand); text-decoration:underline; }
+  .home-search { margin:24px 0; max-width:640px; }
+  .home-search label { display:block; font-weight:700; margin-bottom:8px; }
+  .home-search input { width:100%; padding:14px; border:1px solid var(--border); border-radius:12px; background:var(--surface); color:var(--text); }
+  .home-search p { min-height:1.5em; font-size:.85rem; }
+  .tool-card2[hidden], .cat-block[hidden] { display:none; }
+  @media(max-width:680px) { .task-grid { grid-template-columns:1fr; } }
+
   .home-value {
     margin: 42px 0 10px;
     padding: 32px;

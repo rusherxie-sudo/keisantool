@@ -2,11 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { salaryDeduction, incomeTax, incomeTaxBreakdown, calcShotokuzei } from '../src/lib/shotokuzei.js';
 
 describe('salaryDeduction(給与所得控除)', () => {
-  it('162.5万超〜180万は改正後の段階式', () => {
-    expect(salaryDeduction(1800000)).toBe(650000);
-    expect(salaryDeduction(1900000)).toBe(650000);
+  it('2026年分の低所得給与控除は74万円', () => {
+    expect(salaryDeduction(1800000)).toBe(740000);
+    expect(salaryDeduction(1900000)).toBe(740000);
   });
-  it('年収190万超〜360万 → 控除 = 収入×30%+8万', () => {
+  it('年収220万以上〜360万 → 控除 = 収入×30%+8万', () => {
     expect(salaryDeduction(2500000)).toBe(Math.floor(2500000 * 0.3 + 80000));
     expect(salaryDeduction(3600000)).toBe(Math.floor(3600000 * 0.3 + 80000));
   });
@@ -77,19 +77,19 @@ describe('incomeTaxBreakdown(所得税詳細)', () => {
 });
 
 describe('calcShotokuzei(所得税精算)', () => {
-  it('年収360万 → 基礎控除後の課税所得156万 → 復興特別所得税込み', () => {
+  it('年収360万 → 基礎控除後の課税所得140万 → 復興特別所得税込み', () => {
     const result = calcShotokuzei(3600000);
     expect(result.yearlySalary).toBe(3600000);
     expect(result.salaryDeduction).toBe(Math.floor(3600000 * 0.3 + 80000));
-    expect(result.taxableIncome).toBe(1560000);
+    expect(result.taxableIncome).toBe(1400000);
     expect(result.baseIncomeTax).toBe(incomeTax(result.taxableIncome));
-    expect(result.incomeTax).toBe(79638);
+    expect(result.incomeTax).toBe(71470);
     expect(result.monthlyTax).toBe(Math.floor(result.incomeTax / 12));
   });
   it('年収1000万 → 高額所得の計算', () => {
     const result = calcShotokuzei(10000000);
     expect(result.salaryDeduction).toBe(1950000);
-    expect(result.taxableIncome).toBe(7470000);
+    expect(result.taxableIncome).toBe(7430000);
   });
   it('年収0 → 全て0', () => {
     const result = calcShotokuzei(0);

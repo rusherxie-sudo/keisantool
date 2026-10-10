@@ -1,134 +1,69 @@
-// 国民健康保険料の概算計算ロジック（純関数・DOM非依存）。
-// ⚠️ 国保料率は自治体ごとに異なり、毎年度改定される。本ツールは「概算」であり、
-//   正確な金額は必ずお住まいの市区町村にご確認ください。
-//
-// 料率の出典（令和8年度＝2026年度）:
-//   ・東京23区（特別区・統一保険料率）
-//       練馬区「国民健康保険料の計算方法（令和8年度）」
-//       https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/keisan_hoho.html
-//   ・大阪市（大阪府内統一保険料率）
-//       大阪市「令和8年度大阪市国民健康保険料のお知らせ」
-//       https://www.city.osaka.lg.jp/fukushima/page/0000624311.html
-//   ・均等割の軽減（7割／5割／2割）判定基準（令和8年度）
-//       松阪市「国民健康保険税の軽減（令和8年度）」
-//       https://www.city.matsusaka.mie.jp/soshiki/23/keigen.html
-//
-// 簡略化モデルについて:
-//   本ツールは「所得割 ＋ 均等割」のみで概算する。一部自治体（大阪市など）にある
-//   「平等割（世帯ごとの定額）」は反映していないため、実際の保険料はより高くなる
-//   場合がある。金額の端数は全て切り捨て（Math.floor）。
-
-// 基礎控除額（所得割の算定基礎から差し引く額）
+// 2026年度（2025年所得）、通年加入・一般所得の国保概算。
+// https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/keisan_hoho.html
+// https://www.city.osaka.lg.jp/fukushima/page/0000624311.html
+// 所得割・均等割・平等割・限度額、未就学児・18歳未満の均等割軽減を反映。
+import { salaryIncome } from './japan-tax-2026.js';
+import { residentBasicDeduction } from './juminzei.js';
 export const BASIC_DEDUCTION = 430000;
-
-// 自治体ごとの料率表（医療分 / 後期高齢者支援金分 / 介護分）
-// incomeRate: 所得割率（小数）, perCapita: 均等割額（円/人）, cap: 賦課限度額（円）
 export const CITIES = [
-  {
-    key: 'tokyo23',
-    name: '東京23区',
-    note: '特別区の統一保険料率（令和8年度）',
-    rates: {
-      medical: { incomeRate: 0.0751, perCapita: 47600, cap: 670000 },
-      support: { incomeRate: 0.028, perCapita: 17600, cap: 260000 },
-      care: { incomeRate: 0.0243, perCapita: 17800, cap: 170000 },
-    },
-  },
-  {
-    key: 'osaka',
-    name: '大阪市',
-    note: '大阪府内統一保険料率（令和8年度）。平等割は概算に含めず',
-    rates: {
-      medical: { incomeRate: 0.095, perCapita: 34990, cap: 660000 },
-      support: { incomeRate: 0.0306, perCapita: 11191, cap: 260000 },
-      care: { incomeRate: 0.026, perCapita: 18682, cap: 170000 },
-    },
-  },
+  { key:'tokyo23', name:'練馬区', rates: {
+    medical:{ incomeRate:0.0751, perCapita:47600, household:0, cap:670000 },
+    support:{ incomeRate:0.028, perCapita:17600, household:0, cap:260000 },
+    care:{ incomeRate:0.0243, perCapita:17800, household:0, cap:170000 },
+    childcare:{ incomeRate:0.0027, perCapita:1873, household:0, cap:30000 },
+  }},
+  { key:'osaka', name:'大阪市', rates: {
+    medical:{ incomeRate:0.095, perCapita:34990, household:33908, cap:660000 },
+    support:{ incomeRate:0.0306, perCapita:11191, household:10845, cap:260000 },
+    care:{ incomeRate:0.026, perCapita:18682, household:0, cap:170000 },
+    childcare:{ incomeRate:0.0028, perCapita:1841, household:0, cap:30000 },
+  }},
 ];
 
-function getCity(key) {
-  return CITIES.find((c) => c.key === key) || CITIES[0];
-}
+export function incomeFromSalary(salary) { return salaryIncome(salary, 2025); }
 
-// 年収（給与収入）→ 給与所得の概算。
-// 令和7年度税制改正後の給与所得控除に基づく（最低保障額 55万→65万、適用範囲を年収190万まで拡大）。
-// 令和8年度の国保料は令和7年中の所得が基礎となるため、改正後の速算表を用いる。
-// 速算表（令和7年分以降）:
-//   〜190万      : 控除65万（最低保障）
-//   190万超〜360万: 控除 = 収入×30%+8万
-//   360万超〜660万: 控除 = 収入×20%+44万
-//   660万超〜850万: 控除 = 収入×10%+110万
-//   850万超      : 控除上限195万
-export function incomeFromSalary(salary) {
-  const s = Number(salary);
-  if (!Number.isFinite(s) || s <= 0) return 0;
-  let income;
-  if (s <= 1900000) income = s - 650000; // 最低控除65万
-  else if (s <= 3600000) income = s * 0.7 - 80000; // 控除 = 収入×30%+8万
-  else if (s <= 6600000) income = s * 0.8 - 440000; // 控除 = 収入×20%+44万
-  else if (s <= 8500000) income = s * 0.9 - 1100000; // 控除 = 収入×10%+110万
-  else income = s - 1950000; // 控除上限195万
-  return Math.max(0, Math.floor(income));
-}
-
-// 均等割の軽減判定（世帯の総所得・加入者数から軽減割合を返す）
-// 給与所得者等の数は本概算では考慮せず 1 人として扱う（加算なし）。
-// 7割: 43万
-// 5割: 43万 + 31万 × 加入者数
-// 2割: 43万 + 57万 × 加入者数
-export function reductionRate(income, members) {
+// 判定用所得（世帯主等を含む・年金特例調整済み）を別途用意した場合の補助関数。
+export function reductionRate(income, members, salaryPensionEarners = 1) {
   const inc = Number(income);
   const n = Math.max(1, Math.floor(Number(members) || 1));
   if (!Number.isFinite(inc) || inc < 0) return 0;
-  if (inc <= 430000) return 0.7;
-  if (inc <= 430000 + 295000 * 0 + 310000 * n) return 0.5;
-  if (inc <= 430000 + 570000 * n) return 0.2;
+  const threshold = 430000 + 100000 * Math.max(0, Math.floor(salaryPensionEarners) - 1);
+  if (inc <= threshold) return 0.7;
+  if (inc <= threshold + 310000 * n) return 0.5;
+  if (inc <= threshold + 570000 * n) return 0.2;
   return 0;
 }
 
-// 1区分の保険料を計算（所得割 + 均等割、軽減・限度額を反映）
-function calcCategory(rate, taxableBase, members, reduce) {
-  const incomePart = Math.floor(taxableBase * rate.incomeRate);
-  const perCapitaPart = Math.floor(rate.perCapita * members * (1 - reduce));
-  return {
-    total: Math.min(rate.cap, incomePart + perCapitaPart),
-    perCapita: perCapitaPart,
-  };
-}
-
-// 総合計算
-// 引数: { income(給与所得), members(加入人数), hasCare(40〜64歳が居るか), city(都市キー) }
-export function calcKokuho({ income, members, hasCare, city }) {
-  const inc = Number(income);
-  const n = Math.floor(Number(members) || 0);
-  if (n < 1) {
-    return {
-      total: 0, medical: 0, support: 0, care: 0,
-      medicalPerCapita: 0, supportPerCapita: 0, carePerCapita: 0,
-      reduction: 0, income: 0, taxableBase: 0,
-    };
+// people: 国保加入者ごとの所得と年齢区分。ageGroup: preschool / child / adult / care / senior。
+// reduction は通知書等で確認した軽減割合。未申告・世帯主の所得等が不明なため自動認定しない。
+export function calcKokuho({ people = [], city = 'tokyo23', reduction = 0 }) {
+  const selected = CITIES.find(c => c.key === city);
+  if (!selected) throw new RangeError('対応する自治体を選んでください。');
+  if (![0, 0.2, 0.5, 0.7].includes(reduction)) throw new RangeError('軽減区分を確認してください。');
+  const members = people.map(person => {
+    const income = Number(person.income);
+    if (!Number.isFinite(income) || income < 0 || !['preschool','child','adult','care','senior'].includes(person.ageGroup)) {
+      throw new RangeError('加入者の所得・年齢区分を確認してください。');
+    }
+    return { ...person, income, base:Math.max(0, income - residentBasicDeduction(income)) };
+  });
+  const result = { total:0, income:members.reduce((s,p) => s+p.income,0), taxableBase:members.reduce((s,p) => s+p.base,0), reduction };
+  for (const key of ['medical','support','care','childcare']) {
+    const rate = selected.rates[key];
+    const eligible = key === 'care' ? members.filter(p => p.ageGroup === 'care') : members;
+    const taxableBase = eligible.reduce((s,p) => s+p.base,0);
+    const fixedUnits = eligible.reduce((s,p) => {
+      if (key === 'childcare') return s + (['preschool','child'].includes(p.ageGroup) ? 0 : 1);
+      return s + (p.ageGroup === 'preschool' ? 0.5 : 1);
+    },0);
+    const percentRemaining = 100 - Math.round(reduction * 100);
+    const perCapita = Math.floor(rate.perCapita * fixedUnits * percentRemaining / 100);
+    const household = eligible.length ? Math.floor(rate.household * percentRemaining / 100) : 0;
+    const incomePart = Math.floor(taxableBase * Math.round(rate.incomeRate * 10000) / 10000);
+    result[key] = Math.min(rate.cap, incomePart + perCapita + household);
+    result[`${key}PerCapita`] = perCapita;
+    result[`${key}Household`] = household;
+    result.total += result[key];
   }
-  const safeIncome = Number.isFinite(inc) && inc > 0 ? Math.floor(inc) : 0;
-  const taxableBase = Math.max(0, safeIncome - BASIC_DEDUCTION);
-  const reduce = reductionRate(safeIncome, n);
-  const r = getCity(city).rates;
-
-  const med = calcCategory(r.medical, taxableBase, n, reduce);
-  const sup = calcCategory(r.support, taxableBase, n, reduce);
-  const car = hasCare
-    ? calcCategory(r.care, taxableBase, n, reduce)
-    : { total: 0, perCapita: 0 };
-
-  return {
-    total: med.total + sup.total + car.total,
-    medical: med.total,
-    support: sup.total,
-    care: car.total,
-    medicalPerCapita: med.perCapita,
-    supportPerCapita: sup.perCapita,
-    carePerCapita: car.perCapita,
-    reduction: reduce,
-    income: safeIncome,
-    taxableBase,
-  };
+  return result;
 }

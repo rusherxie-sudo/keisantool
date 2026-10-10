@@ -10,7 +10,9 @@
     "check": "npm test && npm run build && git diff --check",
     "preview": "astro preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check:site": "node scripts/verify-site-quality.mjs",
+    "postbuild": "npm run check:site"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

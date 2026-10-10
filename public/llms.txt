@@ -15,7 +15,7 @@
 - [利益率・粗利率計算ツール](https://keisantool.com/rieki-ritsu/): 原価・売価から粗利率と目標売価を計算
 - [住宅ローン返済シミュレーター](https://keisantool.com/loan/): 毎月返済額・総返済額・総利息
 - [複利・積立シミュレーター](https://keisantool.com/fukuri/): 複利運用・毎月積立の将来額
-- [所得税計算器](https://keisantool.com/shotokuzei/): 年収から所得税を精算
+- [所得税計算器](https://keisantool.com/shotokuzei/): 2026年分の所得税を概算
 - [年末調整計算器](https://keisantool.com/nematsu/): 源泉徴収差額調整
 - [社会保険料計算器](https://keisantool.com/shakaihoken/): 健康保険・厚生年金・雇用保険
 - [住民税計算シミュレーション](https://keisantool.com/juminzei/): 令和8年度・年収から年額と月額を概算
@@ -26,7 +26,7 @@
 - [BMI計算ツール（女性・男性）](https://keisantool.com/bmi/): BMI・標準体重・年齢別の目標体重
 - [カロリー・基礎代謝計算器](https://keisantool.com/calorie/): TDEE・PFCバランス
 - [排卵日・生理日計算器](https://keisantool.com/seiri/): 生理周期から次回・排卵日を予測
-- [水分摂取量計算器](https://keisantool.com/suisui/): 体重から1日の推奨水分量
+- [水分摂取量計算器](https://keisantool.com/suisui/): 体重と係数で水分量を試算
 
 ## 生活・日常
 

@@ -5,8 +5,8 @@ describe('healthInsurance(健康保険料)', () => {
   it('標準報酬月額30万 → 約14850円', () => {
     expect(healthInsurance(300000)).toBe(Math.floor(300000 * 0.0495));
   });
-  it('上限65万 → 約32175円', () => {
-    expect(healthInsurance(700000)).toBe(Math.floor(650000 * 0.0495));
+  it('月70万円は健康保険等級71万円 → 35145円', () => {
+    expect(healthInsurance(700000)).toBe(35145);
   });
   it('不正な入力 → 0', () => {
     expect(healthInsurance(0)).toBe(0);

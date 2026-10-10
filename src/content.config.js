@@ -1,5 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { tools } from './data/tools.js';
+const toolSlugs = tools.map(tool => tool.slug);
 
 const blogCategorySlugs = ['kakutei-shinkoku', 'nematsu-chosei', 'shakai-hoken', 'zeikin-kiso', 'life-event', 'life', 'health', 'pet', 'tools'];
 
@@ -14,9 +16,10 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     author: z.string().default('計算ツール編集部'),
     reviewedDate: z.coerce.date().optional(),
+    reviewScope: z.string().optional(),
     applicableYear: z.number().int().min(2025).max(2100).optional(),
     sources: z.array(z.object({ name: z.string(), url: z.string().url() })).default([]),
-    relatedTools: z.array(z.string()).default([]),
+    relatedTools: z.array(z.enum(toolSlugs)).default([]),
     faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
     ogImage: z.string().optional(),
     draft: z.boolean().default(false),

@@ -1,7 +1,10 @@
 // 令和8年度（令和7年所得）の給与所得者向け個人住民税概算。
 // 標準税率・標準的な非課税限度額を使い、自治体独自の超過課税等は含めない。
 // 金額の端数は Math.floor で切り捨てる。
-import { salaryDeduction, salaryIncome } from './japan-tax-2026.js';
+import { salaryDeduction as salaryDeductionForYear, salaryIncome as salaryIncomeForYear } from './japan-tax-2026.js';
+// 2026年度住民税は2025年の所得で計算する。
+const salaryIncome = (salary) => salaryIncomeForYear(salary, 2025);
+const salaryDeduction = (salary) => salaryDeductionForYear(salary, 2025);
 
 export { salaryDeduction };
 

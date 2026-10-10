@@ -8,7 +8,7 @@ import ResultShare from '../../components/ResultShare.astro';
 const slug = 'kyuyo';
 const title = '時給・残業代計算器 - 給与・手取り額を簡単に計算 | 計算ツール';
 const description =
-  '時給計算・残業代計算・手取り額の概算をその場で行える無料ツール。時給と労働時間から給与を、残業時間と割増率（通常1.25・深夜1.5・休日1.35）から残業代を計算し、月収から手取りの目安まで簡単に確認できます。';
+  '時給計算・残業代計算・手取り額の概算をその場で行える無料ツール。時給と労働時間から給与を、残業時間と割増率（通常残業1.25・深夜残業1.5・法定休日1.35）から残業代を計算し、月収から手取りの目安まで簡単に確認できます。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -113,7 +113,7 @@ const jsonld = {
             </div>
           </div>
           <div class="field">
-            <label class="field__label" for="ot-h-night">深夜 22-5時（×1.5）</label>
+            <label class="field__label" for="ot-h-night">時間外＋深夜 22-5時（×1.5）</label>
             <div class="field__box">
               <input type="number" id="ot-h-night" inputmode="decimal" placeholder="0" />
               <span class="field__suffix">時間</span>
@@ -141,7 +141,7 @@ const jsonld = {
         <div class="result-main" id="ot-pay">¥0</div>
         <div class="result-rows">
           <div class="result-row"><span class="label">通常残業（×1.25）</span><span class="value" id="ot-r-normal">¥0</span></div>
-          <div class="result-row"><span class="label">深夜（×1.5）</span><span class="value" id="ot-r-night">¥0</span></div>
+          <div class="result-row"><span class="label">時間外＋深夜（×1.5）</span><span class="value" id="ot-r-night">¥0</span></div>
           <div class="result-row"><span class="label">休日（×1.35）</span><span class="value" id="ot-r-holiday">¥0</span></div>
           <div class="result-row"><span class="label">月60時間超（×1.5）</span><span class="value" id="ot-r-over60">¥0</span></div>
         </div>
@@ -161,12 +161,17 @@ const jsonld = {
           </div>
         </div>
       </div>
+      <div class="form-group"><label for="net-age">年齢（16〜69歳）</label><input type="number" id="net-age" min="16" max="69" value="30" /></div>
+      <p>賞与・扶養なし、前年も同じ給与と社保を仮定した年間平均。2026年末精算後の税額を12分割し、毎月の天引き額は再現しません。</p>
       <div class="result-box" id="net-result">
         <div class="result-label">手取り額（概算）</div>
         <div class="result-main" id="net-take">¥0</div>
         <div class="result-rows">
           <div class="result-row"><span class="label">月収（額面）</span><span class="value" id="net-gross">¥0</span></div>
-          <div class="result-row"><span class="label">控除合計（概算 約22%）</span><span class="value red" id="net-ded">¥0</span></div>
+          <div class="result-row"><span class="label">控除合計（概算）</span><span class="value red" id="net-ded">¥0</span></div>
+          <div class="result-row"><span class="label">社会保険</span><span class="value" id="net-social">¥0</span></div>
+          <div class="result-row"><span class="label">所得税＋復興特別所得税の月平均</span><span class="value" id="net-tax">¥0</span></div>
+          <div class="result-row"><span class="label">住民税の月平均</span><span class="value" id="net-resident">¥0</span></div>
         </div>
       </div>
     </div>
@@ -188,7 +193,7 @@ const jsonld = {
     <h3>給与の構成要素</h3>
     <ul>
       <li><strong>基本給</strong>：定められた労働時間に対する基本的な給与</li>
-      <li><strong>残業代</strong>：所定労働時間を超えて働いた場合の割増賃金</li>
+      <li><strong>残業代</strong>：時間外労働の賃金。所定時間を超えても法定時間内なら、必ず法定の割増が付くわけではありません</li>
       <li><strong>手当</strong>：通勤手当・住宅手当・家族手当・役職手当など</li>
       <li><strong>賞与</strong>：業績に応じて支払われる一時的な給与</li>
     </ul>
@@ -198,12 +203,13 @@ const jsonld = {
       残業代は労働基準法によって割増率が定められています。法定の最低割増率は以下の通りです。
     </p>
     <ul>
-      <li><strong>通常残業</strong>：所定労働時間超えての労働 → 時給 × 1.25倍</li>
-      <li><strong>深夜残業（22時〜5時）</strong>：深夜帯の労働 → 時給 × 1.5倍</li>
-      <li><strong>休日労働</strong>：休日の労働 → 時給 × 1.35倍</li>
+      <li><strong>通常残業</strong>：法定時間外（月60時間以内・深夜以外） → 時給 × 1.25倍</li>
+      <li><strong>深夜残業（22時〜5時）</strong>：法定時間外（月60時間以内）と深夜帯が重なる労働 → 時給 × 1.5倍</li>
+      <li><strong>休日労働</strong>：法定休日の労働（深夜以外） → 時給 × 1.35倍</li>
       <li><strong>月60時間超残業</strong>：1カ月の残業時間が60時間を超えた部分 → 時給 × 1.5倍</li>
     </ul>
 
+    <p>各欄の時間は重複させないでください。法定時間内の深夜勤務は1.25倍、法定休日の深夜は1.6倍、月60時間超の時間外と深夜の重なりは1.75倍ですが、この画面の区分集計はこれらの組合せには対応しません。詳しくは<a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudouseisaku/chushoukigyou/joken_kankyou_rule.html">厚生労働省の割増賃金の案内</a>をご確認ください。</p>
     <h3>月60時間超割増の背景</h3>
     <p>
       月60時間を超える長時間労働は労働者の健康に悪影響を与えるとされ、2010年4月から大企業を対象に、2023年4月からは中小企業を対象に、月60時間を超える残業について50%以上の割増賃金（1.5倍）が義務付けられました。これは過労死対策の一環として導入されました。
@@ -211,7 +217,7 @@ const jsonld = {
 
     <h3>基本給から時給を計算する方法</h3>
     <p>
-      基本給（月額）から時給を求めるには、「基本給 ÷ 月平均所定労働時間」で計算します。例えば基本給25万円、月平均所定労働時間160時間の場合、時給は250,000 ÷ 160 = 1,562.5円となります。本ツールではこの計算を自動で行ってくれます。
+      基本給（月額）から時給を求めるには、「基本給 ÷ 月平均所定労働時間」で計算します。例えば基本給25万円、月平均所定労働時間160時間の場合、時給は250,000 ÷ 160 = 1,562.5円となります。本ツールは整数円へ切り捨てる概算です。実際の割増賃金の基礎には算入対象の手当も含むため、基本給だけで確定できません。
     </p>
     <p>
       開始・終了時刻と休憩から実際の勤務時間を求める場合は、<a href="/jikan/">時間計算ツール</a>で時間・分と小数時間を計算してから入力できます。
@@ -228,7 +234,7 @@ const jsonld = {
       <li><strong>その他</strong>：退職金拠出金、生命保険料、住宅ローン返済など</li>
     </ul>
     <p>
-      <strong>手取り概算について：</strong>本ツールは令和8年度の給与所得控除・基礎控除、一般事業の雇用保険料率、全国平均の健康保険料率を用いた概算です。扶養・加入支部・住民税の自治体差・賞与などは完全には反映できないため、実際の給与明細とは異なる場合があります。金額の端数は<strong>切り捨て</strong>で計算しています。
+      <strong>手取り概算について：</strong>本ツールは2026年分年末精算の所得税、2026年度住民税、4月分以降の社会保険料を使います。社会保険料の年間換算額を所得税・住民税の所得控除に反映します。扶養・加入支部・住民税の自治体差・賞与などは完全には反映できないため、実際の給与明細とは異なる場合があります。金額の端数は<strong>切り捨て</strong>で計算しています。
     </p>
     <p>退職後に受け取れる金額を調べる場合は、<a href="/shitsugyou-teate/">失業手当計算シミュレーション</a>で離職前6か月の平均月給から概算できます。</p>
 
@@ -252,7 +258,7 @@ const jsonld = {
   <RelatedArticles toolSlug={slug} />
 
   <Faq items={[
-    { q: '残業代はどう計算しますか？', a: '時給×割増率×残業時間で計算します。通常残業は1.25倍、深夜は1.5倍、休日は1.35倍などが基本です。本ツールで区分ごとに自動計算できます。' },
+    { q: '残業代はどう計算しますか？', a: '時給×割増率×残業時間で計算します。通常の法定時間外は1.25倍、時間外と深夜が重なると1.5倍、法定休日は1.35倍などです。本ツールで区分ごとに自動計算できます。' },
     { q: '月給から時給を求めるには？', a: '月給÷1か月の平均所定労働時間で求めます。本ツールは基本給と労働時間から時給を逆算できます。' },
     { q: '手取りも分かりますか？', a: '額面から社会保険料・税の概算を引いた手取りの目安を表示します（概算値です）。' },
   ]} />
@@ -309,7 +315,7 @@ const jsonld = {
     $('ot-r-holiday').textContent = yen(holiday);
     $('ot-r-over60').textContent = yen(over60);
     window.setResultShare?.(
-      `時給・残業代計算器\n残業代の合計：${$('ot-pay').textContent}\n通常残業（×1.25）：${$('ot-r-normal').textContent}\n深夜（×1.5）：${$('ot-r-night').textContent}\n休日（×1.35）：${$('ot-r-holiday').textContent}`
+      `時給・残業代計算器\n残業代の合計：${$('ot-pay').textContent}\n通常残業（×1.25）：${$('ot-r-normal').textContent}\n時間外＋深夜（×1.5）：${$('ot-r-night').textContent}\n休日（×1.35）：${$('ot-r-holiday').textContent}`
     );
   }
 
@@ -330,15 +336,19 @@ const jsonld = {
 
   function renderNet() {
     const income = $('net-income').value;
-    const { takeHome, deduction } = takeHomePay(income);
+    const age = $('net-age').value;
+    const { takeHome, deduction, socialInsurance, incomeTax, residentTax } = takeHomePay(income, { age:Number(age) });
     const box = $('net-result');
-    if (takeHome <= 0) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
+    if (takeHome <= 0 || age === '' || Number(age) < 16 || Number(age) > 69) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
     $('net-take').textContent = yen(takeHome);
     $('net-gross').textContent = yen(Number(income));
     $('net-ded').textContent = yen(deduction);
+    $('net-social').textContent = yen(socialInsurance.total);
+    $('net-tax').textContent = yen(incomeTax);
+    $('net-resident').textContent = yen(residentTax);
     window.setResultShare?.(
-      `時給・残業代計算器\n手取り額（概算）：${$('net-take').textContent}\n月収（額面）：${$('net-gross').textContent}\n控除合計（概算 約22%）：${$('net-ded').textContent}`
+      `時給・残業代計算器\n手取り額（概算）：${$('net-take').textContent}\n月収（額面）：${$('net-gross').textContent}\n控除合計（概算）：${$('net-ded').textContent}`
     );
   }
 
