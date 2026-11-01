@@ -6,9 +6,9 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'nematsu';
-const title = '年末調整計算器 - 源泉徴収差額調整 | 計算ツール';
+const title = '年末調整計算 2026年｜還付金・追徴額のシミュレーション';
 const description =
-  '年末調整を簡単に計算。年間給与収入、源泉徴収された所得税、各種控除額から、還付額または追徴額を試算できる無料ツールです。';
+  '2026年分の給与・源泉徴収税額・社会保険料・生命保険料控除額から、年末調整の還付金と追徴額を無料で試算。計算例つき。給与のみの簡易版で、扶養・配偶者・住宅ローン控除等は対象外です。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -22,11 +22,13 @@ const jsonld = {
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 年末調整</div>
-    <h1>年末調整計算器</h1>
+    <h1>年末調整計算器【2026年分】</h1>
     <p>年末調整を簡単に計算します。年間給与収入、源泉徴収された所得税、各種控除額から、還付額または追徴額を試算します。</p>
   </div>
 
   <div class="calc-card">
+    <p>給与のみの簡易試算です。扶養・配偶者・住宅ローン等の控除は反映しません。<a href="#nematsu-scope" data-track-context>対応範囲を確認</a></p>
+    <button id="nematsu-example" type="button">給与360万円の計算例を入力</button>
     <div class="form-group">
       <label for="yearly-salary">年間給与収入（円）</label>
       <input type="number" id="yearly-salary" inputmode="numeric" placeholder="例：3600000" />
@@ -49,7 +51,7 @@ const jsonld = {
     </div>
 
     <p id="eligibility-message" role="status"></p>
-    <div class="result-box" id="result-box">
+    <div class="result-box" id="result-box" aria-live="polite">
       <div class="result-label" id="result-label">年末調整結果</div>
       <div class="result-main" id="result-main">¥0</div>
       <div class="result-rows">
@@ -75,7 +77,7 @@ const jsonld = {
     <p>生命保険は支払保険料を直接入力しません。<a href="/seimei-hoken-kojo/">生命保険料控除計算</a>で新旧契約・3区分・2026年の子育て特例を計算し、「所得税の控除合計」を転記します。地震保険料は一般の地震保険契約のみ、最大5万円を反映します。</p>
     <h3>計算例</h3>
     <p>給与360万円、社会保険48万円、生命保険控除35,000円、地震保険10,000円なら課税所得875,000円。所得税と復興特別所得税の合計を100円未満切り捨てして年調年税額44,600円。源泉徴収140,000円なら還付の目安95,400円です。</p>
-    <h3>反映しない控除・対象外のケース</h3>
+    <h3 id="nematsu-scope">反映しない控除・対象外のケース</h3>
     <p>扶養・配偶者・障害者等の控除、所得金額調整控除、住宅ローン控除、旧長期損害保険の特例には対応しません。給与以外の所得がある方も対象外です。こうした条件がある場合は勤務先の案内をご確認ください。医療費控除は年末調整では扱わず、原則として確定申告が必要です。</p>
     <p>2026年12月1日施行の改正を反映した年末精算の目安です。給与2,000万円超は年末調整の対象外。転職前の給与・源泉税の合算漏れがある場合も結果が変わります。</p>
     <h3>根拠（2026年10月10日照合）</h3>
@@ -96,6 +98,7 @@ const jsonld = {
 
   const $ = (id) => document.getElementById(id);
   const yen = (n) => '¥' + Math.floor(n).toLocaleString('ja-JP');
+  let resultTracked = false;
 
   function show(box) { box.classList.add('visible'); }
   function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
@@ -152,9 +155,18 @@ const jsonld = {
       '\n年調年税額の目安：' + $('row-actual').textContent +
       '\n源泉徴収額：' + $('row-withheld').textContent
     );
+    if (!resultTracked && typeof window.trackCalculatorResult === 'function') {
+      window.trackCalculatorResult('nematsu');
+      resultTracked = true;
+    }
   }
 
   ['yearly-salary', 'withheld-tax', 'social-insurance', 'life-insurance', 'earthquake-insurance'].forEach((id) => {
     $(id).addEventListener('input', render);
+  });
+  $('nematsu-example').addEventListener('click', () => {
+    const values = { 'yearly-salary': '3600000', 'withheld-tax': '140000', 'social-insurance': '480000', 'life-insurance': '35000', 'earthquake-insurance': '10000' };
+    for (const [id, value] of Object.entries(values)) $(id).value = value;
+    render();
   });
 </script>

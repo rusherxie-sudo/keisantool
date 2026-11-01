@@ -4,8 +4,10 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
+import { calcJuminzei } from '../../lib/juminzei.js';
 
 const slug = 'juminzei';
+const salaryExamples = [200, 300, 400, 500, 600].map(man => ({ man, result: calcJuminzei(man * 10000) }));
 const title = '住民税計算シミュレーション【令和8年度・2026年】年収から自動計算 | 計算ツール';
 const description =
   '2026年（令和8年度）の住民税を年収から自動計算。給与所得控除、社会保険料、配偶者・扶養控除、所得割、均等割、森林環境税を反映し、年額と月額の目安を無料でシミュレーションできます。';
@@ -66,6 +68,7 @@ const jsonld = {
             <label for="other-deductions">その他の所得控除（円・任意）</label>
             <input type="number" id="other-deductions" inputmode="numeric" min="0" step="1000" placeholder="例：120000" />
             <span class="field-note">生命保険料・医療費・iDeCoなどの住民税控除額</span>
+            <span class="field-note">生命保険は<a href="/seimei-hoken-kojo/" data-track-context>所得税と住民税の控除額を別々に計算</a>し、「住民税の所得控除」を入力します。</span>
           </div>
         </div>
 
@@ -144,6 +147,14 @@ const jsonld = {
 
   <ResultShare />
 
+  <section class="howto">
+    <h2>年収別の住民税・月額の計算例</h2>
+    <p>給与のみ・配偶者と扶養親族なし・社会保険料は年収の15%・その他の控除なしの概算です。自治体独自の加算や税額控除は含みません。月額は年額の12分割で、実際の徴収月額とは異なる場合があります。</p>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table"><thead><tr><th>給与年収</th><th>住民税の年額</th><th>12分割の月額</th><th>条件を入力</th></tr></thead><tbody>{salaryExamples.map(({ man, result }) => <tr><th>{man}万円</th><td>{result.residentTax.toLocaleString('ja-JP')}円</td><td>{Math.floor(result.monthlyEstimate).toLocaleString('ja-JP')}円</td><td><button type="button" data-tax-salary={man * 10000}>{man}万円の例で計算</button></td></tr>)}</tbody></table></div></div>
+    <p>例のボタンは入力条件を上記の単身者条件に置き換えます。実際の源泉徴収票の金額や扶養条件に変更して確認してください。</p>
+    <p>今年の所得税の精算は<a href="/nematsu/">年末調整計算</a>、給与から引かれる社会保険料は<a href="/shakaihoken/">社会保険料計算</a>で別に確認できます。住民税と所得税では対象年や控除額が異なります。</p>
+  </section>
+
   <div class="ad-slot"></div>
 
   <section class="howto">
@@ -198,6 +209,7 @@ const jsonld = {
   const $ = (id) => document.getElementById(id);
   const yen = (n) => '¥' + Math.floor(n).toLocaleString('ja-JP');
   const numberValue = (id) => Math.max(0, Number($(id).value) || 0);
+  let resultTracked = false;
 
   function show(box) { box.classList.add('visible'); }
   function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
@@ -268,6 +280,10 @@ const jsonld = {
       '\n住民税年額：' + yen(result.residentTax) +
       '\n月額目安：' + yen(result.monthlyEstimate)
     );
+    if (!resultTracked && typeof window.trackCalculatorResult === 'function') {
+      window.trackCalculatorResult('resident-tax');
+      resultTracked = true;
+    }
   }
 
   const inputIds = [
@@ -276,6 +292,13 @@ const jsonld = {
   ];
   inputIds.forEach((id) => $(id).addEventListener('input', render));
   $('has-spouse').addEventListener('change', toggleSpouse);
+  document.querySelectorAll('[data-tax-salary]').forEach(button => button.addEventListener('click', () => {
+    for (const id of inputIds) $(id).value = id.includes('dependents') ? '0' : '';
+    $('has-spouse').checked = false;
+    $('yearly-salary').value = button.dataset.taxSalary;
+    toggleSpouse();
+    $('yearly-salary').scrollIntoView({ block: 'center' });
+  }));
 </script>
 
 <style>

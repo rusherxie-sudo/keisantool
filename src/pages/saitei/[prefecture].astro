@@ -112,7 +112,7 @@ const faqItems = [
 
   {wageHistory.length > 0 && <section class="howto">
     <h2>{info.prefecture}の最低賃金推移｜令和2〜7年度</h2>
-    <p>{info.prefecture}の最低賃金は、令和2年度の<strong>{wageHistory[0].wage.toLocaleString('ja-JP')}円</strong>から令和7年度の<strong>{info.wage.toLocaleString('ja-JP')}円</strong>へ、6年度分で<strong>{sixYearIncrease.toLocaleString('ja-JP')}円</strong>上昇しました。</p>
+    <p>{info.prefecture}の最低賃金は、令和2年度の<strong>{wageHistory[0].wage.toLocaleString('ja-JP')}円</strong>から令和7年度の<strong>{historicalLatestWage.toLocaleString('ja-JP')}円</strong>へ、6年度分で<strong>{sixYearIncrease.toLocaleString('ja-JP')}円</strong>上昇しました。</p>
     <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table history-table">
       <thead><tr><th>年度</th><th>時間額</th><th>前年度比</th></tr></thead>
       <tbody>{wageHistory.map((row, index) => <tr>

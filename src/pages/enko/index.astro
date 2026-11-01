@@ -57,6 +57,13 @@ const jsonld = {
   <div class="ad-slot"></div>
 
   <section class="howto">
+    <h2>円弧とは？弦・扇形との違い</h2>
+    <p><strong>円弧は、円周の一部分である曲線</strong>です。円弧の両端を直線で結んだものが「弦」、2本の半径と円弧に囲まれた部分が「扇形」です。同じ両端でも、曲線に沿う円弧の長さと直線の弦の長さは異なります。</p>
+    <h3>半径10cmで中心角を変えた計算例</h3>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table"><thead><tr><th>中心角</th><th>円弧の長さ</th><th>計算器で確認</th></tr></thead><tbody>{[[60, '10π/3 ≒ 10.472cm'], [90, '5π ≒ 15.708cm'], [180, '10π ≒ 31.416cm']].map(([angle, length]) => <tr><th>{angle}度</th><td>{length}</td><td><button type="button" data-arc-example={angle}>半径10cm・{angle}度</button></td></tr>)}</tbody></table></div></div>
+  </section>
+
+  <section class="howto">
     <h2>円弧の長さ・扇形の面積の公式</h2>
     <p>半径をr、中心角をθ（度）とすると、円弧の長さは<strong>2πr × θ ÷ 360</strong>、扇形の面積は<strong>πr² × θ ÷ 360</strong>です。半径10cm・中心角90度なら、円弧は5πcm（約15.708cm）、面積は25πcm²（約78.54cm²）になります。</p>
     <div class="formula-grid"><div><span>円弧の長さ</span><strong>ℓ＝2πrθ÷360</strong></div><div><span>扇形の面積</span><strong>S＝πr²θ÷360</strong></div><div><span>弦の長さ</span><strong>c＝2r sin(θ÷2)</strong></div></div>
@@ -81,6 +88,7 @@ const jsonld = {
 </ToolLayout>
 
 <style>
+  .main-result[hidden], .result-grid[hidden] { display: none; }
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.chips span{padding:5px 10px;border-radius:999px;background:var(--cat-tint);color:var(--cat-color);font-size:.74rem;font-weight:700}.arc-card{overflow:hidden}.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-sub)}.tab{display:flex;flex-direction:column;gap:2px;padding:13px;border:0;border-bottom:3px solid transparent;background:none;color:var(--text-muted);font-weight:700}.tab small{font-size:.66rem;font-weight:400}.tab.active{border-color:var(--cat-color);background:var(--surface);color:var(--cat-color)}.panel{padding:24px}.panel[hidden]{display:none}.panel h2{margin-top:0;font-size:1.05rem}.input-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.input-grid label{display:flex;flex-direction:column;gap:7px;font-size:.78rem;font-weight:700}.input-grid input,.input-grid select{min-height:48px}.error{padding:10px 12px;background:var(--danger-bg);color:var(--danger);border-radius:var(--r-sm)}.main-result{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:20px;padding:20px;border-radius:var(--r-md);background:var(--cat-tint)}.main-result strong{color:var(--cat-color);font:700 clamp(1.8rem,6vw,2.8rem) var(--font-mono)}.main-result small,.main-result span{color:var(--text-muted)}.result-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}.result-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.result-grid div{display:flex;justify-content:space-between;gap:8px;padding:12px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.result-grid span{color:var(--text-muted);font-size:.72rem}.result-grid strong{font-family:var(--font-mono);font-size:.82rem;text-align:right}.formula-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.formula-grid div{display:flex;flex-direction:column;gap:6px;padding:15px;border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--surface-sub)}.formula-grid span{color:var(--text-muted);font-size:.72rem}.formula-grid strong{font-family:var(--font-mono)}.source-box a{color:var(--cat-color);font-weight:700}@media(max-width:760px){.input-grid{grid-template-columns:1fr 1fr}.formula-grid{grid-template-columns:1fr}}@media(max-width:480px){.panel{padding:18px}.input-grid,.result-grid,.result-grid.two{grid-template-columns:1fr}.tab{padding:11px 5px;font-size:.78rem}}
 </style>
 
@@ -89,26 +97,32 @@ const jsonld = {
   const $ = (id) => document.getElementById(id);
   const fmt = (value, digits = 8) => Number(value.toPrecision(digits)).toLocaleString('ja-JP', { maximumFractionDigits: 10 });
   let mode = 'arc';
-  function updateArc() {
+  const tracked = new Set();
+  function publish(kind, text, user) {
+    if (mode !== kind) return;
+    window.setResultShare?.(text);
+    if (user && !tracked.has(kind) && typeof window.trackCalculatorResult === 'function') { window.trackCalculatorResult(kind); tracked.add(kind); }
+  }
+  function updateArc(user = false) {
     const result = calculateArc({ radius: $('arc-radius').value, radiusType: $('arc-radius-type').value, angle: $('arc-angle').value });
     $('arc-error').hidden = Boolean(result); $('arc-result').hidden = !result; $('arc-result').nextElementSibling.hidden = !result;
-    if (!result) return;
+    if (!result) { if (mode === 'arc') window.hideResultShare?.(); return; }
     const unit = $('arc-unit').value;
     $('arc-length').textContent = `${fmt(result.arcLength)} ${unit}`;
     $('arc-area').textContent = `${fmt(result.sectorArea)} ${unit}²`;
     $('arc-chord').textContent = `${fmt(result.chordLength)} ${unit}`;
     $('arc-circumference').textContent = `${fmt(result.circumference)} ${unit}`;
-    if (mode === 'arc') window.setResultShare?.(`円弧の長さ計算\n${$('arc-length').textContent}\n中心角：${fmt(result.angle)}°`);
+    publish('arc', `円弧の長さ計算\n${$('arc-length').textContent}\n中心角：${fmt(result.angle)}°`, user);
   }
-  function updateAngle() {
+  function updateAngle(user = false) {
     const result = calculateCentralAngle({ radius: $('angle-radius').value, radiusType: $('angle-radius-type').value, arcLength: $('angle-arc').value });
     $('angle-error').hidden = Boolean(result); $('angle-result').hidden = !result; $('angle-result').nextElementSibling.hidden = !result;
-    if (!result) return;
+    if (!result) { if (mode === 'angle') window.hideResultShare?.(); return; }
     const unit = $('angle-unit').value;
     $('angle-value').textContent = `${fmt(result.angle)}°`;
     $('angle-area').textContent = `${fmt(result.sectorArea)} ${unit}²`;
     $('angle-chord').textContent = `${fmt(result.chordLength)} ${unit}`;
-    if (mode === 'angle') window.setResultShare?.(`円弧の中心角計算\n${$('angle-value').textContent}`);
+    publish('angle', `円弧の中心角計算\n${$('angle-value').textContent}`, user);
   }
   document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => {
     mode = tab.dataset.mode;
@@ -120,6 +134,11 @@ const jsonld = {
     });
     mode === 'arc' ? updateArc() : updateAngle();
   }));
-  document.querySelectorAll('.arc-card input,.arc-card select').forEach((input) => input.addEventListener('input', () => { updateArc(); updateAngle(); }));
+  document.querySelectorAll('.arc-card input,.arc-card select').forEach((input) => input.addEventListener('input', () => { mode === 'arc' ? updateArc(true) : updateAngle(true); }));
+  document.querySelectorAll('[data-arc-example]').forEach(button => button.addEventListener('click', () => {
+    document.querySelector('[data-mode="arc"]').click();
+    $('arc-radius-type').value = 'radius'; $('arc-radius').value = '10'; $('arc-angle').value = button.dataset.arcExample; $('arc-unit').value = 'cm';
+    updateArc(true); document.querySelector('.arc-card').scrollIntoView({ block: 'start' });
+  }));
   updateArc(); updateAngle();
 </script>
