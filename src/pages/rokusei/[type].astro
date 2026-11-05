@@ -12,6 +12,8 @@ export function getStaticPaths() {
 const { typeInfo } = Astro.props;
 const { year: CURRENT_YEAR } = japanDateParts();
 const current = fortuneZone(typeInfo.type, CURRENT_YEAR);
+const annual2027 = fortuneZone(typeInfo.type, 2027);
+const period2027 = daisakkaiPeriod(typeInfo.type, 2027);
 const next = fortuneZone(typeInfo.type, CURRENT_YEAR + 1);
 const cycleRows = forecast(typeInfo.type, CURRENT_YEAR - 2, 12);
 const daisakkaiRows = cycleRows.filter((row) => row.category === '大殺界');
@@ -85,6 +87,14 @@ const faqItems = [
     <a class="calculator-link" href="/rokusei/">生年月日から自分の運命星を無料計算する →</a>
   </div>
 
+  <section class="howto" id="year-2027">
+    <h2>{typeInfo.type}の2027年の運勢・大殺界</h2>
+    <p>2027年は<strong>{annual2027.zone}（{annual2027.category}）</strong>です。2026年の「{fortuneZone(typeInfo.type, 2026).zone}」から進み、2028年は「{fortuneZone(typeInfo.type, 2028).zone}」になります。</p>
+    <p>2027年から見た{period2027.status === 'current' ? '期間中の' : '次回の'}大殺界は<strong>{period2027.startYear}〜{period2027.endYear}年</strong>。最後の「減退」が終わると、{period2027.endYear + 1}年は「種子」です。西暦年単位の年運であり、特定の日の出来事を予測するものではありません。</p>
+    <p><a href={`/rokusei/daisakkai-2027/#${typeInfo.slug}`}>2027年の12タイプ比較表で{typeInfo.type}を確認</a></p>
+    <h3>{typeInfo.type}の宿命大殺界も同じ期間？</h3>
+    <p>年運の3年間と、宿命大殺界の20年間は別です。同じ{typeInfo.type}でも宿命大殺界の時期は一律に決まりません。<a href="/rokusei/shukumei-daisakkai/">生年月日と計算上の性別から宿命大殺界を調べる</a>必要があります。</p>
+  </section>
   <div class="ad-slot"></div>
 
   <section class="howto cycle-section">
