@@ -186,6 +186,18 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
         destination: link.getAttribute('href') || '',
       });
     });
+
+    // Keep contextual navigation separate from the existing related-card metric.
+    document.addEventListener('click', function(event) {
+      var link = event.target.closest('.blog-article__body a, .howto a, a[data-track-context]');
+      if (!link || link.closest('.related, .related-articles') || typeof window.gtag !== 'function') return;
+      var destination = new URL(link.href, location.href);
+      if (destination.origin !== location.origin || destination.pathname === location.pathname || link.hasAttribute('download')) return;
+      window.gtag('event', 'contextual_link_click', {
+        tool_slug: document.body.dataset.toolSlug || 'unknown',
+        destination: destination.pathname,
+      });
+    });
   </script>
 </body>
 </html>

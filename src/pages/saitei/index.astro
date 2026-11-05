@@ -5,27 +5,25 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
-import { NATIONAL_WEIGHTED_AVERAGE, NATIONAL_WAGE_GUIDELINE_2026, NATIONAL_WAGE_HISTORY, minimumWagePrefectures } from '../../lib/saitei.js';
+import { NATIONAL_WEIGHTED_AVERAGE, NATIONAL_WEIGHTED_AVERAGE_2026, WAGE_REVIEWED, WAGE_SOURCE_2026, NATIONAL_WAGE_HISTORY, minimumWagePrefectures } from '../../lib/saitei.js';
 import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'saitei';
 const today = japanDateParts();
 const asOfDate = `${today.year}-${String(today.month).padStart(2, '0')}-${String(today.day).padStart(2, '0')}`;
 const prefectures = minimumWagePrefectures(asOfDate);
-const confirmedCount = prefectures.filter((row) => row.proposedWage).length;
-const decidedCount = prefectures.filter((row) => row.revisionStatus === 'decided').length;
-const notYetConfirmed = prefectures.filter((row) => !row.proposedWage).map((row) => row.prefecture).join('・');
-const title = '最低賃金 2026年｜全国一覧・令和8年度の改定目安と月給計算';
-const description = `2026年の最低賃金はいつ決まる？現在適用中の47都道府県別金額と、令和8年度の地方答申（${confirmedCount}都道府県確認済み）を一覧掲載。日給・月給も自動計算できます。`;
+const pending = prefectures.filter(row => !row.isRevisionEffective);
+const title = '最低賃金 2026年｜全国一覧・発効日と日給・月給計算';
+const description = `2026年（令和8年度）の47都道府県別最低賃金と発効日を公式全国一覧で確認。現在適用中の金額と改定後の金額を分けて掲載し、日給・月給・月給の時間額換算を計算できます。`;
 const jsonld = {
   '@context': 'https://schema.org', '@type': 'WebApplication', name: '最低賃金計算・全国一覧',
   description, applicationCategory: 'UtilityApplication', operatingSystem: 'Web',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
 const faqItems = [
-  { q: '2026年の最低賃金はいくらですか？', a: `現在適用中の地域別最低賃金は、最高${Math.max(...prefectures.map(r=>r.wage)).toLocaleString('ja-JP')}円から最低${Math.min(...prefectures.map(r=>r.wage)).toLocaleString('ja-JP')}円まで都道府県ごとに異なります。令和8年度は${confirmedCount}都道府県の地方答申を掲載し、うち${decidedCount}都府は改正額と発効日が決定済みです。東京・大阪・茨城・山梨・佐賀の状況は2026年9月21日に再確認しました。新額は各発効日から適用されます。` },
+  { q: '2026年の最低賃金はいくらですか？', a: `現在適用中の地域別最低賃金は、最高${Math.max(...prefectures.map(r=>r.wage)).toLocaleString('ja-JP')}円から最低${Math.min(...prefectures.map(r=>r.wage)).toLocaleString('ja-JP')}円まで都道府県ごとに異なります。令和8年度は47都道府県の改正額と発効日を厚生労働省の全国一覧で確認済みです。新額は各発効日から適用されます。` },
   { q: '月給が最低賃金以上か計算する方法は？', a: '最低賃金の対象になる月給を12倍し、年間所定労働日数と1日の所定労働時間の積で割って時間額に換算します。通勤手当、家族手当、賞与、時間外・休日・深夜の割増賃金などは対象月給から除きます。' },
-  { q: '2026年の最低賃金はいつ決まりますか？', a: '中央の引上げ目安は2026年7月28日に答申済みです。その後、各地方最低賃金審議会の答申、異議申出手続、都道府県労働局長の決定を経て、新しい金額が地域ごとの発効日から適用されます。地方答申額は決定・発効前にはまだ現行最低賃金ではありません。' },
+  { q: '2026年の最低賃金はいつから変わりますか？', a: '令和8年度の改正額と発効日は47都道府県について公表済みです。発効日は2026年10月1日から12月2日まで地域によって異なります。発効前は旧額、当日以降は新額を用います。' },
   { q: 'アルバイトや高校生にも最低賃金は適用されますか？', a: '原則として雇用形態や年齢にかかわらず、都道府県内で働くすべての労働者に適用されます。特定産業では地域別最低賃金より高い特定最低賃金が適用される場合があります。' },
 ];
 ---
@@ -38,8 +36,8 @@ const faqItems = [
   </div>
 
   <aside class="status-note" aria-label="令和8年度改定状況">
-    <strong>令和8年度は{confirmedCount}都道府県の地方答申を確認、うち{decidedCount}都府は改正決定済み</strong>
-    <p>一覧で「改正決定・未発効」と「地方答申・予定」を分けて表示します。新額は発効前には現行最低賃金ではありません。計算器は日本時間の利用日を基準に、改正決定済みの地域は発効日から新額へ切り替えます。残りの都道府県（{notYetConfirmed}）は審議中または確認待ちです。掲載状況は2026年9月11日集計、東京・大阪・茨城・山梨・佐賀は9月21日に公式情報を再確認しました。</p>
+    <strong>47都道府県の改正額・発効日を公式全国一覧で確認済み</strong>
+    <p>公式資料確認日：{WAGE_REVIEWED}。基準日{asOfDate}では{47 - pending.length}都道府県で新額が発効済みです。{pending.length > 0 && `未発効の${pending.map(row => row.prefecture).join('・')}は、それぞれの発効日まで旧額を表示します。`}計算器は日本時間の利用日で切り替えます。</p>
   </aside>
 
   <div class="calc-card"><MinimumWageCalculator /></div>
@@ -48,7 +46,7 @@ const faqItems = [
 
   <section class="howto">
     <h2>2026年現在の最低賃金 全国一覧</h2>
-    <p>現在適用中の全国加重平均は<strong>{NATIONAL_WEIGHTED_AVERAGE.toLocaleString('ja-JP')}円</strong>（令和7年度確定）です。令和8年度は中央目安ベースで<strong>{NATIONAL_WAGE_GUIDELINE_2026.toLocaleString('ja-JP')}円</strong>が見込まれますが、各地の決定・発効後に確定します。金額と発効日は厚生労働省「令和7年度地域別最低賃金の全国一覧」に基づきます。都道府県名を選ぶと地域別の計算ページへ移動します。</p>
+    <p>令和8年度改定後の全国加重平均は<strong>{NATIONAL_WEIGHTED_AVERAGE_2026.toLocaleString('ja-JP')}円</strong>です。これは47都道府県の改定後の集計で、各地域には別々の発効日があります。令和7年度の全国加重平均は{NATIONAL_WEIGHTED_AVERAGE.toLocaleString('ja-JP')}円です。</p>
     <div class="data-table-wrap"><div class="data-table-scroll">
       <table class="data-table wage-table">
         <thead><tr><th>都道府県</th><th>現在適用中</th><th>令和8年度の状況</th><th>現行額の発効日</th></tr></thead>
@@ -99,8 +97,9 @@ const faqItems = [
   </section>
 
   <section class="howto sources">
-    <h2>出典・改定状況</h2>
+    <h2>出典・改定状況</h2><p>公式全国一覧の確認日：{WAGE_REVIEWED}。</p>
     <ul>
+      <li><a href={WAGE_SOURCE_2026} target="_blank" rel="noopener">厚生労働省「令和8年度地域別最低賃金全国一覧」金額・発効日</a></li>
       <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html" target="_blank" rel="nofollow noopener">厚生労働省「地域別最低賃金の全国一覧」</a></li>
       <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/chingin/newpage_43899.html" target="_blank" rel="nofollow noopener">厚生労働省「最低賃金額以上かどうかを確認する方法」</a></li>
       <li><a href="https://www.mhlw.go.jp/stf/newpage_74920.html" target="_blank" rel="nofollow noopener">厚生労働省「令和8年度地域別最低賃金額改定の目安について」（2026年7月28日）</a></li>

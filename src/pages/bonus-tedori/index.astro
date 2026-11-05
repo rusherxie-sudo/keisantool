@@ -3,6 +3,8 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import '../../styles/financial-tools.css';
+import { calculateBonus } from '../../lib/bonus-tedori.js';
+const salaryExamples = [200000, 300000, 500000].map(previousSalary => ({ previousSalary, result: calculateBonus({ gross: 500000, socialInsurance: 75000, previousSalary, dependents: 0 }) }));
 const slug = 'bonus-tedori';
 const title = '賞与・ボーナス手取り計算【2026年】所得税・控除の内訳';
 const description = '2026年の賞与・ボーナスの手取りを無料計算。賞与総額、社会保険料等、前月給与、扶養人数から国税庁の税率表で源泉所得税を求め、控除の内訳を表示。甲欄・乙欄に対応。';
@@ -42,6 +44,10 @@ const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', na
    </dl>
    <p class="field-help">源泉徴収は前払いの税額です。年末調整・確定申告によって年間の税額と差額が精算されることがあります。入力した社保等が概算なら、手取りも概算です。</p>
    <div class="finance-actions"><button type="button" class="finance-button secondary" id="bonus-copy">結果をコピー</button><span id="bonus-copy-status" class="copy-status" role="status"></span></div>
+  </section>
+  <section class="howto"><h2>ボーナス50万円でも前月給与で手取りが変わる例</h2><p>額面50万円・賞与の社会保険料等75,000円・甲欄・扶養親族等0人・その他控除0円と仮定した入力例です。75,000円は保険料の見積りではありません。実際の明細や勤務先の見込み額に置き換えてください。</p>
+   <div class="table-scroll"><table><thead><tr><th>前月給与（社保等控除後）</th><th>税率</th><th>源泉所得税等</th><th>手取り</th><th>試す</th></tr></thead><tbody>{salaryExamples.map(({previousSalary,result}) => <tr><th>{previousSalary.toLocaleString('ja-JP')}円</th><td>{result.rate}%</td><td>{result.withholding.toLocaleString('ja-JP')}円</td><td>{result.takeHome.toLocaleString('ja-JP')}円</td><td><button type="button" class="finance-button secondary" data-bonus-salary={previousSalary}>この条件を入力</button></td></tr>)}</tbody></table></div>
+   <p>年末調整の年間給与には給与と賞与の両方、源泉徴収額にも両方の所得税を含めます。年間の精算は<a href="/nematsu/">年末調整計算</a>で対象範囲を確認してください。</p>
   </section>
   <section class="howto">
    <h2>ボーナスの手取りはどう計算する？</h2>
@@ -88,5 +94,9 @@ const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   clear(); for (const [id, value] of [['gross',389558],['social',0],['previous',285454],['dependents',3],['other',0],['class','kou']]) $('bonus-'+id).value=String(value);
   $('bonus-dependents').disabled=false; $('bonus-form').requestSubmit();
  });
+ document.querySelectorAll('[data-bonus-salary]').forEach(button => button.addEventListener('click', () => {
+   for (const [id, value] of [['gross',500000],['social',75000],['previous',button.dataset.bonusSalary],['dependents',0],['other',0],['class','kou']]) $('bonus-'+id).value=String(value);
+   $('bonus-dependents').disabled=false; $('bonus-form').requestSubmit(); $('bonus-result').scrollIntoView({block:'center'});
+ }));
  $('bonus-copy').addEventListener('click', async () => { if (!copyText) return; try { await navigator.clipboard.writeText(copyText); $('bonus-copy-status').textContent='コピーしました'; } catch { $('bonus-copy-status').textContent='コピーできませんでした。結果を選択してコピーしてください。'; } });
 </script>

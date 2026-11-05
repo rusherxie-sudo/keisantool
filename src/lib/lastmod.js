@@ -114,9 +114,9 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
       join(root, `src/content/blog/${path.slice('blog/'.length)}.md`),
     ];
   } else if (/^saitei\/[a-z0-9-]+$/.test(path)) {
-    files = [join(pagesDir, 'saitei/[prefecture].astro'), join(root, 'src/lib/saitei.js')];
+    files = [join(pagesDir, 'saitei/[prefecture].astro'), join(root, 'src/lib/saitei.js'), join(root, 'src/data/minimum-wage-2026.json')];
   } else if (path === 'saitei') {
-    files = [join(pagesDir, 'saitei/index.astro'), join(root, 'src/lib/saitei.js')];
+    files = [join(pagesDir, 'saitei/index.astro'), join(root, 'src/lib/saitei.js'), join(root, 'src/data/minimum-wage-2026.json')];
   } else if (/^shukujitsu\/\d{4}$/.test(path)) {
     files = [join(pagesDir, 'shukujitsu/[year].astro'), join(root, 'src/lib/shukujitsu.js')];
   } else if (path === 'shukujitsu') {
@@ -138,9 +138,13 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
   } else if (/^eigyoubi\/\d{4}(\/\d{2})?$/.test(path) || ['2027','renkyu/2027','embed/work-calendar'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/office-calendar.js'), join(root, 'src/lib/office-tools.js'), join(root, 'src/lib/shukujitsu.js'), join(root, 'src/data/office-holiday-reference.json'), join(root, 'src/components/OfficeYearLinks.astro')];
     if (/^eigyoubi\/\d{4}\/\d{2}$/.test(path) || path === 'embed/work-calendar') files.push(join(root, 'src/components/WorkCalendarGrid.astro'), join(root, 'src/data/office-month-notes.js'));
+  } else if (path === 'ginkou-eigyoubi') {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/bank-calendar.js'), join(root, 'src/lib/office-tools.js'), join(root, 'src/lib/shukujitsu.js')];
   } else if (['eigyoubi', 'kinmu-jikan', 'running-pace'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/office-tools.js')];
     if (path === 'eigyoubi') files.push(join(root, 'src/lib/shukujitsu.js'));
+  } else if (path === 'nenrei-hayami' || path.startsWith('nenrei-hayami/')) {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/components/AgeTableLookup.astro'), join(root, 'src/lib/hayami.js'), join(root, 'src/lib/wareki.js'), join(root, 'src/lib/nenrei.js')];
   } else if (path === 'gakunen-hayami' || path.startsWith('gakunen-hayami/')) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/hayami.js'), join(root, 'src/lib/nenrei.js')];
   } else if (path === 'yukyu-nissu') {
@@ -154,7 +158,7 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/loan.js')];
   } else if (['inu-vaccine', 'neko-vaccine'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/pet-vaccine.js')];
-  } else if (['tsubo-heibei', 'taikakusen'].includes(path)) {
+  } else if (['tsubo-heibei', 'taikakusen', 'enko', 'shukushaku', 'kaitensuu'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, `src/lib/${path}.js`)];
   } else if (['shotokuzei', 'nematsu', 'kyuyo', 'shakaihoken', 'juminzei', 'kokuho'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, `src/lib/${path}.js`), join(root, 'src/lib/japan-tax-2026.js')];

@@ -1,0 +1,244 @@
+{
+  "fiscalYear": 2026,
+  "reviewedDate": "2026-11-05",
+  "source": "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+  "indexSource": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html",
+  "weightedAverage": 1177,
+  "prefectures": {
+    "hokkaido": {
+      "wage": 1131,
+      "previousWage": 1075,
+      "effectiveDate": "2026-10-01"
+    },
+    "aomori": {
+      "wage": 1090,
+      "previousWage": 1029,
+      "effectiveDate": "2026-10-29"
+    },
+    "iwate": {
+      "wage": 1090,
+      "previousWage": 1031,
+      "effectiveDate": "2026-12-01"
+    },
+    "miyagi": {
+      "wage": 1098,
+      "previousWage": 1038,
+      "effectiveDate": "2026-10-01"
+    },
+    "akita": {
+      "wage": 1090,
+      "previousWage": 1031,
+      "effectiveDate": "2026-10-14"
+    },
+    "yamagata": {
+      "wage": 1092,
+      "previousWage": 1032,
+      "effectiveDate": "2026-10-30"
+    },
+    "fukushima": {
+      "wage": 1094,
+      "previousWage": 1033,
+      "effectiveDate": "2026-10-16"
+    },
+    "ibaraki": {
+      "wage": 1136,
+      "previousWage": 1074,
+      "effectiveDate": "2026-10-18"
+    },
+    "tochigi": {
+      "wage": 1125,
+      "previousWage": 1068,
+      "effectiveDate": "2026-10-01"
+    },
+    "gunma": {
+      "wage": 1120,
+      "previousWage": 1063,
+      "effectiveDate": "2026-10-03"
+    },
+    "saitama": {
+      "wage": 1196,
+      "previousWage": 1141,
+      "effectiveDate": "2026-10-01"
+    },
+    "chiba": {
+      "wage": 1195,
+      "previousWage": 1140,
+      "effectiveDate": "2026-10-01"
+    },
+    "tokyo": {
+      "wage": 1280,
+      "previousWage": 1226,
+      "effectiveDate": "2026-10-01"
+    },
+    "kanagawa": {
+      "wage": 1279,
+      "previousWage": 1225,
+      "effectiveDate": "2026-10-01"
+    },
+    "niigata": {
+      "wage": 1108,
+      "previousWage": 1050,
+      "effectiveDate": "2026-10-01"
+    },
+    "toyama": {
+      "wage": 1119,
+      "previousWage": 1062,
+      "effectiveDate": "2026-10-01"
+    },
+    "ishikawa": {
+      "wage": 1113,
+      "previousWage": 1054,
+      "effectiveDate": "2026-10-03"
+    },
+    "fukui": {
+      "wage": 1112,
+      "previousWage": 1053,
+      "effectiveDate": "2026-10-04"
+    },
+    "yamanashi": {
+      "wage": 1113,
+      "previousWage": 1052,
+      "effectiveDate": "2026-11-01"
+    },
+    "nagano": {
+      "wage": 1117,
+      "previousWage": 1061,
+      "effectiveDate": "2026-10-02"
+    },
+    "gifu": {
+      "wage": 1121,
+      "previousWage": 1065,
+      "effectiveDate": "2026-10-01"
+    },
+    "shizuoka": {
+      "wage": 1154,
+      "previousWage": 1097,
+      "effectiveDate": "2026-10-15"
+    },
+    "aichi": {
+      "wage": 1195,
+      "previousWage": 1140,
+      "effectiveDate": "2026-10-01"
+    },
+    "mie": {
+      "wage": 1143,
+      "previousWage": 1087,
+      "effectiveDate": "2026-10-01"
+    },
+    "shiga": {
+      "wage": 1136,
+      "previousWage": 1080,
+      "effectiveDate": "2026-10-03"
+    },
+    "kyoto": {
+      "wage": 1180,
+      "previousWage": 1122,
+      "effectiveDate": "2026-11-16"
+    },
+    "osaka": {
+      "wage": 1231,
+      "previousWage": 1177,
+      "effectiveDate": "2026-10-01"
+    },
+    "hyogo": {
+      "wage": 1172,
+      "previousWage": 1116,
+      "effectiveDate": "2026-10-01"
+    },
+    "nara": {
+      "wage": 1107,
+      "previousWage": 1051,
+      "effectiveDate": "2026-10-04"
+    },
+    "wakayama": {
+      "wage": 1101,
+      "previousWage": 1045,
+      "effectiveDate": "2026-10-03"
+    },
+    "tottori": {
+      "wage": 1090,
+      "previousWage": 1030,
+      "effectiveDate": "2026-10-03"
+    },
+    "shimane": {
+      "wage": 1092,
+      "previousWage": 1033,
+      "effectiveDate": "2026-10-10"
+    },
+    "okayama": {
+      "wage": 1104,
+      "previousWage": 1047,
+      "effectiveDate": "2026-10-02"
+    },
+    "hiroshima": {
+      "wage": 1141,
+      "previousWage": 1085,
+      "effectiveDate": "2026-10-11"
+    },
+    "yamaguchi": {
+      "wage": 1101,
+      "previousWage": 1043,
+      "effectiveDate": "2026-10-08"
+    },
+    "tokushima": {
+      "wage": 1103,
+      "previousWage": 1046,
+      "effectiveDate": "2026-11-01"
+    },
+    "kagawa": {
+      "wage": 1092,
+      "previousWage": 1036,
+      "effectiveDate": "2026-10-01"
+    },
+    "ehime": {
+      "wage": 1093,
+      "previousWage": 1033,
+      "effectiveDate": "2026-11-01"
+    },
+    "kochi": {
+      "wage": 1086,
+      "previousWage": 1023,
+      "effectiveDate": "2026-10-29"
+    },
+    "fukuoka": {
+      "wage": 1114,
+      "previousWage": 1057,
+      "effectiveDate": "2026-10-04"
+    },
+    "saga": {
+      "wage": 1095,
+      "previousWage": 1030,
+      "effectiveDate": "2026-11-15"
+    },
+    "nagasaki": {
+      "wage": 1087,
+      "previousWage": 1031,
+      "effectiveDate": "2026-11-02"
+    },
+    "kumamoto": {
+      "wage": 1092,
+      "previousWage": 1034,
+      "effectiveDate": "2026-12-01"
+    },
+    "oita": {
+      "wage": 1096,
+      "previousWage": 1035,
+      "effectiveDate": "2026-11-01"
+    },
+    "miyazaki": {
+      "wage": 1085,
+      "previousWage": 1023,
+      "effectiveDate": "2026-10-24"
+    },
+    "kagoshima": {
+      "wage": 1090,
+      "previousWage": 1026,
+      "effectiveDate": "2026-10-25"
+    },
+    "okinawa": {
+      "wage": 1086,
+      "previousWage": 1023,
+      "effectiveDate": "2026-12-02"
+    }
+  }
+}

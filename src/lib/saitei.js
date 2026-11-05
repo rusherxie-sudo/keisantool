@@ -1,9 +1,15 @@
+import revision2026 from '../data/minimum-wage-2026.json' with { type: 'json' };
+
 // 地域別最低賃金の計算ロジック（純関数・DOM非依存）。
 // 出典: 厚生労働省「令和7年度 地域別最低賃金 全国一覧」
 // https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html
 // 金額の端数は Math.floor で切り捨てる。
 
+// 令和7年度の歴史値。令和8年度は全国一覧の確定値を別に保持する。
 export const NATIONAL_WEIGHTED_AVERAGE = 1121;
+export const NATIONAL_WEIGHTED_AVERAGE_2026 = revision2026.weightedAverage;
+export const WAGE_REVIEWED = revision2026.reviewedDate;
+export const WAGE_SOURCE_2026 = revision2026.source;
 // 令和8年度の中央最低賃金審議会目安（2026-07-28答申）ベースの全国加重平均。
 // 各地の決定・発効後に確定する見込み額であり、現行確定額（1121円）ではない。
 export const NATIONAL_WAGE_GUIDELINE_2026 = 1176;
@@ -102,6 +108,12 @@ export const MINIMUM_WAGE_DATA = Object.fromEntries(
 );
 
 function applicableWageRow(row, asOfDate) {
+  const revision = revision2026.prefectures[row.slug];
+  if (revision) row = { ...row, proposedWage: revision.wage,
+    proposedIncrease: revision.wage - row.wage, revisionStatus: 'decided',
+    revisionEffectiveDate: revision.effectiveDate, revisionSource: revision2026.source,
+    reviewedDate: revision2026.reviewedDate };
+
   if (
     typeof asOfDate === 'string'
     && /^\d{4}-\d{2}-\d{2}$/.test(asOfDate)

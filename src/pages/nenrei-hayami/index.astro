@@ -3,6 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
+import AgeTableLookup from '../../components/AgeTableLookup.astro';
 import { hayamiTable, UMAREDOSHI_FROM, UMAREDOSHI_TO } from '../../lib/hayami.js';
 import { seirekiToWareki } from '../../lib/wareki.js';
 import { japanDateParts } from '../../lib/japanDate.js';
@@ -74,14 +75,7 @@ const datasetJsonld = {
       <a href="/nenrei-hayami/2027/">2027年版を見る</a>
       <a href="#age-downloads">PDF・印刷</a>
     </nav>
-    <div class="hayami-lookup" hidden>
-      <label for="birth-year-search">生まれ年を探す（西暦・和暦）</label>
-      <div class="hayami-search-controls">
-        <input id="birth-year-search" type="search" placeholder="例：1988、昭和63、平成元年" autocomplete="off" aria-controls="age-table-body" aria-describedby="age-search-status" />
-        <button id="clear-year-search" type="button">全件表示</button>
-      </div>
-      <p id="age-search-status" role="status">{rows.length}年分を表示</p>
-    </div>
+    <AgeTableLookup baseYear={BASE_YEAR} rowCount={rows.length} slug={slug} />
     <p class="hayami-note">
       満年齢は<strong>{BASE_YEAR}年の誕生日を迎えた後</strong>の年齢です。誕生日前は<strong>1歳引いて</strong>ください。生まれる前は対象外です。
     </p>
@@ -90,7 +84,7 @@ const datasetJsonld = {
       <div class="data-table-scroll">
         <table class="data-table hayami-table">
           <thead>
-            <tr><th>西暦</th><th>和暦</th><th>満年齢</th><th>数え年</th><th>干支</th></tr>
+            <tr><th>西暦</th><th>和暦</th><th>満年齢（誕生日後）</th><th>数え年</th><th>干支</th></tr>
           </thead>
           <tbody id="age-table-body">
             {rows.map((r) => (
@@ -165,32 +159,6 @@ const datasetJsonld = {
 </ToolLayout>
 
 <script>
-  const search = document.querySelector('#birth-year-search');
-  const tableRows = [...document.querySelectorAll('#age-table-body tr')];
-  const status = document.querySelector('#age-search-status');
-  const normalize = value => value.normalize('NFKC').replace(/\s+/g, '');
-  let trackedLookup = false;
-  function filterYears() {
-    const query = normalize(search.value);
-    let count = 0;
-    for (const row of tableRows) {
-      row.hidden = !normalize(row.dataset.yearLabel).includes(query);
-      if (!row.hidden) count++;
-    }
-    status.textContent = count ? `${count}年分を表示` : '該当する生まれ年がありません。西暦または和暦で入力してください。';
-    // Only record successful use; never send the entered birth year.
-    if (query && count === 1 && !trackedLookup) {
-      window.gtag?.('event', 'age_table_lookup', { tool_slug: 'nenrei-hayami' });
-      trackedLookup = true;
-    }
-  }
-  search.addEventListener('input', filterYears);
-  document.querySelector('#clear-year-search').addEventListener('click', () => {
-    search.value = '';
-    filterYears();
-    search.focus();
-  });
-  document.querySelector('.hayami-lookup').hidden = false;
   document.querySelectorAll('[data-pdf-year]').forEach(link => link.addEventListener('click', () => {
     window.gtag?.('event', 'age_table_pdf_download', { tool_slug: 'nenrei-hayami', year: link.dataset.pdfYear });
   }));
@@ -206,12 +174,6 @@ const datasetJsonld = {
   .hayami-main { max-width: 880px; width: 100%; margin: 0 auto; }
   .hayami-actions { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 12px; font-size: .85rem; }
   .hayami-actions a, .hayami-intent-note a { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
-  .hayami-lookup { margin-bottom: 10px; }
-  .hayami-lookup label { display: block; margin-bottom: 6px; font-size: .85rem; font-weight: var(--fw-bold); }
-  .hayami-search-controls { display: flex; gap: 8px; }
-  .hayami-search-controls input { min-width: 0; flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: var(--r-md); font-size: 16px; color: var(--text); background: var(--surface); }
-  .hayami-search-controls button { flex: none; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); color: var(--text); cursor: pointer; }
-  #age-search-status { font-size: .78rem; color: var(--text-muted); margin: 4px 0 0; }
   .hayami-note { font-size: .82rem; color: var(--text-muted); margin: 8px 0 12px; line-height: 1.7; }
   .hayami-intent-note { margin: 12px 0; font-size: .82rem; line-height: 1.7; color: var(--text-muted); }
 
@@ -238,7 +200,7 @@ const datasetJsonld = {
      site-footer / fshare などレイアウト側の要素も隠すため is:global（header/ad は global.css 側で対応済み） -->
 <style is:global>
   @media print {
-    .site-footer, .fshare, .print-btn, .hayami-lookup, .hayami-actions, .howto, .faq, .related, .ad-slot,
+    .site-footer, .fshare, .print-btn, .hayami-actions, .howto, .faq, .related, .ad-slot,
     .page-hero .crumb, .page-hero p { display: none !important; }
     .page-hero { margin-bottom: 6px; }
     .page-hero h1 { font-size: 14pt; }

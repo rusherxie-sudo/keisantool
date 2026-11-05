@@ -17,7 +17,7 @@ const aprilEntryRows = Array.from({ length: 17 }, (_, index) => {
   const joinYear = tableYear - index;
   return { joinYear, serviceYear: tableYear - joinYear + 1, completedYears: tableYear - joinYear };
 });
-const quickEntryYears = new Set([2017, 2018, 2019, 2022]);
+const quickEntryYears = new Set([2017, 2018, 2019, 2020, 2021, 2022]);
 const quickEntryRows = aprilEntryRows.filter((row) => quickEntryYears.has(row.joinYear)).reverse();
 const jsonld = {
   '@context': 'https://schema.org',
@@ -53,7 +53,7 @@ const jsonld = {
         <div>
           <span>{row.joinYear}年入社</span>
           <strong>{row.serviceYear}年目</strong>
-          <small>勤続満{row.completedYears}年</small>
+          <small>勤続満{row.completedYears}年</small><button type="button" data-entry-year={row.joinYear}>この入社年で計算</button>
         </div>
       ))}
     </div>
@@ -166,7 +166,7 @@ const jsonld = {
       <table>
         <thead><tr><th>入社年月</th><th>{tableYear}年4月1日現在</th><th>完了した勤続年数</th></tr></thead>
         <tbody>{aprilEntryRows.map((row) => (
-          <tr><td>{row.joinYear}年4月入社（{seirekiToWareki(row.joinYear,4,1).label}）</td><td><strong>{row.serviceYear}年目</strong></td><td>{row.completedYears}年</td></tr>
+          <tr><td>{row.joinYear}年4月入社（{seirekiToWareki(row.joinYear,4,1).label}）</td><td><strong>{row.serviceYear}年目</strong></td><td>{row.completedYears}年 <button type="button" data-entry-year={row.joinYear}>計算する</button></td></tr>
         ))}</tbody>
       </table>
     </div>
@@ -311,6 +311,11 @@ const jsonld = {
       hasReverseTracked = true;
     }
   });
+  document.querySelectorAll('[data-entry-year]').forEach(button => button.addEventListener('click', () => {
+    $('join-date').value = `${button.dataset.entryYear}-04-01`;
+    $('reference-date').value = localToday(); render();
+    $('join-date').scrollIntoView({block:'center'});
+  }));
   $('join-date').addEventListener('input', render);
   $('reference-date').addEventListener('input', render);
   $('today-button').addEventListener('click', () => {

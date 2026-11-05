@@ -1,0 +1,65 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import { bankMonth, BANK_SOURCES, BANK_REVIEWED } from '../../lib/bank-calendar.js';
+import { BUSINESS_YEARS } from '../../lib/office-tools.js';
+import '../../styles/office-tools.css';
+const slug = 'ginkou-eigyoubi';
+const title = '銀行営業日カレンダー 2026・2027年｜月別日数・何営業日後';
+const description = '土日祝と12月31日〜1月3日を除く銀行営業日数を月別に確認。2026・2027年のカレンダー、翌営業日・何銀行営業日後の日付、日付別CSVに対応。ATM・振込の着金日は別途確認してください。';
+const annual = BUSINESS_YEARS.map(year => ({ year, months: Array.from({ length: 12 }, (_, i) => bankMonth(year, i + 1)) }));
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={{ '@context': 'https://schema.org', '@type': 'WebApplication', name: '銀行営業日カレンダー', description, applicationCategory: 'UtilityApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } }}>
+  <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/eigyoubi/">営業日数</a> ／ 銀行営業日</div><h1>銀行営業日カレンダー・何営業日後の計算</h1><p>土日・国民の祝日と<strong>12月31日〜1月3日</strong>を除いて数えます。銀行窓口の標準的な営業日の目安です。</p></div>
+  <section class="calc-card office-tool" aria-labelledby="bank-month-heading">
+    <h2 id="bank-month-heading">月の銀行営業日数を調べる</h2>
+    <div class="office-fields"><div><label for="bank-year">年</label><select id="bank-year">{BUSINESS_YEARS.map(year => <option>{year}</option>)}</select></div><div><label for="bank-month">月</label><select id="bank-month">{Array.from({ length: 12 }, (_, i) => <option value={i + 1}>{i + 1}月</option>)}</select></div></div>
+    <p id="bank-month-summary" class="office-summary" aria-live="polite"></p>
+    <div class="office-actions"><button id="bank-csv" type="button">この月の銀行営業日CSVを保存</button></div>
+    <div class="office-scroll"><table class="office-table"><thead><tr><th>日付</th><th>曜日</th><th>区分</th><th>休業理由</th></tr></thead><tbody id="bank-days"></tbody></table></div>
+  </section>
+  <section class="calc-card office-tool" aria-labelledby="bank-next-heading">
+    <h2 id="bank-next-heading">翌銀行営業日・何銀行営業日後を計算</h2>
+    <p>基準日は含めず、翌日から数えます。休業日を基準にした場合も同じ数え方です。</p>
+    <div class="office-fields"><div><label for="bank-date">基準日</label><input id="bank-date" type="date" min="2026-01-01" max="2027-12-31" /></div><div><label for="bank-count">何銀行営業日後（1〜260）</label><input id="bank-count" type="number" min="1" max="260" step="1" value="1" /></div></div>
+    <p id="bank-next-result" class="office-summary" aria-live="polite" hidden></p><p id="bank-error" class="office-error" role="status"></p>
+  </section>
+  {annual.map(({ year, months }) => <section class="howto" id={`bank-${year}`}><h2>{year}年の月別銀行営業日数</h2><p>標準条件の年間銀行営業日は<strong>{months.reduce((sum, month) => sum + month.businessDays, 0)}日</strong>です。個別の支店休業・臨時休業は含みません。</p><div class="office-scroll"><table class="office-table"><thead><tr><th>月</th><th>暦日</th><th>銀行営業日</th><th>銀行休業日（重複除外）</th></tr></thead><tbody>{months.map(month => <tr><th>{month.month}月</th><td>{month.calendarDays}日</td><td>{month.businessDays}日</td><td>{month.calendarDays - month.businessDays}日</td></tr>)}</tbody></table></div></section>)}
+  <section class="howto"><h2>2026〜2027年の年末年始はいつから営業？</h2><p>標準条件では、年内の最終銀行営業日は<strong>2026年12月30日（水）</strong>、年始は<strong>2027年1月4日（月）</strong>です。12月31日〜1月3日は休業日として扱います。</p><p>例えば12月30日の「1銀行営業日後」は1月4日、「2銀行営業日後」は1月5日です。2027年1月8日（金）の翌銀行営業日は、土日と成人の日を挟んだ1月12日（火）です。</p><h2>ATM・ネットバンキング・振込は別に確認</h2><p>この計算は振込の着金日や引落日を保証しません。ATM、インターネットバンキング、即時振込は窓口の休業日でも利用できる場合があり、金融機関・取引時刻・メンテナンス・振込先によって異なります。実際の手続きは利用銀行の案内を確認してください。</p><p>会社独自の休日や勤務曜日を指定する場合は<a href="/eigyoubi/">一般の営業日数カレンダー</a>、会社の年末年始休業は<a href="/nenmatsu-nenshi/">年末年始休み計算</a>をご利用ください。</p><h2>計算の根拠と対応年</h2><p>銀行法第15条と銀行法施行令第5条に基づく標準的な休業日を使用しています。祝日データの確認済み範囲は2026・2027年です。計算結果が2028年以降になる場合は表示しません。</p><ul>{BANK_SOURCES.map(source => <li><a href={source.url} target="_blank" rel="noopener">{source.name}</a></li>)}</ul><p class="office-note">銀行休業日の法令確認日：{BANK_REVIEWED}。支店ごとの追加休業・例外営業・臨時休業は反映していません。</p></section>
+  <RelatedTools current={slug} /><Faq items={[
+    { q: '銀行営業日と普通の営業日は同じですか？', a: '土日祝休みという点は同じですが、銀行は12月31日〜1月3日も標準的な休業日です。会社独自の休日や銀行支店の個別休業は別途確認してください。' },
+    { q: '1銀行営業日後は当日を含みますか？', a: 'このツールでは基準日を含めず、翌日から土日祝・年末年始を除いて数えます。銀行から指定された期限の数え方がある場合は、その案内を優先してください。' },
+    { q: '2027年の銀行はいつから営業しますか？', a: '標準条件では2027年1月4日（月）です。ATMやネットバンキングの利用時間は別途確認してください。' },
+  ]} />
+</ToolLayout>
+<script>
+  import { bankMonth, nextBankBusinessDay } from '../../lib/bank-calendar.js';
+  import { BUSINESS_YEARS, downloadCsv } from '../../lib/office-tools.js';
+  import { japanDateParts } from '../../lib/japanDate.js';
+  const $ = id => document.getElementById(id);
+  const today = japanDateParts();
+  const year = BUSINESS_YEARS.includes(today.year) ? today.year : BUSINESS_YEARS.at(-1);
+  $('bank-year').value = String(year); $('bank-month').value = String(today.month);
+  $('bank-date').value = `${year}-${String(today.month).padStart(2, '0')}-${String(today.day).padStart(2, '0')}`;
+  const tracked = new Set(); let current;
+  function track(kind, user) { if (user && !tracked.has(kind) && typeof window.trackCalculatorResult === 'function') { window.trackCalculatorResult(kind); tracked.add(kind); } }
+  function renderMonth(user = false) {
+    current = bankMonth(Number($('bank-year').value), Number($('bank-month').value));
+    if (!current) return;
+    $('bank-month-summary').textContent = `${current.year}年${current.month}月：${current.businessDays}銀行営業日 ／ ${current.calendarDays}日間`;
+    $('bank-days').replaceChildren();
+    for (const day of current.days) { const row = document.createElement('tr'); for (const value of [day.date, '日月火水木金土'[day.weekday], day.working ? '銀行営業日' : '休業日', day.reason || '—']) { const cell = document.createElement('td'); cell.textContent = value; row.append(cell); } $('bank-days').append(row); }
+    track('bank-month', user);
+  }
+  function renderNext(user = false) {
+    const result = nextBankBusinessDay($('bank-date').value, Number($('bank-count').value));
+    $('bank-next-result').hidden = !result;
+    $('bank-error').textContent = result ? '' : '2026・2027年の実在する基準日と1〜260の整数を入力してください。結果も対応年内に限ります。';
+    if (result) { $('bank-next-result').textContent = `${$('bank-count').value}銀行営業日後：${result}`; track('bank-next-day', user); }
+  }
+  for (const id of ['bank-year', 'bank-month']) $(id).addEventListener('change', () => renderMonth(true));
+  for (const id of ['bank-date', 'bank-count']) $(id).addEventListener('input', () => renderNext(true));
+  $('bank-csv').addEventListener('click', () => { if (!current) return; downloadCsv(`ginkou-eigyoubi-${current.year}-${current.month}.csv`, [['日付', '曜日', '区分', '休業理由'], ...current.days.map(day => [day.date, '日月火水木金土'[day.weekday], day.working ? '銀行営業日' : '休業日', day.reason])]); window.gtag?.('event', 'bank_calendar_download', { tool_slug: 'ginkou-eigyoubi' }); });
+  renderMonth(); renderNext();
+</script>

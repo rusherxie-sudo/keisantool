@@ -66,20 +66,12 @@ const CONFIRMED_ANSWERS = [
   ['saga', 1030, 1095, 65, '2026-09-01'],
 ];
 
-// 2026-08-29時点で答申額を確認できていない地域（審議中または未確認）。
-// 金額を推定・予測として書き込んではならない。
-const NOT_YET_CONFIRMED = [
-  'iwate', 'kumamoto', 'oita', 'okinawa', 'kochi',
-];
-
 describe('令和7年度の地域別最低賃金データ', () => {
   it('確認済みの令和8年度地方答申額を現行額と分けて保持する', () => {
     for (const [slug, wage, proposedWage, proposedIncrease, proposedDate] of CONFIRMED_ANSWERS) {
       expect(getMinimumWageInfo(slug)).toMatchObject({ wage, proposedWage, proposedIncrease, proposedDate });
     }
-    for (const slug of NOT_YET_CONFIRMED) {
-      expect(getMinimumWageInfo(slug)).not.toHaveProperty('proposedWage');
-    }
+
   });
 
   it('令和8年度の中央目安ベース全国加重平均を保持する', () => {
@@ -93,9 +85,9 @@ describe('令和7年度の地域別最低賃金データ', () => {
     expect(getMinimumWageInfo('osaka')).toMatchObject({
       revisionStatus: 'decided', revisionDecisionDate: '2026-09-02', revisionEffectiveDate: '2026-10-01',
     });
-    expect(getMinimumWageInfo('ibaraki')).toMatchObject({ revisionStatus: 'answered', revisionEffectiveDate: '2026-10-18' });
-    expect(getMinimumWageInfo('yamanashi')).toMatchObject({ revisionStatus: 'answered', revisionEffectiveDate: '2026-11-01' });
-    expect(getMinimumWageInfo('saga')).toMatchObject({ revisionStatus: 'answered', revisionEffectiveDate: '2026-11-15' });
+    expect(getMinimumWageInfo('ibaraki')).toMatchObject({ revisionStatus: 'decided', revisionEffectiveDate: '2026-10-18' });
+    expect(getMinimumWageInfo('yamanashi')).toMatchObject({ revisionStatus: 'decided', revisionEffectiveDate: '2026-11-01' });
+    expect(getMinimumWageInfo('saga')).toMatchObject({ revisionStatus: 'decided', revisionEffectiveDate: '2026-11-15' });
     for (const slug of ['tokyo', 'osaka', 'ibaraki', 'yamanashi', 'saga']) {
       expect(getMinimumWageInfo(slug).proposedSource).toMatch(/^https:\/\/jsite\.mhlw\.go\.jp\//);
     }
@@ -188,10 +180,27 @@ describe('改正決定額の発効日切り替え', () => {
     });
   });
 
-  it('答申段階の地域は予定日を過ぎても自動適用しない', () => {
-    expect(getMinimumWageInfo('ibaraki', '2026-10-18')).toMatchObject({
-      wage: 1074, isRevisionEffective: false, revisionStatus: 'answered',
-    });
+  it('11月・12月の発効日前後を区別する', () => {
+    expect(getMinimumWageInfo('saga', '2026-11-14').wage).toBe(1030);
+    expect(getMinimumWageInfo('saga', '2026-11-15').wage).toBe(1095);
+    expect(getMinimumWageInfo('iwate', '2026-11-30').wage).toBe(1031);
+    expect(getMinimumWageInfo('iwate', '2026-12-01').wage).toBe(1090);
+    expect(getMinimumWageInfo('okinawa', '2026-12-01').wage).toBe(1023);
+    expect(getMinimumWageInfo('okinawa', '2026-12-02').wage).toBe(1086);
+  });
+
+  it('公式の全国一覧を全地域に適用し、各発効日前日は旧額を保つ', () => {
+    const rows = minimumWagePrefectures();
+    expect(rows.every(row => row.revisionStatus === 'decided')).toBe(true);
+    for (const row of rows) {
+      const date = new Date(`${row.revisionEffectiveDate}T00:00:00Z`);
+      date.setUTCDate(date.getUTCDate() - 1);
+      expect(getMinimumWage(row.slug, date.toISOString().slice(0,10))).toBe(row.wage);
+      expect(getMinimumWage(row.slug, row.revisionEffectiveDate)).toBe(row.proposedWage);
+    }
+    expect(minimumWagePrefectures('2026-11-05').filter(row => !row.isRevisionEffective).map(row => row.slug)).toEqual(['iwate','kyoto','saga','kumamoto','okinawa']);
+    expect(getMinimumWage('kanagawa', '2026-11-05')).toBe(1279);
+    expect(getMinimumWage('yamanashi', '2026-11-05')).toBe(1113);
   });
 });
 
