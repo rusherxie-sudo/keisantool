@@ -45,6 +45,7 @@ const jsonld = {
       </div>
     </div>
 
+    <div class="form-group ra-year-select"><label for="ra-year">双方の年運を確認する年（地運の相性点は変わりません）</label><select id="ra-year">{[CURRENT_YEAR, CURRENT_YEAR + 1].map(year => <option value={year}>{year}年</option>)}</select></div>
     <div class="ra-prompt" id="ra-prompt">ふたりの生年月日を入力すると、自動で相性を表示します。</div>
 
     <div class="result-box" id="ra-result" data-year={CURRENT_YEAR} aria-live="polite">
@@ -102,6 +103,11 @@ const jsonld = {
       <span>端数は切り捨て。点数は本ツールが12の運命周期を比較しやすくするために設定した目安です。</span>
     </div>
 
+    <h2>運命星だけの相性早見表で判断できる？</h2>
+    <p>「土星人と金星人」のような6星同士の一覧だけでは、本ツールの地運は確定しません。自分のプラス・マイナスと、相手の生まれ年の十二支が必要です。同じ星人の組み合わせでも結果が変わるため、上の生年月日入力で双方向を確認してください。</p>
+    <h2>恋愛・結婚・仕事の相性として読むとき</h2>
+    <p>相性点は恋愛の成功率や結婚の確率ではありません。恋人・夫婦なら連絡の頻度や生活上の希望、仕事仲間なら役割や相談の仕方など、実際に話し合うきっかけとして使えます。片方向だけが大殺界でも、関係が悪くなると決まるわけではありません。</p>
+    <p>「地運」と「今年・来年の年運」は分けて見てください。年を切り替えても地運の点数は変わりません。<a href="/rokusei/daisakkai-2027/">2027年の大殺界が始まる・終わるタイプ</a>は年運の一覧で確認できます。</p>
     <h2>12の運命周期と相性の見方</h2>
     <div class="ra-zone-grid">
       <div><b>種子・緑生・立花</b><span>縁が始まり、育ち、花開く流れ</span></div>
@@ -166,7 +172,7 @@ const jsonld = {
     const person1 = parseDate($('ra-date-1').value);
     const person2 = parseDate($('ra-date-2').value);
     const resultBox = $('ra-result');
-    const year = Number(resultBox.dataset.year);
+    const year = Number($('ra-year').value);
     const result = person1 && person2 ? rokuseiCompatibility(person1, person2, year) : null;
 
     if (!result) {
@@ -203,6 +209,7 @@ const jsonld = {
     }
   }
 
+  $('ra-year').addEventListener('change', render);
   $('ra-date-1').addEventListener('input', render);
   $('ra-date-2').addEventListener('input', render);
   $('ra-date-1').addEventListener('change', render);
@@ -210,6 +217,7 @@ const jsonld = {
 </script>
 
 <style>
+  .ra-year-select { margin: 0 26px 20px; }
   .ra-chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
   .ra-chips span { padding:6px 11px; border-radius:999px; background:var(--cat-tint); color:var(--cat-color); font-size:.76rem; font-weight:700; }
   .ra-inputs { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:end; gap:18px; padding:26px; }

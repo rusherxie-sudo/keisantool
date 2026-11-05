@@ -23,6 +23,10 @@ import { japanDateParts } from '../../lib/japanDate.js';
 const select=document.querySelector('#annual-type'),answer=document.querySelector('#annual-answer');
 let tracked=false;
 function showAnswer(){const row=[...document.querySelectorAll('[data-type]')].find(r=>r.dataset.type===select.value);answer.hidden=!row;answer.textContent=row?.dataset.answer||'';if(row&&!tracked&&typeof window.gtag==='function'){window.gtag('event','annual_fortune_lookup',{tool_slug:'rokusei/daisakkai-2027',year:2027});tracked=true;}}
+// A type link selects the matching answer without carrying a birth date.
+function selectLinkedType(){const slug=location.hash.slice(1);if([...select.options].some(option=>option.value===slug)){select.value=slug;showAnswer();}}
+selectLinkedType();
+window.addEventListener('hashchange',selectLinkedType);
 select.addEventListener('change',()=>{document.querySelector('#annual-birthdate').value='';document.querySelector('#annual-birth-error').textContent='';showAnswer();});
 document.querySelector('#annual-birthdate').addEventListener('input',event=>{
  const value=event.target.value;

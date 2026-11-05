@@ -92,6 +92,46 @@ const STAR_PROFILES: StarProfile[] = [
     <p>生年月日を入力するだけで、運命星（6星）とプラス・マイナス、{CURRENT_YEAR}年の大殺界を自動判定。今後9年の早見表も無料で確認できます。</p>
   </div>
 
+  <div class="calc-card" id="rokusei-calculator">
+    <div class="wide-input">
+      <div class="form-group">
+        <label for="rk-date">自分は何星人？ 生年月日から調べる</label>
+        <input type="date" id="rk-date" min="1900-01-01" max="2099-12-31" />
+      </div>
+    </div>
+
+    <p id="rk-error" role="status"></p>
+    <div class="result-box" id="rk-result" aria-live="polite">
+      <div class="result-label">あなたの運命星</div>
+      <div class="result-main" id="rk-type">―</div>
+      <div class="result-rows">
+        <div class="result-row"><span class="label">運命星</span><span class="value" id="rk-star">―</span></div>
+        <div class="result-row"><span class="label">陽陰</span><span class="value" id="rk-pol">―</span></div>
+        <div class="result-row"><span class="label">生まれた日の干支</span><span class="value" id="rk-kanshi">―</span></div>
+        <div class="result-row"><span class="label" id="rk-year-label">今年（―年）の運勢</span><span class="value" id="rk-zone">―</span></div>
+      </div>
+      <div class="rk-note" id="rk-zone-desc"></div>
+      <p id="rk-method"></p>
+      <p><a id="rk-type-link" data-track-context>自分のタイプの12年早見表</a> ／ <a id="rk-annual-link" data-track-context>2027年の年運・大殺界</a> ／ <a href="/rokusei-aisho/" data-track-context>ふたりの相性を調べる</a></p>
+
+      <div class="rk-forecast">
+        <div class="result-label">今後数年の大殺界カレンダー（運勢の目安）</div>
+        <div class="data-table-wrap">
+          <div class="data-table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr><th>西暦</th><th>運勢ゾーン</th><th>区分</th></tr>
+              </thead>
+              <tbody id="rk-forecast"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ResultShare />
+
   <section class="rk-current-answer" aria-labelledby="rk-current-heading">
     <h2 id="rk-current-heading">{CURRENT_YEAR}年に大殺界なのは何星人？</h2>
     <p><strong>{daisakkaiTypes.map((item) => `${item.type}（${item.zone}）`).join('・')}</strong>です。生年月日を入力すると、自分の運命星と今年の運勢をすぐ確認できます。</p>
@@ -121,46 +161,16 @@ const STAR_PROFILES: StarProfile[] = [
     </a>
   </nav>
 
-  <div class="calc-card" id="rokusei-calculator">
-    <div class="wide-input">
-      <div class="form-group">
-        <label for="rk-date">生年月日</label>
-        <input type="date" id="rk-date" min="1900-01-01" max="2099-12-31" />
-      </div>
-    </div>
 
-    <div class="result-box" id="rk-result">
-      <div class="result-label">あなたの運命星</div>
-      <div class="result-main" id="rk-type">―</div>
-      <div class="result-rows">
-        <div class="result-row"><span class="label">運命星</span><span class="value" id="rk-star">―</span></div>
-        <div class="result-row"><span class="label">陽陰</span><span class="value" id="rk-pol">―</span></div>
-        <div class="result-row"><span class="label">生まれた日の干支</span><span class="value" id="rk-kanshi">―</span></div>
-        <div class="result-row"><span class="label" id="rk-year-label">今年（―年）の運勢</span><span class="value" id="rk-zone">―</span></div>
-      </div>
-      <div class="rk-note" id="rk-zone-desc"></div>
-
-      <div class="rk-forecast">
-        <div class="result-label">今後数年の大殺界カレンダー（運勢の目安）</div>
-        <div class="data-table-wrap">
-          <div class="data-table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr><th>西暦</th><th>運勢ゾーン</th><th>区分</th></tr>
-              </thead>
-              <tbody id="rk-forecast"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ResultShare />
 
   <div class="ad-slot"></div>
 
   <section class="howto">
+    <h2>何星人かを調べる計算方法</h2>
+    <p>本ツールでは、①生まれた日の干支、②その干支に対応する空亡、③空亡に対応する運命星、④生まれ年の十二支によるプラス・マイナス、の順に判定します。出生年だけでは運命星は決まりません。</p>
+    <p>例：1958年2月24日は、日干支が「壬申」、空亡が「戌亥」なので土星人です。1958年は戌年（陽支）のため、結果は「土星人プラス」になります。入力後の結果にも同じ判定過程を表示します。</p>
+    <p>空亡と運命星の対応は、戌亥＝土星人、申酉＝金星人、午未＝火星人、辰巳＝天王星人、寅卯＝木星人、子丑＝水星人です。プラスは子・寅・辰・午・申・戌年、マイナスは丑・卯・巳・未・酉・亥年です。</p>
+    <p>運命数表から星数を求める説明とは手順が異なります。他の資料と照合するときは、日干支・空亡・年の境界の扱いを確認してください。タイプが分かっている方は<a href="/rokusei/hayamihyou/">12タイプの年運早見表</a>から確認できます。</p>
     <h2>六星占術・大殺界の調べ方</h2>
     <p>
       六星占術は、占術研究家の細木数子氏が考案し、現在は細木かおり氏に受け継がれている運命学です。生年月日をもとに、土星人・金星人・火星人・天王星人・木星人・水星人という6つの「運命星」と、生まれ年の干支による陽（プラス）／陰（マイナス）を組み合わせた12タイプで運命の流れを読み解きます。
@@ -366,7 +376,9 @@ const STAR_PROFILES: StarProfile[] = [
 </style>
 
 <script>
-  import { rokusei, fortuneZone, forecast } from '../../lib/rokusei.js';
+  import { rokusei, fortuneZone, forecast, fortuneTypes } from '../../lib/rokusei.js';
+
+  import { japanDateParts } from '../../lib/japanDate.js';
 
   const $ = (id) => document.getElementById(id);
   const CAT_CLASS = { 大殺界: 'daisakkai', 中殺界: 'chusakkai', 小殺界: 'shosakkai', 好調: 'kouchou' };
@@ -379,10 +391,13 @@ const STAR_PROFILES: StarProfile[] = [
   function render() {
     const v = $('rk-date').value;
     const box = $('rk-result');
+    $('rk-error').textContent = '';
     if (!v) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
     const [y, m, d] = v.split('-').map(Number);
-    const r = rokusei(y, m, d);
-    if (!r) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
+    const today = japanDateParts();
+    const limit = `${today.year}-${String(today.month).padStart(2, '0')}-${String(today.day).padStart(2, '0')}`;
+    const r = y >= 1900 && v <= limit ? rokusei(y, m, d) : null;
+    if (!r) { $('rk-error').textContent = '1900年以降、今日以前の正しい生年月日を入力してください。'; box.classList.remove('visible'); window.hideResultShare?.(); return; }
     box.classList.add('visible');
     if (!hasTrackedResult) {
       window.trackCalculatorResult?.('fortune');
@@ -394,7 +409,11 @@ const STAR_PROFILES: StarProfile[] = [
     $('rk-pol').textContent = r.polarity + '（' + r.yearBranch + '年）';
     $('rk-kanshi').textContent = r.kanshi + '（空亡：' + r.kuubou + '）';
 
-    const thisYear = new Date().getFullYear();
+    $('rk-method').textContent = `判定過程：日干支 ${r.kanshi} → 空亡 ${r.kuubou} → ${r.star}。${r.yearBranch}年生まれのため${r.polarity}です。`;
+    const typeSlug = fortuneTypes().find(t => t.type === r.type).slug;
+    $('rk-type-link').href = `/rokusei/${typeSlug}/`;
+    $('rk-annual-link').href = `/rokusei/daisakkai-2027/#${typeSlug}`;
+    const thisYear = today.year;
     const z = fortuneZone(r.type, thisYear);
     $('rk-year-label').textContent = `今年（${thisYear}年）の運勢`;
     $('rk-zone').innerHTML = z.zone + badge(z.category);
