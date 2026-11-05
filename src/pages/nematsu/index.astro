@@ -26,6 +26,12 @@ const jsonld = {
     <p>年末調整を簡単に計算します。年間給与収入、源泉徴収された所得税、各種控除額から、還付額または追徴額を試算します。</p>
   </div>
 
+  <nav class="yearend-links" aria-label="年末調整で確認すること"><a href="#nematsu-input-guide" data-track-context>入力する金額を確認</a><a href="/seimei-hoken-kojo/" data-track-context>保険料から控除額を計算</a><a href="/bonus-tedori/" data-track-context>冬の賞与の手取り</a></nav>
+  <details class="howto" id="nematsu-input-guide"><summary>何を入力すればいい？ 給与明細・控除証明書の確認順</summary>
+    <ol><li>年間給与収入：その年の給与と賞与の額面合計です。手取り額ではありません。年途中で転職した場合は、年末調整に含める前職分の源泉徴収票も確認します。</li><li>源泉徴収額：給与・賞与から天引きされた所得税等の年間合計です。住民税や社会保険料を合算しません。</li><li>社会保険料：給与・賞与からの天引き等、控除対象の年間合計を確認します。前職分も含めた重複のない金額を使います。</li><li>生命保険：<a href="/seimei-hoken-kojo/">生命保険料控除計算</a>の「所得税の所得控除」を入力します。支払った保険料や住民税の控除額ではありません。</li></ol>
+    <p>今後の給与・賞与を含めた見込み額なら、結果も見込みです。扶養・配偶者・住宅ローン等がある場合は<a href="#nematsu-scope">この簡易版の対象外条件</a>を先に確認してください。</p>
+    <p>共済の証明書は<a href="/blog/nematsu-kenmin-kyosai-kakikata/">県民共済・都民共済の区分と割戻金</a>、地震保険は<a href="/blog/nematsu-jishin-hoken-kakikata/">地震保険料控除の記入方法</a>へ。</p>
+  </details>
   <div class="calc-card">
     <p>給与のみの簡易試算です。扶養・配偶者・住宅ローン等の控除は反映しません。<a href="#nematsu-scope" data-track-context>対応範囲を確認</a></p>
     <button id="nematsu-example" type="button">給与360万円の計算例を入力</button>
@@ -170,3 +176,5 @@ const jsonld = {
     render();
   });
 </script>
+
+<style>.yearend-links{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}.yearend-links a{padding:8px 12px;background:var(--cat-tint);border-radius:var(--r-md);color:var(--cat-color);font-size:.85rem}summary{cursor:pointer;font-weight:700}</style>

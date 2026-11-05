@@ -1070,6 +1070,7 @@ const relatedJourneys = {
   eigyoubi: ['ginkou-eigyoubi', 'kinmu-jikan', 'nissu', 'shukujitsu'],
   'ginkou-eigyoubi': ['eigyoubi', 'nenmatsu-nenshi', 'nissu', 'shukujitsu'],
   juminzei: ['seimei-hoken-kojo', 'nematsu', 'kyuyo', 'shotokuzei'],
+  kaitensuu: ['gear-hi', 'toruku', 'enko', 'hayasa'],
   enko: ['en-menseki', 'taikakusen', 'sankaku-kansuu', 'tani'],
   shukushaku: ['tani', 'tsubo-heibei', 'koubai', 'taikakusen'],
   'kinmu-jikan': ['eigyoubi', 'jikan', 'kyuyo', 'yukyu-nissu'],

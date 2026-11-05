@@ -114,9 +114,9 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
       join(root, `src/content/blog/${path.slice('blog/'.length)}.md`),
     ];
   } else if (/^saitei\/[a-z0-9-]+$/.test(path)) {
-    files = [join(pagesDir, 'saitei/[prefecture].astro'), join(root, 'src/lib/saitei.js')];
+    files = [join(pagesDir, 'saitei/[prefecture].astro'), join(root, 'src/lib/saitei.js'), join(root, 'src/data/minimum-wage-2026.json')];
   } else if (path === 'saitei') {
-    files = [join(pagesDir, 'saitei/index.astro'), join(root, 'src/lib/saitei.js')];
+    files = [join(pagesDir, 'saitei/index.astro'), join(root, 'src/lib/saitei.js'), join(root, 'src/data/minimum-wage-2026.json')];
   } else if (/^shukujitsu\/\d{4}$/.test(path)) {
     files = [join(pagesDir, 'shukujitsu/[year].astro'), join(root, 'src/lib/shukujitsu.js')];
   } else if (path === 'shukujitsu') {
@@ -158,7 +158,7 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/loan.js')];
   } else if (['inu-vaccine', 'neko-vaccine'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/pet-vaccine.js')];
-  } else if (['tsubo-heibei', 'taikakusen', 'enko', 'shukushaku'].includes(path)) {
+  } else if (['tsubo-heibei', 'taikakusen', 'enko', 'shukushaku', 'kaitensuu'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, `src/lib/${path}.js`)];
   } else if (['shotokuzei', 'nematsu', 'kyuyo', 'shakaihoken', 'juminzei', 'kokuho'].includes(path)) {
     files = [sourceFileForUrl(pagesDir, path), join(root, `src/lib/${path}.js`), join(root, 'src/lib/japan-tax-2026.js')];

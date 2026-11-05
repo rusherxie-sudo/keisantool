@@ -94,6 +94,7 @@ describe('sourceFileForUrl', () => {
     expect(sourceFilesForUrl(pagesDir, 'saitei/tokyo')).toEqual([
       join(pagesDir, 'saitei/[prefecture].astro'),
       join(process.cwd(), 'src/lib/saitei.js'),
+      join(process.cwd(), 'src/data/minimum-wage-2026.json'),
     ]);
   });
 

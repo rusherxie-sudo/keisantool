@@ -77,7 +77,7 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
   <section class="home-tasks" aria-labelledby="task-title">
     <h2 id="task-title" class="home-h2">いま確認したいことから探す</h2>
     <div class="task-grid">
-      <article><h3>給与と税金を確認する</h3><p>額面と手取り、年末の還付、保険料の内訳。</p><nav><a href="/kyuyo/">手取り</a><a href="/nematsu/">年末調整</a><a href="/kokuho/">退職後の国保</a></nav></article>
+      <article><h3>給与と税金を確認する</h3><p>額面と手取り、年末の還付、保険料の内訳。</p><nav><a href="/kyuyo/">手取り</a><a href="/nematsu/">年末調整</a><a href="/seimei-hoken-kojo/" data-track-context>保険料控除</a><a href="/bonus-tedori/" data-track-context>冬の賞与</a><a href="/kokuho/">退職後の国保</a></nav></article>
       <article><h3>書類に年齢・日付を記入する</h3><p>生年月日から年齢を調べ、和暦や学年へ。</p><nav><a href="/nenrei-hayami/">年齢早見表</a><a href="/wareki/">和暦変換</a><a href="/gakunen-hayami/">学年</a></nav></article>
       <article><h3>仕事の予定を立てる</h3><p>締切までの日数や入社からの経過を確認。</p><nav><a href="/nissu/">日数</a><a href="/kinzoku-nensuu/">勤続年数</a><a href="/2027/">2027年の準備</a></nav></article>
       <article><h3>日々の支払いを分ける</h3><p>税込額、割り勘、移動にかかる燃料費。</p><nav><a href="/zeizei/">消費税</a><a href="/warikai/">割り勘</a><a href="/gasoline/">ガソリン代</a></nav></article>

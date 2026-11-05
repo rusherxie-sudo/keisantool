@@ -2,7 +2,8 @@
 const { baseYear, rowCount, slug } = Astro.props;
 ---
 <div class="age-lookup" data-age-lookup data-base-year={baseYear} data-lookup-slug={slug} hidden>
-  <label for="birth-year-search">生まれ年を探す（西暦・和暦）</label>
+  <label for="age-search-mode">年表の探し方</label><select id="age-search-mode" aria-controls="age-table-body"><option value="birth">生まれ年から探す（西暦・和暦）</option><option value="age">{baseYear}年の誕生日に迎える年齢から探す</option></select>
+  <label for="birth-year-search" id="age-search-label">生まれ年（西暦・和暦）</label>
   <div class="age-search-controls"><input id="birth-year-search" type="search" placeholder="例：1988、昭和63、平成元年" autocomplete="off" aria-controls="age-table-body" aria-describedby="age-search-status" /><button id="clear-year-search" type="button">全件表示</button></div>
   <p id="age-search-status" role="status">{rowCount}年分を表示</p>
   <p id="age-lookup-answer" class="age-lookup-answer" aria-live="polite" hidden></p>
@@ -16,16 +17,24 @@ const { baseYear, rowCount, slug } = Astro.props;
   let tracked = false;
   function filter() {
     const query = normalize(search.value);
+    const byAge = document.querySelector('#age-search-mode').value === 'age';
+    const ageQuery = query.replace(/歳$/, '');
     const visible = [];
-    for (const row of rows) { row.hidden = !normalize(row.dataset.yearLabel).includes(query); if (!row.hidden) visible.push(row); }
-    status.textContent = visible.length ? `${visible.length}年分を表示` : '該当する生まれ年がありません。西暦または和暦で入力してください。';
+    for (const row of rows) { row.hidden = Boolean(query) && (byAge ? !/^\d+$/.test(ageQuery) || Number(root.dataset.baseYear) - Number(row.dataset.birthYear) !== Number(ageQuery) : !normalize(row.dataset.yearLabel).includes(query)); if (!row.hidden) visible.push(row); }
+    status.textContent = visible.length ? `${visible.length}年分を表示` : (byAge ? '該当する年齢がありません。年表の範囲内の整数を入力してください。' : '該当する生まれ年がありません。西暦または和暦で入力してください。');
     answer.hidden = !query || visible.length !== 1;
     if (!answer.hidden) {
       const born = Number(visible[0].dataset.birthYear), age = Number(root.dataset.baseYear) - born;
       answer.textContent = age === 0 ? `${born}年生まれ：誕生後は0歳。誕生前は未出生です。` : `${born}年生まれ：${root.dataset.baseYear}年の誕生日前は${age - 1}歳、誕生日後は${age}歳です。`;
-      if (!tracked && typeof window.gtag === 'function') { window.gtag('event', 'age_table_lookup', { tool_slug: root.dataset.lookupSlug }); tracked = true; }
+      if (!tracked && typeof window.gtag === 'function') { window.gtag('event', 'age_table_lookup', { tool_slug: root.dataset.lookupSlug, lookup_mode: byAge ? 'age' : 'birth-year' }); tracked = true; }
     }
   }
+  document.querySelector('#age-search-mode').addEventListener('change', event => {
+    const byAge = event.target.value === 'age';
+    document.querySelector('#age-search-label').textContent = byAge ? `${root.dataset.baseYear}年の誕生日に迎える年齢（現在の年齢ではありません）` : '生まれ年（西暦・和暦）';
+    search.placeholder = byAge ? '例：30、20歳' : '例：1988、昭和63、平成元年';
+    search.value = ''; filter(); search.focus();
+  });
   search.addEventListener('input', filter);
   document.querySelector('#clear-year-search').addEventListener('click', () => { search.value = ''; filter(); search.focus(); });
   root.hidden = false;
@@ -34,6 +43,7 @@ const { baseYear, rowCount, slug } = Astro.props;
   .age-lookup { margin-bottom: 10px; }
   label { display: block; margin-bottom: 6px; font-size: .85rem; font-weight: var(--fw-bold); }
   .age-search-controls { display: flex; gap: 8px; }
+  select { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border); border-radius: var(--r-md); color: var(--text); background: var(--surface); font-size: 16px; }
   input { min-width: 0; flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: var(--r-md); font-size: 16px; color: var(--text); background: var(--surface); }
   button { flex: none; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); color: var(--text); cursor: pointer; }
   #age-search-status { font-size: .78rem; color: var(--text-muted); margin: 4px 0 0; }

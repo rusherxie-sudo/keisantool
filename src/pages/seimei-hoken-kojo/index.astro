@@ -32,6 +32,8 @@ const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', na
    <p class="field-help">所得税は全体で12万円、住民税は7万円が上限です。新旧契約がある区分は、新のみ・旧のみ・併用のうち最も大きい控除額を採用しています。計算上の1円未満は切り上げます。</p>
    <details><summary>新旧それぞれの計算額を確認</summary><div id="insurance-breakdown"></div></details>
    <p>この金額が課税所得から差し引かれます。還付・減税額は本人の所得、税率、他の控除等で変わり、この結果だけでは確定しません。</p>
+   <div class="finance-actions"><button type="button" class="finance-button secondary" data-copy-deduction="income">所得税の控除額だけコピー</button><button type="button" class="finance-button secondary" data-copy-deduction="resident">住民税の控除額だけコピー</button></div>
+   <p id="insurance-next-step"></p><p id="insurance-nematsu-next"><a href="/nematsu/" data-track-context>2026年分の年末調整で還付・追徴を確認</a>。転記前に対象年と簡易版の適用範囲を確認してください。</p>
    <div class="finance-actions"><button type="button" class="finance-button secondary" id="insurance-copy">結果をコピー</button><span id="insurance-copy-status" class="copy-status" role="status"></span></div>
   </section>
   <section class="howto">
@@ -60,8 +62,8 @@ const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', na
 <script>
  import { calculateLifeInsurance, PREMIUM_FIELDS } from '../../lib/seimei-hoken-kojo.js';
  const $ = (id) => document.getElementById(id), yen = (n) => `${n.toLocaleString('ja-JP')}円`;
- let copyText = '', tracked = false;
- function clear() { $('insurance-result').hidden=true; $('insurance-error').hidden=true; $('insurance-copy-status').textContent=''; copyText=''; }
+ let copyText = '', tracked = false, deduction = null;
+ function clear() { $('insurance-result').hidden=true; $('insurance-error').hidden=true; $('insurance-copy-status').textContent=''; copyText=''; deduction=null; }
  $('insurance-form').addEventListener('input',clear); $('insurance-form').addEventListener('change',clear);
  $('insurance-form').addEventListener('submit',(event)=>{
   event.preventDefault(); clear();
@@ -79,8 +81,17 @@ const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', na
    }
   }
   copyText=`${r.year}年分 生命保険料控除\n所得税の所得控除：${yen(r.income.total)}\n${r.residentYear}年度住民税の所得控除：${yen(r.resident.total)}\n${$('insurance-enhanced').textContent}\n※還付・減税額そのものではありません。\n${location.origin}${location.pathname}`;
+  deduction = { income: r.income.total, resident: r.resident.total };
+  $('insurance-nematsu-next').hidden = r.year !== 2026;
+  $('insurance-next-step').textContent = `${r.year}年分の年末調整では所得税の控除額を使います。住民税の結果は${r.residentYear}年度分です。異なる年度の住民税計算へ転記しないでください。`;
   $('insurance-result').hidden=false;if(!tracked){window.trackCalculatorResult?.('seimei-hoken-kojo');tracked=true;}
  });
  $('insurance-example').addEventListener('click',()=>{clear();for(const f of PREMIUM_FIELDS)$('insurance-'+f).value='0';$('insurance-generalOld').value='90000';$('insurance-generalNew').value='39000';$('insurance-medical').value='15000';$('insurance-child').value='no';$('insurance-form').requestSubmit();});
+ document.querySelectorAll('[data-copy-deduction]').forEach(button => button.addEventListener('click', async () => {
+   if (!deduction) return;
+   const kind = button.dataset.copyDeduction;
+   try { await navigator.clipboard.writeText(String(deduction[kind])); $('insurance-copy-status').textContent = `${kind === 'income' ? '所得税' : '住民税'}の控除額をコピーしました`; window.gtag?.('event','deduction_amount_copy',{tool_slug:'seimei-hoken-kojo',tax_type:kind}); }
+   catch { $('insurance-copy-status').textContent = 'コピーできませんでした。表示された控除額を選択してコピーしてください。'; }
+ }));
  $('insurance-copy').addEventListener('click',async()=>{if(!copyText)return;try{await navigator.clipboard.writeText(copyText);$('insurance-copy-status').textContent='コピーしました';}catch{$('insurance-copy-status').textContent='コピーできませんでした。結果を選択してコピーしてください。';}});
 </script>

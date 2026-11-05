@@ -19,6 +19,7 @@ const ROOT = process.cwd();
 // 未コミットの新規ファイルはここに含まれず、実行側で git log / mtime にフォールバックする。
 const TARGETS = [
   'src/pages',
+  'src/data/minimum-wage-2026.json',
   'src/lib',
   'src/content',
   'src/components',
