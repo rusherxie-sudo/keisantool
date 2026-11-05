@@ -4,7 +4,7 @@ import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
-import { SIGNS, seizaAisho } from '../../lib/seiza-aisho.js';
+import { SIGNS, seizaAisho, pairPath } from '../../lib/seiza-aisho.js';
 
 const slug = 'seiza-aisho';
 const title = '星座相性診断 - 12星座の相性表・全144組み合わせを計算 | 計算ツール';
@@ -20,10 +20,10 @@ const jsonld = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 };
 
-// 12×12 の相性マトリクス（ビルド時生成・全144ページへの内部リンク）
+// 12×12 の相性マトリクス（ビルド時生成・78通りの重複しない結果への内部リンク）
 const matrix = SIGNS.map((a) =>
   SIGNS.map((b) => ({
-    href: `/seiza-aisho/${a.slug}-${b.slug}/`,
+    href: pairPath(a.slug, b.slug),
     rank: seizaAisho(a.slug, b.slug).rank,
     score: seizaAisho(a.slug, b.slug).score,
     label: `${a.name}×${b.name}の相性`,
@@ -137,6 +137,7 @@ const matrix = SIGNS.map((a) =>
     </table>
 
     <h3>② アスペクト（角度）と相性度</h3>
+    <p>点数は当サイトが比較表示のために設定したもので、交際・結婚の成功率や統計調査の値ではありません。太陽星座同士の簡略比較で、出生時刻・出生地を使う出生図全体の相性鑑定は行いません。</p>
     <p>黄道十二宮を30度ずつ並べたとき、2つの星座が何個離れているか（＝角度）で関係性が決まります。本ツールの判定基準は次の7段階です。</p>
     <table class="sa-mini-table">
       <thead><tr><th>離れ方</th><th>アスペクト</th><th>相性度</th></tr></thead>
@@ -164,9 +165,9 @@ const matrix = SIGNS.map((a) =>
 
   <Faq items={[
     { q: '星座の相性はどうやって決まりますか？', a: '本ツールでは、西洋占星術で通行の「エレメント（火・地・風・水）」と「アスペクト（2つの星座の角度）」で判定します。同じエレメント（120度）が最も調和しやすく、90度（スクエア）は刺激し合う関係とされます。判定表はページ内で公開しています。' },
-    { q: '相性が▲（48点）だったら付き合わない方がいいですか？', a: 'いいえ。スクエア（90度）は「刺激し合い、成長させ合う関係」ともされ、実際に長続きするカップルも多い組み合わせです。占いは娯楽ですので、参考程度にお楽しみください。' },
+    { q: '相性が▲（48点）だったら付き合わない方がいいですか？', a: 'いいえ。スクエア（90度）は「刺激し合い、成長させ合う関係」ともされ、実際の関係の長さや成否を、この点数から判断することはできません。占いは娯楽ですので、参考程度にお楽しみください。' },
     { q: '自分の星座がわかりません。', a: '「誕生日から選ぶ」を開いて生年月日を入れると自動で星座を選択します。詳しくは星座調べ（誕生日から星座）のページでも確認できます。' },
-    { q: '144通りすべての組み合わせが見られますか？', a: 'はい。ページ内の相性早見表から、12星座×12星座＝全144組み合わせの詳細ページに移動できます。' },
+    { q: '144通りすべての組み合わせが見られますか？', a: 'はい。12星座×12星座の144通りを選べます。逆順は同じ結果なので、同じ星座同士12組と異なる星座66組の計78結果にまとめています。' },
   ]} />
 
   <div class="ad-slot"></div>
@@ -212,7 +213,7 @@ const matrix = SIGNS.map((a) =>
 </style>
 
 <script>
-  import { seizaAisho, signBySlug } from '../../lib/seiza-aisho.js';
+  import { seizaAisho, signBySlug, pairPath } from '../../lib/seiza-aisho.js';
   import { SIGNS } from '../../lib/seiza-aisho.js';
   import { seiza } from '../../lib/seiza.js';
 
@@ -246,7 +247,7 @@ const matrix = SIGNS.map((a) =>
     $('sa-aspect').textContent = r.aspect.name;
     $('sa-element').textContent = `${r.element1} × ${r.element2}`;
     $('sa-comment').textContent = r.comment;
-    $('sa-detail-link').setAttribute('href', `/seiza-aisho/${v1}-${v2}/`);
+    $('sa-detail-link').setAttribute('href', pairPath(v1, v2));
 
     window.setResultShare?.(
       '星座相性診断\n' +
@@ -255,11 +256,19 @@ const matrix = SIGNS.map((a) =>
     );
   }
 
+  function loadPair() {
+    const [first, second, ...extra] = location.hash.slice(1).split('-');
+    if (!extra.length && signBySlug(first) && signBySlug(second)) {
+      $('sa-s1').value = first; $('sa-s2').value = second; render();
+    }
+  }
+  loadPair();
+  window.addEventListener('hashchange', loadPair);
   ['sa-s1', 'sa-s2'].forEach((id) => $(id).addEventListener('change', render));
   [['sa-b1', 'sa-s1'], ['sa-b2', 'sa-s2']].forEach(([bd, sel]) => {
     $(bd).addEventListener('change', () => {
       const slug = slugFromDate($(bd).value);
-      if (slug) { $(sel).value = slug; render(); }
+      $(sel).value = slug; render();
     });
   });
 </script>

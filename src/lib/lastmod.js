@@ -86,7 +86,7 @@ export function sourceFileForUrl(pagesDir, urlPath) {
   // 地域別最低賃金の47都道府県ページ：内容は src/lib/saitei.js のデータから生成されるため、
   // lastmod はデータファイルのコミット日時を参照する（答申追記ごとに自動更新される）。
   if (path.startsWith('saitei/')) return join(process.cwd(), 'src/lib/saitei.js');
-  // 星座相性の144組み合わせページも動的ルート（テンプレの最終更新日を lastmod にする）
+  // 星座相性の78組み合わせページも動的ルート（テンプレの最終更新日を lastmod にする）
   if (/^seiza-aisho\/.+/.test(path)) return join(pagesDir, 'seiza-aisho/[pair].astro');
   // 六曜カレンダーの月別スポークページも動的ルート
   if (/^rokuyo\/\d{4}-\d{2}$/.test(path)) return join(pagesDir, 'rokuyo/[month].astro');
@@ -168,6 +168,8 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/bonus-tedori.js'), join(root, 'src/data/bonus-rates-2026.js')];
   } else if (path === 'seimei-hoken-kojo') {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/seimei-hoken-kojo.js')];
+  } else if (path === 'seiza-aisho' || path.startsWith('seiza-aisho/')) {
+    files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/seiza-aisho.js')];
   } else if (path === 'rokusei' || path.startsWith('rokusei/')) {
     const primary = sourceFileForUrl(pagesDir, path);
     files = [primary, join(root, 'src/lib/rokusei.js')];

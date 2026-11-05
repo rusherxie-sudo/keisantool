@@ -223,14 +223,14 @@ export function pairPageCopy(slug1, slug2) {
 
   const pairLabel = slug1 === slug2 ? `${s1.name}同士` : `${s1.name}と${s2.name}`;
   return {
-    title: `${pairLabel}の相性は？恋愛・友達・仕事を${result.score}点で診断 | 計算ツール`,
+    title: `${pairLabel}の相性計算結果｜${result.score}点・判定の内訳 | 計算ツール`,
     h1: `${pairLabel}の相性は？`,
-    description: `${pairLabel}の相性は${result.score}点・${RANK_LABELS[result.rank]}。西洋占星術の${result.aspect.name}から、恋愛・友達・仕事での関係、長所、注意点、うまく付き合うコツを具体的に解説します。`,
-    intro: `${pairLabel}の相性を、西洋占星術のエレメントとアスペクトで診断しました。総合点に加えて、恋愛・友達・仕事での付き合い方も確認できます。`,
+    description: `${pairLabel}は本ツールの基準で${result.score}点・${RANK_LABELS[result.rank]}。${result.aspect.name}とエレメントの内訳を確認し、星座を選び直して比較できます。点数は実際の関係を測定した値ではありません。`,
+    intro: `${pairLabel}を選んだ計算結果です。星座同士の位置関係を本ツール独自の7段階の点数に置き換えています。順番を入れ替えても結果は同じです。`,
   };
 }
 
-// 144組（同星座・両方向を含む）のページ生成用ペア一覧。
+// 144通りの入力（両方向を含む）。独立したページ数ではない。
 export function allPairs() {
   const pairs = [];
   for (const a of SIGNS) {
@@ -239,4 +239,16 @@ export function allPairs() {
     }
   }
   return pairs;
+}
+
+// Opposite input orders share one result URL in zodiac order.
+export function pairPath(slug1, slug2) {
+  const a = SIGNS.findIndex(sign => sign.slug === slug1);
+  const b = SIGNS.findIndex(sign => sign.slug === slug2);
+  if (a < 0 || b < 0) return null;
+  return `/seiza-aisho/${SIGNS[Math.min(a, b)].slug}-${SIGNS[Math.max(a, b)].slug}/`;
+}
+
+export function uniquePairs() {
+  return allPairs().filter(({ slug1, slug2 }) => pairPath(slug1, slug2) === `/seiza-aisho/${slug1}-${slug2}/`);
 }

@@ -42,5 +42,20 @@ for (const file of walk(root).filter(f=>/sitemap-\d+\.xml$/.test(f))) {
     if (!doc || doc.noindex || doc.canonical!==url) errors.push(`sitemap: missing, noindex or noncanonical ${url}`);
   }
 }
+// Consolidated result routes must remain direct 301s to real retained pages.
+const redirects = readFileSync(join(root, '_redirects'), 'utf8').split('\n')
+  .map(line => line.trim()).filter(line => line && !line.startsWith('#'))
+  .map(line => line.split(/\s+/));
+const redirectSources = new Set(redirects.map(row => row[0]));
+const pairRedirects = redirects.filter(row => row[0].startsWith('/seiza-aisho/'));
+for (const [from, to, status] of pairRedirects) {
+  if (status !== '301' || !existsSync(fileForPath(to)) || redirectSources.has(to)) {
+    errors.push(`pair redirect: invalid or chained ${from} -> ${to}`);
+  }
+  if (existsSync(fileForPath(from))) errors.push(`pair redirect: duplicate HTML still built at ${from}`);
+}
+if (pairRedirects.length !== 132 || new Set(pairRedirects.map(row => row[0])).size !== 132) {
+  errors.push('pair redirects: expected 66 unique routes with slash and slashless rules');
+}
 if(errors.length) { console.error(errors.join('\n'));process.exitCode=1; }
 else console.log(`Site quality: ${files.length} HTML, ${sitemapCount} sitemap URLs, ${checkedLinks} internal links, ${checkedFragments} fragment links checked.`);

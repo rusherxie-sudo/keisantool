@@ -6,7 +6,6 @@ import {
   warekiLabels,
   etoYomi,
   rokuseiSegments,
-  seizaRanges,
   yakudoshiSeirekiYears,
   ageYearTable,
   UMAREDOSHI_FROM,
@@ -40,7 +39,6 @@ const polMark = pol === 'プラス' ? '（＋）' : '（−）';
 const segs = rokuseiSegments(year);
 const segsFirstHalf = segs.filter((s) => s.from.month <= 6);
 const segsSecondHalf = segs.filter((s) => s.from.month >= 7);
-const zodiac = seizaRanges();
 const yakuM = yakudoshiSeirekiYears(year, 'male');
 const yakuF = yakudoshiSeirekiYears(year, 'female');
 const hitM = yakuM.filter((r) => r.year === BASE_YEAR);
@@ -246,26 +244,8 @@ const color = getColorByCategory('生活・日常');
     </section>
 
     <section class="howto um-section">
-      <h2>{year}年生まれの星座（誕生日から）</h2>
-      <p>
-        12星座は生まれ年に関係なく誕生日（月日）で決まります。{year}年生まれの方も、次の区間表で自分の星座を確認できます。
-      </p>
-      <div class="data-table-wrap">
-        <div class="data-table-scroll">
-          <table class="data-table um-table">
-            <thead><tr><th>星座</th><th>誕生日</th></tr></thead>
-            <tbody>
-              {zodiac.map((z) => (
-                <tr>
-                  <td>{z.symbol} {z.name}（{z.en}）</td>
-                  <td class="num--sub">{z.from.month}月{z.from.day}日〜{z.to.month}月{z.to.day}日</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <p class="um-note">※ 境界日生まれの方は年によって前後する場合があります。<a href="/seiza/">星座調べ</a>で誕生日から判定できます。</p>
+      <h2>星座は出生年ではなく誕生日で確認</h2>
+      <p>星座の区間表は出生年ごとに同じ内容なので、<a href="/seiza/">星座早見表・誕生日からの星座調べ</a>にまとめています。境界日付近では、出生年・時刻によって一般的な区間表と異なる場合があります。</p>
     </section>
 
     <section class="howto um-section">
