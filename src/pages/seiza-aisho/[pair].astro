@@ -1,11 +1,10 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
-import Faq from '../../components/Faq.astro';
-import { SIGNS, ELEMENTS, signBySlug, seizaAisho, allPairs, pairPageCopy } from '../../lib/seiza-aisho.js';
+import { SIGNS, ELEMENTS, signBySlug, seizaAisho, uniquePairs, pairPath, pairPageCopy } from '../../lib/seiza-aisho.js';
 
 export function getStaticPaths() {
-  return allPairs().map((p) => ({
+  return uniquePairs().map((p) => ({
     params: { pair: `${p.slug1}-${p.slug2}` },
     props: p,
   }));
@@ -17,7 +16,6 @@ const s2 = signBySlug(slug2);
 const r = seizaAisho(slug1, slug2);
 const same = slug1 === slug2;
 const copy = pairPageCopy(slug1, slug2);
-const pairLabel = same ? `${s1.name}同士` : `${s1.name}と${s2.name}`;
 
 const pageSlug = `seiza-aisho/${slug1}-${slug2}`;
 const RANK_LABELS = { '◎': 'とても良い相性', '○': '良い相性', '△': '工夫しだいの相性', '▲': '刺激し合う相性' };
@@ -45,7 +43,7 @@ const breadcrumb = {
 
 // 「あなたが◯◯座」で相手を変えた12リンク（同組み合わせは除く）
 const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
-  href: `/seiza-aisho/${slug1}-${s.slug}/`,
+  href: pairPath(slug1, s.slug),
   label: `${s1.name}×${s.name}`,
 }));
 ---
@@ -63,13 +61,13 @@ const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
       <div class="sp-sign">
         <span class="sp-symbol">{s1.symbol}</span>
         <span class="sp-name">{s1.name}</span>
-        <span class="sp-role">あなた</span>
+        <span class="sp-role">星座1</span>
       </div>
       <div class="sp-x" aria-hidden="true">×</div>
       <div class="sp-sign">
         <span class="sp-symbol">{s2.symbol}</span>
         <span class="sp-name">{s2.name}</span>
-        <span class="sp-role">相手</span>
+        <span class="sp-role">星座2</span>
       </div>
     </div>
 
@@ -90,57 +88,17 @@ const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
     </div>
   </div>
 
-  <div class="ad-slot"></div>
 
   <section class="howto">
-    <h2>{s1.name}と{s2.name}、それぞれの性格</h2>
-    {same ? (
-      <p>ふたりとも{s1.name}の組み合わせです。長所も短所も共有する「鏡」のような関係なので、下の性格はそのままふたりに当てはまります。</p>
-    ) : (
-      <p>相性は「違い」を知ることから。まずはお互いの基本的な気質を見てみましょう。</p>
-    )}
-    <div class="sp-profiles">
-      <div class="sp-profile">
-        <div class="sp-profile-head">
-          <span class="sp-profile-symbol">{s1.symbol}</span>
-          <div>
-            <div class="sp-profile-name">{s1.name}（{s1.kana}）<span class="sp-profile-role">あなた</span></div>
-            <div class="sp-profile-meta">{s1.period}生まれ ／ {ELEMENTS[s1.element].label}</div>
-          </div>
-        </div>
-        <div class="sp-traits">{s1.traits.map((t) => <span class="sp-trait">{t}</span>)}</div>
-        <p>{s1.desc}</p>
-      </div>
-      <div class="sp-profile">
-        <div class="sp-profile-head">
-          <span class="sp-profile-symbol">{s2.symbol}</span>
-          <div>
-            <div class="sp-profile-name">{s2.name}（{s2.kana}）<span class="sp-profile-role">相手</span></div>
-            <div class="sp-profile-meta">{s2.period}生まれ ／ {ELEMENTS[s2.element].label}</div>
-          </div>
-        </div>
-        <div class="sp-traits">{s2.traits.map((t) => <span class="sp-trait">{t}</span>)}</div>
-        <p>{s2.desc}</p>
-      </div>
-    </div>
-
-    <h2 class="sp-h2">{pairLabel}の恋愛・友達・仕事の相性</h2>
-    <p>総合点だけでは分かりにくい、関係別の長所と注意点をまとめました。</p>
-    <div class="sp-relationships">
-      <article class="sp-relationship">
-        <h3><span aria-hidden="true">♡</span> 恋愛・結婚</h3>
-        <p>{r.relationships.love}</p>
-      </article>
-      <article class="sp-relationship">
-        <h3><span aria-hidden="true">♧</span> 友達・友情</h3>
-        <p>{r.relationships.friendship}</p>
-      </article>
-      <article class="sp-relationship">
-        <h3><span aria-hidden="true">◇</span> 仕事・職場</h3>
-        <p>{r.relationships.work}</p>
-      </article>
-    </div>
-
+    <h2>選んだ星座と計算の内訳</h2>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>項目</th><th>{s1.name}</th><th>{s2.name}</th></tr></thead>
+      <tbody><tr><th>一般的な誕生日の範囲</th><td>{s1.period}</td><td>{s2.period}</td></tr>
+      <tr><th>エレメント</th><td>{ELEMENTS[s1.element].label}</td><td>{ELEMENTS[s2.element].label}</td></tr>
+      <tr><th>12星座の並び（牡羊座を1番目）</th><td>{SIGNS.indexOf(s1) + 1}番目</td><td>{SIGNS.indexOf(s2) + 1}番目</td></tr></tbody>
+    </table></div></div>
+    <p>並びの差は{Math.abs(SIGNS.indexOf(s1) - SIGNS.indexOf(s2))}個です。円を逆向きにたどった距離と比べ、短い方の{r.aspect.distance}個 × 30度 ＝ {r.aspect.distance * 30}度を判定に使います。</p>
+    <p><a href={`/seiza-aisho/#${slug1}-${slug2}`} data-track-context>この組み合わせを計算器に戻して、星座を選び直す</a></p>
     <h2 class="sp-h2">この相性度の根拠（計算方法）</h2>
     <p>
       本ツールの相性は、黄道十二宮で{s1.name}から{s2.name}が<strong>{r.aspect.distance}個離れた位置</strong>にあること（アスペクト：{r.aspect.name}）と、
@@ -150,41 +108,16 @@ const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
       から機械的に算出しています。トライン（120度・同エレメント）が92点で最高、スクエア（90度）が48点という7段階の判定基準は<a href="/seiza-aisho/">星座相性診断のトップページ</a>で公開しています。
     </p>
     <p>
-      同じ誕生日の組み合わせなら結果は常に同じです。星座がわからない場合は<a href="/seiza/">星座調べ（誕生日から星座）</a>で確認できます。
+      この点数は交際や結婚の成功率ではなく、性別・実際の性格・出生時刻も判定していません。同じ星座の組み合わせなら結果は常に同じです。星座がわからない場合は<a href="/seiza/">星座調べ（誕生日から星座）</a>で確認できます。
     </p>
     <div class="disclaimer">
       ※ 星座占い・相性占いは娯楽・文化的慣習に基づくものであり、科学的根拠はありません。計算結果はあくまで参考値です。人間関係の大切な判断は、結果に頼らずご自身の責任でお決めください。
     </div>
   </section>
 
-  <Faq items={[
-    {
-      q: `${s1.name}と${s2.name}の相性は何点ですか？`,
-      a: `${s1.name}と${s2.name}の相性は${r.score}点で、${RANK_LABELS[r.rank]}です。西洋占星術のアスペクト（${r.aspect.name}）と、${same ? `ふたりとも${ELEMENTS[s1.element].label}のエレメント` : `${ELEMENTS[s1.element].label}×${ELEMENTS[s2.element].label}のエレメントの組み合わせ`}から機械的に算出しています。`,
-    },
-    {
-      q: `${s1.name}×${s2.name}と${s2.name}×${s1.name}で相性度は変わりますか？`,
-      a: same
-        ? `${s1.name}同士の組み合わせのため、順番を入れ替えても同じ相性になります。`
-        : `変わりません。エレメントとアスペクトの関係は対称なので、あなたが${s1.name}でも${s2.name}でも相性度は同じ${r.score}点です。`,
-    },
-    {
-      q: `${pairLabel}の恋愛相性を良くするコツは？`,
-      a: r.relationships.love,
-    },
-    {
-      q: '星座相性の結果はどこまで信用できますか？',
-      a: '星座占い・相性占いは娯楽・文化的慣習に基づくものであり、科学的根拠はありません。判定基準は星座相性診断のトップページで公開していますが、人間関係の大切な判断はご自身の責任でお決めください。',
-    },
-  ]} />
-
   <section class="sp-links">
     <h2>ほかの組み合わせも見る</h2>
-    {!same && (
-      <p class="sp-reverse">
-        逆から見た相性はこちら：<a href={`/seiza-aisho/${slug2}-${slug1}/`}>{s2.name}×{s1.name}の相性（あなたが{s2.name}の場合）</a>
-      </p>
-    )}
+    <p>逆順も同じ結果になるため、ひとつの結果ページで確認できます。</p>
     <div class="sp-links-grid">
       {others.map((o) => <a href={o.href}>{o.label}</a>)}
       <a href="/seiza-aisho/" class="sp-links-hub">相性表にもどる</a>
@@ -193,7 +126,6 @@ const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
 
   <RelatedTools current="seiza-aisho" />
 
-  <div class="ad-slot"></div>
 </ToolLayout>
 
 <style>

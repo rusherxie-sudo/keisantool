@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SIGNS, signBySlug, seizaAisho, allPairs, pairPageCopy } from '../src/lib/seiza-aisho.js';
+import { SIGNS, signBySlug, seizaAisho, allPairs, pairPageCopy, pairPath, uniquePairs } from '../src/lib/seiza-aisho.js';
 
 // ── 検証の根拠（独立アンカー）─────────────────────────────
 // 判定は西洋占星術で通行の「エレメント×アスペクト」方式：
@@ -153,17 +153,17 @@ describe('seizaAisho（全144組の整合性）', () => {
 });
 
 describe('pairPageCopy（検索意図に合わせた組み合わせページ文言）', () => {
-  it('同じ星座は「同士」を使い、恋愛・友達・仕事と点数をタイトルで回答する', () => {
+  it('同じ星座は「同士」を使い、計算結果と独自基準を明記する', () => {
     const copy = pairPageCopy('ohitsuji', 'ohitsuji');
-    expect(copy.title).toBe('牡羊座同士の相性は？恋愛・友達・仕事を80点で診断 | 計算ツール');
+    expect(copy.title).toBe('牡羊座同士の相性計算結果｜80点・判定の内訳 | 計算ツール');
     expect(copy.h1).toBe('牡羊座同士の相性は？');
-    expect(copy.description).toContain('牡羊座同士の相性は80点');
-    expect(copy.description).toContain('恋愛・友達・仕事');
+    expect(copy.description).toContain('牡羊座同士は本ツールの基準で80点');
+    expect(copy.description).toContain('実際の関係を測定した値ではありません');
   });
 
   it('異なる星座は両方の名前を保ち、検索結果で結論まで示す', () => {
     const copy = pairPageCopy('shishi', 'ite');
-    expect(copy.title).toBe('獅子座と射手座の相性は？恋愛・友達・仕事を92点で診断 | 計算ツール');
+    expect(copy.title).toBe('獅子座と射手座の相性計算結果｜92点・判定の内訳 | 計算ツール');
     expect(copy.h1).toBe('獅子座と射手座の相性は？');
     expect(copy.description).toContain('92点・とても良い相性');
     expect(copy.description).toContain('トライン（120度）');
@@ -175,8 +175,8 @@ describe('pairPageCopy（検索意図に合わせた組み合わせページ文�
   });
 });
 
-describe('allPairs（144ページ生成用）', () => {
-  it('12×12=144組（同星座含む・両方向を別ページとして返す）', () => {
+describe('allPairs（144通りの入力）', () => {
+  it('12×12=144組（同星座含む・両方向の入力を返す）', () => {
     const pairs = allPairs();
     expect(pairs).toHaveLength(144);
     const keys = new Set(pairs.map((p) => `${p.slug1}-${p.slug2}`));
@@ -185,5 +185,27 @@ describe('allPairs（144ページ生成用）', () => {
     expect(keys.has('ohitsuji-oushi')).toBe(true);
     expect(keys.has('oushi-ohitsuji')).toBe(true);
     expect(keys.has('uo-uo')).toBe(true);
+  });
+});
+
+
+describe('symmetric result URL consolidation', () => {
+  it('maps every input to one of 78 retained results without changing the score', () => {
+    const retained = new Set(uniquePairs().map(p => `/seiza-aisho/${p.slug1}-${p.slug2}/`));
+    expect(retained.size).toBe(78);
+    let redirects = 0;
+    for (const {slug1, slug2} of allPairs()) {
+      const path = pairPath(slug1, slug2);
+      expect(retained.has(path)).toBe(true);
+      expect(path).toBe(pairPath(slug2, slug1));
+      const [a, b] = path.split('/')[2].split('-');
+      expect(seizaAisho(a,b).score).toBe(seizaAisho(slug1,slug2).score);
+      if (path !== `/seiza-aisho/${slug1}-${slug2}/`) redirects++;
+    }
+    expect(redirects).toBe(66);
+  });
+  it('rejects unknown slugs instead of making a broken result link', () => {
+    expect(pairPath('unknown','uo')).toBeNull();
+    expect(pairPath('uo','')).toBeNull();
   });
 });
