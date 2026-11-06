@@ -81,6 +81,8 @@ export function sourceFileForUrl(pagesDir, urlPath) {
   if (path === 'rokusei/daisakkai-2027') return join(pagesDir, 'rokusei/daisakkai-2027.astro');
   if (path === 'rokusei/daisakkai-2026') return join(pagesDir, 'rokusei/daisakkai-2026.astro');
   if (path === 'rokusei/shukumei-daisakkai') return join(pagesDir, 'rokusei/shukumei-daisakkai.astro');
+  // Named topic routes precede the 12-type fallback (including shukumei-guide).
+  if (path.startsWith('rokusei/') && existsSync(join(pagesDir, `${path}.astro`))) return join(pagesDir, `${path}.astro`);
   // 六星占術の12タイプ別ページも動的ルート
   if (path.startsWith('rokusei/')) return join(pagesDir, 'rokusei/[type].astro');
   // 地域別最低賃金の47都道府県ページ：内容は src/lib/saitei.js のデータから生成されるため、
@@ -170,12 +172,22 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/seimei-hoken-kojo.js')];
   } else if (path === 'seiza-aisho' || path.startsWith('seiza-aisho/')) {
     files = [sourceFileForUrl(pagesDir, path), join(root, 'src/lib/seiza-aisho.js')];
-  } else if (path === 'rokusei' || path.startsWith('rokusei/')) {
+  } else if (path === 'rokusei' || path.startsWith('rokusei/') || path === 'rokusei-aisho' || path.startsWith('rokusei-aisho/')) {
     const primary = sourceFileForUrl(pagesDir, path);
-    files = [primary, join(root, 'src/lib/rokusei.js')];
+    files = [primary, join(root, 'src/lib/rokusei.js'), join(root, 'src/components/RokuseiTopicLinks.astro')];
+    const starTopic = /^rokusei\/(doseijin|kinseijin|kaseijin|tenouseijin|mokuseijin|suiseijin)$/.test(path);
+    if (starTopic || path === 'rokusei' || /-(plus|minus)$/.test(path) || path === 'rokusei/unmei-shuki') files.push(join(root, 'src/data/rokusei-content.js'));
+    if (starTopic) files.push(join(root, 'src/components/RokuseiStarPage.astro'), join(root, 'src/lib/rokusei-reigou.js'));
+    if (path === 'rokusei/reigou') files.push(join(root, 'src/lib/rokusei-reigou.js'));
+    if (['rokusei/keisan-hyou', 'rokusei/daisakkai', 'rokusei-aisho/hayamihyou'].includes(path)) files.push(join(root, 'src/lib/rokusei-lookup.js'), join(root, 'src/scripts/rokusei-form.js'));
+    if (starTopic || ['rokusei/keisan-hyou','rokusei/daisakkai','rokusei-aisho/hayamihyou','rokusei/unmei-shuki'].includes(path)) files.push(join(root, 'src/components/RokuseiPage.astro'), join(root, 'src/styles/rokusei-topic.css'));
+    if (path === 'rokusei-aisho') files.push(join(root, 'src/lib/rokusei-aisho.js'), join(root, 'src/lib/tanjobi-aisho.js'));
+    if (path === 'rokusei/shukumei-daisakkai') files.push(join(root, 'src/lib/shukumei.js'));
   } else {
     files = [sourceFileForUrl(pagesDir, path)];
   }
+
+  if (path === '') files.push(join(root, 'src/components/HomeFortuneChannel.astro'), join(root, 'src/data/tools.js'));
 
   return [...new Set(files.filter((file) => file && existsSync(file)))];
 }

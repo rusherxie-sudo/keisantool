@@ -1,4 +1,6 @@
 ---
+import { starProfiles, cycleProfiles } from '../../data/rokusei-content.js';
+import RokuseiTopicLinks from '../../components/RokuseiTopicLinks.astro';
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
@@ -10,6 +12,7 @@ export function getStaticPaths() {
 }
 
 const { typeInfo } = Astro.props;
+const profile = starProfiles.find(p => p.star === typeInfo.star);
 const { year: CURRENT_YEAR } = japanDateParts();
 const current = fortuneZone(typeInfo.type, CURRENT_YEAR);
 const annual2027 = fortuneZone(typeInfo.type, 2027);
@@ -150,6 +153,8 @@ const faqItems = [
   </nav>
 
   <p class="howto"><a href="/rokusei/daisakkai-2027/">2027年の年運・大殺界の開始と終了を12タイプで比較</a></p>
+  <section class="howto"><h2>{typeInfo.star}の性格と関連する調べ方</h2><p>{profile.base}</p><p><a href={`/rokusei/${profile.slug}/`} data-track-context>{typeInfo.star}の性格・プラスとマイナスの違い</a> ／ <a href={`/rokusei/unmei-shuki/#${cycleProfiles.find(c=>c.zone===current.zone).slug}`} data-track-context>「{current.zone}」の意味</a></p><p>現在・次回以外の大殺界は、<a href="/rokusei/daisakkai/" data-track-context>過去と未来の期間検索</a>で運命星を選んで調べられます。</p></section>
+  <RokuseiTopicLinks />
   <RelatedTools current="rokusei" />
   <Faq items={faqItems} />
   <div class="ad-slot"></div>

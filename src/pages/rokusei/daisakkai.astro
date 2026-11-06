@@ -1,0 +1,52 @@
+---
+import RokuseiPage from '../../components/RokuseiPage.astro';
+import Faq from '../../components/Faq.astro';
+import {fortuneTypes,daisakkaiPeriod} from '../../lib/rokusei.js';
+import {japanDateParts} from '../../lib/japanDate.js';
+const year=japanDateParts().year;const types=fortuneTypes();
+const title='大殺界はいつ？自動計算で過去・未来の開始年と終了年を調べる';
+const description='生年月日または運命星から、大殺界がいつ始まり、いつ終わるかを無料で検索。1900〜2099年の指定期間を年表にし、過去と未来の3年間を区別して表示します。';
+const sources=[{url:'https://daisakkai.net/nenun',label:'大殺界早見表：年運の12タイプ一覧'},{url:'https://www.senjutsu.jp/labo_6sei',label:'大久保占い研究室：運命周期・大殺界の計算方法'}];
+const faqs=[{q:'過去の大殺界も調べられますか？',a:'はい。検索開始年と終了年を過去の西暦にすると、その期間の年運を表示します。過去の出来事の原因を占いで証明するものではありません。'},{q:'大殺界は何年続きますか？',a:'年運では陰影・停止・減退の3年間です。12年周期で巡り、減退の翌年は種子になります。宿命大殺界の20年間とは別です。'},{q:'大殺界が途中から表示されるのはなぜ？',a:'検索区間が3年の途中から始まる場合も、結果には本来の開始年と終了年を表示します。「一部が検索区間外」と書かれた期間は、年表に全3年が載っているとは限りません。'}];
+---
+<RokuseiPage {title} {description} slug="rokusei/daisakkai" heading="大殺界はいつ？過去・未来の自動計算" tool {sources}>
+ <form id="range-form" class="calc-card">
+  <div class="rk-control"><label for="range-mode">調べ方を選ぶ</label><select id="range-mode"><option value="birthday">生年月日から調べる</option><option value="type">運命星を選ぶ</option></select></div>
+  <div class="rk-form-grid">
+   <div class="rk-control" id="range-birth-field"><label for="range-birth">生年月日</label><input id="range-birth" type="date" min="1900-01-01" max="2099-12-31" required /></div>
+   <div class="rk-control" id="range-type-field" hidden><label for="range-type">運命星とプラス・マイナス</label><select id="range-type" disabled>{types.map(t=><option value={t.type}>{t.type}</option>)}</select></div>
+   <div class="rk-control"><label for="range-from">検索開始年</label><input id="range-from" type="number" min="1900" max="2099" value={year-5} required /></div>
+   <div class="rk-control"><label for="range-to">検索終了年</label><input id="range-to" type="number" min="1900" max="2099" value={year+12} required /></div>
+  </div>
+  <button class="rk-submit" type="submit">大殺界の期間を調べる</button><p id="range-status" role="status">過去を調べたい場合は、検索する西暦年を変更してください。</p>
+  <section id="range-result" class="rk-answer" hidden><h2 id="range-heading"></h2><ul id="range-periods"></ul>
+   <div class="rk-topic-table" tabindex="0" role="region" aria-label="指定期間の年運"><table><thead><tr><th scope="col">年</th><th scope="col">運命周期</th><th scope="col">区分</th></tr></thead><tbody id="range-years"></tbody></table></div>
+   <p><a id="range-type-link" href="/rokusei/" data-track-context>この運命星の詳しい年表</a> ／ <a href="/rokusei/unmei-shuki/" data-track-context>周期の意味を読む</a></p>
+  </section><noscript>期間検索にはJavaScriptが必要です。下の12タイプ早見表でも現在・次回の期間を確認できます。</noscript>
+ </form>
+ <section class="howto"><h2>大殺界とは？開始・終了の読み方</h2><p>六星占術の年運では、12段階のうち「陰影」「停止」「減退」が続く3年間を大殺界と呼びます。開始年は陰影、中央の年は停止、終了年は減退です。終了年の翌年は種子になります。</p><p>たとえば火星人プラスは2025〜2027年が大殺界で、2028年は種子です。2026年だけを検索しても、開始は2025年・終了は2027年と表示します。</p>
+  <h2>{year}年から見た12タイプの大殺界早見表</h2><p>大殺界に当たるタイプは現在の3年間、それ以外は次回の3年間を掲載しています。</p>
+  <div class="rk-topic-table" tabindex="0" role="region" aria-label="12タイプの大殺界期間"><table><thead><tr><th scope="col">タイプ</th><th scope="col">現在／次回</th><th scope="col">開始〜終了</th><th scope="col">次の種子</th></tr></thead><tbody>{types.map(t=>{const p=daisakkaiPeriod(t.type,year);return <tr><th scope="row"><a href={`/rokusei/${t.slug}/`}>{t.type}</a></th><td>{p.status==='current'?'期間中':'次回'}</td><td>{p.startYear}〜{p.endYear}年</td><td>{p.endYear+1}年</td></tr>})}</tbody></table></div>
+  <h2>「過去の大殺界」と「宿命大殺界」の違い</h2><p>この検索は、過去も未来も同じ12年周期の年運を計算します。人生の20年間を扱う宿命大殺界とは別の計算です。そちらは<a href="/rokusei/shukumei-daisakkai/" data-track-context>宿命大殺界の計算器</a>と<a href="/rokusei/shukumei-guide/" data-track-context>計算結果の読み方</a>をご覧ください。</p>
+  <h2>計算の範囲</h2><p>入力範囲は1900〜2099年、検索年は両端を含みます。生年月日による判定は1月1日を年の境界にします。表示は年単位であり、月運・日運、具体的な出来事や発生日を判定するものではありません。霊合星人の副星は<a href="/rokusei/reigou/" data-track-context>専用ツール</a>で確認できます。</p>
+  <p>大殺界を理由に必要な治療、仕事の手続き、住まいの判断を先延ばしにする必要はありません。占いの周期と現実の条件を分けて考えてください。</p>
+ </section><Faq items={faqs}/>
+</RokuseiPage>
+<script>
+ import {rokusei,fortuneTypes} from '../../lib/rokusei.js';
+ import {daisakkaiRange} from '../../lib/rokusei-lookup.js';
+ import {bindResult,write,rows} from '../../scripts/rokusei-form.js';
+ const form=document.querySelector<HTMLFormElement>('#range-form')!, mode=document.querySelector<HTMLSelectElement>('#range-mode')!,birth=document.querySelector<HTMLInputElement>('#range-birth')!,type=document.querySelector<HTMLSelectElement>('#range-type')!;
+ mode.addEventListener('change',()=>{const useBirth=mode.value==='birthday';birth.disabled=!useBirth;birth.required=useBirth;type.disabled=useBirth;document.getElementById('range-birth-field')!.hidden=!useBirth;document.getElementById('range-type-field')!.hidden=useBirth;});
+ bindResult(form,document.getElementById('range-result'),document.getElementById('range-status'),()=>{
+  let chosen=type.value;
+  if(mode.value==='birthday'){const [y,m,d]=birth.value.split('-').map(Number);if(y<1900||y>2099)return '生年月日は1900〜2099年で入力してください。';const r=rokusei(y,m,d);if(!r)return '実在する生年月日を入力してください。';chosen=r.type;}
+  const from=Number(document.querySelector<HTMLInputElement>('#range-from')!.value),to=Number(document.querySelector<HTMLInputElement>('#range-to')!.value),r=daisakkaiRange(chosen,from,to);
+  if(!r)return '検索年は1900〜2099年で、開始年が終了年以前になるように入力してください。';
+  write('range-heading',`${chosen}：${from}〜${to}年`);
+  const list=document.getElementById('range-periods')!;list.replaceChildren();
+  for(const p of r.periods){const li=document.createElement('li');li.textContent=`${p.startYear}〜${p.endYear}年（陰影→停止→減退）。${p.seedYear}年から種子。${p.clipped?'一部が検索区間外です。':''}`;list.append(li);}
+  if(!r.periods.length){const li=document.createElement('li');li.textContent='この検索期間に年運の大殺界はありません。';list.append(li);}
+  rows('range-years',r.years.map(x=>[`${x.year}年`,x.zone,x.category]));document.querySelector<HTMLAnchorElement>('#range-type-link')!.href=`/rokusei/${fortuneTypes().find(t=>t.type===chosen)!.slug}/`;
+ },'daisakkai_range');
+</script>

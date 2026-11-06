@@ -1,0 +1,42 @@
+---
+import RokuseiPage from '../../components/RokuseiPage.astro';
+import Faq from '../../components/Faq.astro';
+import {chiunTable,BRANCHES} from '../../lib/rokusei-lookup.js';
+const data=chiunTable();
+const title='六星占術 相性表・早見表｜運命星と相手の干支で地運を調べる';
+const description='自分の運命星と相手の生まれ年の干支から、地運を表で確認。双方のタイプと出生年を選ぶと、あなたから見た相手・相手から見たあなたを別々に表示します。';
+const sources=[{url:'https://www.senjutsu.jp/labo_6sei/aishou',label:'大久保占い研究室：地運と天運の見方・1956年4月12日の例'}];
+const faq=[{q:'星人同士の組み合わせだけで相性は分かりますか？',a:'この地運の見方では、見る側の運命星と、相手の出生年の干支を使います。同じ星人でも出生年が違うと結果が異なるため、星人名だけで一つの答えにはできません。'},{q:'相性ランキングはありますか？',a:'本表は地運の配置を示すもので、恋人や配偶者の順位を決めるランキングではありません。生年月日で調べる計算器の点数も、本サイトが比較用に設定した目安で、公式の確率ではありません。'},{q:'霊合星人の相性にも使えますか？',a:'主星の地運を確認することはできますが、副星を含む総合判断ではありません。霊合星人の主星・副星は専用の判定ツールで確認してください。'}];
+---
+<RokuseiPage {title} {description} slug="rokusei-aisho/hayamihyou" heading="六星占術の相性表・地運早見表" tool {sources}>
+ <form id="chiun-form" class="calc-card"><div class="rk-form-grid">
+  <div class="rk-control"><label for="chiun-a">あなたの運命星</label><select id="chiun-a">{data.map(x=><option value={x.type}>{x.type}</option>)}</select></div>
+  <div class="rk-control"><label for="chiun-ay">あなたの出生年（西暦）</label><input id="chiun-ay" type="number" min="1900" max="2099" required placeholder="例：1956"/></div>
+  <div class="rk-control"><label for="chiun-b">相手の運命星</label><select id="chiun-b">{data.map(x=><option value={x.type}>{x.type}</option>)}</select></div>
+  <div class="rk-control"><label for="chiun-by">相手の出生年（西暦）</label><input id="chiun-by" type="number" min="1900" max="2099" required placeholder="例：1960"/></div>
+ </div><p>運命星が分からない場合は<a href="/rokusei-aisho/" data-track-context>2人の生年月日から自動計算</a>できます。</p><button class="rk-submit" type="submit">双方向の地運を調べる</button><p id="chiun-status" role="status">タイプと出生年を選ぶと、下の表の該当する位置も強調します。</p>
+ <section id="chiun-result" class="rk-answer" hidden><h2>ふたりの地運</h2><p id="chiun-forward"></p><p id="chiun-backward"></p><p>二つの配置は別々に読みます。年ごとに変わる年運や、相性の総合点ではありません。</p></section></form>
+ <section class="howto"><h2>12タイプ×相手の干支の相性早見表</h2><p>左の行が「見る側の運命星」、上の列が「相手の出生年の干支」です。相手の運命星を列に当てはめる表ではありません。横にスクロールすると亥年まで読めます。</p>
+ <div class="rk-topic-table" tabindex="0" role="region" aria-label="12タイプと相手の出生干支の地運"><table id="chiun-table"><thead><tr><th scope="col">見る側の運命星</th>{BRANCHES.map(b=><th scope="col">{b}</th>)}</tr></thead><tbody>{data.map(row=><tr><th scope="row">{row.type}</th>{row.cells.map(c=><td data-type={row.type} data-branch={c.branch}>{c.zone}</td>)}</tr>)}</tbody></table></div>
+ <h2>表の読み方：1956年4月12日生まれの例</h2><p>この生年月日は木星人プラスです。その人から見た「子年生まれの相手」は安定、寅年生まれの相手は停止、申年生まれの相手は達成の位置に当たります。これは参考資料にある子年の例と照合しています。</p><p>逆方向を読む場合は、相手の運命星の行で、本人の出生年である申の列を確認します。どちらから見るかで答えが変わる点が大切です。</p>
+ <h2>出生年の干支を確認する</h2><div class="rk-topic-table"><table><thead><tr><th>干支</th><th>出生年の例（12年ごと）</th></tr></thead><tbody>{BRANCHES.map((b,i)=><tr><th scope="row">{b}</th><td>{[1960+i,1972+i,1984+i,1996+i,2008+i].join('・')}</td></tr>)}</tbody></table></div>
+ <h2>地運・天運・ランキングの違い</h2><p>この表は出生条件から決まる「地運」を調べます。「天運」は双方の年運を知りたい年で見比べる考え方なので、年を指定する必要があります。<a href="/rokusei-aisho/" data-track-context>生年月日の相性計算器</a>では、地運とその年の年運を分けて確認できます。</p><p>「相性ランキング」を探している場合も、まずどちらから見た関係か、どの年の話かを確認してください。本表は星人を良い順・悪い順に並べません。恋愛・親子・仕事の関係は、実際の会話や合意、生活環境によっても変わります。</p><p>各配置の意味は<a href="/rokusei/unmei-shuki/" data-track-context>12の運命周期の解説</a>、副星の確認は<a href="/rokusei/reigou/" data-track-context>霊合星人の判定</a>へ進めます。</p>
+ </section><Faq items={faq}/>
+</RokuseiPage>
+<script>
+ import {chiun,BRANCHES} from '../../lib/rokusei-lookup.js';
+ import {polarity} from '../../lib/rokusei.js';
+ import {bindResult,write} from '../../scripts/rokusei-form.js';
+ const form=document.querySelector<HTMLFormElement>('#chiun-form')!;
+ function clearHighlight(){document.querySelectorAll('#chiun-table [data-selected]').forEach(el=>el.removeAttribute('data-selected'));}
+ form.addEventListener('input',clearHighlight);
+ bindResult(form,document.getElementById('chiun-result'),document.getElementById('chiun-status'),()=>{
+  clearHighlight();const a=document.querySelector<HTMLSelectElement>('#chiun-a')!.value,b=document.querySelector<HTMLSelectElement>('#chiun-b')!.value;
+  const ay=Number(document.querySelector<HTMLInputElement>('#chiun-ay')!.value),by=Number(document.querySelector<HTMLInputElement>('#chiun-by')!.value);
+  if(![ay,by].every(y=>Number.isInteger(y)&&y>=1900&&y<=2099))return '出生年を1900〜2099年の整数で入力してください。';
+  if(!a.endsWith(polarity(ay))||!b.endsWith(polarity(by)))return '選んだプラス・マイナスと出生年が一致しません。生年月日からタイプを確認してください。';
+  const ab=BRANCHES[((ay-4)%12+12)%12],bb=BRANCHES[((by-4)%12+12)%12];
+  write('chiun-forward',`あなた（${a}）から見た相手（${bb}年）：${chiun(a,bb)!.zone}`);write('chiun-backward',`相手（${b}）から見たあなた（${ab}年）：${chiun(b,ab)!.zone}`);
+  document.querySelectorAll<HTMLElement>('#chiun-table [data-type]').forEach(el=>{if((el.dataset.type===a&&el.dataset.branch===bb)||(el.dataset.type===b&&el.dataset.branch===ab))el.dataset.selected='true';});
+ },'chiun_table');
+</script>

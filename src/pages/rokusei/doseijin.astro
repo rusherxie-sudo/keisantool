@@ -1,0 +1,6 @@
+---
+import RokuseiStarPage from '../../components/RokuseiStarPage.astro';
+import { starProfiles } from '../../data/rokusei-content.js';
+const profile=starProfiles.find(p=>p.slug==='doseijin');
+---
+<RokuseiStarPage {profile}/>

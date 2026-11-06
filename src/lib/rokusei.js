@@ -251,3 +251,10 @@ export function rokusei(year, month, day) {
     yearBranch: SHI[yearBranch(year)],
   };
 }
+
+// 運命数表の各月1日の値（1〜60）。星数は「運命数−1＋日」を60で循環。
+// https://fortune.netoff.co.jp/rokusei/keisan/ の1950〜2030年月表と照合。
+export function unmeiNumber(year, month) {
+  if (!Number.isInteger(year) || year < 1900 || year > 2099 || !validDate(year, month, 1)) return null;
+  return kanshiIndex(year, month, 1) + 1;
+}

@@ -1,0 +1,18 @@
+---
+import RokuseiPage from '../../components/RokuseiPage.astro';
+import Faq from '../../components/Faq.astro';
+import {cycleProfiles} from '../../data/rokusei-content.js';
+const title='六星占術の運命周期12種類｜種子・立花・再会・乱気と大殺界の意味';
+const description='種子から減退まで、六星占術の12段階を順番と意味で確認。健弱・乱気・大殺界の違い、年運と月運・日運の区別、計算結果の読み方をまとめました。';
+const sources=[{url:'https://www.senjutsu.jp/labo_6sei',label:'大久保占い研究室：六星占術の運命周期と大殺界'},{url:'https://daisakkai.net/nenun',label:'大殺界早見表：年運・月運・日運の区別'}];
+---
+<RokuseiPage {title} {description} slug="rokusei/unmei-shuki" heading="六星占術の運命周期・12段階の意味" {sources}>
+ <section class="howto"><h2>運命周期の順番</h2><p>六星占術の年運では、次の12段階が一年ずつ進みます。減退の次は種子に戻ります。自分が今どの段階かは、<a href="/rokusei/" data-track-context>生年月日から運命星を調べるツール</a>で確認できます。</p>
+ <nav class="rk-topic-nav" aria-label="周期の解説に移動">{cycleProfiles.map((c,i)=><a href={`#${c.slug}`}>{i+1}. {c.zone}</a>)}</nav>
+ <div class="rk-topic-table"><table><thead><tr><th>区分</th><th>該当する周期</th></tr></thead><tbody><tr><th>大殺界</th><td>陰影・停止・減退</td></tr><tr><th>中殺界</th><td>乱気</td></tr><tr><th>小殺界</th><td>健弱</td></tr><tr><th>その他（本サイトでは好調と表示）</th><td>種子・緑生・立花・達成・再会・財成・安定</td></tr></tbody></table></div>
+ <h2>12の運命周期の意味と読み方</h2><div class="rk-cycle-list">{cycleProfiles.map((c,i)=><article id={c.slug}><h3>{i+1}. {c.zone}（{c.category}）</h3><p>{c.meaning}</p><p>{c.reading}</p><p>次の段階：<a href={`#${cycleProfiles[(i+1)%12].slug}`}>{cycleProfiles[(i+1)%12].zone}</a></p></article>)}</div>
+ <h2>年運・月運・日運を混同しない</h2><p>年運は一年単位、月運は月単位、日運は日単位の周期です。同じ言葉が使われても、日付の起点や計算の対象は異なります。年運が停止だから毎月・毎日も停止という意味にはなりません。本サイトの大殺界期間検索は年運を扱います。</p>
+ <h2>地運の相性表で同じ言葉が出たとき</h2><p>相性表では、相手の生まれ年の干支が自分の周期のどの位置にあるかを読みます。「相手が安定」と表示されても、今年が安定の年という意味ではありません。<a href="/rokusei-aisho/hayamihyou/" data-track-context>地運早見表</a>で方向と出生年を確認してください。</p>
+ <h2>過ごし方はどう考える？</h2><p>占いの言葉を、予定や生活を振り返るきっかけとして楽しむことはできます。ただし、結婚・転職・引っ越し・治療の判断は、当事者の合意、費用、健康状態など現実の情報を基に行ってください。運命周期だけで時期を決める必要はありません。</p><p><a href="/rokusei/daisakkai/" data-track-context>自分の大殺界がいつ始まり、いつ終わるか調べる →</a></p>
+ </section><Faq items={[{q:'乱気と大殺界は同じですか？',a:'乱気は中殺界、大殺界は陰影・停止・減退の3段階です。表の区分が異なります。'},{q:'再会なら復縁できますか？',a:'再会は周期の名前であり、特定の相手との復縁を保証するものではありません。相手の意思や現在の関係を尊重してください。'},{q:'立花の読み方は？',a:'六星占術の周期名としては「りっか」と読まれます。種子、緑生に続く3番目の段階です。'}]}/>
+</RokuseiPage>

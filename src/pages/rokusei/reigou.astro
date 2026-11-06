@@ -1,0 +1,114 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import Faq from '../../components/Faq.astro';
+import { reigouTable } from '../../lib/rokusei-reigou.js';
+import { japanDateParts } from '../../lib/japanDate.js';
+const slug = 'rokusei/reigou';
+const title = '霊合星人 調べ方・自動計算【無料】生年月日で判定・12タイプ早見表';
+const description = '生年月日から霊合星人かどうかを無料で自動計算。運命星・生まれ年の干支・判定理由と、主星と副星の12年分の年表を表示します。登録不要。';
+const year = japanDateParts().year;
+const rows = reigouTable();
+const faq = [
+  { q: '霊合星人はどう調べますか？', a: '生年月日から運命星とプラス・マイナスを求め、生まれた年がそのタイプの「停止」に当たるかを確認します。干支だけでは判定できません。' },
+  { q: '1月・2月生まれは前年として計算しますか？', a: 'このツールは1月1日で年を切り替える暦年方式です。立春で年を切り替える方式とは、年初の判定が異なる場合があります。' },
+  { q: '今年が大殺界なら霊合星人ですか？', a: 'いいえ。判定に使うのは今年の運勢ではなく、生まれた年の運命周期です。生まれた年が「停止」に当たることが条件です。' },
+  { q: '霊合星人なら強運ですか？', a: '六星占術では二つの星の性質をあわせ持つと解釈しますが、強運や人生の出来事を保証するものではありません。結果は娯楽としてお楽しみください。' },
+];
+const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', name: '霊合星人 自動計算', description, applicationCategory: 'EntertainmentApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } };
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/rokusei/">六星占術</a> ／ 霊合星人</div>
+    <h1>霊合星人の調べ方・自動計算</h1>
+    <p>生年月日から「霊合星人かどうか」を確認。判定理由と、二つの星の年運を並べて表示します。</p>
+  </div>
+  <form id="reigou-form" class="calc-card">
+    <div class="form-group"><label for="reigou-date">生年月日</label><input id="reigou-date" type="date" min="1900-01-01" max="2099-12-31" required aria-describedby="reigou-method" /></div>
+    <p id="reigou-method">1900〜2099年に対応。年の切り替えは1月1日です。</p>
+    <button type="submit" class="reigou-button">霊合星人か調べる</button>
+    <p id="reigou-status" role="status" aria-live="polite">生年月日を入力して「調べる」を押してください。</p>
+    <section id="reigou-result" hidden>
+      <h2 id="reigou-heading"></h2>
+      <p id="reigou-reason"></p>
+      <p id="reigou-secondary"></p>
+      <h3>年運の年表（{year}〜{year + 11}年）</h3>
+      <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+        <thead><tr><th scope="col">年</th><th scope="col" id="primary-label">主星の年運</th><th scope="col" id="secondary-label">副星の年運</th></tr></thead>
+        <tbody id="reigou-years" data-year={year}></tbody>
+      </table></div></div>
+      <p>大殺界は「陰影・停止・減退」です。二つの年運は別々に表示しており、合算した吉凶や点数ではありません。</p>
+      <a id="reigou-type-link" href="/rokusei/">運命星の詳しい年表を見る →</a>
+    </section>
+    <noscript><p>自動計算にはJavaScriptが必要です。下の早見表でも条件を確認できます。</p></noscript>
+  </form>
+  <section class="howto">
+    <h2>霊合星人とは？判定の仕組み</h2>
+    <p>六星占術では、自分の運命星の周期で、生まれた年が「停止」に当たる人を霊合星人（れいごうせいじん）と呼びます。7番目の運命星ではなく、もとの星に加えて対になる星の影響も受けるという考え方です。</p>
+    <p>対になる星は「土星人と天王星人」「金星人と木星人」「火星人と水星人」。プラス・マイナスは同じで、たとえば木星人プラスの霊合星人は、金星人プラスを副星として見ます。</p>
+    <h2>霊合星人の早見表：12タイプと生まれ年の干支</h2>
+    <p>自分の運命星と生まれ年の干支が、同じ行の組み合わせになっているかを確認してください。</p>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th scope="col">運命星（主星）</th><th scope="col">該当する干支</th><th scope="col">副星</th></tr></thead>
+      <tbody>{rows.map((row) => <tr><th scope="row"><a href={`/rokusei/${row.slug}/`}>{row.type}</a></th><td>{row.branch}年</td><td>{row.secondaryType}</td></tr>)}</tbody>
+    </table></div></div>
+    <h2>計算例と年の切り替え</h2>
+    <p>2010年1月1日生まれは木星人プラス・寅年で、霊合星人に該当します。1975年5月7日生まれは木星人マイナス・卯年で該当します。一方、1985年8月15日生まれは火星人マイナス・丑年なので該当しません。</p>
+    <p>本ツールは1月1日を年の境界として扱います。立春境界の資料と比較する際は、特に1月・2月生まれの年の扱いを確認してください。</p>
+    <p><a href="/rokusei/">運命星・大殺界の自動計算</a> ／ <a href="/rokusei/hayamihyou/">12タイプの年運早見表</a> ／ <a href="/rokusei-aisho/">2人の相性を調べる</a></p>
+    <div class="disclaimer">六星占術は文化・娯楽としての占いです。結果は性格や将来の出来事を保証するものではありません。本サイトは細木数子氏・細木かおり氏の公式サービスではありません。</div>
+    <h2>判定方法の参考資料</h2>
+    <ul>
+      <li><a href="https://www.senjutsu.jp/labo_6sei" target="_blank" rel="noopener">大久保占い研究室：六星占術の運命星と大殺界</a>（生まれ年が「停止」に当たるという条件）</li>
+      <li><a href="https://fortune.netoff.co.jp/rokusei/keisan/" target="_blank" rel="noopener">ネットオフ：六星占術の計算方法</a>（干支の判定表・生年月日の計算例）</li>
+      <li><a href="https://fortune.netoff.co.jp/rokusei/reigousei/" target="_blank" rel="noopener">ネットオフ：霊合星人とは</a>（対になる星の組み合わせ）</li>
+    </ul>
+    <p>判定条件・公開例の確認日：2026年11月7日。日運・月運・宿命大殺界はこのツールの計算対象ではありません。</p>
+  </section>
+  <Faq items={faq} />
+  <RelatedTools current={slug} />
+</ToolLayout>
+<style>
+  .reigou-button { background: var(--cat-color); color: white; border: 0; border-radius: 10px; padding: 12px 22px; font: inherit; font-weight: 700; cursor: pointer; }
+  .reigou-button:focus-visible { outline: 3px solid #1e293b; outline-offset: 3px; }
+  #reigou-result h2 { color: var(--cat-color); }
+  #reigou-result { margin-top: 20px; }
+  #reigou-method, #reigou-status { line-height: 1.7; }
+</style>
+<script>
+  import { reigou, reigouTable } from '../../lib/rokusei-reigou.js';
+  import { fortuneZone } from '../../lib/rokusei.js';
+  const form = document.querySelector<HTMLFormElement>('#reigou-form')!;
+  const input = document.querySelector<HTMLInputElement>('#reigou-date')!;
+  const result = document.querySelector<HTMLElement>('#reigou-result')!;
+  const status = document.querySelector<HTMLElement>('#reigou-status')!;
+  const tbody = document.querySelector<HTMLElement>('#reigou-years')!;
+  let tracked = false;
+  input.addEventListener('input', () => { result.hidden = true; status.textContent = '「霊合星人か調べる」を押すと結果を表示します。'; });
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const [y, m, d] = input.value.split('-').map(Number);
+    const r = reigou(y, m, d);
+    if (!r) { result.hidden = true; status.textContent = '1900〜2099年の実在する生年月日を入力してください。'; return; }
+    document.querySelector('#reigou-heading')!.textContent = r.isReigou ? `${r.type}の霊合星人です` : `${r.type}：霊合星人には該当しません`;
+    document.querySelector('#reigou-reason')!.textContent = `生まれ年の干支は${r.yearBranch}。${r.type}にとって${y}年は「${r.birthZone}」で、${r.isReigou ? '「停止」に当たるため該当します。' : '「停止」ではないため該当しません。'}`;
+    document.querySelector('#reigou-secondary')!.textContent = r.secondaryType ? `主星：${r.type} ／ 副星：${r.secondaryType}` : '副星の年運は表示しません。主星の年運を確認できます。';
+    document.querySelector('#primary-label')!.textContent = `${r.type}（主星）`;
+    document.querySelector('#secondary-label')!.textContent = r.secondaryType ? `${r.secondaryType}（副星）` : '副星（該当なし）';
+    tbody.replaceChildren();
+    const base = Number(tbody.dataset.year);
+    for (let year = base; year < base + 12; year++) {
+      const tr = document.createElement('tr');
+      const th = document.createElement('th'); th.scope = 'row'; th.textContent = `${year}年`; tr.append(th);
+      for (const type of [r.type, r.secondaryType]) {
+        const td = document.createElement('td'); const zone = type ? fortuneZone(type, year) : null;
+        td.textContent = zone ? `${zone.zone}（${zone.category}）` : '—'; tr.append(td);
+      }
+      tbody.append(tr);
+    }
+    const link = document.querySelector<HTMLAnchorElement>('#reigou-type-link')!;
+    link.href = `/rokusei/${reigouTable().find((row) => row.type === r.type)!.slug}/`;
+    result.hidden = false; status.textContent = '判定結果と年表を表示しました。';
+    if (!tracked) { window.trackCalculatorResult?.('reigou'); tracked = true; }
+  });
+</script>

@@ -28,6 +28,11 @@ export const categoryColors = {
 };
 
 export const tools = [
+  { slug: 'rokusei/keisan-hyou', nav: '運命数表', name: '六星占術 計算表・運命数表', icon: '🔮', category: '占い・文化', short: '出生年の表と星数の計算過程', live: true },
+  { slug: 'rokusei/daisakkai', nav: '大殺界の期間', name: '大殺界の過去・未来検索', icon: '🔮', category: '占い・文化', short: '開始年・終了年を区間で確認', live: true },
+  { slug: 'rokusei-aisho/hayamihyou', nav: '相性早見表', name: '六星占術 地運相性表', icon: '🔮', category: '占い・文化', short: '運命星と相手の干支で確認', live: true },
+  { slug: 'rokusei/reigou', nav: '霊合星人', name: '霊合星人の判定・年表', icon: '🔮', category: '占い・文化', short: '生年月日から判定・主星と副星の年運', live: true },
+
   { slug: 'taishoku-yukyu', nav: '退職前の有給消化', name: '退職前の有給消化・最終出勤日計算', icon: '📅', category: '生活・日常', short: '退職日・残日数から予定を逆算・結果URL', live: true },
   { slug: 'nenmatsu-nenshi', nav: '年末年始の休業予定', name: '年末年始の会社休日・出勤予定', icon: '📅', category: '生活・日常', short: '会社休日・年をまたぐ日程・結果URL', live: true },
   { slug: 'eigyoubi', nav: '営業日数', name: '営業日数カレンダー・CSV', icon: '📅', category: '生活・日常', short: '月別営業日数・会社休日・2026/2027', live: true },
@@ -1090,7 +1095,11 @@ const relatedJourneys = {
   saitei: ['kyuyo', 'shakaihoken', 'shotokuzei', 'juminzei'],
   jisa: ['jikan', 'nissu', 'hinodeiri', 'wareki'],
   hinodeiri: ['jisa', 'jikan', 'shukujitsu', 'rokuyo'],
-  rokusei: ['rokusei-aisho', 'tanjobi-aisho', 'suumijutsu', 'seiza'],
+  rokusei: ['rokusei/keisan-hyou', 'rokusei/daisakkai', 'rokusei-aisho', 'rokusei/reigou'],
+  'rokusei/reigou': ['rokusei', 'rokusei/daisakkai', 'rokusei-aisho', 'rokusei/keisan-hyou'],
+  'rokusei/keisan-hyou': ['rokusei', 'rokusei/reigou', 'rokusei/daisakkai', 'rokusei-aisho'],
+  'rokusei/daisakkai': ['rokusei', 'rokusei/reigou', 'rokusei/keisan-hyou', 'rokusei-aisho'],
+  'rokusei-aisho/hayamihyou': ['rokusei-aisho', 'rokusei', 'rokusei/reigou', 'rokusei/daisakkai'],
   hayasa: ['running-pace', 'kasokudo', 'ryuuryou', 'tani'],
   shukujitsu: ['rokuyo', 'nissu', 'jikan', 'gakunen-hayami'],
   rokuyo: ['shukujitsu', 'nissu', 'yakudoshi', 'hinodeiri'],

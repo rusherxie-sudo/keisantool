@@ -1,4 +1,5 @@
 ---
+import RokuseiTopicLinks from '../../components/RokuseiTopicLinks.astro';
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
@@ -90,6 +91,7 @@ const faqItems = [
     </p>
   </div>
 
+  <section class="howto"><h2>どちらの早見表を探していますか？</h2><p>このページは「運命星ごとの年運」を見る表です。生年月日から何星人か調べたい場合は、<a href="/rokusei/keisan-hyou/" data-track-context>出生年・月の運命数表と星数計算</a>へ進んでください。過去の年は<a href="/rokusei/daisakkai/" data-track-context>期間を指定して大殺界を検索</a>できます。</p></section>
   <section class="hm-guide" aria-labelledby="hm-guide-h">
     <h2 id="hm-guide-h">自分の運命星が分からないときは</h2>
     <p>
@@ -197,6 +199,7 @@ const faqItems = [
   </section>
 
   <p class="howto"><a href="/rokusei/daisakkai-2027/">2027年の年運・大殺界の開始と終了を12タイプで比較</a></p>
+  <RokuseiTopicLinks />
   <RelatedTools current="rokusei" />
 
   <Faq items={faqItems} />
