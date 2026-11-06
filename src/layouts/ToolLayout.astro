@@ -111,7 +111,7 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   <link rel="canonical" href={canonical} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content={jsonld?.['@type'] === 'BlogPosting' ? 'article' : 'website'} />
   <meta property="og:locale" content="ja_JP" />
   <meta property="og:site_name" content="計算ツール" />
   <meta property="og:title" content={title} />

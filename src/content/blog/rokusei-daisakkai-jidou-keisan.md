@@ -3,7 +3,7 @@ title: '六星占術の大殺界はどう調べる？生年月日から運命星
 description: '六星占術の大殺界を生年月日から調べる流れを解説。運命星・プラスマイナス・陰影、停止、減退の意味と、早見表を見るときの注意点を紹介します。'
 pubDate: 2026-07-18
 updatedDate: 2026-11-07
-category: 'life'
+category: 'uranai'
 tags: ['六星占術', '大殺界', '運命星', '早見表']
 author: '計算ツール編集部'
 relatedTools: ['rokusei', 'yakudoshi', 'nenrei-hayami']
@@ -83,3 +83,10 @@ faq:
 - 相手との地運：[運命星と相手の干支の相性表](/rokusei-aisho/hayamihyou/)
 - 種子・再会・乱気などの用語：[12の運命周期の意味](/rokusei/unmei-shuki/)
 - 20年間の宿命大殺界：[計算例と結果の読み方](/rokusei/shukumei-guide/)
+
+## 計算の途中や、結果の意味を詳しく確認する
+
+- 本や別サイトと計算が違う：[運命数・星数・年の境界を確認](/blog/rokusei-keisan-machigai/)
+- 年表の区切りを読みたい：[年運の読み方と予定の整理例](/blog/rokusei-nenun-yomikata/)
+- 主星と副星が表示された：[霊合星人の結果の読み方](/blog/rokusei-reigou-yomikata/)
+- ふたりの結果を比べたい：[地運相性と点数の読み方](/blog/rokusei-aisho-kekka-yomikata/)

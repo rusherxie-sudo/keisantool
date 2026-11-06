@@ -1,5 +1,12 @@
 export const blogCategories = [
   {
+    slug: 'uranai',
+    name: '占い・文化',
+    icon: '🔮',
+    color: 'uranai',
+    description: '六星占術の運命星・年運・霊合星人・相性の読み方を、計算例と図で解説します。占いとしての意味と、計算で確認できる範囲を分けて紹介します。',
+  },
+  {
     slug: 'kakutei-shinkoku',
     name: '確定申告',
     icon: '📋',
@@ -84,6 +91,7 @@ export function getBlogCategory(slug) {
 export function getBlogCategoryColor(slug) {
   const cat = getBlogCategory(slug);
   const colorMap = {
+    uranai: { accent: '#7953c4', tint: '#f3effa' },
     tax: { accent: '#2f6df0', tint: '#eef3ff' },
     health: { accent: '#15a06a', tint: '#e8f7f0' },
     life: { accent: '#e08a00', tint: '#fdf3e0' },

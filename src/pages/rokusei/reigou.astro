@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import { reigouTable } from '../../lib/rokusei-reigou.js';
 import { japanDateParts } from '../../lib/japanDate.js';
@@ -67,6 +68,7 @@ const jsonld = { '@context': 'https://schema.org', '@type': 'WebApplication', na
   </section>
   <Faq items={faq} />
   <RelatedTools current={slug} />
+  <RelatedArticles toolSlug={slug} />
 </ToolLayout>
 <style>
   .reigou-button { background: var(--cat-color); color: white; border: 0; border-radius: 10px; padding: 12px 22px; font: inherit; font-weight: 700; cursor: pointer; }

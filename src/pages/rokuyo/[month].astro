@@ -3,7 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import Faq from '../../components/Faq.astro';
 import RokuyoCalendarGrid from '../../components/RokuyoCalendarGrid.astro';
-import { rokuyoMonthTable, rokuyoDesc } from '../../lib/rokuyo.js';
+import { rokuyoMonthTable, rokuyoDesc, toKyureki } from '../../lib/rokuyo.js';
 import { PUBLISHED_ROKUYO_YEARS } from '../../lib/publishedRoutes.js';
 import { japanDateParts } from '../../lib/japanDate.js';
 
@@ -28,6 +28,13 @@ const isCurrentMonth = YEAR === japanToday.year && MONTH === japanToday.month;
 const rows = rokuyoMonthTable(YEAR, MONTH);
 const taianDays = rows.filter((r) => r.rokuyo === '大安').map((r) => `${r.day}日`);
 const butsumetsuDays = rows.filter((r) => r.rokuyo === '仏滅').map((r) => `${r.day}日`);
+const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+const taianRows = rows.filter((row) => row.rokuyo === '大安').map((row) => ({
+  ...row, weekday: new Date(Date.UTC(YEAR, MONTH - 1, row.day)).getUTCDay(),
+}));
+const weekendTaian = taianRows.filter((row) => row.weekday === 0 || row.weekday === 6);
+const firstLunar = toKyureki(YEAR, MONTH, 1);
+const lastLunar = toKyureki(YEAR, MONTH, rows.length);
 
 let prevYear = YEAR, prevMonth = MONTH - 1;
 if (prevMonth < 1) { prevMonth = 12; prevYear -= 1; }
@@ -105,6 +112,23 @@ const jsonld = {
       なかでも<strong>大安</strong>は「万事に良い」とされ結婚式などの祝い事に好まれ、逆に<strong>仏滅</strong>は「万事に凶」とされ祝い事は避けられる傾向があります。ただし六曜は江戸時代以降に広まった暦注であり、地域や宗派、時代によって解釈が異なることもあります。
     </p>
     <div class="disclaimer">※ 六曜は文化的な慣習・参考情報であり、科学的根拠を保証するものではありません。重要な日取りは、ご家族やご親族、式場・寺社などともご相談のうえお決めください。計算結果はあくまで参考値です。</div>
+  </section>
+
+  <section class="howto">
+    <h2>{MONTH_LABEL}の大安を曜日から選ぶ</h2>
+    <p>日取りの相談では、六曜だけでなく曜日も並べると予定を比較しやすくなります。{MONTH_LABEL}の大安{taianRows.length}日のうち、土曜・日曜に当たるのは<strong>{weekendTaian.length > 0 ? weekendTaian.map((row) => `${row.day}日（${weekdays[row.weekday]}）`).join('・') : 'ありません'}</strong>。祝日、施設の休館日、勤務先の休業日は別の条件です。</p>
+    <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+      <thead><tr><th>大安の日付</th><th>曜日</th><th>予定を決める前の確認</th></tr></thead>
+      <tbody>{taianRows.map((row) => <tr><td>{MONTH}月{row.day}日</td><td>{weekdays[row.weekday]}曜日</td><td>{row.weekday === 0 || row.weekday === 6 ? '土日でも施設・窓口の営業を確認' : '仕事・学校や参列者の予定を確認'}</td></tr>)}</tbody>
+    </table></div></div>
+    <h3>結婚式・入籍・引っ越しは、それぞれの条件で確認</h3>
+    <p>結婚式なら会場と参列者の都合、入籍なら自治体の受付方法、引っ越しなら搬入可能な時間や契約日を先に整理します。大安であっても窓口が開くとは限りません。休日受付と通常窓口では確認できる内容が異なる場合もあるため、手続き先へ事前に確認してください。</p>
+    <p>六曜を気にするかどうかには個人差があります。本人と家族の希望を聞いたうえで候補日を数日残し、料金や予約状況を比べると、ひとつの表示だけに予定を縛られずに選べます。必要な移動日数の確認には<a href="/nissu/">日数計算器</a>、国民の祝日の確認には<a href="/shukujitsu/">祝日カレンダー</a>が使えます。</p>
+    <h2>六曜が月の途中で順番どおりに見えない理由</h2>
+    <p>本カレンダーは旧暦の月と日の和を6で割った余りに、六曜を対応させて算出しています。現在のカレンダーの月日をそのまま足す計算ではありません。{MONTH_LABEL}1日は旧暦{firstLunar.isLeap ? '閏' : ''}{firstLunar.month}月{firstLunar.day}日、末日の{rows.length}日は旧暦{lastLunar.isLeap ? '閏' : ''}{lastLunar.month}月{lastLunar.day}日として扱っています。</p>
+    <p>旧暦の月が変わると起点も変わるため、表示はいつも単純な6日間の繰り返しになるとは限りません。前日から1つずつ進めるだけで月全体を埋めると、月の途中からずれることがあります。月をまたぐ予定では、前月末・翌月初もリンク先で確認してください。</p>
+    <h3>計算上の暦と、地域の慣習を区別する</h3>
+    <p>旧暦換算には天文暦に基づく計算ライブラリを使っています。日付境界や旧暦の扱いによって資料との差が生じる場合があるため、式場や寺社が使う暦に合わせたいときは、年月日を指定して相手先にも確認してください。六曜の解釈は科学的な予測ではなく、暦に関する文化的慣習です。仏滅という表示が、病気・事故などの発生を予告するわけではありません。</p>
   </section>
 
   <RelatedTools current="rokuyo" />

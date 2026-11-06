@@ -3,7 +3,7 @@ import { glob } from 'astro/loaders';
 import { tools } from './data/tools.js';
 const toolSlugs = tools.map(tool => tool.slug);
 
-const blogCategorySlugs = ['kakutei-shinkoku', 'nematsu-chosei', 'shakai-hoken', 'zeikin-kiso', 'life-event', 'life', 'health', 'pet', 'tools'];
+const blogCategorySlugs = ['kakutei-shinkoku', 'nematsu-chosei', 'shakai-hoken', 'zeikin-kiso', 'life-event', 'life', 'health', 'pet', 'tools', 'uranai'];
 
 const blog = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),

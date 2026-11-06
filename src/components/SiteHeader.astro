@@ -1,49 +1,28 @@
 ---
-import { tools, categories, categoryMeta, categoryColors } from '../data/tools.js';
+import { tools, categoryMeta, categoryColors } from '../data/tools.js';
 import Icon from './Icon.astro';
 const { current } = Astro.props;
-const catSlug = (name) => categoryMeta.find((c) => c.name === name)?.slug;
-const catId = (name) => categoryColors[name]?.id;
-const catAccent = (name) => categoryColors[name]?.accent;
-
-// カテゴリごとにツールをまとめる（live のみ）。ナビはカテゴリ→ドロップダウン構成。
-const byCategory = categories
-  .map((c) => ({ name: c, items: tools.filter((t) => t.category === c && t.live !== false) }))
-  .filter((c) => c.items.length > 0);
+const currentCategory = tools.find((tool) => tool.slug === current)?.category;
 ---
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="site-logo">keisantool<span>計算</span></a>
-    <button class="nav-toggle" id="nav-toggle" type="button" aria-label="メニューを開く" aria-expanded="false">
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-label="メニューを開く" aria-controls="site-nav" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
-    <nav class="site-nav" id="site-nav" aria-label="カテゴリ別ツール">
+    <nav class="site-nav" id="site-nav" aria-label="メインナビゲーション">
       <a href="/" class="nav-item nav-home" aria-current={current === '' ? 'page' : undefined}>
         <Icon name="home" size={17} class="nav-cat-ic" />ホーム
       </a>
-      <a href="/blog/" class="nav-item" aria-current={current === 'blog' ? 'page' : undefined}>
-        <span class="nav-cat-ic">📝</span>ブログ
-      </a>
-      {byCategory.map((cat) => (
-        <div class="nav-group">
-          <button class="nav-item nav-cat" type="button" aria-haspopup="true" aria-expanded="false">
-            <span class="nav-cat-ic" style={`color:${catAccent(cat.name)}`}><Icon name={catId(cat.name)} size={17} /></span>
-            {cat.name}<span class="nav-caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="nav-menu" role="menu" style={`--cat-color:${catAccent(cat.name)}`}>
-            {catSlug(cat.name) && (
-              <a href={`/category/${catSlug(cat.name)}/`} role="menuitem" class="nav-menu-all" aria-current={current === catSlug(cat.name) ? 'page' : undefined}>
-                {cat.name}をすべて見る →
-              </a>
-            )}
-            {cat.items.map((t) => (
-              <a href={`/${t.slug}/`} role="menuitem" aria-current={current === t.slug ? 'page' : undefined}>
-                <span class="nav-ic"><Icon name={t.slug} size={18} /></span>{t.nav}
-              </a>
-            ))}
-          </div>
-        </div>
+      {categoryMeta.map((cat) => (
+        <a href={`/category/${cat.slug}/`} class="nav-item" aria-current={current === cat.slug ? 'page' : undefined} data-active={currentCategory === cat.name || undefined}>
+          <span class="nav-cat-ic" style={`color:${categoryColors[cat.name]?.accent}`}><Icon name={categoryColors[cat.name]?.id} size={17} /></span>
+          {cat.name}
+        </a>
       ))}
+      <a href="/blog/" class="nav-item" aria-current={current === 'blog' ? 'page' : undefined}>
+        <span class="nav-cat-ic" aria-hidden="true">📝</span>ブログ
+      </a>
     </nav>
   </div>
 </header>
@@ -52,69 +31,43 @@ const byCategory = categories
   const header = document.querySelector('.site-header');
   const navToggle = document.getElementById('nav-toggle');
   const siteNav = document.getElementById('site-nav');
-  const groups = Array.from(document.querySelectorAll('.nav-group'));
 
-  function closeAll() {
-    groups.forEach((g) => {
-      g.classList.remove('open');
-      g.querySelector('.nav-cat')?.setAttribute('aria-expanded', 'false');
-    });
+  function closeMenu() {
+    siteNav?.classList.remove('open');
+    navToggle?.setAttribute('aria-expanded', 'false');
+    navToggle?.setAttribute('aria-label', 'メニューを開く');
   }
 
-  // ハンバーガー（モバイル）
-  navToggle?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const open = siteNav.classList.toggle('open');
+  navToggle?.addEventListener('click', () => {
+    const open = siteNav?.classList.toggle('open') || false;
     navToggle.setAttribute('aria-expanded', String(open));
-    if (!open) closeAll();
+    navToggle.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
   });
-
-  const isDesktopHover = () =>
-    window.matchMedia('(hover:hover) and (min-width:821px)').matches;
-
-  // カテゴリのクリック開閉（モバイルのタップ・デスクトップのクリック両対応）
-  groups.forEach((g) => {
-    const btn = g.querySelector('.nav-cat');
-    btn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const willOpen = !g.classList.contains('open');
-      closeAll();
-      if (willOpen) {
-        g.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
-      }
-    });
-    // PC：別カテゴリに hover で入ったら、クリックで開いていた他メニューを閉じる。
-    // 持続する .open と CSS :hover の二重表示（旧バグ）を防ぐ。
-    g.addEventListener('mouseenter', () => {
-      if (!isDesktopHover()) return;
-      groups.forEach((other) => {
-        if (other !== g) {
-          other.classList.remove('open');
-          other.querySelector('.nav-cat')?.setAttribute('aria-expanded', 'false');
-        }
-      });
-    });
+  siteNav?.addEventListener('click', (event) => {
+    if (event.target instanceof Element && event.target.closest('a')) closeMenu();
   });
-
-  // PC：ナビ領域から離れたら開いていたメニューを閉じる
-  siteNav?.addEventListener('mouseleave', () => {
-    if (isDesktopHover()) closeAll();
+  document.addEventListener('click', (event) => {
+    if (event.target instanceof Node && !header?.contains(event.target)) closeMenu();
   });
-
-  // 外側クリック・Escで閉じる
-  document.addEventListener('click', (e) => {
-    if (!header.contains(e.target)) {
-      closeAll();
-      siteNav.classList.remove('open');
-      navToggle?.setAttribute('aria-expanded', 'false');
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && siteNav?.classList.contains('open')) {
+      closeMenu();
+      navToggle?.focus();
     }
   });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeAll();
-      siteNav.classList.remove('open');
-      navToggle?.setAttribute('aria-expanded', 'false');
-    }
-  });
+  window.matchMedia('(min-width:1281px)').addEventListener('change', closeMenu);
 </script>
+
+<style>
+  .site-nav { justify-content: flex-end; flex-wrap: nowrap; }
+  .nav-item { padding: 9px 8px; font-size: .78rem; }
+  .nav-item[aria-current="page"], .nav-item[data-active] { background: var(--brand-tint); color: var(--text); }
+  @media (max-width:1280px) {
+    .nav-toggle { display: flex; }
+    .site-nav { position: absolute; top: var(--header-h); left: 0; right: 0; display: none; flex-direction: column;
+      align-items: stretch; justify-content: flex-start; background: var(--surface); max-height: calc(100dvh - var(--header-h));
+      overflow-y: auto; padding: 8px 0; border-bottom: 1.5px solid var(--border); box-shadow: var(--shadow-pop); }
+    .site-nav.open { display: flex; max-height: calc(100dvh - var(--header-h)); }
+    .nav-item { width: 100%; min-height: 44px; justify-content: flex-start; gap: 10px; padding: 12px 24px; border-radius: 0; font-size: .95rem; }
+  }
+</style>

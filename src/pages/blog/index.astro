@@ -8,9 +8,9 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
 
 const slug = 'blog';
-const title = 'ブログ - 税金・社会保険・生活のお役立ちコラム | 計算ツール';
+const title = 'ブログ - 六星占術・税金・暮らしの計算を解説 | 計算ツール';
 const description =
-  '確定申告・年末調整・社会保険料・税金の基礎知識をまとめたコラムです。計算方法や手続きの説明と、関連する無料の計算ツールを掲載しています。';
+  '六星占術の調べ方や結果の読み方、税金・社会保険・暮らしの計算を解説。図や具体例で計算の根拠と注意点を確認し、関連する無料ツールを使えます。';
 
 const jsonld = {
   '@context': 'https://schema.org',
@@ -31,7 +31,7 @@ const jsonld = {
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ ブログ</div>
     <h1>ブログ</h1>
-    <p>確定申告・年末調整・社会保険料など、税金や暮らしにまつわるお役立ち情報をわかりやすく解説します。各記事から対応する計算ツールでシミュレーションもできます。</p>
+    <p>六星占術の調べ方や結果の読み方、税金・暮らしの計算を図や具体例で解説します。計算の根拠、入力する条件、結果だけでは判断できないことを確認し、関連ツールで試せます。</p>
   </div>
 
   <div class="blog-cats">

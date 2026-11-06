@@ -19,6 +19,9 @@ const otherCities = cities.filter((item) => item.id !== city.id);
 const january = rows.find((row) => row.month === 1 && row.day === 15);
 const july = rows.find((row) => row.month === 7 && row.day === 15);
 const todayResult = hinodeIri(YEAR, todayMonth, todayDay, city.id);
+const comparisonCity = cities.find((item) => item.id === (city.id === 'tokyo' ? 'sapporo' : 'tokyo'));
+const comparisonJuly = hinodeIri(YEAR, 7, 15, comparisonCity.id);
+const summerDifference = july.dayLengthMinutes - january.dayLengthMinutes;
 const slug = `hinodeiri/${city.id}`;
 const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
 const title = `${city.name}の日の出・日の入り時刻【${YEAR}年】指定日計算・年間早見表 | 計算ツール`;
@@ -133,6 +136,19 @@ const faqItems = [
       <li><a href="https://eco.mtk.nao.ac.jp/koyomi/dni/" target="_blank" rel="noopener">国立天文台 暦計算室「各地のこよみ」</a></li>
       <li><a href="https://gml.noaa.gov/grad/solcalc/calcdetails.html" target="_blank" rel="noopener">NOAA Solar Calculator Details</a></li>
     </ul>
+  </section>
+
+  <section class="howto">
+    <h2>{city.name}の計算地点と、ほかの都市との違い</h2>
+    <p>このページでは、あらかじめ登録した{city.name}の代表地点の緯度・経度を使います。同じ市内でも観測場所は異なるため、ご自宅の窓から太陽が見える瞬間や、山頂から見える瞬間を予測するものではありません。時刻はすべて日本標準時（JST）です。</p>
+    <p>{YEAR}年7月15日の比較では、{city.name}は日の出{july.sunrise}・日の入り{july.sunset}、{comparisonCity.name}は日の出{comparisonJuly.sunrise}・日の入り{comparisonJuly.sunset}です。時計の時刻の差には東西方向の位置が、夏と冬の昼の長さの差には南北方向の位置が関係します。「東の都市だから必ず一年中同じ分数だけ早い」とは限りません。</p>
+    <h3>昼の長さと、屋外で活動できる時間は別</h3>
+    <p>{city.name}では、表の1月15日と7月15日で昼の長さが<strong>{lengthLabel(summerDifference)}</strong>変わります。ただし、これは日の出から日の入りまでの計算値の差です。建物の影、雲、雨、周囲の明かりは反映しておらず、洗濯物が乾く時間や日照時間の予報を表すものではありません。</p>
+    <h3>撮影・旅行の予定に使う場合</h3>
+    <p>朝日や夕日を見たいときは、まず上の入力欄で実際に出かける日を選びます。次に、現地までの移動時間や入場時間を別に確保してください。日の出前・日の入り後には薄明がありますが、本ツールは薄明の開始・終了や撮影に適した光の時間を計算していません。方角や地形で見える時刻も変わるため、現地施設の案内と天気予報をあわせて確認します。</p>
+    <h3>安全や公的な記録の時刻には使わない</h3>
+    <p>登山、海辺の活動、夜間作業などの安全判断は、日の入り時刻だけではできません。照明や装備、退避の余裕を確保し、作業先のルールを優先してください。国立天文台と比較する際も、同じ日付・地点・時刻系かをそろえる必要があります。代表地点や丸め方が異なる表との差を、すべて計算誤りと判断しないようにします。</p>
+    <p>年間早見表は各月1日・15日の抜粋です。夏至・冬至の当日や、最も早い日の出・最も遅い日の入りの日を特定する一覧ではありません。日付を一日ずつ変えて確認できる計算器と、月ごとの傾向を比べる表を使い分けてください。</p>
   </section>
 
   <nav class="howto city-links" aria-label="ほかの都市の日の出・日の入り時刻">

@@ -51,9 +51,17 @@ const nextYear = year < UMAREDOSHI_TO ? year + 1 : null;
 
 const slug = `umaredoshi/${year}`;
 const canonicalUrl = new URL(`/umaredoshi/${year}/`, Astro.site).href;
+const usageCopy = age >= 100
+  ? '家族史・人物年譜などで、生年と出来事の年から当時の年齢を確認できます。'
+  : age >= 65
+    ? '家族の年齢確認や長寿祝いの準備に、満年齢と数え年を区別して使えます。'
+    : age >= 18
+      ? '履歴書の年齢確認や、過去の出来事が何歳のころだったかを調べる際に使えます。'
+      : '学校・進学の予定を確認する際に使えます。学年は誕生日の4月1日・4月2日の境界も確認してください。';
+const milestoneAges = [20, 40, 60, 80].filter((value) => year + value <= BASE_YEAR);
 
 const title = `${year}年生まれは何歳？${BASE_YEAR}年は${age - 1}歳・${age}歳｜年齢早見表・干支・厄年 | 計算ツール`;
-const description = `${year}年（${wareki}）生まれは、${BASE_YEAR}年の誕生日前なら満${age - 1}歳、誕生日を迎えると満${age}歳です。数え年は${kazoe}歳、干支は${e.kanji}（${e.yomi}）。年齢早見表・厄年・星座を確認でき、履歴書や公的書類の年齢確認にも使えます。`;
+const description = `${year}年（${wareki}）生まれは、${BASE_YEAR}年の誕生日前なら満${age - 1}歳、誕生日を迎えると満${age}歳です。数え年は${kazoe}歳、干支は${e.kanji}（${e.yomi}）。${usageCopy}`;
 
 const jsonld = {
   '@context': 'https://schema.org',
@@ -86,7 +94,7 @@ const color = getColorByCategory('生活・日常');
       <div class="crumb"><a href="/">ホーム</a> ／ <a href="/nenrei-hayami/">年齢早見表</a> ／ {year}年生まれ</div>
       <h1>{year}年生まれは何歳？{BASE_YEAR}年の年齢早見表</h1>
       <p>
-        {year}年（{wareki}）生まれの方は、<strong>{BASE_YEAR}年（{BASE_WAREKI}）の誕生日前は満{age - 1}歳、誕生日を迎えると満{age}歳</strong>です。数え年、干支、前後の年齢早見表、厄年、星座をまとめて確認でき、履歴書や公的書類の年齢確認にも利用できます。
+        {year}年（{wareki}）生まれの場合、<strong>{BASE_YEAR}年（{BASE_WAREKI}）の誕生日前は満{age - 1}歳、誕生日を迎えると満{age}歳</strong>です。{usageCopy}
       </p>
     </div>
 
@@ -251,8 +259,30 @@ const color = getColorByCategory('生活・日常');
     <section class="howto um-section">
       <h2>{year}年生まれの年齢の数え方</h2>
       <p>
-        <strong>満年齢</strong>は誕生日ごとに1歳増える数え方で、{year}年生まれの方は{BASE_YEAR}年の誕生日で<strong>満{age}歳</strong>になります（誕生日前は{age - 1}歳）。履歴書や公的書類には満年齢を記入します。<strong>数え年</strong>は生まれた年を1歳として1月1日ごとに1歳増える数え方で、{BASE_YEAR}年の数え年は<strong>{kazoe}歳</strong>です。厄年・七五三・長寿祝いなどは数え年で数えるのが一般的です。生年月日から今日時点の正確な満年齢を知りたいときは<a href="/nenrei/">年齢計算器</a>を、他の年の一覧は<a href="/nenrei-hayami/">年齢早見表</a>をご覧ください。
+        <strong>満年齢</strong>は誕生日ごとに1歳増える数え方で、{year}年生まれなら{BASE_YEAR}年の誕生日で<strong>満{age}歳</strong>に相当します（誕生日前は{age - 1}歳）。<strong>数え年</strong>は生まれた年を1歳として1月1日ごとに1歳増える数え方で、{BASE_YEAR}年は<strong>{kazoe}歳</strong>です。長寿祝い・厄年などで使う年齢は地域や家庭によって異なるため、案内の基準を先に確認してください。
       </p>
+      <h3>西暦の差だけで年齢を決めない</h3>
+      <p>{BASE_YEAR} − {year} ＝ {age}は、その年に迎える誕生日での年齢です。誕生日より前の時点では1を引きます。たとえば{BASE_YEAR}年4月1日時点の年齢を調べる場合、誕生日が3月なら満{age}歳、5月なら満{age - 1}歳になります。年だけがわかる資料では、ひとつの年齢に断定せず「{age - 1}〜{age}歳」と記すと、月日が不明であることを表せます。</p>
+      {age >= 100 ? (
+        <p>このページの年齢は、生年をもとにした暦上の換算です。個人の存命や実際の経歴を示すものではありません。故人の享年・行年を確認する場合は、現在の年ではなく亡くなった年月日を基準にし、資料が満年齢と数え年のどちらを使っているかも確認してください。</p>
+      ) : age >= 65 ? (
+        <p>長寿祝いは、満年齢で行う家庭と数え年で行う家庭があります。同じ{year}年生まれでも、祝いの日付と数え方で準備する年が変わるため、本人の希望や家族の予定を優先してください。年金や医療制度の資格は生年だけでは決まらず、加入歴や判定日など別の条件があります。</p>
+      ) : age >= 18 ? (
+        <p>履歴書などで「現在の年齢」を求められた場合は、提出先が指定する基準日の満年齢を確認します。生年の差から勤務年数や加入期間まで推定することはできません。入社日・加入日が必要な計算は、それぞれの記録をもとに別に行ってください。</p>
+      ) : (
+        <p>同じ生年でも、早生まれかどうかで学年が分かれます。学校の学年は4月2日から翌年4月1日までをひとつの区切りとするため、この年齢表だけでは入学・卒業年を確定できません。月日を入力できる<a href="/gakureki/">入学・卒業年度計算器</a>も確認してください。</p>
+      )}
+      {milestoneAges.length > 0 && (
+        <>
+          <h3>{year}年生まれの過去の年齢を調べる</h3>
+          <p>年譜や写真に記された年から当時の年齢を確認するには、「出来事の西暦 − {year}」を計算し、その日の誕生日を迎えていなければ1を引きます。次の表は、その年の誕生日に迎える年齢です。</p>
+          <div class="data-table-wrap"><div class="data-table-scroll"><table class="data-table">
+            <thead><tr><th>出来事の年</th><th>誕生日前</th><th>誕生日以降</th></tr></thead>
+            <tbody>{milestoneAges.map((value) => <tr><td>{year + value}年（{warekiLabels(year + value)}）</td><td>満{value - 1}歳</td><td>満{value}歳</td></tr>)}</tbody>
+          </table></div></div>
+        </>
+      )}
+      <p>月日を含めた年齢は<a href="/nenrei/">年齢計算器</a>、ほかの生年との比較は<a href="/nenrei-hayami/">年齢早見表</a>で確認できます。</p>
       <div class="disclaimer">※ 計算結果はあくまで参考値です。</div>
     </section>
 

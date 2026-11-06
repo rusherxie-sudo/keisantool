@@ -4,7 +4,9 @@ import { getCollection } from 'astro:content';
 const { toolSlug, count = 3 } = Astro.props;
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const relatedPosts = allPosts.filter((p) => p.data.relatedTools && p.data.relatedTools.includes(toolSlug));
+const relatedPosts = allPosts
+  .filter((p) => p.data.relatedTools && p.data.relatedTools.includes(toolSlug))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime() || a.id.localeCompare(b.id));
 const posts = relatedPosts.slice(0, count);
 ---
 {posts.length > 0 && (

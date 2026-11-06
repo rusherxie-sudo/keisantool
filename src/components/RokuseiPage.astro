@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../layouts/ToolLayout.astro';
+import RelatedArticles from './RelatedArticles.astro';
 import '../styles/rokusei-topic.css';
 const { title, description, slug, heading = title, tool = false, sources = [] } = Astro.props;
 const url = new URL(`/${slug}/`, Astro.site).href;
@@ -9,6 +10,7 @@ const breadcrumb = {'@context':'https://schema.org','@type':'BreadcrumbList',ite
 <ToolLayout title={title} description={description} slug={slug} current="rokusei" jsonld={jsonld} breadcrumb={breadcrumb} wide>
   <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/rokusei/">六星占術</a> ／ {heading}</div><h1>{heading}</h1><p>{description}</p></div>
   <slot />
+  <RelatedArticles toolSlug={slug} />
   <section class="howto rk-reading-note"><h2>参考資料と読み方</h2>
     <ul>{sources.map((s) => <li><a href={s.url} target="_blank" rel="noopener">{s.label}</a></li>)}</ul>
     <p>資料確認：2026年11月7日。六星占術は文化・娯楽としての占いです。性格や将来を確定するものではありません。本サイトは細木数子氏・細木かおり氏の公式サービスではありません。</p>

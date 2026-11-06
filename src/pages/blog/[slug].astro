@@ -71,6 +71,8 @@ const themeStyle = `--cat-color:${themeColor.accent};--cat-tint:${themeColor.tin
 
 const disclaimerText = data.category === 'health'
   ? '当サイトの計算結果と健康情報は参考値であり、診断・治療を目的とするものではありません。体調に不安がある場合や健診で指摘を受けた場合は、医師・管理栄養士などの専門職にご相談ください。'
+  : data.category === 'uranai'
+    ? '本記事は占い・文化を楽しむための非公式の解説です。計算結果は性格・人間関係・将来の出来事を保証するものではなく、科学的な予測ではありません。'
   : data.category === 'pet'
     ? '当サイトの情報は一般的な目安であり、個々の動物の診断・治療を目的とするものではありません。体調や飼育について不安がある場合は、獣医師にご相談ください。'
     : ['kakutei-shinkoku', 'nematsu-chosei', 'shakai-hoken', 'zeikin-kiso'].includes(data.category)
@@ -193,6 +195,9 @@ const disclaimerText = data.category === 'health'
     font-size: .95rem;
     line-height: 1.9;
   }
+  .blog-article__body figure { margin: 28px 0; }
+  .blog-article__body img { display: block; width: 100%; max-width: 640px; height: auto; margin: 0 auto; border-radius: 16px; }
+  .blog-article__body figcaption { margin-top: 10px; font-size: .78rem; line-height: 1.7; color: var(--text-muted); text-align: center; }
   .blog-article__body h2 {
     font-size: 1.25rem;
     font-weight: var(--fw-black);
