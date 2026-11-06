@@ -20,6 +20,10 @@ const ROOT = process.cwd();
 const TARGETS = [
   'src/pages',
   'src/data/minimum-wage-2026.json',
+  'src/data/rokusei-content.js',
+  'src/data/tools.js',
+  'src/styles/rokusei-topic.css',
+  'src/scripts/rokusei-form.js',
   'src/lib',
   'src/content',
   'src/components',

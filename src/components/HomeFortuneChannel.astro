@@ -1,0 +1,39 @@
+---
+const entries = [
+ {href:'/rokusei/', title:'自分は何星人？',desc:'生年月日から運命星と今年の年運を確認',tag:'六星占術'},
+ {href:'/rokusei/daisakkai/',title:'大殺界はいつ？',desc:'過去・未来の開始年と終了年を調べる',tag:'期間を検索'},
+ {href:'/rokusei-aisho/',title:'ふたりの相性を知りたい',desc:'生年月日で双方向の地運を計算',tag:'相性診断'},
+ {href:'/rokusei/reigou/',title:'霊合星人か調べたい',desc:'判定理由と主星・副星の年表を確認',tag:'霊合星人'},
+];
+---
+<section class="fortune-channel" aria-labelledby="fortune-channel-title">
+ <div class="fortune-channel__head"><div><p class="fortune-channel__eyebrow">占い・文化</p><h2 id="fortune-channel-title">六星占術を、知りたいことから。</h2><p>誕生日から調べる無料の占いツール。結果の見方や計算方法も確認できます。</p></div><a class="fortune-channel__all" href="/category/uranai/" data-fortune-entry="category">占いツール一覧 →</a></div>
+ <div class="fortune-channel__grid">{entries.map(e=><a class="fortune-channel__card" href={e.href} data-fortune-entry={e.tag}><span>{e.tag}</span><h3>{e.title}</h3><p>{e.desc}</p><b aria-hidden="true">→</b></a>)}</div>
+ <nav class="fortune-channel__more" aria-label="占いの表と解説"><a href="/rokusei/daisakkai-2027/" data-fortune-entry="annual">2027年の年運</a><a href="/rokusei/keisan-hyou/" data-fortune-entry="number-table">運命数・計算表</a><a href="/rokusei-aisho/hayamihyou/" data-fortune-entry="compatibility-table">相性早見表</a><a href="/rokusei/shukumei-daisakkai/" data-fortune-entry="shukumei">宿命大殺界</a></nav>
+ <p class="fortune-channel__note">占いは娯楽・参考情報としてお楽しみください。</p>
+</section>
+<style>
+ .fortune-channel { margin:28px 0; padding:26px; background:linear-gradient(125deg,#f6f0ff,#faf8ff 65%,#eef3ff); border:1px solid #ded0f6; border-radius:24px; }
+ .fortune-channel__head { display:flex; justify-content:space-between; align-items:center; gap:20px; }
+ .fortune-channel__eyebrow { color:#6941a1; font-size:.8rem; font-weight:800; margin:0 0 7px; }
+ .fortune-channel h2 { font-size:clamp(1.25rem,2.3vw,1.65rem); margin:0 0 9px; color:#302043; }
+ .fortune-channel__head p:not(.fortune-channel__eyebrow) { margin:0; color:#5e526d; font-size:.9rem; line-height:1.8; }
+ .fortune-channel__all { flex-shrink:0; font-weight:700; color:#633698; font-size:.9rem; }
+ .fortune-channel__grid { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:20px; }
+ .fortune-channel__card { position:relative; padding:18px 16px 30px; border:1px solid #e3d8f3; border-radius:15px; background:#fff; text-decoration:none; color:#302043; }
+ .fortune-channel__card:hover { border-color:#8954b7; box-shadow:0 5px 16px #63428b14; }
+ .fortune-channel__card span { font-size:.72rem; color:#6941a1; }
+ .fortune-channel__card h3 { margin:9px 0; font-size:1rem; }
+ .fortune-channel__card p { margin:0; font-size:.82rem; line-height:1.8; color:#62576f; }
+ .fortune-channel__card b { position:absolute;right:15px;bottom:10px;color:#6941a1; }
+ .fortune-channel__more { display:flex;flex-wrap:wrap;gap:10px 22px; margin-top:19px; }
+ .fortune-channel__more a { color:#633698; font-size:.85rem; font-weight:650; }
+ .fortune-channel__note { margin:15px 0 0; color:#6c6178; font-size:.74rem; }
+ @media(max-width:900px){.fortune-channel__grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+ @media(max-width:540px){.fortune-channel{padding:18px;margin:22px 0;}.fortune-channel__head{display:block;}.fortune-channel__all{display:inline-block;margin-top:12px;}.fortune-channel__card{padding:14px 12px 28px;}.fortune-channel__card h3{font-size:.93rem;}}
+</style>
+<script>
+ document.querySelectorAll<HTMLAnchorElement>('[data-fortune-entry]').forEach(link=>link.addEventListener('click',()=>{
+   window.trackToolInteraction?.(`home_fortune_${link.dataset.fortuneEntry}`);
+ }));
+</script>

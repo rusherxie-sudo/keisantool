@@ -1,0 +1,49 @@
+---
+import RokuseiPage from '../../components/RokuseiPage.astro';
+import Faq from '../../components/Faq.astro';
+import { birthYearTable } from '../../lib/rokusei-lookup.js';
+const slug='rokusei/keisan-hyou';
+const title='六星占術 計算表・運命数表｜生年月日から星数と何星人かを調べる';
+const description='出生年の運命数表を表示し、月と日から星数・運命星・プラスマイナスを計算。途中の式も確認できます。1900〜2099年の表に対応、無料・登録不要です。';
+const sources=[{url:'https://fortune.netoff.co.jp/rokusei/keisan/',label:'ネットオフ：運命数表と星数の計算方法'},{url:'https://www.senjutsu.jp/labo_6sei',label:'大久保占い研究室：日干支と運命星の対応'}];
+const exampleYears=[1952,1953,1960,1975,1985,2010,2015];
+const faq=[{q:'運命数と星数は同じですか？',a:'この表では運命数は生まれた年月の値、星数は運命数−1＋生まれた日を1〜60に収めた値です。星数の範囲から運命星を判定します。資料によって呼び方が違うため、表と計算式を混ぜないでください。'},{q:'計算結果が60になったら？',a:'60はそのままです。61以上のときに60を引きます。例えば78なら18、61なら1です。'},{q:'1月・2月生まれは前年の表を使いますか？',a:'本表は1月1日を年の切り替えとする暦年方式なので、入力した西暦年の表を使います。立春で年を切り替える方式とは区別してください。'}];
+---
+<RokuseiPage {title} {description} {slug} heading="六星占術の計算表・運命数表" tool sources={sources}>
+  <form id="number-form" class="calc-card">
+    <div class="rk-form-grid">
+      <div class="rk-control"><label for="birth-year">生まれた年（西暦）</label><input id="birth-year" type="number" min="1900" max="2099" step="1" required placeholder="例：1985" /></div>
+      <div class="rk-control"><label for="birth-month">生まれた月</label><select id="birth-month">{Array.from({length:12},(_,i)=><option value={i+1}>{i+1}月</option>)}</select></div>
+      <div class="rk-control"><label for="birth-day">生まれた日</label><input id="birth-day" type="number" min="1" max="31" step="1" required placeholder="例：15" /></div>
+    </div>
+    <button class="rk-submit" type="submit">運命数と星数を調べる</button>
+    <p id="number-status" role="status">年・月・日を入力すると、その年の12か月分の表も表示します。</p>
+    <section id="number-result" class="rk-answer" hidden><h2 id="number-type"></h2><p id="number-formula"></p><p id="number-polarity"></p>
+      <div class="rk-topic-table" tabindex="0" role="region" aria-label="入力年の運命数表"><table><caption id="number-caption"></caption><thead><tr><th scope="col">月</th><th scope="col">運命数</th></tr></thead><tbody id="number-months"></tbody></table></div>
+      <p><a id="number-type-link" href="/rokusei/" data-track-context>このタイプの年運を確認する</a> ／ <a href="/rokusei/reigou/" data-track-context>霊合星人かを調べる</a></p>
+    </section>
+    <noscript>自動計算にはJavaScriptが必要です。下の公開例の表と式はそのまま確認できます。</noscript>
+  </form>
+  <section class="howto"><h2>運命数表から運命星を出す手順</h2><ol><li>生まれた年と月が交わる値を「運命数」として読みます。</li><li><strong>運命数 − 1 ＋ 生まれた日</strong>を計算します。61以上なら60を引き、星数を1〜60に収めます。</li><li>下の星数表から運命星を決め、生まれ年の干支でプラス・マイナスを確認します。</li></ol>
+    <p>1985年8月15日なら、8月の運命数は9。9−1＋15＝23なので火星人です。1985年は丑年のため、火星人マイナスになります。</p>
+    <h2>計算例に使う出生年の運命数表</h2><p>下表は照合用の代表年です。他の年は上の計算欄で表示できます。横にスクロールして12月まで確認してください。</p>
+    <div class="rk-topic-table" tabindex="0" role="region" aria-label="代表年の運命数表"><table><thead><tr><th scope="col">出生年</th>{Array.from({length:12},(_,i)=><th scope="col">{i+1}月</th>)}</tr></thead><tbody>{exampleYears.map(year=><tr><th scope="row">{year}</th>{birthYearTable(year).map(row=><td>{row.number}</td>)}</tr>)}</tbody></table></div>
+    <h2>星数と6つの運命星</h2><div class="rk-topic-table"><table><thead><tr><th>星数</th><th>運命星</th></tr></thead><tbody>{['土星人','金星人','火星人','天王星人','木星人','水星人'].map((star,i)=><tr><th scope="row">{i*10+1}〜{i*10+10}</th><td>{star}</td></tr>)}</tbody></table></div>
+    <h2>60を超える例・うるう年の扱い</h2><p>1953年3月31日なら運命数48、48−1＋31＝78。60を引くと星数18なので金星人です。1960年12月1日は星数60ですが、12月2日は61となり、60を引いて1に戻ります。</p><p>うるう年は2月29日があるため、3月以降の表も変わります。本表は各年月の日付から算出しており、平年の表を流用しません。存在しない日付は計算しません。</p>
+    <h2>プラス・マイナスと年運は別に確認</h2><p>子・寅・辰・午・申・戌年はプラス、丑・卯・巳・未・酉・亥年はマイナスです。これは良し悪しを表す符号ではありません。星が分かったら<a href="/rokusei/hayamihyou/" data-track-context>年運の早見表</a>や<a href="/rokusei/daisakkai/" data-track-context>大殺界の期間検索</a>で、知りたい年を確認してください。</p>
+  </section><Faq items={faq}/>
+</RokuseiPage>
+<script>
+ import { calculationSteps,birthYearTable } from '../../lib/rokusei-lookup.js';
+ import { fortuneTypes } from '../../lib/rokusei.js';
+ import { bindResult,write,rows } from '../../scripts/rokusei-form.js';
+ const form=document.querySelector<HTMLFormElement>('#number-form')!;
+ bindResult(form,document.getElementById('number-result'),document.getElementById('number-status'),()=>{
+   const y=Number(document.querySelector<HTMLInputElement>('#birth-year')!.value),m=Number(document.querySelector<HTMLSelectElement>('#birth-month')!.value),d=Number(document.querySelector<HTMLInputElement>('#birth-day')!.value);
+   const r=calculationSteps(y,m,d);if(!r)return '1900〜2099年の実在する年月日を入力してください。';
+   write('number-type',r.type);write('number-formula',`運命数 ${r.number} − 1 ＋ ${d}日 ＝ ${r.raw}${r.wrapped?` → 60を引いて${r.starNumber}`:''}。星数${r.starNumber}は${r.star}です。`);
+   write('number-polarity',`${y}年は${r.yearBranch}年 → ${r.polarity}（1月1日で年を切り替える方式）。`);
+   write('number-caption',`${y}年の運命数表`);rows('number-months',birthYearTable(y).map(row=>[`${row.month}月`,row.number]));
+   document.querySelector<HTMLAnchorElement>('#number-type-link')!.href=`/rokusei/${fortuneTypes().find(t=>t.type===r.type)!.slug}/`;
+ },'rokusei_number_table');
+</script>

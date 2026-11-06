@@ -119,3 +119,18 @@ describe('sourceFileForUrl', () => {
     expect(sourceFileForUrl(pagesDir, 'does-not-exist-anywhere')).toBeNull();
   });
 });
+
+describe('rokusei topic route and dependency dates', () => {
+  const pagesDir = join(process.cwd(), 'src/pages');
+  it('named content/tool routes do not inherit the 12-type template date', () => {
+    for (const slug of ['reigou','keisan-hyou','daisakkai','doseijin','unmei-shuki','shukumei-guide']) {
+      expect(sourceFileForUrl(pagesDir, `rokusei/${slug}`)).toBe(join(pagesDir, `rokusei/${slug}.astro`));
+    }
+    expect(sourceFileForUrl(pagesDir, 'rokusei/kaseijin-plus')).toBe(join(pagesDir, 'rokusei/[type].astro'));
+  });
+  it('tracks shared content, calculations and homepage channel changes', () => {
+    expect(sourceFilesForUrl(pagesDir, 'rokusei/mokuseijin')).toContain(join(process.cwd(),'src/data/rokusei-content.js'));
+    expect(sourceFilesForUrl(pagesDir, 'rokusei-aisho/hayamihyou')).toContain(join(process.cwd(),'src/lib/rokusei-lookup.js'));
+    expect(sourceFilesForUrl(pagesDir, '')).toContain(join(process.cwd(),'src/components/HomeFortuneChannel.astro'));
+  });
+});

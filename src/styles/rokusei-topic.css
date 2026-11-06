@@ -1,0 +1,27 @@
+.rk-topic-nav { display:flex; flex-wrap:wrap; gap:10px; margin:24px 0; }
+.rk-topic-nav a { padding:10px 14px; border:1px solid var(--border); border-radius:12px; background:var(--cat-tint); color:var(--text); font-weight:600; }
+.rk-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.rk-form-grid > *, .rk-control { min-width:0; }
+.rk-control label { display:block; font-weight:700; margin-bottom:7px; }
+.rk-control input,.rk-control select { box-sizing:border-box; width:100%; max-width:100%; min-width:0; padding:11px; border:1px solid var(--border); border-radius:10px; background:var(--surface); color:var(--text); font:inherit; }
+.rk-submit { margin:16px 0 4px; padding:12px 20px; border:0; border-radius:10px; background:#7040c5; color:#fff; font:inherit; font-weight:700; cursor:pointer; }
+.rk-submit:focus-visible { outline:3px solid var(--text); outline-offset:3px; }
+.rk-answer { margin-top:18px; padding:18px; border-radius:12px; background:var(--cat-tint); }
+.rk-answer[hidden] { display:none; }
+.rk-answer h2 { margin-top:0; }
+.rk-topic-table { overflow-x:auto; margin:18px 0; border:1px solid var(--border); border-radius:12px; }
+.rk-topic-table table { border-collapse:collapse; width:100%; font-size:.9rem; }
+.rk-topic-table td,.rk-topic-table th { padding:12px; border-bottom:1px solid var(--border); text-align:left; white-space:nowrap; }
+.rk-topic-table thead th { background:var(--cat-tint); }
+.rk-topic-table tr:last-child td,.rk-topic-table tr:last-child th { border-bottom:0; }
+.rk-topic-table caption { text-align:left; font-weight:700; padding:12px; }
+.rk-topic-table [data-selected="true"] { background:var(--cat-tint); font-weight:700; outline:2px solid #7040c5; outline-offset:-2px; }
+.rk-reading-note { font-size:.9rem; }
+.rk-star-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.rk-star-card { padding:18px; border:1px solid var(--border); border-radius:14px; background:var(--surface); }
+.rk-star-card h3 { margin:0 0 8px; }
+.rk-cycle-list { display:grid; gap:14px; }
+.rk-cycle-list article { padding:18px; border:1px solid var(--border); border-radius:14px; scroll-margin-top:85px; }
+.rk-cycle-list h3 { margin:0 0 8px; }
+.rk-cycle-list p { margin:8px 0; line-height:1.85; }
+@media(max-width:600px) { .rk-form-grid,.rk-star-grid { grid-template-columns:1fr; } .rk-topic-nav a { flex:1 1 140px; font-size:.87rem; } }

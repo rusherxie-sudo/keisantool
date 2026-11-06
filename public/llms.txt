@@ -88,6 +88,10 @@
 
 ## 占い・文化
 
+- [六星占術 計算表・運命数表](https://keisantool.com/rokusei/keisan-hyou/): 出生年の表と星数の計算過程
+- [大殺界の過去・未来検索](https://keisantool.com/rokusei/daisakkai/): 開始年・終了年を区間で確認
+- [六星占術 地運相性表](https://keisantool.com/rokusei-aisho/hayamihyou/): 運命星と相手の干支で確認
+- [霊合星人の判定・年表](https://keisantool.com/rokusei/reigou/): 生年月日から判定・主星と副星の年運
 - [六星占術・大殺界計算器](https://keisantool.com/rokusei/): 星・大殺界の自動計算
 - [六星占術 相性診断](https://keisantool.com/rokusei-aisho/): ふたりの生年月日から地運相性を計算
 - [星座調べ（誕生日から星座）](https://keisantool.com/seiza/): 誕生日から12星座を判定

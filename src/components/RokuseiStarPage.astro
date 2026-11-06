@@ -1,0 +1,30 @@
+---
+import RokuseiPage from './RokuseiPage.astro';
+import Faq from './Faq.astro';
+import { fortuneZone,daisakkaiPeriod } from '../lib/rokusei.js';
+import { reigouTable } from '../lib/rokusei-reigou.js';
+import { japanDateParts } from '../lib/japanDate.js';
+import { starProfiles } from '../data/rokusei-content.js';
+const {profile:p}=Astro.props;
+const {year}=japanDateParts();
+const types=['プラス','マイナス'].map((pol,i)=>({type:p.star+pol,slug:`${p.slug}-${i?'minus':'plus'}`,pol,now:fortuneZone(p.star+pol,year),period:daisakkaiPeriod(p.star+pol,year)}));
+const reigouRows=reigouTable().filter(row=>row.star===p.star);
+const title=`${p.star}とは？性格・プラスマイナスの違い・大殺界と相性の調べ方`;
+const description=`六星占術の${p.star}を、性格の読み方、プラス・マイナスの判定、年運と大殺界の期間に分けて解説。自分のタイプと相性・霊合星人を調べる入口もまとめています。`;
+const sources=[{url:`https://www.senjutsu.jp/labo_6sei/labo_6sei_h_${p.source}`,label:`大久保占い研究室：${p.star}の性格・年運の解説`},{url:'https://fortune.netoff.co.jp/rokusei/keisan/',label:'ネットオフ：運命数・プラスマイナスと霊合条件の計算表'}];
+---
+<RokuseiPage {title} {description} slug={`rokusei/${p.slug}`} heading={`${p.star}の性格・プラスマイナス・大殺界`} {sources}>
+ <section class="howto"><h2>{p.star}とは</h2><p>{p.base}</p><p><strong>{p.catch}</strong>という説明を、六星占術での解釈として紹介します。</p>
+ <nav class="rk-topic-nav" aria-label={`${p.star}を調べる`}><a href="/rokusei/" data-track-context>自分が{p.star}か調べる</a>{types.map(t=><a href={`/rokusei/${t.slug}/`} data-track-context>{t.type}の年表</a>)}</nav>
+ <h2>性格の説明をどう読む？</h2><p>{p.nuance}</p><p>性格説明に当てはまる部分があっても、生年月日と性格の関係を科学的に示したものではありません。職業、家族関係、性別だけで本人の将来を決めるための情報でもありません。</p>
+ <h2>プラスとマイナスの違い・調べ方</h2><p>プラス・マイナスは、明るい性格か暗い性格かではなく、生まれた年の干支で分ける区分です。本サイトでは年の区切りを1月1日とします。まず生年月日から運命星を求め、その後に出生年の区分を組み合わせます。</p>
+ <div class="rk-star-grid">{types.map((t,i)=><article class="rk-star-card"><h3>{t.type}</h3><p>出生年の干支：{i?'丑・卯・巳・未・酉・亥':'子・寅・辰・午・申・戌'}</p><p>{year}年：{t.now.zone}（{t.now.category}）</p><p>{t.period.status==='current'?'現在':'次回'}の大殺界：{t.period.startYear}〜{t.period.endYear}年</p><a href={`/rokusei/${t.slug}/`} data-track-context>このタイプの詳しい年表 →</a></article>)}</div>
+ <p>同じ{p.star}でも年運が1年ずれるため、年表を読む前に区分まで確認してください。計算の途中も確かめたい場合は<a href="/rokusei/keisan-hyou/" data-track-context>運命数・星数の計算表</a>を使えます。</p>
+ <h2>{p.star}の2026・2027・2028年を比較</h2><div class="rk-topic-table"><table><thead><tr><th scope="col">タイプ</th>{[2026,2027,2028].map(y=><th scope="col">{y}年</th>)}</tr></thead><tbody>{types.map(t=><tr><th scope="row">{t.type}</th>{[2026,2027,2028].map(y=><td>{fortuneZone(t.type,y).zone}</td>)}</tr>)}</tbody></table></div>
+ <p>これは年運の周期です。2027年の全タイプ比較は<a href="/rokusei/daisakkai-2027/" data-track-context>2027年の六星占術・大殺界早見表</a>、過去の期間は<a href="/rokusei/daisakkai/" data-track-context>大殺界の期間検索</a>で確認できます。</p>
+ <h2>{p.star}の相性を調べるには</h2><p>{p.relationship}</p><p>誕生日が分かるなら<a href="/rokusei-aisho/" data-track-context>2人の生年月日で計算</a>、タイプが分かるなら<a href="/rokusei-aisho/hayamihyou/" data-track-context>運命星と相手の干支の相性表</a>で確認してください。主星だけで全ての関係を順位付けする表ではありません。</p>
+ <h2>{p.star}の霊合星人</h2><p>生まれた年が本人の周期の停止に当たる場合は霊合星人です。{p.star}の条件は次のとおりです。</p><ul>{reigouRows.map(r=><li>{r.type}・{r.branch}年生まれ → 副星は{r.secondaryType}</li>)}</ul><p><a href="/rokusei/reigou/" data-track-context>霊合星人かどうかを生年月日から確認する →</a></p>
+ </section>
+ <Faq items={[{q:p.question,a:p.answer},{q:`${p.star}と宿命大殺界の時期は同じですか？`,a:'星人の年運と、20年間の宿命大殺界は別の計算です。星人名だけで宿命大殺界の年齢区間は決まりません。'}]}/>
+ <nav class="rk-topic-nav" aria-label="他の運命星">{starProfiles.filter(x=>x.slug!==p.slug).map(x=><a href={`/rokusei/${x.slug}/`}>{x.star}</a>)}</nav>
+</RokuseiPage>

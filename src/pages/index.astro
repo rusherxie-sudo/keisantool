@@ -1,4 +1,5 @@
 ---
+import HomeFortuneChannel from '../components/HomeFortuneChannel.astro';
 import ToolLayout from '../layouts/ToolLayout.astro';
 import Icon from '../components/Icon.astro';
 import BlogCard from '../components/BlogCard.astro';
@@ -14,7 +15,7 @@ const catStyle = (name) => {
 
 const title = '無料計算ツール一覧 - 税金・健康・占い・給与・日付の計算 | 計算ツール';
 const description =
-  '消費税・BMI・厄年・出産予定日・給与・偏差値・国民健康保険料など、日常で使える計算ツールを無料でまとめました。すべてブラウザ上でその場で計算できます。';
+  '六星占術・相性診断・大殺界、消費税・BMI・給与・日付など、日常で使える計算ツールを無料でまとめました。すべてブラウザ上でその場で計算できます。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -38,7 +39,8 @@ const organizationJsonld = {
 const FEATURED = ['rokusei', 'zeizei', 'nenrei', 'bmi', 'color-code', 'kyuyo'];
 const featured = FEATURED.map(getTool).filter(Boolean);
 
-const byCategory = categories
+const homeCategories = ['占い・文化', ...categories.filter(c => c !== '占い・文化')];
+const byCategory = homeCategories
   .map((c) => ({ name: c, items: tools.filter((t) => t.category === c && t.live !== false) }))
   .filter((c) => c.items.length > 0);
 
@@ -51,7 +53,7 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
   <div slot="hero" class="home-hero">
     <div class="home-hero__inner">
       <h1>無料計算ツール一覧</h1>
-      <p>税金や健康の計算、日付の確認、文字の変換がブラウザでできます。</p>
+      <p>税金や健康の計算、六星占術・相性診断、日付の確認がブラウザでできます。</p>
     </div>
   </div>
 
@@ -73,6 +75,8 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
       ))}
     </div>
   </section>
+
+  <HomeFortuneChannel />
 
   <section class="home-tasks" aria-labelledby="task-title">
     <h2 id="task-title" class="home-h2">いま確認したいことから探す</h2>

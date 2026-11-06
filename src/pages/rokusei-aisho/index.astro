@@ -1,4 +1,5 @@
 ---
+import RokuseiTopicLinks from '../../components/RokuseiTopicLinks.astro';
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
@@ -144,6 +145,7 @@ const jsonld = {
     </ul>
   </section>
 
+  <RokuseiTopicLinks />
   <RelatedTools current={slug} />
   <RelatedArticles toolSlug={slug} />
 

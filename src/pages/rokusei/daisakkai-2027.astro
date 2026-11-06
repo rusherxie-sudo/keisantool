@@ -1,4 +1,5 @@
 ---
+import RokuseiTopicLinks from '../../components/RokuseiTopicLinks.astro';
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import Faq from '../../components/Faq.astro';
 import { fortuneTypes, fortuneZone, daisakkaiPeriod } from '../../lib/rokusei.js';
@@ -16,6 +17,7 @@ const jsonld = { '@context':'https://schema.org', '@type':'WebPage', name:title,
 <section class="howto"><h2>2026年・2027年・2028年の比較と大殺界の期間</h2><p>横にスクロールすると期間と次の「種子」の年まで読めます。大殺界以外のタイプは、2027年から見た次回の期間を表示しています。</p><div class="office-scroll"><table class="office-table"><thead><tr><th>タイプ</th><th>2026年</th><th>2027年</th><th>2028年</th><th>現在／次回の大殺界</th><th>次の種子</th></tr></thead><tbody>{rows.map(r=><tr id={r.slug} data-type={r.slug} data-answer={`${r.type}の2027年は「${r.current.zone}」。${r.period.status==='current'?'大殺界は':'次の大殺界は'}${r.period.startYear}〜${r.period.endYear}年で、${r.period.endYear+1}年に「種子」になります。`}><th><a href={`/rokusei/${r.slug}/`}>{r.type}</a></th><td>{r.before.zone}</td><td><strong>{r.current.zone}</strong>{r.current.category==='大殺界'?'（大殺界）':''}</td><td>{r.after.zone}</td><td>{r.period.status==='current'?'期間中':'次回'}：{r.period.startYear}〜{r.period.endYear}年</td><td>{r.period.endYear+1}年</td></tr>)}</tbody></table></div></section>
 <section class="howto"><h2>「いつ終わる」の読み方</h2><p>この表では年運を西暦年単位で表示します。「減退」が3年間の最後で、次の年は「種子」です。月運・日運や、具体的な出来事が起こる日を判定するものではありません。霊合星人の複合的な解釈は含めていません。</p><h2>宿命大殺界との違い</h2><p>ここで扱う年運の大殺界は、12年周期のうちの3年間です。人生の20年間を扱う<a href="/rokusei/shukumei-daisakkai/">宿命大殺界</a>とは計算も期間も異なります。</p><h2>計算方法と参考資料</h2><p>既存の12年周期計算を使用し、2027年の大殺界3タイプを公開年運表の<a href="https://daisakkai.net/kinseinenun" rel="noopener" target="_blank">金星人プラス</a>、<a href="https://daisakkai.net/kaseimnenun" rel="noopener" target="_blank">火星人マイナス</a>、<a href="https://daisakkai.net/kaseinenun" rel="noopener" target="_blank">火星人プラス</a>と照合しています。</p><p>六星占術は文化・娯楽としての占いです。将来の出来事を保証するものではなく、仕事・健康・結婚などの判断には実際の状況を優先してください。</p><nav class="office-links"><a href="/rokusei/daisakkai-2026/">2026年の大殺界</a><a href="/rokusei/hayamihyou/">現在の年運早見表</a><a href="/rokusei-aisho/">ふたりの相性を計算</a></nav></section>
 <Faq items={[{q:'2027年に大殺界が終わるのは何星人ですか？',a:'火星人プラスです。2027年が減退にあたり、2028年は種子となります。'},{q:'2027年に大殺界が始まるのは何星人ですか？',a:'金星人プラスです。2027年が陰影、2028年が停止、2029年が減退です。'},{q:'2027年の火星人マイナスは大殺界ですか？',a:'はい。2027年は停止です。2026〜2028年が大殺界の3年間になります。'}]}/>
+<RokuseiTopicLinks />
 </ToolLayout>
 <script>
 import { rokusei, fortuneTypes } from '../../lib/rokusei.js';
