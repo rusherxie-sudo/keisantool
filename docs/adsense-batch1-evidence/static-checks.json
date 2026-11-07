@@ -1,0 +1,87 @@
+{
+  "cities": [
+    {
+      "url": "/hinodeiri/wakkanai/",
+      "lat": 45.4153,
+      "lon": 141.6733
+    },
+    {
+      "url": "/hinodeiri/sapporo/",
+      "lat": 43.0642,
+      "lon": 141.3469
+    },
+    {
+      "url": "/hinodeiri/sendai/",
+      "lat": 38.2682,
+      "lon": 140.8694
+    },
+    {
+      "url": "/hinodeiri/niigata/",
+      "lat": 37.9161,
+      "lon": 139.0364
+    },
+    {
+      "url": "/hinodeiri/kanazawa/",
+      "lat": 36.5613,
+      "lon": 136.6562
+    },
+    {
+      "url": "/hinodeiri/tokyo/",
+      "lat": 35.6762,
+      "lon": 139.6503
+    },
+    {
+      "url": "/hinodeiri/yokohama/",
+      "lat": 35.4437,
+      "lon": 139.638
+    },
+    {
+      "url": "/hinodeiri/nagoya/",
+      "lat": 35.1815,
+      "lon": 136.9066
+    },
+    {
+      "url": "/hinodeiri/kyoto/",
+      "lat": 35.0116,
+      "lon": 135.7681
+    },
+    {
+      "url": "/hinodeiri/osaka/",
+      "lat": 34.6937,
+      "lon": 135.5023
+    },
+    {
+      "url": "/hinodeiri/kobe/",
+      "lat": 34.6901,
+      "lon": 135.1955
+    },
+    {
+      "url": "/hinodeiri/hiroshima/",
+      "lat": 34.3853,
+      "lon": 132.4553
+    },
+    {
+      "url": "/hinodeiri/fukuoka/",
+      "lat": 33.5904,
+      "lon": 130.4017
+    },
+    {
+      "url": "/hinodeiri/kagoshima/",
+      "lat": 31.5966,
+      "lon": 130.5571
+    },
+    {
+      "url": "/hinodeiri/naha/",
+      "lat": 26.2124,
+      "lon": 127.6809
+    }
+  ],
+  "resultPages": 78,
+  "htmlCount": 565,
+  "leapDay": {
+    "sunrise": "06:12",
+    "sunset": "17:36",
+    "dayLengthMinutes": 684,
+    "city": "東京"
+  }
+}

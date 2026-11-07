@@ -1,7 +1,7 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
-import { SIGNS, ELEMENTS, signBySlug, seizaAisho, uniquePairs, pairPath, pairPageCopy } from '../../lib/seiza-aisho.js';
+import { SIGNS, ELEMENTS, signBySlug, seizaAisho, uniquePairs, pairPageCopy } from '../../lib/seiza-aisho.js';
 
 export function getStaticPaths() {
   return uniquePairs().map((p) => ({
@@ -41,11 +41,6 @@ const breadcrumb = {
   ],
 };
 
-// 「あなたが◯◯座」で相手を変えた12リンク（同組み合わせは除く）
-const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
-  href: pairPath(slug1, s.slug),
-  label: `${s1.name}×${s.name}`,
-}));
 ---
 <ToolLayout title={title} description={description} slug={pageSlug} current="seiza-aisho" jsonld={jsonld} breadcrumb={breadcrumb} robots="noindex,follow">
   <div class="page-hero">
@@ -108,19 +103,10 @@ const others = SIGNS.filter((s) => s.slug !== slug2).map((s) => ({
       から機械的に算出しています。トライン（120度・同エレメント）が92点で最高、スクエア（90度）が48点という7段階の判定基準は<a href="/seiza-aisho/">星座相性診断のトップページ</a>で公開しています。
     </p>
     <p>
-      この点数は交際や結婚の成功率ではなく、性別・実際の性格・出生時刻も判定していません。同じ星座の組み合わせなら結果は常に同じです。星座がわからない場合は<a href="/seiza/">星座調べ（誕生日から星座）</a>で確認できます。
+      この点数は交際や結婚の成功率ではなく、性別・実際の性格・出生時刻も判定していません。点数は当サイト独自の基準です。同じ距離なら同じ点数になり、星座ごとの個別鑑定ではありません。星座がわからない場合は<a href="/seiza/">星座調べ（誕生日から星座）</a>で確認できます。
     </p>
     <div class="disclaimer">
       ※ 星座占い・相性占いは娯楽・文化的慣習に基づくものであり、科学的根拠はありません。計算結果はあくまで参考値です。人間関係の大切な判断は、結果に頼らずご自身の責任でお決めください。
-    </div>
-  </section>
-
-  <section class="sp-links">
-    <h2>ほかの組み合わせも見る</h2>
-    <p>逆順も同じ結果になるため、ひとつの結果ページで確認できます。</p>
-    <div class="sp-links-grid">
-      {others.map((o) => <a href={o.href}>{o.label}</a>)}
-      <a href="/seiza-aisho/" class="sp-links-hub">相性表にもどる</a>
     </div>
   </section>
 

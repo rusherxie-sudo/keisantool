@@ -9,7 +9,7 @@ import { SIGNS, seizaAisho, pairPath } from '../../lib/seiza-aisho.js';
 const slug = 'seiza-aisho';
 const title = '星座相性診断 - 12星座の相性表・全144組み合わせを計算 | 計算ツール';
 const description =
-  '12星座の相性を西洋占星術のエレメント（火・地・風・水）とアスペクト（角度）で自動計算する無料の星座相性診断。おひつじ座×おうし座など全144組み合わせの相性表と詳細ページつき。登録不要・娯楽としてお楽しみください。';
+  '12星座の相性を西洋占星術のエレメント（火・地・風・水）とアスペクト（角度）で自動計算する無料の星座相性診断。おひつじ座×おうし座など全144入力の相性表と計算結果・角度の明細つき。登録不要・娯楽としてお楽しみください。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -26,7 +26,7 @@ const matrix = SIGNS.map((a) =>
     href: pairPath(a.slug, b.slug),
     rank: seizaAisho(a.slug, b.slug).rank,
     score: seizaAisho(a.slug, b.slug).score,
-    label: `${a.name}×${b.name}の相性`,
+    label: `${a.name}×${b.name}の計算結果・角度の明細`,
   }))
 );
 ---
@@ -68,7 +68,7 @@ const matrix = SIGNS.map((a) =>
       </div>
     </div>
 
-    <div class="result-box" id="sa-result">
+    <div class="result-box" id="sa-result" aria-live="polite" tabindex="-1">
       <div class="result-label">ふたりの相性度</div>
       <div class="sa-pair" id="sa-pair">―</div>
       <div class="result-main"><span id="sa-score">―</span><span class="sa-unit">点</span></div>
@@ -79,7 +79,7 @@ const matrix = SIGNS.map((a) =>
         <div class="result-row"><span class="label">エレメント</span><span class="value" id="sa-element">―</span></div>
       </div>
       <p class="sa-comment" id="sa-comment"></p>
-      <a class="sa-detail-link" id="sa-detail-link" href="#">この組み合わせの詳しい相性を見る →</a>
+      <a class="sa-detail-link" id="sa-detail-link" href="#">計算結果・角度の明細を開く →</a>
     </div>
   </div>
 
@@ -89,7 +89,7 @@ const matrix = SIGNS.map((a) =>
 
   <section class="sa-matrix-sec">
     <h2>12星座 相性早見表（全144組み合わせ）</h2>
-    <p class="sa-matrix-note">行があなた、列が相手の星座です。記号を押すと、その組み合わせの詳しい相性ページが開きます（◎とても良い／○良い／△工夫しだい／▲刺激し合う）。</p>
+    <p class="sa-matrix-note">行があなた、列が相手の星座です。記号を押すと、このページの選択と計算結果が更新されます。結果下のリンクから角度の明細を開けます。JavaScriptが無効の場合は記号から直接明細へ進みます（◎とても良い／○良い／△工夫しだい／▲刺激し合う）。</p>
     <div class="data-table-wrap">
       <div class="data-table-scroll">
         <table class="data-table sa-table">
@@ -105,7 +105,7 @@ const matrix = SIGNS.map((a) =>
                 <td class="sa-rowhead">{a.symbol} {a.name}</td>
                 {SIGNS.map((b, j) => (
                   <td class={matrix[i][j].rank === '◎' ? 'sa-best' : ''}>
-                    <a href={matrix[i][j].href} title={matrix[i][j].label}>{matrix[i][j].rank}</a>
+                    <a href={matrix[i][j].href} data-sign1={a.slug} data-sign2={b.slug} aria-label={matrix[i][j].label} title={matrix[i][j].label}>{matrix[i][j].rank}</a>
                   </td>
                 ))}
               </tr>
@@ -138,7 +138,7 @@ const matrix = SIGNS.map((a) =>
 
     <h3>② アスペクト（角度）と相性度</h3>
     <p>点数は当サイトが比較表示のために設定したもので、交際・結婚の成功率や統計調査の値ではありません。太陽星座同士の簡略比較で、出生時刻・出生地を使う出生図全体の相性鑑定は行いません。</p>
-    <p>黄道十二宮を30度ずつ並べたとき、2つの星座が何個離れているか（＝角度）で関係性が決まります。本ツールの判定基準は次の7段階です。</p>
+    <p>黄道十二宮を30度ずつ並べたとき、2つの星座が何個離れているか（＝角度）で関係性が決まります。同じ距離なら同じ点数になり、星座ごとの個別鑑定ではありません。本ツールの判定基準は次の7段階です。</p>
     <table class="sa-mini-table">
       <thead><tr><th>離れ方</th><th>アスペクト</th><th>相性度</th></tr></thead>
       <tbody>
@@ -262,6 +262,17 @@ const matrix = SIGNS.map((a) =>
       $('sa-s1').value = first; $('sa-s2').value = second; render();
     }
   }
+  document.querySelectorAll('[data-sign1][data-sign2]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      $('sa-s1').value = link.dataset.sign1;
+      $('sa-s2').value = link.dataset.sign2;
+      $('sa-b1').value = ''; $('sa-b2').value = '';
+      render();
+      $('sa-result').focus();
+    });
+  });
   loadPair();
   window.addEventListener('hashchange', loadPair);
   ['sa-s1', 'sa-s2'].forEach((id) => $(id).addEventListener('change', render));

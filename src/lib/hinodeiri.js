@@ -3,8 +3,7 @@
 // NOAA（米国海洋大気庁）が公開している低精度太陽位置式に基づく。
 // 出典：NOAA General Solar Position Calculations
 // （https://gml.noaa.gov/grad/solcalc/solareqns.PDF 相当のアルゴリズム）。
-// 東京の実測値（国立天文台暦計算室 https://eco.mtk.nao.ac.jp/koyomi/dni/ ）との
-// 突き合わせで ±1分程度の精度を確認済み（tests/hinodeiri.test.js）。
+// 東京の限られた日付を公表暦と照合（tests/hinodeiri.test.js）。全都市・全年の誤差保証ではない。
 // 日本国内の緯度（北緯24〜46度程度）では白夜・極夜は発生しない。
 
 const CITIES = [
@@ -160,4 +159,10 @@ export function cityYearTable(year, cityId) {
     }
   }
   return rows;
+}
+
+// 実際の計算に使う登録座標。特定の観測施設を意味しない。
+export function cityCoordinates(cityId) {
+  const city = findCity(cityId);
+  return city ? { lat: city.lat, lon: city.lon } : null;
 }

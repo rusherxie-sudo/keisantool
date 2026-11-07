@@ -1,0 +1,258 @@
+
+ RUN  v4.1.8 /home/ubuntu/website/keisantool
+
+ ❯ tests/adsense-batch1.test.js (10 tests | 1 failed) 176ms
+     × static output says reference date and exposes actual coordinates without a precision promise 118ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: city input/label/result use the same JST date > static output says reference date and exposes actual coordinates without a precision promise
+AssertionError: expected '---\nimport ToolLayout from \'../../l…' to contain 'class="result-box visible" id="hd-res…'
+
+- Expected
++ Received
+
+- class="result-box visible" id="hd-result"
++ ---
++ import ToolLayout from '../../layouts/ToolLayout.astro';
++ import RelatedTools from '../../components/RelatedTools.astro';
++ import ResultShare from '../../components/ResultShare.astro';
++ import Faq from '../../components/Faq.astro';
++ import { listCities, cityYearTable, hinodeIri, cityCoordinates } from '../../lib/hinodeiri.js';
++ import { japanDateParts } from '../../lib/japanDate.js';
++
++ export function getStaticPaths() {
++   return listCities().map((city) => ({ params: { city: city.id }, props: { city } }));
++ }
++
++ const { city } = Astro.props;
++ const { year: YEAR, month: todayMonth, day: todayDay } = japanDateParts();
++ const tokyoToday = `${YEAR}-${String(todayMonth).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`;
++ const cities = listCities();
++ const coordinates = cityCoordinates(city.id);
++ const rows = cityYearTable(YEAR, city.id);
++ const otherCities = cities.filter((item) => item.id !== city.id);
++ const january = rows.find((row) => row.month === 1 && row.day === 15);
++ const july = rows.find((row) => row.month === 7 && row.day === 15);
++ const todayResult = hinodeIri(YEAR, todayMonth, todayDay, city.id);
++ const comparisonCity = cities.find((item) => item.id === (city.id === 'tokyo' ? 'sapporo' : 'tokyo'));
++ const comparisonJuly = hinodeIri(YEAR, 7, 15, comparisonCity.id);
++ const summerDifference = july.dayLengthMinutes - january.dayLengthMinutes;
++ const slug = `hinodeiri/${city.id}`;
++ const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
++ const title = `${city.name}の日の出・日の入り時刻【${YEAR}年】指定日計算・年間早見表 | 計算ツール`;
++ const description = `${city.name}の${YEAR}年の日の出・日の入り時刻を無料で確認。日付を選ぶだけで日の出、日の入り、昼の長さを計算できます。毎月1日・15日の年間早見表つき。`;
++
++ const jsonld = {
++   '@context': 'https://schema.org',
++   '@type': 'WebApplication',
++   name: `${city.name}の日の出・日の入り時刻計算`,
++   description,
++   url: canonicalUrl,
++   applicationCategory: 'UtilityApplication',
++   operatingSystem: 'Web',
++   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
++   featureList: ['指定日の日の出時刻を計算', '指定日の日の入り時刻を計算', '昼の長さを表示', `${YEAR}年の年間早見表`],
++ };
++
++ const breadcrumb = {
++   '@context': 'https://schema.org',
++   '@type': 'BreadcrumbList',
++   itemListElement: [
++     { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
++     { '@type': 'ListItem', position: 2, name: '日の出・日の入り時刻計算', item: new URL('/hinodeiri/', Astro.site).href },
++     { '@type': 'ListItem', position: 3, name: `${city.name}の日の出・日の入り`, item: canonicalUrl },
++   ],
++ };
++
++ function lengthLabel(minutes) {
++   return `${Math.floor(minutes / 60)}時間${minutes % 60}分`;
++ }
++
++ const faqItems = [
++   {
++     q: `${city.name}の日の出・日の入り時刻は何時ですか？`,
++     a: `日付によって変わります。${YEAR}年1月15日は日の出${january.sunrise}・日の入り${january.sunset}、7月15日は日の出${july.sunrise}・日の入り${july.sunset}の目安です。上の計算器で知りたい日付を選ぶと確認できます。`,
++   },
++   {
++     q: `${city.name}で昼が長いのはいつ頃ですか？`,
++     a: '北半球にある日本では夏至の6月21日頃に昼が最も長く、冬至の12月22日頃に最も短くなります。正確な時刻は年によってわずかに変わります。',
++   },
++   {
++     q: '日の出・日の入り時刻はどのように計算していますか？',
++     a: 'NOAAが公開する太陽位置式をもとに、都市の緯度・経度と指定日から計算しています。大気差と太陽の視半径を考慮した標準的な天頂角を使用しています。',
++   },
++ ];
++ ---
++
++ <ToolLayout title={title} description={description} slug={slug} current="hinodeiri" jsonld={jsonld} breadcrumb={breadcrumb} wide>
++   <div class="page-hero">
++     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/hinodeiri/">日の出・日の入り</a> ／ {city.name}</div>
++     <h1>{city.name}の日の出・日の入り時刻【{YEAR}年】</h1>
++     <p>{city.name}の指定日の日の出、日の入り、昼の長さを計算できます。静的表示の基準日（{tokyoToday}・JST）は日の出<strong>{todayResult.sunrise}</strong>、日の入り<strong>{todayResult.sunset}</strong>です。</p>
++   </div>
++
++   <div class="calc-card city-calc" data-city-id={city.id}>
++     <div class="form-group">
++       <label for="hd-date">計算する日付（JST）</label>
++       <input type="date" id="hd-date" value={tokyoToday} />
++     </div>
++     <div class="result-box" id="hd-result" aria-live="polite">
++       <div class="result-label" id="hd-city-label">{city.name} {tokyoToday}（JST・基準日）の日の出・日の入り</div>
++       <div class="result-main" id="hd-main">{todayResult.sunrise} 〜 {todayResult.sunset}</div>
++       <div class="result-rows">
++         <div class="result-row"><span class="label">日の出</span><span class="value" id="hd-sunrise">{todayResult.sunrise}</span></div>
++         <div class="result-row"><span class="label">日の入り</span><span class="value" id="hd-sunset">{todayResult.sunset}</span></div>
++         <div class="result-row"><span class="label">昼の長さ</span><span class="value" id="hd-length">{lengthLabel(todayResult.dayLengthMinutes)}</span></div>
++       </div>
++     </div>
++     <p class="switch-city"><a href="/hinodeiri/">ほかの都市・日付から計算する →</a></p>
++   </div>
++
++   <ResultShare />
++   <div class="ad-slot"></div>
++
++   <section class="howto year-table-section">
++     <h2>{city.name}の{YEAR}年 日の出・日の入り年間早見表</h2>
++     <p>この表は静的表示の基準年{YEAR}年の表で、上の選択日を変えても年は切り替わりません。季節による変化を比較しやすいよう、各月の1日と15日を掲載しています。任意の日付は上の計算器で確認できます。日付は端末の時差にかかわらずJSTの暦日として扱います。年末・年始も選択した年月日を計算します。</p>
++     <div class="data-table-wrap">
++       <div class="data-table-scroll">
++         <table class="data-table sun-table">
++           <thead><tr><th>月日</th><th>日の出</th><th>日の入り</th><th>昼の長さ</th></tr></thead>
++           <tbody>
++             {rows.map((row) => (
++               <tr>
++                 <td class="num">{row.month}月{row.day}日</td>
++                 <td class="num">{row.sunrise}</td>
++                 <td class="num">{row.sunset}</td>
++                 <td class="num">{lengthLabel(row.dayLengthMinutes)}</td>
++               </tr>
++             ))}
++           </tbody>
++         </table>
++       </div>
++     </div>
++     <p class="table-note">※ 日本標準時（JST）で表示しています。時刻は標高0mを基準とした計算値で、地形や標高、気象条件による見え方の違いは含みません。</p>
++   </section>
++
++   <section class="howto">
++     <h2>{city.name}の日の長さは季節でどう変わる？</h2>
++     <p>
++       {YEAR}年1月15日の{city.name}は、日の出が<strong>{january.sunrise}</strong>、日の入りが<strong>{january.sunset}</strong>、昼の長さは<strong>{lengthLabel(january.dayLengthMinutes)}</strong>です。
++       7月15日は、日の出が<strong>{july.sunrise}</strong>、日の入りが<strong>{july.sunset}</strong>、昼の長さは<strong>{lengthLabel(july.dayLengthMinutes)}</strong>になります。
++     </p>
++     <p>日本では夏至に近い6月ほど昼が長く、冬至に近い12月ほど短くなります。旅行、写真撮影、釣り、屋外作業などでは、日の入り後すぐに完全な暗闇になるわけではない点にもご注意ください。</p>
++     <div class="disclaimer">※ 計算結果はあくまで参考値です。全都市・すべての日付での誤差は検証しておらず、精度を保証しません。遠い年代の値も検証対象外です。正式な時刻は国立天文台の発表をご確認ください。</div>
++   </section>
++
++   <section class="howto sources">
++     <h2>計算方法と参考情報</h2>
++     <p>NOAAの太陽位置計算式をもとに、{city.name}の緯度・経度、地球の公転軌道、地軸の傾き、大気差と太陽の視半径を考慮して計算しています。</p>
++     <ul>
++       <li><a href="https://eco.mtk.nao.ac.jp/koyomi/dni/" target="_blank" rel="noopener">国立天文台 暦計算室「各地のこよみ」</a></li>
++       <li><a href="https://gml.noaa.gov/grad/solcalc/calcdetails.html" target="_blank" rel="noopener">NOAA Solar Calculator Details</a></li>
++     </ul>
++   </section>
++
++   <section class="howto">
++     <h2>{city.name}の計算地点と、ほかの都市との違い</h2>
++     <p>このページでは、登録座標（北緯{coordinates.lat}度・東経{coordinates.lon}度）、標高0mの仮定を使います。この座標は特定の観測施設を示すものではありません。座標の小数桁数は時刻の精度保証ではありません。同じ市内でも観測場所は異なるため、ご自宅の窓から太陽が見える瞬間や、山頂から見える瞬間を予測するものではありません。時刻はすべて日本標準時（JST）です。</p>
++     <p>{YEAR}年7月15日の比較では、{city.name}は日の出{july.sunrise}・日の入り{july.sunset}、{comparisonCity.name}は日の出{comparisonJuly.sunrise}・日の入り{comparisonJuly.sunset}です。時計の時刻の差には東西方向の位置が、夏と冬の昼の長さの差には南北方向の位置が関係します。「東の都市だから必ず一年中同じ分数だけ早い」とは限りません。</p>
++     <h3>昼の長さと、屋外で活動できる時間は別</h3>
++     <p>{city.name}では、表の1月15日と7月15日で昼の長さが<strong>{lengthLabel(summerDifference)}</strong>変わります。ただし、これは日の出から日の入りまでの計算値の差です。建物の影、雲、雨、周囲の明かりは反映しておらず、洗濯物が乾く時間や日照時間の予報を表すものではありません。</p>
++     <h3>撮影・旅行の予定に使う場合</h3>
++     <p>朝日や夕日を見たいときは、まず上の入力欄で実際に出かける日を選びます。次に、現地までの移動時間や入場時間を別に確保してください。日の出前・日の入り後には薄明がありますが、本ツールは薄明の開始・終了や撮影に適した光の時間を計算していません。方角や地形で見える時刻も変わるため、現地施設の案内と天気予報をあわせて確認します。</p>
++     <h3>安全や公的な記録の時刻には使わない</h3>
++     <p>登山、海辺の活動、夜間作業などの安全判断は、日の入り時刻だけではできません。照明や装備、退避の余裕を確保し、作業先のルールを優先してください。国立天文台と比較する際も、同じ日付・地点・時刻系かをそろえる必要があります。代表地点や丸め方が異なる表との差を、すべて計算誤りと判断しないようにします。</p>
++     <p>年間早見表は各月1日・15日の抜粋です。夏至・冬至の当日や、最も早い日の出・最も遅い日の入りの日を特定する一覧ではありません。日付を一日ずつ変えて確認できる計算器と、月ごとの傾向を比べる表を使い分けてください。</p>
++   </section>
++
++   <nav class="howto city-links" aria-label="ほかの都市の日の出・日の入り時刻">
++     <h2>ほかの都市の日の出・日の入り</h2>
++     <div class="city-link-grid">
++       {otherCities.map((item) => <a href={`/hinodeiri/${item.id}/`}>{item.name}の日の出・日の入り</a>)}
++     </div>
++     <p><a class="hub-link" href="/hinodeiri/">全国15都市から自由に選べる計算器 →</a></p>
++   </nav>
++
++   <RelatedTools current="hinodeiri" />
++   <Faq items={faqItems} />
++   <div class="ad-slot"></div>
++ </ToolLayout>
++
++ <script>
++   import { japanDateParts } from '../../lib/japanDate.js';
++   import { hinodeIri } from '../../lib/hinodeiri.js';
++
++   const root = document.querySelector('[data-city-id]');
++   const cityId = root?.dataset.cityId;
++   const dateInput = document.getElementById('hd-date');
++   const get = (id) => document.getElementById(id);
++
++   function todayISO() {
++     const { year, month, day } = japanDateParts();
++     return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
++   }
++
++   function render() {
++     if (!cityId) return;
++     const [year, month, day] = dateInput.value.split('-').map(Number);
++     const result = hinodeIri(year, month, day, cityId);
++     if (!result) {
++       get('hd-city-label').textContent = '有効な日付（JST）を選んでください';
++       ['hd-main', 'hd-sunrise', 'hd-sunset', 'hd-length'].forEach((id) => { get(id).textContent = '―'; });
++       window.hideResultShare?.();
++       return;
++     }
++     const hours = Math.floor(result.dayLengthMinutes / 60);
++     const minutes = result.dayLengthMinutes % 60;
++     get('hd-city-label').textContent = `${result.city} ${dateInput.value}（JST）の日の出・日の入り`;
++     get('hd-main').textContent = `${result.sunrise} 〜 ${result.sunset}`;
++     get('hd-sunrise').textContent = result.sunrise;
++     get('hd-sunset').textContent = result.sunset;
++     get('hd-length').textContent = `${hours}時間${minutes}分`;
++     get('hd-result').classList.add('visible');
++     window.setResultShare?.(`日の出・日の入り時刻計算\n${dateInput.value} ${result.city}\n日の出：${result.sunrise}\n日の入り：${result.sunset}\n昼の長さ：${hours}時間${minutes}分`);
++   }
++
++   if (dateInput) {
++     dateInput.value = todayISO();
++     dateInput.addEventListener('input', render);
++     render();
++   }
++ </script>
++
++ <style>
++   .city-calc { max-width: 620px; padding: 24px; }
++   .switch-city { margin: 14px 0 0; text-align: right; }
++   .switch-city a, .sources a, .hub-link { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
++   .sun-table { min-width: 520px; }
++   .sun-table td:not(:first-child), .sun-table th:not(:first-child) { text-align: right; }
++   .table-note { margin-top: 12px; font-size: .78rem; color: var(--text-muted); }
++   .sources ul { padding-left: 1.2em; }
++   .city-link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
++   .city-link-grid a { padding: 10px 12px; border: 1px solid var(--border-2); border-radius: var(--r-sm); color: var(--cat-color); background: var(--surface-sub); font-size: .82rem; font-weight: var(--fw-bold); }
++   .city-link-grid a:hover { background: var(--cat-tint); }
++   @media (max-width: 640px) {
++     .city-link-grid { grid-template-columns: 1fr; }
++     .city-calc { padding: 18px; }
++   }
++ </style>
++
+
+ ❯ tests/adsense-batch1.test.js:71:18
+     69|   it('static output says reference date and exposes actual coordinates…
+     70|     const city = read('src/pages/hinodeiri/[city].astro');
+     71|     expect(city).toContain('class="result-box visible" id="hd-result"'…
+       |                  ^
+     72|     expect(city).toContain('value={tokyoToday} disabled');
+     73|     expect(city).not.toContain('本日');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  02:34:02
+   Duration  711ms (transform 163ms, setup 0ms, import 250ms, tests 176ms, environment 0ms)
+

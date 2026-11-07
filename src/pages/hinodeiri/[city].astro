@@ -3,7 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import RelatedTools from '../../components/RelatedTools.astro';
 import ResultShare from '../../components/ResultShare.astro';
 import Faq from '../../components/Faq.astro';
-import { listCities, cityYearTable, hinodeIri } from '../../lib/hinodeiri.js';
+import { listCities, cityYearTable, hinodeIri, cityCoordinates } from '../../lib/hinodeiri.js';
 import { japanDateParts } from '../../lib/japanDate.js';
 
 export function getStaticPaths() {
@@ -14,6 +14,7 @@ const { city } = Astro.props;
 const { year: YEAR, month: todayMonth, day: todayDay } = japanDateParts();
 const tokyoToday = `${YEAR}-${String(todayMonth).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`;
 const cities = listCities();
+const coordinates = cityCoordinates(city.id);
 const rows = cityYearTable(YEAR, city.id);
 const otherCities = cities.filter((item) => item.id !== city.id);
 const january = rows.find((row) => row.month === 1 && row.day === 15);
@@ -73,16 +74,16 @@ const faqItems = [
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/hinodeiri/">日の出・日の入り</a> ／ {city.name}</div>
     <h1>{city.name}の日の出・日の入り時刻【{YEAR}年】</h1>
-    <p>{city.name}の指定日の日の出、日の入り、昼の長さを計算できます。本日（{todayMonth}月{todayDay}日）は日の出<strong>{todayResult.sunrise}</strong>、日の入り<strong>{todayResult.sunset}</strong>です。</p>
+    <p>{city.name}の指定日の日の出、日の入り、昼の長さを計算できます。静的表示の基準日（{tokyoToday}・JST）は日の出<strong>{todayResult.sunrise}</strong>、日の入り<strong>{todayResult.sunset}</strong>です。</p>
   </div>
 
   <div class="calc-card city-calc" data-city-id={city.id}>
     <div class="form-group">
-      <label for="hd-date">日付</label>
-      <input type="date" id="hd-date" value={tokyoToday} />
+      <label for="hd-date">計算する日付（JST）</label>
+      <input type="date" id="hd-date" value={tokyoToday} disabled />
     </div>
-    <div class="result-box" id="hd-result" aria-live="polite">
-      <div class="result-label" id="hd-city-label">{city.name}の日の出・日の入り</div>
+    <div class="result-box visible" id="hd-result" aria-live="polite">
+      <div class="result-label" id="hd-city-label">{city.name} {tokyoToday}（JST・基準日）の日の出・日の入り</div>
       <div class="result-main" id="hd-main">{todayResult.sunrise} 〜 {todayResult.sunset}</div>
       <div class="result-rows">
         <div class="result-row"><span class="label">日の出</span><span class="value" id="hd-sunrise">{todayResult.sunrise}</span></div>
@@ -93,12 +94,13 @@ const faqItems = [
     <p class="switch-city"><a href="/hinodeiri/">ほかの都市・日付から計算する →</a></p>
   </div>
 
+  <noscript><p>JavaScriptが無効のため、基準日の静的な計算値を表示しています。別の日付の計算にはJavaScriptが必要です。</p></noscript>
   <ResultShare />
   <div class="ad-slot"></div>
 
   <section class="howto year-table-section">
     <h2>{city.name}の{YEAR}年 日の出・日の入り年間早見表</h2>
-    <p>季節による変化を比較しやすいよう、各月の1日と15日を掲載しています。任意の日付は上の計算器で確認できます。</p>
+    <p>この表は静的表示の基準年{YEAR}年の表で、上の選択日を変えても年は切り替わりません。季節による変化を比較しやすいよう、各月の1日と15日を掲載しています。任意の日付は上の計算器で確認できます。日付は端末の時差にかかわらずJSTの暦日として扱います。年末・年始も選択した年月日を計算します。</p>
     <div class="data-table-wrap">
       <div class="data-table-scroll">
         <table class="data-table sun-table">
@@ -126,7 +128,7 @@ const faqItems = [
       7月15日は、日の出が<strong>{july.sunrise}</strong>、日の入りが<strong>{july.sunset}</strong>、昼の長さは<strong>{lengthLabel(july.dayLengthMinutes)}</strong>になります。
     </p>
     <p>日本では夏至に近い6月ほど昼が長く、冬至に近い12月ほど短くなります。旅行、写真撮影、釣り、屋外作業などでは、日の入り後すぐに完全な暗闇になるわけではない点にもご注意ください。</p>
-    <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の時刻と1分程度の差が生じる場合があります。正式な時刻は国立天文台の発表をご確認ください。</div>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。全都市・すべての日付での誤差は検証しておらず、精度を保証しません。遠い年代の値も検証対象外です。正式な時刻は国立天文台の発表をご確認ください。</div>
   </section>
 
   <section class="howto sources">
@@ -140,7 +142,7 @@ const faqItems = [
 
   <section class="howto">
     <h2>{city.name}の計算地点と、ほかの都市との違い</h2>
-    <p>このページでは、あらかじめ登録した{city.name}の代表地点の緯度・経度を使います。同じ市内でも観測場所は異なるため、ご自宅の窓から太陽が見える瞬間や、山頂から見える瞬間を予測するものではありません。時刻はすべて日本標準時（JST）です。</p>
+    <p>このページでは、登録座標（北緯{coordinates.lat}度・東経{coordinates.lon}度）、標高0mの仮定を使います。この座標は特定の観測施設を示すものではありません。座標の小数桁数は時刻の精度保証ではありません。同じ市内でも観測場所は異なるため、ご自宅の窓から太陽が見える瞬間や、山頂から見える瞬間を予測するものではありません。時刻はすべて日本標準時（JST）です。</p>
     <p>{YEAR}年7月15日の比較では、{city.name}は日の出{july.sunrise}・日の入り{july.sunset}、{comparisonCity.name}は日の出{comparisonJuly.sunrise}・日の入り{comparisonJuly.sunset}です。時計の時刻の差には東西方向の位置が、夏と冬の昼の長さの差には南北方向の位置が関係します。「東の都市だから必ず一年中同じ分数だけ早い」とは限りません。</p>
     <h3>昼の長さと、屋外で活動できる時間は別</h3>
     <p>{city.name}では、表の1月15日と7月15日で昼の長さが<strong>{lengthLabel(summerDifference)}</strong>変わります。ただし、これは日の出から日の入りまでの計算値の差です。建物の影、雲、雨、周囲の明かりは反映しておらず、洗濯物が乾く時間や日照時間の予報を表すものではありません。</p>
@@ -165,6 +167,7 @@ const faqItems = [
 </ToolLayout>
 
 <script>
+  import { japanDateParts } from '../../lib/japanDate.js';
   import { hinodeIri } from '../../lib/hinodeiri.js';
 
   const root = document.querySelector('[data-city-id]');
@@ -173,18 +176,23 @@ const faqItems = [
   const get = (id) => document.getElementById(id);
 
   function todayISO() {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const { year, month, day } = japanDateParts();
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   }
 
   function render() {
-    if (!dateInput?.value || !cityId) return;
+    if (!cityId) return;
     const [year, month, day] = dateInput.value.split('-').map(Number);
     const result = hinodeIri(year, month, day, cityId);
-    if (!result) return;
+    if (!result) {
+      get('hd-city-label').textContent = '有効な日付（JST）を選んでください';
+      ['hd-main', 'hd-sunrise', 'hd-sunset', 'hd-length'].forEach((id) => { get(id).textContent = '―'; });
+      window.hideResultShare?.();
+      return;
+    }
     const hours = Math.floor(result.dayLengthMinutes / 60);
     const minutes = result.dayLengthMinutes % 60;
-    get('hd-city-label').textContent = `${result.city}の日の出・日の入り`;
+    get('hd-city-label').textContent = `${result.city} ${dateInput.value}（JST）の日の出・日の入り`;
     get('hd-main').textContent = `${result.sunrise} 〜 ${result.sunset}`;
     get('hd-sunrise').textContent = result.sunrise;
     get('hd-sunset').textContent = result.sunset;
@@ -194,6 +202,7 @@ const faqItems = [
   }
 
   if (dateInput) {
+    dateInput.disabled = false;
     dateInput.value = todayISO();
     dateInput.addEventListener('input', render);
     render();

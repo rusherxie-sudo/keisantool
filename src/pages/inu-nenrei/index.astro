@@ -52,9 +52,9 @@ const jsonld = {
         <input type="radio" name="size" id="size-small" value="small" checked />
         <label for="size-small">小型（〜10kg）</label>
         <input type="radio" name="size" id="size-medium" value="medium" />
-        <label for="size-medium">中型（〜25kg）</label>
+        <label for="size-medium">中型（10kg超〜25kg以下）</label>
         <input type="radio" name="size" id="size-large" value="large" />
-        <label for="size-large">大型（25kg〜）</label>
+        <label for="size-large">大型（25kg超）</label>
       </div>
     </div>
 
@@ -85,7 +85,7 @@ const jsonld = {
       <li><strong>大型犬</strong>：1歳＝人間の12歳。<strong>2歳以降は1年ごとに＋7歳</strong>（12＋（犬の年齢−1）×7）。犬種や個体によって老化の進み方は異なります。</li>
     </ul>
     <p>
-      なお、子犬の1年目は人間に換算すると一気に十数歳ぶん成長する特別な時期で、<strong>1歳は計算式の例外値</strong>（小型・中型＝15歳、大型＝12歳）として扱います。体重から体型がわからない場合は、おおよそ10kg以下を小型、10〜25kgを中型、25kgを超えると大型の目安としてください。
+      なお、子犬の1年目は人間に換算すると一気に十数歳ぶん成長する特別な時期で、<strong>1歳は計算式の例外値</strong>（小型・中型＝15歳、大型＝12歳）として扱います。体重から体型がわからない場合は、おおよそ10kg以下を小型、10kg超〜25kg以下を中型、25kgを超えると大型の目安としてください。
     </p>
 
     <h3>犬の年齢早見表（人間換算・1〜20歳）</h3>
@@ -109,7 +109,7 @@ const jsonld = {
       </div>
     </div>
 
-    <p>健康管理は人間換算だけでは判断できません。<a href="https://www.aaha.org/resources/life-stage-canine-2019/canine-life-stage-definitions/" target="_blank" rel="noopener noreferrer">AAHAの犬のライフステージ資料</a>は、実年齢や成長段階に応じたケアを考えるための参考です。これは本ツールの換算式の公認・医学的な年齢測定を意味しません。1歳未満や小数年齢は式の間を補間した目安です。</p>
+    <p>健康管理は人間換算だけでは判断できません。<a href="https://www.aaha.org/resources/life-stage-canine-2019/canine-life-stage-definitions/" target="_blank" rel="noopener noreferrer">AAHAの犬のライフステージ資料</a>は、実年齢や成長段階に応じたケアを考えるための参考です。これは本ツールの換算式の公認・医学的な年齢測定を意味しません。1歳未満や小数年齢は節点の間を直線で補間し、表示は小数点以下を切り捨てます。0歳は0、小型・中型の0.5歳は7、1.5歳は19、大型の1.5歳は15歳相当です。体格区分は成犬時の大きさの目安で、個体の健康を判定しません。</p>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。犬種・個体差があり、健康・医療に関わる判断は必ず獣医師にご相談ください。</div>
   </section>
 
@@ -130,7 +130,7 @@ const jsonld = {
   import { dogHumanAge } from '../../lib/pet-age.js';
 
   const $ = (id) => document.getElementById(id);
-  const SIZE_LABEL = { small: '小型犬（〜10kg）', medium: '中型犬（〜25kg）', large: '大型犬（25kg〜）' };
+  const SIZE_LABEL = { small: '小型犬（〜10kg）', medium: '中型犬（10kg超〜25kg以下）', large: '大型犬（25kg超）' };
 
   function selectedSize() {
     const el = document.querySelector('input[name="size"]:checked');

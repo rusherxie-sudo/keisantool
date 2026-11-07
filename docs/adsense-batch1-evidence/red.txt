@@ -1,0 +1,921 @@
+
+ RUN  v4.1.8 /home/ubuntu/website/keisantool
+
+ ❯ tests/adsense-batch1.test.js (10 tests | 10 failed) 54ms
+     × ordinary activation updates selectors/result; modified clicks keep the detail link 16ms
+     × static anchors have accessible names and real detail URLs; removes recommendation loop 16ms
+     × 2026-11-07T14:59:59Z defaults to 2026-11-07 even outside Japan 5ms
+     × 2026-11-07T15:00:00Z defaults to 2026-11-08 even outside Japan 3ms
+     × 2026-12-31T15:00:00Z defaults to 2027-01-01 even outside Japan 2ms
+     × static output says reference date and exposes actual coordinates without a precision promise 3ms
+     × 5-year small example = 36 1ms
+     × 5-year medium example = 36 1ms
+     × 5-year large example = 40 1ms
+     × documents first two years, interpolation, floor and exact size boundaries 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: comparison stays on the hub with link fallback > ordinary activation updates selectors/result; modified clicks keep the detail link
+AssertionError: expected undefined to be type of 'function'
+
+Expected: "function"
+Received: "undefined"
+
+ ❯ tests/adsense-batch1.test.js:29:33
+     27|     const link = element(); link.dataset = { sign1: 'uo', sign2: 'ohit…
+     28|     const { get } = client('src/pages/seiza-aisho/index.astro', {}, [l…
+     29|     expect(link.handlers.click).toBeTypeOf('function');
+       |                                 ^
+     30|     const preventDefault = vi.fn();
+     31|     link.handlers.click({ button: 0, preventDefault }); // Enter on an…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: comparison stays on the hub with link fallback > static anchors have accessible names and real detail URLs; removes recommendation loop
+AssertionError: expected '---\nimport ToolLayout from \'../../l…' to contain 'aria-label={matrix[i][j].label}'
+
+- Expected
++ Received
+
+- aria-label={matrix[i][j].label}
++ ---
++ import ToolLayout from '../../layouts/ToolLayout.astro';
++ import RelatedTools from '../../components/RelatedTools.astro';
++ import RelatedArticles from '../../components/RelatedArticles.astro';
++ import Faq from '../../components/Faq.astro';
++ import ResultShare from '../../components/ResultShare.astro';
++ import { SIGNS, seizaAisho, pairPath } from '../../lib/seiza-aisho.js';
++
++ const slug = 'seiza-aisho';
++ const title = '星座相性診断 - 12星座の相性表・全144組み合わせを計算 | 計算ツール';
++ const description =
++   '12星座の相性を西洋占星術のエレメント（火・地・風・水）とアスペクト（角度）で自動計算する無料の星座相性診断。おひつじ座×おうし座など全144組み合わせの相性表と詳細ページつき。登録不要・娯楽としてお楽しみください。';
++ const jsonld = {
++   '@context': 'https://schema.org',
++   '@type': 'WebApplication',
++   name: '星座相性診断',
++   description,
++   applicationCategory: 'EntertainmentApplication',
++   operatingSystem: 'Web',
++   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
++ };
++
++ // 12×12 の相性マトリクス（ビルド時生成・78通りの重複しない結果への内部リンク）
++ const matrix = SIGNS.map((a) =>
++   SIGNS.map((b) => ({
++     href: pairPath(a.slug, b.slug),
++     rank: seizaAisho(a.slug, b.slug).rank,
++     score: seizaAisho(a.slug, b.slug).score,
++     label: `${a.name}×${b.name}の相性`,
++   }))
++ );
++ ---
++ <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
++   <div class="page-hero">
++     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 星座相性</div>
++     <h1>星座相性診断（12星座の相性表）</h1>
++     <p>ふたりの星座を選ぶだけで、エレメントとアスペクト（角度）から相性度を自動計算。全144組み合わせの相性表つきです。</p>
++   </div>
++
++   <div class="calc-card">
++     <div class="sa-inputs">
++       <div class="sa-side">
++         <div class="form-group">
++           <label for="sa-s1">あなたの星座</label>
++           <select id="sa-s1">
++             <option value="">選んでください</option>
++             {SIGNS.map((s) => <option value={s.slug}>{s.symbol} {s.name}（{s.kana}）</option>)}
++           </select>
++         </div>
++         <details class="sa-bd">
++           <summary>誕生日から選ぶ</summary>
++           <input type="date" id="sa-b1" aria-label="あなたの誕生日" />
++         </details>
++       </div>
++       <div class="sa-x" aria-hidden="true">×</div>
++       <div class="sa-side">
++         <div class="form-group">
++           <label for="sa-s2">相手の星座</label>
++           <select id="sa-s2">
++             <option value="">選んでください</option>
++             {SIGNS.map((s) => <option value={s.slug}>{s.symbol} {s.name}（{s.kana}）</option>)}
++           </select>
++         </div>
++         <details class="sa-bd">
++           <summary>誕生日から選ぶ</summary>
++           <input type="date" id="sa-b2" aria-label="相手の誕生日" />
++         </details>
++       </div>
++     </div>
++
++     <div class="result-box" id="sa-result">
++       <div class="result-label">ふたりの相性度</div>
++       <div class="sa-pair" id="sa-pair">―</div>
++       <div class="result-main"><span id="sa-score">―</span><span class="sa-unit">点</span></div>
++       <div class="sa-rank" id="sa-rank">―</div>
++       <div class="sa-meter" aria-hidden="true"><span id="sa-meter-bar"></span></div>
++       <div class="result-rows">
++         <div class="result-row"><span class="label">アスペクト（角度の関係）</span><span class="value" id="sa-aspect">―</span></div>
++         <div class="result-row"><span class="label">エレメント</span><span class="value" id="sa-element">―</span></div>
++       </div>
++       <p class="sa-comment" id="sa-comment"></p>
++       <a class="sa-detail-link" id="sa-detail-link" href="#">この組み合わせの詳しい相性を見る →</a>
++     </div>
++   </div>
++
++   <ResultShare />
++
++   <div class="ad-slot"></div>
++
++   <section class="sa-matrix-sec">
++     <h2>12星座 相性早見表（全144組み合わせ）</h2>
++     <p class="sa-matrix-note">行があなた、列が相手の星座です。記号を押すと、その組み合わせの詳しい相性ページが開きます（◎とても良い／○良い／△工夫しだい／▲刺激し合う）。</p>
++     <div class="data-table-wrap">
++       <div class="data-table-scroll">
++         <table class="data-table sa-table">
++           <thead>
++             <tr>
++               <th>あなた＼相手</th>
++               {SIGNS.map((s) => <th><span class="sa-th-symbol">{s.symbol}</span><span class="sa-th-name">{s.name.replace('座', '')}</span></th>)}
++             </tr>
++           </thead>
++           <tbody>
++             {SIGNS.map((a, i) => (
++               <tr>
++                 <td class="sa-rowhead">{a.symbol} {a.name}</td>
++                 {SIGNS.map((b, j) => (
++                   <td class={matrix[i][j].rank === '◎' ? 'sa-best' : ''}>
++                     <a href={matrix[i][j].href} title={matrix[i][j].label}>{matrix[i][j].rank}</a>
++                   </td>
++                 ))}
++               </tr>
++             ))}
++           </tbody>
++         </table>
++       </div>
++     </div>
++   </section>
++
++   <div class="ad-slot"></div>
++
++   <section class="howto">
++     <h2>星座相性の計算方法（判定基準を公開）</h2>
++     <p>
++       本ツールの星座相性は、西洋占星術で通行の<strong>エレメント</strong>と<strong>アスペクト（2つの星座の角度）</strong>の考え方だけで機械的に計算しています。同じ組み合わせなら必ず同じ結果になります。
++     </p>
++
++     <h3>① 4つのエレメント（火・地・風・水）</h3>
++     <p>12星座は3つずつ、4つのエレメント（元素）に分かれます。同じエレメント同士は気質が似ており、火と風、地と水は互いを活かし合う相性とされます。</p>
++     <table class="sa-mini-table">
++       <thead><tr><th>エレメント</th><th>星座</th></tr></thead>
++       <tbody>
++         <tr><td>火（情熱・行動）</td><td>牡羊座・獅子座・射手座</td></tr>
++         <tr><td>地（堅実・現実）</td><td>牡牛座・乙女座・山羊座</td></tr>
++         <tr><td>風（知性・社交）</td><td>双子座・天秤座・水瓶座</td></tr>
++         <tr><td>水（感情・共感）</td><td>蟹座・蠍座・魚座</td></tr>
++       </tbody>
++     </table>
++
++     <h3>② アスペクト（角度）と相性度</h3>
++     <p>点数は当サイトが比較表示のために設定したもので、交際・結婚の成功率や統計調査の値ではありません。太陽星座同士の簡略比較で、出生時刻・出生地を使う出生図全体の相性鑑定は行いません。</p>
++     <p>黄道十二宮を30度ずつ並べたとき、2つの星座が何個離れているか（＝角度）で関係性が決まります。本ツールの判定基準は次の7段階です。</p>
++     <table class="sa-mini-table">
++       <thead><tr><th>離れ方</th><th>アスペクト</th><th>相性度</th></tr></thead>
++       <tbody>
++         <tr><td>4つ（120度）</td><td>トライン＝同じエレメント</td><td>92点 ◎</td></tr>
++         <tr><td>2つ（60度）</td><td>セクスタイル＝火×風／地×水</td><td>84点 ○</td></tr>
++         <tr><td>0（同じ星座）</td><td>コンジャンクション</td><td>80点 ○</td></tr>
++         <tr><td>6つ（180度）</td><td>オポジション＝正反対で惹かれ合う</td><td>76点 ○</td></tr>
++         <tr><td>1つ（30度）</td><td>セミセクスタイル＝お隣同士</td><td>62点 △</td></tr>
++         <tr><td>5つ（150度）</td><td>インコンジャンクト</td><td>55点 △</td></tr>
++         <tr><td>3つ（90度）</td><td>スクエア＝刺激し合う緊張関係</td><td>48点 ▲</td></tr>
++       </tbody>
++     </table>
++     <p>
++       自分の星座がわからない場合は<a href="/seiza/">星座調べ（誕生日から星座）</a>で確認できます。生まれ年ごとの運勢を知りたい方は<a href="/rokusei/">六星占術・大殺界計算器</a>もどうぞ。
++     </p>
++     <div class="disclaimer">
++       ※ 星座占い・相性占いは娯楽・文化的慣習に基づくものであり、科学的根拠はありません。計算結果はあくまで参考値です。人間関係の大切な判断は、結果に頼らずご自身の責任でお決めください。
++     </div>
++   </section>
++
++   <RelatedTools current={slug} />
++
++   <RelatedArticles toolSlug={slug} />
++
++   <Faq items={[
++     { q: '星座の相性はどうやって決まりますか？', a: '本ツールでは、西洋占星術で通行の「エレメント（火・地・風・水）」と「アスペクト（2つの星座の角度）」で判定します。同じエレメント（120度）が最も調和しやすく、90度（スクエア）は刺激し合う関係とされます。判定表はページ内で公開しています。' },
++     { q: '相性が▲（48点）だったら付き合わない方がいいですか？', a: 'いいえ。スクエア（90度）は「刺激し合い、成長させ合う関係」ともされ、実際の関係の長さや成否を、この点数から判断することはできません。占いは娯楽ですので、参考程度にお楽しみください。' },
++     { q: '自分の星座がわかりません。', a: '「誕生日から選ぶ」を開いて生年月日を入れると自動で星座を選択します。詳しくは星座調べ（誕生日から星座）のページでも確認できます。' },
++     { q: '144通りすべての組み合わせが見られますか？', a: 'はい。12星座×12星座の144通りを選べます。逆順は同じ結果なので、同じ星座同士12組と異なる星座66組の計78結果にまとめています。' },
++   ]} />
++
++   <div class="ad-slot"></div>
++ </ToolLayout>
++
++ <style>
++   .sa-inputs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: start; max-width: 760px; margin: 0 auto; }
++   .sa-side .form-group { margin-bottom: 6px; }
++   .sa-x { font-size: 1.2rem; font-weight: var(--fw-black); color: var(--text-faint); padding-top: 44px; }
++   @media (max-width: 560px) {
++     .sa-inputs { grid-template-columns: 1fr; gap: 10px; }
++     .sa-x { display: none; }
++   }
++   .sa-bd summary { font-size: .78rem; color: var(--text-muted); cursor: pointer; padding: 2px 0 6px; }
++   .sa-bd input { width: 100%; height: 44px; padding: 0 12px; border: 1.5px solid var(--border-input); border-radius: var(--r-md); background: var(--surface-sub); font-family: var(--font-mono); }
++   .result-box { margin-top: 22px; max-width: 760px; margin-left: auto; margin-right: auto; }
++   .sa-pair { font-size: 1.05rem; font-weight: var(--fw-bold); color: var(--text); }
++   .sa-unit { font-size: 1.2rem; font-weight: var(--fw-bold); margin-left: 4px; }
++   .sa-rank { font-size: 1rem; font-weight: var(--fw-bold); color: color-mix(in srgb, var(--cat-color) 62%, #000); margin-top: 4px; }
++   .sa-meter { height: 10px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--cat-color) 14%, #fff); margin-top: 12px; overflow: hidden; }
++   .sa-meter span { display: block; height: 100%; width: 0; border-radius: var(--r-pill); background: var(--cat-color); transition: width .5s ease; }
++   .sa-comment { font-size: .86rem; color: var(--text-3); line-height: 1.8; margin: 14px 0 0; }
++   .sa-detail-link { display: inline-block; margin-top: 14px; font-size: .88rem; font-weight: var(--fw-bold); color: var(--cat-color); text-decoration: none; }
++   .sa-detail-link:hover { text-decoration: underline; }
++
++   .sa-matrix-sec { margin-top: 28px; }
++   .sa-matrix-sec h2 { font-size: 1.15rem; font-weight: var(--fw-black); color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
++   .sa-matrix-sec h2::before { content: ''; width: 6px; height: 1.1em; background: var(--cat-color); border-radius: 3px; }
++   .sa-matrix-note { font-size: .84rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.7; }
++   .sa-table { min-width: 720px; }
++   .sa-table th { text-align: center; padding: 10px 6px; }
++   .sa-th-symbol { display: block; font-size: 1rem; }
++   .sa-th-name { display: block; font-size: .68rem; font-weight: var(--fw-bold); }
++   .sa-table td { text-align: center; padding: 0; }
++   .sa-table td a { display: block; padding: 10px 6px; text-decoration: none; color: var(--text); font-weight: var(--fw-bold); }
++   .sa-table td a:hover { background: var(--cat-tint); }
++   .sa-table .sa-rowhead { text-align: left; padding: 10px 12px; font-weight: var(--fw-bold); background: var(--cat-tint); color: color-mix(in srgb, var(--cat-color) 62%, #000); white-space: nowrap; }
++   .sa-table .sa-best a { color: var(--cat-color); }
++
++   .sa-mini-table { width: 100%; border-collapse: collapse; margin: 12px 0 6px; font-size: .88rem; }
++   .sa-mini-table th, .sa-mini-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border-2); }
++   .sa-mini-table th { color: var(--text-muted); font-weight: var(--fw-bold); font-size: .8rem; }
++ </style>
++
++ <script>
++   import { seizaAisho, signBySlug, pairPath } from '../../lib/seiza-aisho.js';
++   import { SIGNS } from '../../lib/seiza-aisho.js';
++   import { seiza } from '../../lib/seiza.js';
++
++   const $ = (id) => document.getElementById(id);
++
++   // 誕生日→星座（seiza.js は漢字名を返すので slug に引き直す）
++   function slugFromDate(v) {
++     const m = v.match(/^\d{4}-(\d{2})-(\d{2})$/);
++     if (!m) return '';
++     const s = seiza(Number(m[1]), Number(m[2]));
++     if (!s) return '';
++     const hit = SIGNS.find((x) => x.name === s.name);
++     return hit ? hit.slug : '';
++   }
++
++   function render() {
++     const v1 = $('sa-s1').value;
++     const v2 = $('sa-s2').value;
++     const box = $('sa-result');
++     if (!v1 || !v2) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
++     const r = seizaAisho(v1, v2);
++     if (!r) { box.classList.remove('visible'); window.hideResultShare?.(); return; }
++     const s1 = signBySlug(v1);
++     const s2 = signBySlug(v2);
++     box.classList.add('visible');
++
++     $('sa-pair').textContent = `${s1.symbol} ${s1.name} × ${s2.symbol} ${s2.name}`;
++     $('sa-score').textContent = r.score;
++     $('sa-rank').textContent = `${r.rank} ${r.rank === '◎' ? 'とても良い相性' : r.rank === '○' ? '良い相性' : r.rank === '△' ? '工夫しだいの相性' : '刺激し合う相性'}`;
++     $('sa-meter-bar').style.width = `${r.score}%`;
++     $('sa-aspect').textContent = r.aspect.name;
++     $('sa-element').textContent = `${r.element1} × ${r.element2}`;
++     $('sa-comment').textContent = r.comment;
++     $('sa-detail-link').setAttribute('href', pairPath(v1, v2));
++
++     window.setResultShare?.(
++       '星座相性診断\n' +
++         `${s1.name} × ${s2.name}：${r.score}点（${r.rank}）\n` +
++         `${r.aspect.name}・${r.element1}×${r.element2}`
++     );
++   }
++
++   function loadPair() {
++     const [first, second, ...extra] = location.hash.slice(1).split('-');
++     if (!extra.length && signBySlug(first) && signBySlug(second)) {
++       $('sa-s1').value = first; $('sa-s2').value = second; render();
++     }
++   }
++   loadPair();
++   window.addEventListener('hashchange', loadPair);
++   ['sa-s1', 'sa-s2'].forEach((id) => $(id).addEventListener('change', render));
++   [['sa-b1', 'sa-s1'], ['sa-b2', 'sa-s2']].forEach(([bd, sel]) => {
++     $(bd).addEventListener('change', () => {
++       const slug = slugFromDate($(bd).value);
++       $(sel).value = slug; render();
++     });
++   });
++ </script>
++
+
+ ❯ tests/adsense-batch1.test.js:44:17
+     42|     const hub = read('src/pages/seiza-aisho/index.astro');
+     43|     expect(hub).toContain('href={matrix[i][j].href}');
+     44|     expect(hub).toContain('aria-label={matrix[i][j].label}');
+       |                 ^
+     45|     expect(hub).not.toContain('詳しい相性');
+     46|     expect(hub).toContain('同じ距離なら同じ点数');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: city input/label/result use the same JST date > 2026-11-07T14:59:59Z defaults to 2026-11-07 even outside Japan
+AssertionError: expected '東京の日の出・日の入り' to contain '2026-11-07'
+
+Expected: "2026-11-07"
+Received: "東京の日の出・日の入り"
+
+ ❯ tests/adsense-batch1.test.js:61:46
+     59|     const { get } = client('src/pages/hinodeiri/[city].astro');
+     60|     expect(get('hd-date').value).toBe(date);
+     61|     expect(get('hd-city-label').textContent).toContain(date);
+       |                                              ^
+     62|     get('hd-date').value = '2028-02-29'; get('hd-date').handlers.input…
+     63|     expect(get('hd-city-label').textContent).toContain('2028-02-29');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: city input/label/result use the same JST date > 2026-11-07T15:00:00Z defaults to 2026-11-08 even outside Japan
+AssertionError: expected '2026-11-07' to be '2026-11-08' // Object.is equality
+
+Expected: "2026-11-08"
+Received: "2026-11-07"
+
+ ❯ tests/adsense-batch1.test.js:60:34
+     58|     vi.useFakeTimers(); vi.setSystemTime(new Date(instant));
+     59|     const { get } = client('src/pages/hinodeiri/[city].astro');
+     60|     expect(get('hd-date').value).toBe(date);
+       |                                  ^
+     61|     expect(get('hd-city-label').textContent).toContain(date);
+     62|     get('hd-date').value = '2028-02-29'; get('hd-date').handlers.input…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: city input/label/result use the same JST date > 2026-12-31T15:00:00Z defaults to 2027-01-01 even outside Japan
+AssertionError: expected '2026-12-31' to be '2027-01-01' // Object.is equality
+
+Expected: "2027-01-01"
+Received: "2026-12-31"
+
+ ❯ tests/adsense-batch1.test.js:60:34
+     58|     vi.useFakeTimers(); vi.setSystemTime(new Date(instant));
+     59|     const { get } = client('src/pages/hinodeiri/[city].astro');
+     60|     expect(get('hd-date').value).toBe(date);
+       |                                  ^
+     61|     expect(get('hd-city-label').textContent).toContain(date);
+     62|     get('hd-date').value = '2028-02-29'; get('hd-date').handlers.input…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: city input/label/result use the same JST date > static output says reference date and exposes actual coordinates without a precision promise
+AssertionError: expected '---\nimport ToolLayout from \'../../l…' not to contain '本日'
+
+- Expected
++ Received
+
+- 本日
++ ---
++ import ToolLayout from '../../layouts/ToolLayout.astro';
++ import RelatedTools from '../../components/RelatedTools.astro';
++ import ResultShare from '../../components/ResultShare.astro';
++ import Faq from '../../components/Faq.astro';
++ import { listCities, cityYearTable, hinodeIri } from '../../lib/hinodeiri.js';
++ import { japanDateParts } from '../../lib/japanDate.js';
++
++ export function getStaticPaths() {
++   return listCities().map((city) => ({ params: { city: city.id }, props: { city } }));
++ }
++
++ const { city } = Astro.props;
++ const { year: YEAR, month: todayMonth, day: todayDay } = japanDateParts();
++ const tokyoToday = `${YEAR}-${String(todayMonth).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`;
++ const cities = listCities();
++ const rows = cityYearTable(YEAR, city.id);
++ const otherCities = cities.filter((item) => item.id !== city.id);
++ const january = rows.find((row) => row.month === 1 && row.day === 15);
++ const july = rows.find((row) => row.month === 7 && row.day === 15);
++ const todayResult = hinodeIri(YEAR, todayMonth, todayDay, city.id);
++ const comparisonCity = cities.find((item) => item.id === (city.id === 'tokyo' ? 'sapporo' : 'tokyo'));
++ const comparisonJuly = hinodeIri(YEAR, 7, 15, comparisonCity.id);
++ const summerDifference = july.dayLengthMinutes - january.dayLengthMinutes;
++ const slug = `hinodeiri/${city.id}`;
++ const canonicalUrl = new URL(`/${slug}/`, Astro.site).href;
++ const title = `${city.name}の日の出・日の入り時刻【${YEAR}年】指定日計算・年間早見表 | 計算ツール`;
++ const description = `${city.name}の${YEAR}年の日の出・日の入り時刻を無料で確認。日付を選ぶだけで日の出、日の入り、昼の長さを計算できます。毎月1日・15日の年間早見表つき。`;
++
++ const jsonld = {
++   '@context': 'https://schema.org',
++   '@type': 'WebApplication',
++   name: `${city.name}の日の出・日の入り時刻計算`,
++   description,
++   url: canonicalUrl,
++   applicationCategory: 'UtilityApplication',
++   operatingSystem: 'Web',
++   offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
++   featureList: ['指定日の日の出時刻を計算', '指定日の日の入り時刻を計算', '昼の長さを表示', `${YEAR}年の年間早見表`],
++ };
++
++ const breadcrumb = {
++   '@context': 'https://schema.org',
++   '@type': 'BreadcrumbList',
++   itemListElement: [
++     { '@type': 'ListItem', position: 1, name: 'ホーム', item: new URL('/', Astro.site).href },
++     { '@type': 'ListItem', position: 2, name: '日の出・日の入り時刻計算', item: new URL('/hinodeiri/', Astro.site).href },
++     { '@type': 'ListItem', position: 3, name: `${city.name}の日の出・日の入り`, item: canonicalUrl },
++   ],
++ };
++
++ function lengthLabel(minutes) {
++   return `${Math.floor(minutes / 60)}時間${minutes % 60}分`;
++ }
++
++ const faqItems = [
++   {
++     q: `${city.name}の日の出・日の入り時刻は何時ですか？`,
++     a: `日付によって変わります。${YEAR}年1月15日は日の出${january.sunrise}・日の入り${january.sunset}、7月15日は日の出${july.sunrise}・日の入り${july.sunset}の目安です。上の計算器で知りたい日付を選ぶと確認できます。`,
++   },
++   {
++     q: `${city.name}で昼が長いのはいつ頃ですか？`,
++     a: '北半球にある日本では夏至の6月21日頃に昼が最も長く、冬至の12月22日頃に最も短くなります。正確な時刻は年によってわずかに変わります。',
++   },
++   {
++     q: '日の出・日の入り時刻はどのように計算していますか？',
++     a: 'NOAAが公開する太陽位置式をもとに、都市の緯度・経度と指定日から計算しています。大気差と太陽の視半径を考慮した標準的な天頂角を使用しています。',
++   },
++ ];
++ ---
++
++ <ToolLayout title={title} description={description} slug={slug} current="hinodeiri" jsonld={jsonld} breadcrumb={breadcrumb} wide>
++   <div class="page-hero">
++     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/hinodeiri/">日の出・日の入り</a> ／ {city.name}</div>
++     <h1>{city.name}の日の出・日の入り時刻【{YEAR}年】</h1>
++     <p>{city.name}の指定日の日の出、日の入り、昼の長さを計算できます。本日（{todayMonth}月{todayDay}日）は日の出<strong>{todayResult.sunrise}</strong>、日の入り<strong>{todayResult.sunset}</strong>です。</p>
++   </div>
++
++   <div class="calc-card city-calc" data-city-id={city.id}>
++     <div class="form-group">
++       <label for="hd-date">日付</label>
++       <input type="date" id="hd-date" value={tokyoToday} />
++     </div>
++     <div class="result-box" id="hd-result" aria-live="polite">
++       <div class="result-label" id="hd-city-label">{city.name}の日の出・日の入り</div>
++       <div class="result-main" id="hd-main">{todayResult.sunrise} 〜 {todayResult.sunset}</div>
++       <div class="result-rows">
++         <div class="result-row"><span class="label">日の出</span><span class="value" id="hd-sunrise">{todayResult.sunrise}</span></div>
++         <div class="result-row"><span class="label">日の入り</span><span class="value" id="hd-sunset">{todayResult.sunset}</span></div>
++         <div class="result-row"><span class="label">昼の長さ</span><span class="value" id="hd-length">{lengthLabel(todayResult.dayLengthMinutes)}</span></div>
++       </div>
++     </div>
++     <p class="switch-city"><a href="/hinodeiri/">ほかの都市・日付から計算する →</a></p>
++   </div>
++
++   <ResultShare />
++   <div class="ad-slot"></div>
++
++   <section class="howto year-table-section">
++     <h2>{city.name}の{YEAR}年 日の出・日の入り年間早見表</h2>
++     <p>季節による変化を比較しやすいよう、各月の1日と15日を掲載しています。任意の日付は上の計算器で確認できます。</p>
++     <div class="data-table-wrap">
++       <div class="data-table-scroll">
++         <table class="data-table sun-table">
++           <thead><tr><th>月日</th><th>日の出</th><th>日の入り</th><th>昼の長さ</th></tr></thead>
++           <tbody>
++             {rows.map((row) => (
++               <tr>
++                 <td class="num">{row.month}月{row.day}日</td>
++                 <td class="num">{row.sunrise}</td>
++                 <td class="num">{row.sunset}</td>
++                 <td class="num">{lengthLabel(row.dayLengthMinutes)}</td>
++               </tr>
++             ))}
++           </tbody>
++         </table>
++       </div>
++     </div>
++     <p class="table-note">※ 日本標準時（JST）で表示しています。時刻は標高0mを基準とした計算値で、地形や標高、気象条件による見え方の違いは含みません。</p>
++   </section>
++
++   <section class="howto">
++     <h2>{city.name}の日の長さは季節でどう変わる？</h2>
++     <p>
++       {YEAR}年1月15日の{city.name}は、日の出が<strong>{january.sunrise}</strong>、日の入りが<strong>{january.sunset}</strong>、昼の長さは<strong>{lengthLabel(january.dayLengthMinutes)}</strong>です。
++       7月15日は、日の出が<strong>{july.sunrise}</strong>、日の入りが<strong>{july.sunset}</strong>、昼の長さは<strong>{lengthLabel(july.dayLengthMinutes)}</strong>になります。
++     </p>
++     <p>日本では夏至に近い6月ほど昼が長く、冬至に近い12月ほど短くなります。旅行、写真撮影、釣り、屋外作業などでは、日の入り後すぐに完全な暗闇になるわけではない点にもご注意ください。</p>
++     <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の時刻と1分程度の差が生じる場合があります。正式な時刻は国立天文台の発表をご確認ください。</div>
++   </section>
++
++   <section class="howto sources">
++     <h2>計算方法と参考情報</h2>
++     <p>NOAAの太陽位置計算式をもとに、{city.name}の緯度・経度、地球の公転軌道、地軸の傾き、大気差と太陽の視半径を考慮して計算しています。</p>
++     <ul>
++       <li><a href="https://eco.mtk.nao.ac.jp/koyomi/dni/" target="_blank" rel="noopener">国立天文台 暦計算室「各地のこよみ」</a></li>
++       <li><a href="https://gml.noaa.gov/grad/solcalc/calcdetails.html" target="_blank" rel="noopener">NOAA Solar Calculator Details</a></li>
++     </ul>
++   </section>
++
++   <section class="howto">
++     <h2>{city.name}の計算地点と、ほかの都市との違い</h2>
++     <p>このページでは、あらかじめ登録した{city.name}の代表地点の緯度・経度を使います。同じ市内でも観測場所は異なるため、ご自宅の窓から太陽が見える瞬間や、山頂から見える瞬間を予測するものではありません。時刻はすべて日本標準時（JST）です。</p>
++     <p>{YEAR}年7月15日の比較では、{city.name}は日の出{july.sunrise}・日の入り{july.sunset}、{comparisonCity.name}は日の出{comparisonJuly.sunrise}・日の入り{comparisonJuly.sunset}です。時計の時刻の差には東西方向の位置が、夏と冬の昼の長さの差には南北方向の位置が関係します。「東の都市だから必ず一年中同じ分数だけ早い」とは限りません。</p>
++     <h3>昼の長さと、屋外で活動できる時間は別</h3>
++     <p>{city.name}では、表の1月15日と7月15日で昼の長さが<strong>{lengthLabel(summerDifference)}</strong>変わります。ただし、これは日の出から日の入りまでの計算値の差です。建物の影、雲、雨、周囲の明かりは反映しておらず、洗濯物が乾く時間や日照時間の予報を表すものではありません。</p>
++     <h3>撮影・旅行の予定に使う場合</h3>
++     <p>朝日や夕日を見たいときは、まず上の入力欄で実際に出かける日を選びます。次に、現地までの移動時間や入場時間を別に確保してください。日の出前・日の入り後には薄明がありますが、本ツールは薄明の開始・終了や撮影に適した光の時間を計算していません。方角や地形で見える時刻も変わるため、現地施設の案内と天気予報をあわせて確認します。</p>
++     <h3>安全や公的な記録の時刻には使わない</h3>
++     <p>登山、海辺の活動、夜間作業などの安全判断は、日の入り時刻だけではできません。照明や装備、退避の余裕を確保し、作業先のルールを優先してください。国立天文台と比較する際も、同じ日付・地点・時刻系かをそろえる必要があります。代表地点や丸め方が異なる表との差を、すべて計算誤りと判断しないようにします。</p>
++     <p>年間早見表は各月1日・15日の抜粋です。夏至・冬至の当日や、最も早い日の出・最も遅い日の入りの日を特定する一覧ではありません。日付を一日ずつ変えて確認できる計算器と、月ごとの傾向を比べる表を使い分けてください。</p>
++   </section>
++
++   <nav class="howto city-links" aria-label="ほかの都市の日の出・日の入り時刻">
++     <h2>ほかの都市の日の出・日の入り</h2>
++     <div class="city-link-grid">
++       {otherCities.map((item) => <a href={`/hinodeiri/${item.id}/`}>{item.name}の日の出・日の入り</a>)}
++     </div>
++     <p><a class="hub-link" href="/hinodeiri/">全国15都市から自由に選べる計算器 →</a></p>
++   </nav>
++
++   <RelatedTools current="hinodeiri" />
++   <Faq items={faqItems} />
++   <div class="ad-slot"></div>
++ </ToolLayout>
++
++ <script>
++   import { hinodeIri } from '../../lib/hinodeiri.js';
++
++   const root = document.querySelector('[data-city-id]');
++   const cityId = root?.dataset.cityId;
++   const dateInput = document.getElementById('hd-date');
++   const get = (id) => document.getElementById(id);
++
++   function todayISO() {
++     const now = new Date();
++     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
++   }
++
++   function render() {
++     if (!dateInput?.value || !cityId) return;
++     const [year, month, day] = dateInput.value.split('-').map(Number);
++     const result = hinodeIri(year, month, day, cityId);
++     if (!result) return;
++     const hours = Math.floor(result.dayLengthMinutes / 60);
++     const minutes = result.dayLengthMinutes % 60;
++     get('hd-city-label').textContent = `${result.city}の日の出・日の入り`;
++     get('hd-main').textContent = `${result.sunrise} 〜 ${result.sunset}`;
++     get('hd-sunrise').textContent = result.sunrise;
++     get('hd-sunset').textContent = result.sunset;
++     get('hd-length').textContent = `${hours}時間${minutes}分`;
++     get('hd-result').classList.add('visible');
++     window.setResultShare?.(`日の出・日の入り時刻計算\n${dateInput.value} ${result.city}\n日の出：${result.sunrise}\n日の入り：${result.sunset}\n昼の長さ：${hours}時間${minutes}分`);
++   }
++
++   if (dateInput) {
++     dateInput.value = todayISO();
++     dateInput.addEventListener('input', render);
++     render();
++   }
++ </script>
++
++ <style>
++   .city-calc { max-width: 620px; padding: 24px; }
++   .switch-city { margin: 14px 0 0; text-align: right; }
++   .switch-city a, .sources a, .hub-link { color: var(--cat-color); text-decoration: underline; text-underline-offset: 2px; }
++   .sun-table { min-width: 520px; }
++   .sun-table td:not(:first-child), .sun-table th:not(:first-child) { text-align: right; }
++   .table-note { margin-top: 12px; font-size: .78rem; color: var(--text-muted); }
++   .sources ul { padding-left: 1.2em; }
++   .city-link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
++   .city-link-grid a { padding: 10px 12px; border: 1px solid var(--border-2); border-radius: var(--r-sm); color: var(--cat-color); background: var(--surface-sub); font-size: .82rem; font-weight: var(--fw-bold); }
++   .city-link-grid a:hover { background: var(--cat-tint); }
++   @media (max-width: 640px) {
++     .city-link-grid { grid-template-columns: 1fr; }
++     .city-calc { padding: 18px; }
++   }
++ </style>
++
+
+ ❯ tests/adsense-batch1.test.js:71:22
+     69|   it('static output says reference date and exposes actual coordinates…
+     70|     const city = read('src/pages/hinodeiri/[city].astro');
+     71|     expect(city).not.toContain('本日');
+       |                      ^
+     72|     expect(city).toContain('基準日');
+     73|     expect(city).toContain('coordinates.lat');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: dog article is reproducible against the real tool > 5-year small example = 36
+AssertionError: expected '---\ntitle: 犬の年齢を人間換算｜体格による違いと計算の限界\n…' to contain '| 小型犬 |'
+
+- Expected
++ Received
+
+- | 小型犬 |
++ ---
++ title: 犬の年齢を人間換算｜体格による違いと計算の限界
++ description: 犬種や体格で成長の速さが違うため、換算年齢は目安です。ツールの使い方と、健康管理で別に確認する情報を整理します。
++ pubDate: 2026-07-16
++ category: pet
++ tags:
++ - 犬の年齢
++ - 人間換算
++ - 小型犬
++ - 大型犬
++ - シニア犬
++ author: 計算ツール編集部
++ relatedTools:
++ - inu-nenrei
++ - inu-gohan
++ updatedDate: 2026-10-10
++ sources:
++ - name: AAHA Canine Life Stage Definitions
++   url: https://www.aaha.org/resources/life-stage-canine-2019/canine-life-stage-definitions/
++ - name: AAHA 2023 Senior Care Guidelines
++   url: https://www.aaha.org/resources/2023-aaha-senior-care-guidelines-for-dogs-and-cats/
++ reviewedDate: 2026-10-10
++ reviewScope: 本文の計算例・適用範囲と下記資料の照合。個別の健康状態の評価・診断は対象外。
++ ---
++
++ ## 年齢の7倍だけでは表せません
++
++ 犬の成長と加齢の速さは、人と同じではなく、犬種や体格によっても違います。人間換算は年齢をイメージする補助です。どの換算表を使っても、個々の犬の健康状態や残りの寿命を正確に測れるわけではありません。
++
++ [犬の年齢換算ツール](/inu-nenrei/)では、犬の年齢と体格区分を選んで、当サイトの簡易モデルによる結果を確認できます。結果を診断や治療の基準には使わないでください。
++
++ ## 入力するときの確認表
++
++ | 入力・確認 | 取り違えを減らすポイント |
++ |---|---|
++ | 生年月日・年齢 | 保護犬の推定年齢は推定と記録する |
++ | 体格区分 | 子犬の現在体重だけで成犬時の体格を決めない |
++ | 比較する表 | 資料によって換算方法が違うことを確認する |
++ | 結果の用途 | 成長のイメージと、診察での健康評価を分ける |
++
++ 別のサイトと結果が数歳違っても、どちらかが実際の体年齢を測定したことにはなりません。比較する場合は、同じ換算モデルを継続して使います。
++
++ ## シニアになる年齢は一律ではない
++
++ AAHAの犬のライフステージの考え方では、シニアは予想される生涯の最後の約4分の1にあたる時期とされています。犬種や体格で寿命の傾向が異なるため、すべての犬を同じ誕生日で切り替えるものではありません。
++
++ この割合も、個体の余命を算出する式ではありません。健診で年齢だけでなく体格、病歴、活動性などを合わせて評価します。
++
++ ## 年齢より先に相談したい変化
++
++ 食欲や体重、飲水・排尿、歩き方、睡眠、呼吸などが普段と違うときは、年齢のせいと決めつけず獣医師に相談します。症状がいつ始まったか、続くのか、ときどきなのかを記録し、歩き方などは動画で伝える方法もあります。
++
++ シニアだから一律にタンパク質を減らす、散歩をやめる、サプリメントを始める、といった判断は避けます。食事・運動・検査の計画は、現在の病気や筋肉の状態に合わせて相談してください。
++
++ ## 日常の記録に使う
++
++ 月ごとの体重、食べた量、散歩や遊びの様子を同じ条件で記録すると変化を見つけやすくなります。[犬のごはん計算器](/inu-gohan/)も概算なので、表示量を固定せず、体格や体重の推移、獣医師の指示に合わせて調整します。年齢換算はこうした観察を始めるきっかけとして利用してください。
++
+
+ ❯ tests/adsense-batch1.test.js:82:21
+     80|     expect(dogHumanAge(5,size)).toBe(age);
+     81|     const article = read('src/content/blog/inu-nenrei-no-kakikata.md');
+     82|     expect(article).toContain(`| ${size === 'small' ? '小型犬' : size ===…
+       |                     ^
+     83|     expect(article).toContain(`${age}歳`);
+     84|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: dog article is reproducible against the real tool > 5-year medium example = 36
+AssertionError: expected '---\ntitle: 犬の年齢を人間換算｜体格による違いと計算の限界\n…' to contain '| 中型犬 |'
+
+- Expected
++ Received
+
+- | 中型犬 |
++ ---
++ title: 犬の年齢を人間換算｜体格による違いと計算の限界
++ description: 犬種や体格で成長の速さが違うため、換算年齢は目安です。ツールの使い方と、健康管理で別に確認する情報を整理します。
++ pubDate: 2026-07-16
++ category: pet
++ tags:
++ - 犬の年齢
++ - 人間換算
++ - 小型犬
++ - 大型犬
++ - シニア犬
++ author: 計算ツール編集部
++ relatedTools:
++ - inu-nenrei
++ - inu-gohan
++ updatedDate: 2026-10-10
++ sources:
++ - name: AAHA Canine Life Stage Definitions
++   url: https://www.aaha.org/resources/life-stage-canine-2019/canine-life-stage-definitions/
++ - name: AAHA 2023 Senior Care Guidelines
++   url: https://www.aaha.org/resources/2023-aaha-senior-care-guidelines-for-dogs-and-cats/
++ reviewedDate: 2026-10-10
++ reviewScope: 本文の計算例・適用範囲と下記資料の照合。個別の健康状態の評価・診断は対象外。
++ ---
++
++ ## 年齢の7倍だけでは表せません
++
++ 犬の成長と加齢の速さは、人と同じではなく、犬種や体格によっても違います。人間換算は年齢をイメージする補助です。どの換算表を使っても、個々の犬の健康状態や残りの寿命を正確に測れるわけではありません。
++
++ [犬の年齢換算ツール](/inu-nenrei/)では、犬の年齢と体格区分を選んで、当サイトの簡易モデルによる結果を確認できます。結果を診断や治療の基準には使わないでください。
++
++ ## 入力するときの確認表
++
++ | 入力・確認 | 取り違えを減らすポイント |
++ |---|---|
++ | 生年月日・年齢 | 保護犬の推定年齢は推定と記録する |
++ | 体格区分 | 子犬の現在体重だけで成犬時の体格を決めない |
++ | 比較する表 | 資料によって換算方法が違うことを確認する |
++ | 結果の用途 | 成長のイメージと、診察での健康評価を分ける |
++
++ 別のサイトと結果が数歳違っても、どちらかが実際の体年齢を測定したことにはなりません。比較する場合は、同じ換算モデルを継続して使います。
++
++ ## シニアになる年齢は一律ではない
++
++ AAHAの犬のライフステージの考え方では、シニアは予想される生涯の最後の約4分の1にあたる時期とされています。犬種や体格で寿命の傾向が異なるため、すべての犬を同じ誕生日で切り替えるものではありません。
++
++ この割合も、個体の余命を算出する式ではありません。健診で年齢だけでなく体格、病歴、活動性などを合わせて評価します。
++
++ ## 年齢より先に相談したい変化
++
++ 食欲や体重、飲水・排尿、歩き方、睡眠、呼吸などが普段と違うときは、年齢のせいと決めつけず獣医師に相談します。症状がいつ始まったか、続くのか、ときどきなのかを記録し、歩き方などは動画で伝える方法もあります。
++
++ シニアだから一律にタンパク質を減らす、散歩をやめる、サプリメントを始める、といった判断は避けます。食事・運動・検査の計画は、現在の病気や筋肉の状態に合わせて相談してください。
++
++ ## 日常の記録に使う
++
++ 月ごとの体重、食べた量、散歩や遊びの様子を同じ条件で記録すると変化を見つけやすくなります。[犬のごはん計算器](/inu-gohan/)も概算なので、表示量を固定せず、体格や体重の推移、獣医師の指示に合わせて調整します。年齢換算はこうした観察を始めるきっかけとして利用してください。
++
+
+ ❯ tests/adsense-batch1.test.js:82:21
+     80|     expect(dogHumanAge(5,size)).toBe(age);
+     81|     const article = read('src/content/blog/inu-nenrei-no-kakikata.md');
+     82|     expect(article).toContain(`| ${size === 'small' ? '小型犬' : size ===…
+       |                     ^
+     83|     expect(article).toContain(`${age}歳`);
+     84|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: dog article is reproducible against the real tool > 5-year large example = 40
+AssertionError: expected '---\ntitle: 犬の年齢を人間換算｜体格による違いと計算の限界\n…' to contain '| 大型犬 |'
+
+- Expected
++ Received
+
+- | 大型犬 |
++ ---
++ title: 犬の年齢を人間換算｜体格による違いと計算の限界
++ description: 犬種や体格で成長の速さが違うため、換算年齢は目安です。ツールの使い方と、健康管理で別に確認する情報を整理します。
++ pubDate: 2026-07-16
++ category: pet
++ tags:
++ - 犬の年齢
++ - 人間換算
++ - 小型犬
++ - 大型犬
++ - シニア犬
++ author: 計算ツール編集部
++ relatedTools:
++ - inu-nenrei
++ - inu-gohan
++ updatedDate: 2026-10-10
++ sources:
++ - name: AAHA Canine Life Stage Definitions
++   url: https://www.aaha.org/resources/life-stage-canine-2019/canine-life-stage-definitions/
++ - name: AAHA 2023 Senior Care Guidelines
++   url: https://www.aaha.org/resources/2023-aaha-senior-care-guidelines-for-dogs-and-cats/
++ reviewedDate: 2026-10-10
++ reviewScope: 本文の計算例・適用範囲と下記資料の照合。個別の健康状態の評価・診断は対象外。
++ ---
++
++ ## 年齢の7倍だけでは表せません
++
++ 犬の成長と加齢の速さは、人と同じではなく、犬種や体格によっても違います。人間換算は年齢をイメージする補助です。どの換算表を使っても、個々の犬の健康状態や残りの寿命を正確に測れるわけではありません。
++
++ [犬の年齢換算ツール](/inu-nenrei/)では、犬の年齢と体格区分を選んで、当サイトの簡易モデルによる結果を確認できます。結果を診断や治療の基準には使わないでください。
++
++ ## 入力するときの確認表
++
++ | 入力・確認 | 取り違えを減らすポイント |
++ |---|---|
++ | 生年月日・年齢 | 保護犬の推定年齢は推定と記録する |
++ | 体格区分 | 子犬の現在体重だけで成犬時の体格を決めない |
++ | 比較する表 | 資料によって換算方法が違うことを確認する |
++ | 結果の用途 | 成長のイメージと、診察での健康評価を分ける |
++
++ 別のサイトと結果が数歳違っても、どちらかが実際の体年齢を測定したことにはなりません。比較する場合は、同じ換算モデルを継続して使います。
++
++ ## シニアになる年齢は一律ではない
++
++ AAHAの犬のライフステージの考え方では、シニアは予想される生涯の最後の約4分の1にあたる時期とされています。犬種や体格で寿命の傾向が異なるため、すべての犬を同じ誕生日で切り替えるものではありません。
++
++ この割合も、個体の余命を算出する式ではありません。健診で年齢だけでなく体格、病歴、活動性などを合わせて評価します。
++
++ ## 年齢より先に相談したい変化
++
++ 食欲や体重、飲水・排尿、歩き方、睡眠、呼吸などが普段と違うときは、年齢のせいと決めつけず獣医師に相談します。症状がいつ始まったか、続くのか、ときどきなのかを記録し、歩き方などは動画で伝える方法もあります。
++
++ シニアだから一律にタンパク質を減らす、散歩をやめる、サプリメントを始める、といった判断は避けます。食事・運動・検査の計画は、現在の病気や筋肉の状態に合わせて相談してください。
++
++ ## 日常の記録に使う
++
++ 月ごとの体重、食べた量、散歩や遊びの様子を同じ条件で記録すると変化を見つけやすくなります。[犬のごはん計算器](/inu-gohan/)も概算なので、表示量を固定せず、体格や体重の推移、獣医師の指示に合わせて調整します。年齢換算はこうした観察を始めるきっかけとして利用してください。
++
+
+ ❯ tests/adsense-batch1.test.js:82:21
+     80|     expect(dogHumanAge(5,size)).toBe(age);
+     81|     const article = read('src/content/blog/inu-nenrei-no-kakikata.md');
+     82|     expect(article).toContain(`| ${size === 'small' ? '小型犬' : size ===…
+       |                     ^
+     83|     expect(article).toContain(`${age}歳`);
+     84|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  tests/adsense-batch1.test.js > batch1: dog article is reproducible against the real tool > documents first two years, interpolation, floor and exact size boundaries
+AssertionError: expected '---\ntitle: 犬の年齢を人間換算｜体格による違いと計算の限界\n…' to contain '15歳'
+
+- Expected
++ Received
+
+- 15歳
++ ---
++ title: 犬の年齢を人間換算｜体格による違いと計算の限界
++ description: 犬種や体格で成長の速さが違うため、換算年齢は目安です。ツールの使い方と、健康管理で別に確認する情報を整理します。
++ pubDate: 2026-07-16
++ category: pet
++ tags:
++ - 犬の年齢
++ - 人間換算
++ - 小型犬
++ - 大型犬
++ - シニア犬
++ author: 計算ツール編集部
++ relatedTools:
++ - inu-nenrei
++ - inu-gohan
++ updatedDate: 2026-10-10
++ sources:
++ - name: AAHA Canine Life Stage Definitions
++   url: https://www.aaha.org/resources/life-stage-canine-2019/canine-life-stage-definitions/
++ - name: AAHA 2023 Senior Care Guidelines
++   url: https://www.aaha.org/resources/2023-aaha-senior-care-guidelines-for-dogs-and-cats/
++ reviewedDate: 2026-10-10
++ reviewScope: 本文の計算例・適用範囲と下記資料の照合。個別の健康状態の評価・診断は対象外。
++ ---
++
++ ## 年齢の7倍だけでは表せません
++
++ 犬の成長と加齢の速さは、人と同じではなく、犬種や体格によっても違います。人間換算は年齢をイメージする補助です。どの換算表を使っても、個々の犬の健康状態や残りの寿命を正確に測れるわけではありません。
++
++ [犬の年齢換算ツール](/inu-nenrei/)では、犬の年齢と体格区分を選んで、当サイトの簡易モデルによる結果を確認できます。結果を診断や治療の基準には使わないでください。
++
++ ## 入力するときの確認表
++
++ | 入力・確認 | 取り違えを減らすポイント |
++ |---|---|
++ | 生年月日・年齢 | 保護犬の推定年齢は推定と記録する |
++ | 体格区分 | 子犬の現在体重だけで成犬時の体格を決めない |
++ | 比較する表 | 資料によって換算方法が違うことを確認する |
++ | 結果の用途 | 成長のイメージと、診察での健康評価を分ける |
++
++ 別のサイトと結果が数歳違っても、どちらかが実際の体年齢を測定したことにはなりません。比較する場合は、同じ換算モデルを継続して使います。
++
++ ## シニアになる年齢は一律ではない
++
++ AAHAの犬のライフステージの考え方では、シニアは予想される生涯の最後の約4分の1にあたる時期とされています。犬種や体格で寿命の傾向が異なるため、すべての犬を同じ誕生日で切り替えるものではありません。
++
++ この割合も、個体の余命を算出する式ではありません。健診で年齢だけでなく体格、病歴、活動性などを合わせて評価します。
++
++ ## 年齢より先に相談したい変化
++
++ 食欲や体重、飲水・排尿、歩き方、睡眠、呼吸などが普段と違うときは、年齢のせいと決めつけず獣医師に相談します。症状がいつ始まったか、続くのか、ときどきなのかを記録し、歩き方などは動画で伝える方法もあります。
++
++ シニアだから一律にタンパク質を減らす、散歩をやめる、サプリメントを始める、といった判断は避けます。食事・運動・検査の計画は、現在の病気や筋肉の状態に合わせて相談してください。
++
++ ## 日常の記録に使う
++
++ 月ごとの体重、食べた量、散歩や遊びの様子を同じ条件で記録すると変化を見つけやすくなります。[犬のごはん計算器](/inu-gohan/)も概算なので、表示量を固定せず、体格や体重の推移、獣医師の指示に合わせて調整します。年齢換算はこうした観察を始めるきっかけとして利用してください。
++
+
+ ❯ tests/adsense-batch1.test.js:87:122
+     85|   it('documents first two years, interpolation, floor and exact size b…
+     86|     const article = read('src/content/blog/inu-nenrei-no-kakikata.md');
+     87|     for (const phrase of ['15歳', '24歳', '12歳', '19歳', '切り捨て', '10kg超〜2…
+       |                                                                                                                          ^
+     88|     expect([10,10.01,25,25.01].map(sizeFromWeight)).toEqual(['small','…
+     89|     for (const size of ['small','medium','large']) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed (10)
+   Start at  02:32:12
+   Duration  394ms (transform 70ms, setup 0ms, import 115ms, tests 54ms, environment 0ms)
+
