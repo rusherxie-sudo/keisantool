@@ -1,0 +1,7 @@
+RUN  v4.1.8 /home/ubuntu/website/keisantool
+
+
+ Test Files  1 passed (1)
+      Tests  23 passed (23)
+   Start at  18:38:27
+   Duration  752ms (transform 142ms, setup 0ms, import 199ms, tests 91ms, environment 0ms)

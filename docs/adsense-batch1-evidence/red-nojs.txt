@@ -1,5 +1,4 @@
-
- RUN  v4.1.8 /home/ubuntu/website/keisantool
+RUN  v4.1.8 /home/ubuntu/website/keisantool
 
  ❯ tests/adsense-batch1.test.js (10 tests | 1 failed) 176ms
      × static output says reference date and exposes actual coordinates without a precision promise 118ms
@@ -255,4 +254,3 @@ AssertionError: expected '---\nimport ToolLayout from \'../../l…' to contain '
       Tests  1 failed | 9 passed (10)
    Start at  02:34:02
    Duration  711ms (transform 163ms, setup 0ms, import 250ms, tests 176ms, environment 0ms)
-

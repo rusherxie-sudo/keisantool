@@ -70,3 +70,11 @@ prebuild 逐项检查 `public/llms.txt`、2026／2027 的 work-calendar JSON／C
 现有生产发布：GitHub main → Cloudflare Pages Git 集成，`npm run build` → `dist/`；GitHub Actions 在 main push／PR 运行 npm ci、npm test、npm run build，仓库工作流本身不部署，不能据此推断 Pages 必定等待 Actions。README 配置记录 Node 22，本轮没有复核云端设置。没有执行 push、wrangler deploy、索引提交或账号操作。
 
 下一优先级为负责人审查此候选；获准发布后按既有机制发布精确提交，并复验线上旧 URL 301／目标 200、日期交互和主工具比较。没有新 GSC／GA4 效果窗口，也没有 AdSense 过审结论。超范围记录：日出日落 hub 自身的日期／精度说明不在此次 15 城市范围，后续宜独立核查；不在本轮扩改。全城市／全年误差及远年代精度未独立验证，页面已明确边界。
+
+## 最终提交及 lastmod 复核
+
+- 实现及初始证据：`2761696ff2ae9d38f092e8504cf5ab1cdb4e3116`。
+- 独立 lastmod 提交：`84fbbc7249aa1aa9c2f52d2a6e6eb63183579dd5`。生成 353 条记录，程序核对与父提交相比恰好只有本批 6 个实际修改源路径改变，没有批量刷新全站。
+- lastmod 后定向验证 1 文件／23 项通过：[日志](adsense-batch1-evidence/lastmod-test.txt)。最终再次完整构建通过，仍为 565 HTML／477 sitemap URL／24,103 内链／533 片段链接；prebuild 的公共生成文件无差异。
+- 测试／构建日志只清理工具输出的行尾空白及首尾空行，不改诊断或结果数值，以便整批 `git diff --check` 通过。实质代码和原有测试断言未因此更改。
+- 最终证据／交付文档另提交；精确最终 SHA 见交付回复或本分支 HEAD。仍仅本地提交，未推送／部署。
