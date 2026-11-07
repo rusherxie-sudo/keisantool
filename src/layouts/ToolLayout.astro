@@ -153,6 +153,16 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   <script is:inline>
     var _hmt = _hmt || [];
     (function() {
+      // No verified URL/referrer override contract: fail closed on tools and URL state.
+      // Static informational routes only. Do not alter location or shared-result hashes.
+      try {
+        var page = new URL(location.href);
+        if (page.search || page.hash || !/^\/(?:blog\/[^/]+\/|category\/[^/]+\/|about\/|privacy\/|editorial-policy\/)$/.test(page.pathname)) return;
+        if (document.referrer) {
+          var ref = new URL(document.referrer);
+          if (ref.search || ref.hash) return;
+        }
+      } catch { return; }
       var hm = document.createElement("script");
       hm.src = "https://hm.baidu.com/hm.js?d84361ca34153f1c434c38b9cb0e0bb5";
       var s = document.getElementsByTagName("script")[0];
@@ -191,22 +201,28 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
     document.addEventListener('click', function(event) {
       var link = event.target.closest('.related-link, .related-articles__item');
       if (!link || typeof window.gtag !== 'function') return;
+      try {
+      var destination = new URL(link.href, location.href);
+      if (!/^https?:$/.test(destination.protocol)) return;
       window.gtag('event', 'related_content_click', {
         tool_slug: document.body.dataset.toolSlug || 'unknown',
-        destination: link.getAttribute('href') || '',
+        destination: destination.origin === location.origin ? destination.pathname : destination.origin + destination.pathname,
       });
+      } catch { /* Optional analytics must not interrupt navigation. */ }
     });
 
     // Keep contextual navigation separate from the existing related-card metric.
     document.addEventListener('click', function(event) {
       var link = event.target.closest('.blog-article__body a, .howto a, a[data-track-context]');
       if (!link || link.closest('.related, .related-articles') || typeof window.gtag !== 'function') return;
+      try {
       var destination = new URL(link.href, location.href);
       if (destination.origin !== location.origin || destination.pathname === location.pathname || link.hasAttribute('download')) return;
       window.gtag('event', 'contextual_link_click', {
         tool_slug: document.body.dataset.toolSlug || 'unknown',
         destination: destination.pathname,
       });
+      } catch { /* Optional analytics must not interrupt navigation. */ }
     });
   </script>
 </body>

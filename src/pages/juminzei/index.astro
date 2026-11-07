@@ -145,6 +145,7 @@ const jsonld = {
     </div>
   </div>
 
+  <p class="office-note">共有すると、給与収入・給与所得・課税所得・住民税額などの計算結果とこのページのURLが相手に送られます。送信前に内容をご確認ください。</p>
   <ResultShare />
 
   <section class="howto">
@@ -281,7 +282,7 @@ const jsonld = {
       '\n月額目安：' + yen(result.monthlyEstimate)
     );
     if (!resultTracked && typeof window.trackCalculatorResult === 'function') {
-      window.trackCalculatorResult('resident-tax');
+      try { window.trackCalculatorResult('resident-tax'); } catch { /* Optional measurement. */ }
       resultTracked = true;
     }
   }

@@ -70,6 +70,7 @@ const jsonld = {
     </div>
   </div>
 
+  <p class="office-note">共有すると、BMI・判定・標準体重・推定体脂肪率の計算結果とこのページのURLが相手に送られます。送信前に内容をご確認ください。</p>
   <ResultShare />
 
   <div class="ad-slot"></div>
@@ -191,6 +192,7 @@ const jsonld = {
     ].join('\n');
   }
 
+  let resultTracked = false;
   function render() {
     const bmi = calcBmi($('bmi-height').value, $('bmi-weight').value);
     const box = $('bmi-result');
@@ -250,6 +252,10 @@ const jsonld = {
     }
 
     window.setResultShare?.(shareSummary());
+    if (!resultTracked && typeof window.trackCalculatorResult === 'function') {
+      try { window.trackCalculatorResult('bmi'); } catch { /* Optional measurement. */ }
+      resultTracked = true;
+    }
   }
 
   ['bmi-height', 'bmi-weight', 'bmi-age'].forEach((id) =>
