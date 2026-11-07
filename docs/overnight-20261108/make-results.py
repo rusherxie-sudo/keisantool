@@ -21,3 +21,11 @@ add(16,'blocked','依指令等待获批与授权，不执行',[],[],'等待用�
 add(17,'candidate','修正PROJECT/GROWTH/ONBOARDING/HANDOFF/README与KT01当前事实优先级；历史保留标旧；纠正统一floor约定',['PROJECT.md','GROWTH.md','ONBOARDING.md','HANDOFF.md','README.md','CLAUDE.md','docs/KT01-MARKDOWN-CANDIDATE.md'],['内容人工复核','git diff --check'],'本轮候选未上线；历史章节不是当前生产状态，不把候选或旧测试数写当前事实')
 rows.sort(key=lambda r:r['task'])
 (root/'results.json').write_text(json.dumps({'date':'2026-11-08','base':'dead3514689640200556647c58a26add3c667927','branch':'candidate/overnight-20261108','code_freeze_sha':'873b2b6663c3812bee82f933ac2f1a00f2c47356','delivery_final_sha':'see final-state.json generated after evidence commit to avoid self-reference','deployment':'NOT DEPLOYED; no push or external writes','tasks':rows},ensure_ascii=False,indent=2)+'\n')
+# Preserve the subsequent read-only dependency audit if this evidence generator is rerun.
+audit=root/'npm-audit.json'
+if audit.exists():
+ import subprocess
+ payload=json.loads((root/'results.json').read_text())
+ counts=json.loads(audit.read_text()).get('metadata',{}).get('vulnerabilities',{})
+ payload['known_dependency_risk']={'npm_audit':'npm-audit.json',**{k:counts.get(k) for k in ['critical','high','moderate','low','total']},'baseline_dependency_files_unchanged':subprocess.check_output(['git','diff','dead351','--','package.json','package-lock.json'],text=True)=='','exposure':'not independently established; no dependency upgrade in this scoped candidate'}
+ (root/'results.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n')

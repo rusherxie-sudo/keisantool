@@ -241,5 +241,15 @@
       ],
       "unmet_acceptance": "本轮候选未上线；历史章节不是当前生产状态，不把候选或旧测试数写当前事实"
     }
-  ]
+  ],
+  "known_dependency_risk": {
+    "npm_audit": "npm-audit.json",
+    "critical": 1,
+    "high": 9,
+    "moderate": 2,
+    "low": 1,
+    "total": 13,
+    "baseline_dependency_files_unchanged": true,
+    "exposure": "not independently established; no dependency upgrade in this scoped candidate"
+  }
 }

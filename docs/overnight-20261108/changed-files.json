@@ -304,6 +304,10 @@
     {
       "change": "untracked final receipt generated after evidence commit",
       "path": "docs/overnight-20261108/final-state.json"
+    },
+    {
+      "change": "A",
+      "path": "docs/overnight-20261108/npm-audit.json"
     }
   ]
 }
