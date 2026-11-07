@@ -57,7 +57,7 @@ const jsonld = {
     <div class="md-preview-wrap">
       <div class="md-preview-head">
         <span class="md-preview-title">プレビュー</span>
-        <span class="md-preview-note">※ プレビューは自己責任でご利用ください</span>
+        <span class="md-preview-note">※ 安全化した HTML を表示・コピーします</span>
       </div>
       <div id="md-preview" class="md-preview"></div>
     </div>
@@ -69,7 +69,7 @@ const jsonld = {
 
   <section class="howto">
     <h2>使い方とMarkdownについて</h2>
-    <p>左（スマートフォンでは上）の入力欄に Markdown を貼り付けると、右側に HTML ソースが、下部にプレビューが自動で表示されます。「HTML をコピー」ボタンを押すと、変換後の HTML をそのままクリップボードにコピーできます。</p>
+    <p>左（スマートフォンでは上）の入力欄に Markdown を貼り付けると、右側に HTML ソースが、下部にプレビューが自動で表示されます。「HTML をコピー」ボタンを押すと、安全化した HTML をクリップボードにコピーできます。</p>
     <p><strong>Markdown（マークダウン）</strong>とは、記号を使って文章の構造（見出し・箇条書き・強調など）を手軽に書ける記法です。書いたテキストはそのまま HTML に変換でき、ブログ・README・メール・ドキュメントなどで広く使われています。本ツールでよく使う記法は次のとおりです。</p>
     <ul>
       <li><strong>見出し</strong>：行頭に <code>#</code> を付けます（<code>#</code> の数で大きさが変わり、<code># 見出し</code> は <code>&lt;h1&gt;</code>、<code>## 見出し</code> は <code>&lt;h2&gt;</code> になります）。</li>
@@ -79,7 +79,7 @@ const jsonld = {
       <li><strong>コード</strong>：<code>`コード`</code> のようにバッククォートで囲むとインラインコードに、3 つのバッククォートで囲むとコードブロックになります。</li>
     </ul>
     <p>変換には実績のある Markdown パーサー（marked）を使用しているため、一般的な記法は標準的な HTML として正しく変換されます。</p>
-    <div class="disclaimer">※ 変換はお使いのブラウザ内だけで行われ、入力した内容がサーバーへ送信されることはありません。プレビューは入力された HTML をそのまま描画するため、信頼できない内容を貼り付ける場合はご自身の責任でご利用ください。計算結果（変換結果）はあくまで参考値です。</div>
+    <div class="disclaimer">※ 変換はお使いのブラウザ内だけで行われ、入力した内容がサーバーへ送信されることはありません。表示・コピーする HTML からスクリプトやイベント属性、危険な URL を除去します。基本的な HTML の装飾や画像は使えますが、SVG・MathML・フォーム・埋め込みフレーム・スタイル指定には対応していません。外部画像は読み込み時に画像の配信元へ通信します。計算結果（変換結果）はあくまで参考値です。</div>
   </section>
 
   <RelatedTools current={slug} />
@@ -242,7 +242,7 @@ const jsonld = {
   function render() {
     const html = mdToHtml(input.value);
     output.value = html;
-    // プレビューは入力者自身のブラウザ内のみで描画される（自己責任）。
+    // mdToHtml returns the same sanitized HTML used by output and copy.
     preview.innerHTML = html;
 
     // 結果シェア用サマリー（ブラウザ内で変換・入出力の概要）

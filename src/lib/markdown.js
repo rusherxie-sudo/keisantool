@@ -1,22 +1,41 @@
-// Markdown → HTML 変換（marked の薄いラッパー）
-//
-// 計算ロジックではなく文字列変換だが、ページが依存する公開関数として
-// テスト可能な純関数の形で提供する。実際の変換は実績のある marked に委譲し、
-// ここでは「空文字列・非文字列を安全に処理する」ガードのみを足す。
-//
-// XSS について：本ツールはユーザー自身が入力した Markdown を、ユーザー自身の
-// ブラウザ内でプレビュー表示するだけ（サーバー送信・他者への配信なし）。
-// そのため影響範囲は入力者自身に限られ、DOMPurify 等のサニタイズは導入しない。
-// ページ側ではプレビュー区に「プレビューは自己責任で」の注記を表示する。
 import { marked } from 'marked';
+import createDOMPurify from 'dompurify';
 
-/**
- * Markdown 文字列を HTML 文字列に変換する。
- * @param {string} str Markdown テキスト
- * @returns {string} 変換後の HTML。入力が空または文字列でない場合は ''。
- */
+// Browser-only conversion: use a private sanitizer, shared by preview and export.
+// No raw result from marked may reach either sink.
+const purifier = createDOMPurify(globalThis.window);
+const policy = {
+  ALLOWED_TAGS: [
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'hr',
+    'strong', 'em', 'del', 's', 'b', 'i', 'u', 'blockquote',
+    'ul', 'ol', 'li', 'pre', 'code', 'a', 'img',
+    'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td',
+  ],
+  ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'start', 'colspan', 'rowspan', 'align'],
+  ALLOW_DATA_ATTR: false,
+  ALLOW_ARIA_ATTR: false,
+};
+
+if (purifier.isSupported) {
+  purifier.addHook('uponSanitizeAttribute', (_node, data) => {
+    if (data.attrName !== 'href' && data.attrName !== 'src') return;
+    // Parse URLs using the browser, including entity-decoded / obfuscated values.
+    // Relative URLs resolve against a fixed HTTPS base only for validation.
+    try {
+      const { protocol } = new URL(data.attrValue, 'https://markdown.invalid/');
+      const allowed = data.attrName === 'src'
+        ? ['https:', 'http:']
+        : ['https:', 'http:', 'mailto:', 'tel:'];
+      if (!allowed.includes(protocol)) data.keepAttr = false;
+    } catch {
+      data.keepAttr = false;
+    }
+  });
+}
+
+/** Return sanitized HTML for both preview and HTML copy; no DOM means fail closed. */
 export function mdToHtml(str) {
   if (typeof str !== 'string' || str === '') return '';
-  // marked.parse は同期実行（デフォルト設定）。改行を <br> にはせず標準挙動。
-  return marked.parse(str, { async: false });
+  if (!purifier.isSupported) throw new Error('Markdown conversion requires a supported browser DOM');
+  return purifier.sanitize(marked.parse(str, { async: false }), policy);
 }
