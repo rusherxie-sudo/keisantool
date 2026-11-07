@@ -20,6 +20,8 @@ def depends(p,target,seen=None):
 def urls(text):return sorted(set(re.findall(r'https?://[^\s<>\'"）)]+',text)))
 nta=lambda n:f'https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/{n}.htm'
 source_map={
+'zeizei':(['https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6102.htm','https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6371.htm'],'现行8%/10%税率；不是逐年度所得税','税率/发票规则改正时；本工具逐次floor与发票单据处理不同','2026-11-07','继承11/7消费税定向整改；不重新认证'),
+'koteiShisan':(['https://www.tax.metro.tokyo.lg.jp/kazei/real_estate/kotei_tosi'],'现行标准概算；自治体差异、评估额年度需自行确认','每年1月1日征收基准；评估/新筑减免适用期另核','2026-10-10','继承页面来源；全国各地舍入、评估替换与120㎡边界未全验，不称税单准确'),
 'japan-tax-2026':([nta(1199),nta(1410),nta(2260)],'2025/2026所得年；2027+未获生产支持，不能默认为2026','2026-12-01（2026年末精算）；2025另表','2026-11-08','本轮在线复核No1199/1410，其余继承10/10；未发现生产2027所得税复用入口'),
 'japan-social-2026':(['https://www.kyoukaikenpo.or.jp/lp/2026hokenryou/','https://www.kyoukaikenpo.or.jp/assets/R8_44oita.pdf'],'2026年度，全国平均概算','健康介护3月；支援金4月；雇保4月（须按项目核对）','2026-10-10','继承既有证据，未重新认证47支部保费'),
 'kokuho':(['https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/keisan_hoho.html','https://www.city.osaka.lg.jp/fukushima/page/0000624311.html'],'2026年度，2025年所得，练马/大阪','2026-04-01','2026-11-08','本轮仅重新读取练马4区分；大阪继承10/10'),

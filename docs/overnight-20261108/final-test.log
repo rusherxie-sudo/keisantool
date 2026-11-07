@@ -1,0 +1,13 @@
+
+> keisantool@0.0.1 test
+> vitest run
+
+
+ RUN  v4.1.8 /home/ubuntu/website/keisantool-overnight-20261108
+
+
+ Test Files  119 passed (119)
+      Tests  1996 passed (1996)
+   Start at  01:37:53
+   Duration  27.16s (transform 1.07s, setup 0ms, import 3.86s, tests 2.46s, environment 1.48s)
+

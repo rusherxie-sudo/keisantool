@@ -1,0 +1,33 @@
+
+ RUN  v4.1.8 /home/ubuntu/website/keisantool-overnight-20261108
+
+ ❯ tests/overnight-regressions.test.js (10 tests | 1 failed) 261ms
+   × a throwing shared-result return event cannot prevent helper registration 18ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/overnight-regressions.test.js > a throwing shared-result return event cannot prevent helper registration
+AssertionError: expected [Function] to not throw an error but 'Error: optional' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"Error: optional"
+
+ ❯ tests/overnight-regressions.test.js:57:174
+     55|  const code=[...read('src/layouts/ToolLayout.astro').matchAll(/<script…
+     56|  const window={gtag(){throw new Error('optional');}};
+     57|  expect(()=>runInNewContext(code,{window,document:{body:{dataset:{tool…
+       |                                                                                                                                                                              ^
+     58|  expect(typeof window.trackCalculatorResult).toBe('function');
+     59| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  01:34:11
+   Duration  1.48s (transform 103ms, setup 0ms, import 993ms, tests 261ms, environment 0ms)
+

@@ -1,0 +1,13 @@
+
+> keisantool@0.0.1 test
+> vitest run tests/overnight-regressions.test.js tests/unit-cost-prototype.test.js tests/related-posts.test.js tests/kokuho.test.js tests/nissu.test.js tests/office-tools.test.js tests/suisui.test.js
+
+
+ RUN  v4.1.8 /home/ubuntu/website/keisantool-overnight-20261108
+
+
+ Test Files  7 passed (7)
+      Tests  112 passed (112)
+   Start at  09:24:42
+   Duration  2.34s (transform 156ms, setup 0ms, import 942ms, tests 242ms, environment 1ms)
+

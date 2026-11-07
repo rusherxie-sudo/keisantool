@@ -1,5 +1,7 @@
 # KT-01 Markdown 安全修复候选（独立审查通过，已验收待发布）
 
+> 当前状态（2026-11-08）：用户指定且远端核实的线上 main dead351 已包含本修复。下文“候选/待发布”为当时验收记录，本轮不重复完整安全验收、不再次发布。
+
 基线：2e90cc69802633585bea257e27622a8904b6875b；分支 fix/kt01-markdown-safety；worktree `/home/ubuntu/website/keisantool-kt01-markdown`。当前状态：独立审查通过，已验收待发布。本轮仅提交代码归档，提交完成后仍不推送、不合并 main、不部署。冻结时尚未 commit 的记录保留为历史。
 
 ## 风险与实现

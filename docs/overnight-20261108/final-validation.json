@@ -1,0 +1,19 @@
+{
+  "node_path": "/tmp/keisantool-node22/node-v22.23.4-linux-x64/bin/node",
+  "node_version": "v22.23.4",
+  "candidate_sha": "873b2b6663c3812bee82f933ac2f1a00f2c47356",
+  "commands": [
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "seconds": 27.76,
+      "log": "final-test.log"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "seconds": 26.24,
+      "log": "final-build.log"
+    }
+  ]
+}

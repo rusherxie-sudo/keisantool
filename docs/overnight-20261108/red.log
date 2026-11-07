@@ -1,0 +1,89 @@
+
+> keisantool@0.0.1 test
+> vitest run tests/overnight-regressions.test.js tests/unit-cost-prototype.test.js
+
+
+ RUN  v4.1.8 /home/ubuntu/website/keisantool-overnight-20261108
+
+ ❯ tests/overnight-regressions.test.js (8 tests | 3 failed) 142ms
+     × uses JST at year boundary, labels chosen day, clears stale output and share 132ms
+     × ignores missing and throwing transports and sends no input values 5ms
+   × water model rejects Infinity 2ms
+ ❯ tests/unit-cost-prototype.test.js (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit-cost-prototype.test.js [ tests/unit-cost-prototype.test.js ]
+Error: Cannot find module '../docs/prototypes/unit-cost/model.mjs' imported from /home/ubuntu/website/keisantool-overnight-20261108/tests/unit-cost-prototype.test.js
+ ❯ tests/unit-cost-prototype.test.js:2:1
+      1| import { it, expect } from 'vitest';
+      2| import { compareProducts } from '../docs/prototypes/unit-cost/model.mj…
+       | ^
+      3| const product=(overrides={})=>({price:600,quantity:1000,unit:'mL',dose…
+      4| it('compares direct per-use cost, cash and points separately; depletio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/overnight-regressions.test.js > sunrise hub output lifetime > uses JST at year boundary, labels chosen day, clears stale output and share
+AssertionError: expected '2026-12-31' to be '2027-01-01' // Object.is equality
+
+Expected: "2027-01-01"
+Received: "2026-12-31"
+
+ ❯ tests/overnight-regressions.test.js:17:25
+     15|     runInNewContext(code,{window,document:window.document,hinodeIri,ja…
+     16|     const input=window.document.querySelector('#hd-date');
+     17|     expect(input.value).toBe('2027-01-01');
+       |                         ^
+     18|     input.value='2028-02-29'; input.dispatchEvent(new window.Event('in…
+     19|     expect(window.document.querySelector('#hd-city-label').textContent…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/overnight-regressions.test.js > optional analytics must not break calculators > ignores missing and throwing transports and sends no input values
+AssertionError: expected [Function] to not throw an error but 'Error: optional transport failed' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"Error: optional transport failed"
+
+ ❯ tests/overnight-regressions.test.js:33:71
+     31|     const window={gtag}; const document={body:{dataset:{toolSlug:'eigy…
+     32|     runInNewContext(code,{window,document,location:{search:'',href:'ht…
+     33|     expect(()=>window.trackCalculatorResult('business-calendar')).not.…
+       |                                                                       ^
+     34|     expect(gtag.mock.calls[0]).toEqual(['event','calculator_result_vie…
+     35|     delete window.gtag; expect(()=>window.trackCalculatorResult('range…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/overnight-regressions.test.js > water model rejects Infinity
+AssertionError: expected Infinity to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ Infinity
+
+ ❯ tests/overnight-regressions.test.js:39:41
+     37| });
+     38| it.each([Infinity,-Infinity,NaN,'',0,-1])('water model rejects %s', va…
+     39|   expect(calcSuisui(value).recommended).toBe(0);
+       |                                         ^
+     40| });
+     41|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 5 passed (8)
+   Start at  01:22:27
+   Duration  1.49s (transform 90ms, setup 0ms, import 947ms, tests 142ms, environment 0ms)
+

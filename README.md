@@ -1,5 +1,7 @@
 # keisantool
 
+> 当前事实见 [PROJECT.md](PROJECT.md) 与 [GROWTH.md](GROWTH.md)。2026-11-08本地候选及验收见 [夜间报告](docs/OVERNIGHT-2026-11-08.md)；该候选未推送、未部署。
+
 keisantool.com 是基于 Astro 的日文计算・转换工具站。
 
 ## 部署流程

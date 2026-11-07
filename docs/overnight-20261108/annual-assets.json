@@ -2,6 +2,49 @@
   "scope": "仓库年度敏感资产：制度逻辑/包装器、47工资、法规文章、日期与下载依赖。官方URL为现有来源或本轮读取，verification_scope区分未知。",
   "assets": [
     {
+      "id": "zeizei",
+      "path": "src/lib/zeizei.js",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6102.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6371.htm"
+      ],
+      "applicable_year": "现行8%/10%税率；不是逐年度所得税",
+      "effective_date": "税率/发票规则改正时；本工具逐次floor与发票单据处理不同",
+      "last_verified": "2026-11-07",
+      "verification_scope": "继承11/7消费税定向整改；不重新认证",
+      "affected_tools_pages": [
+        "src/pages/zeizei/index.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "koteiShisan",
+      "path": "src/lib/koteiShisan.js",
+      "official_source_urls": [
+        "https://www.tax.metro.tokyo.lg.jp/kazei/real_estate/kotei_tosi"
+      ],
+      "applicable_year": "现行标准概算；自治体差异、评估额年度需自行确认",
+      "effective_date": "每年1月1日征收基准；评估/新筑减免适用期另核",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承页面来源；全国各地舍入、评估替换与120㎡边界未全验，不称税单准确",
+      "affected_tools_pages": [
+        "src/pages/kotei-shisan/index.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
       "id": "japan-tax-2026",
       "path": "src/lib/japan-tax-2026.js",
       "official_source_urls": [
@@ -3220,7 +3263,7 @@
       "official_source_gap": "unknown；现有来源并非官方原始资料，待补"
     }
   ],
-  "count": 116,
+  "count": 118,
   "known_gaps": [
     "部分历史给付来源仅有二手转述；官方原始金额资料待补",
     "未审计云端定时任务，不能保证跨年自动构建",

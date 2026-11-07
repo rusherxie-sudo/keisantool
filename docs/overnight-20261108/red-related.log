@@ -1,0 +1,28 @@
+
+> keisantool@0.0.1 test
+> vitest run tests/related-posts.test.js
+
+
+ RUN  v4.1.8 /home/ubuntu/website/keisantool-overnight-20261108
+
+ ❯ tests/related-posts.test.js (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/related-posts.test.js [ tests/related-posts.test.js ]
+Error: Cannot find module '../src/lib/related-posts.js' imported from /home/ubuntu/website/keisantool-overnight-20261108/tests/related-posts.test.js
+ ❯ tests/related-posts.test.js:2:1
+      1| import { it, expect } from 'vitest';
+      2| import { relatedPosts } from '../src/lib/related-posts.js';
+       | ^
+      3| const post=(id,category,relatedTools=[])=>({id,data:{category,relatedT…
+      4| it('prefers overlapping tool tasks over arbitrary collection order; ex…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  01:22:42
+   Duration  221ms (transform 21ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

@@ -1,0 +1,20 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'コードを選択しました。手動でコピーしてください。'
+- 'コピーしました。'
+
+    at file:///home/ubuntu/website/keisantool-overnight-20261108/docs/overnight-20261108/browser-optional-tracking.mjs:7:242 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'コードを選択しました。手動でコピーしてください。',
+  expected: 'コピーしました。',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.23.4

@@ -1,0 +1,9 @@
+
+ RUN  v4.1.8 /home/ubuntu/website/keisantool-overnight-20261108
+
+
+ Test Files  3 passed (3)
+      Tests  24 passed (24)
+   Start at  01:31:13
+   Duration  1.37s (transform 87ms, setup 0ms, import 696ms, tests 188ms, environment 0ms)
+

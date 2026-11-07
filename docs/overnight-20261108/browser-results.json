@@ -1,5 +1,5 @@
 {
-  "mode": "real Chromium, local dev server, all non-loopback requests aborted; no GA/social requests",
+  "mode": "real Chromium, local server, native Clipboard writeText wrapped to log locally, all non-loopback requests aborted; no GA/social requests",
   "checks": [
     {
       "name": "1440: nissu inclusive, copy, shift, clear",

@@ -1,0 +1,23 @@
+from pathlib import Path
+import json
+root=Path('docs/overnight-20261108')
+rows=[]
+def add(n,status,scope,artifacts,tests,unmet):rows.append({'task':f'KT-{n:02}','status':status,'done_scope':scope,'candidate':status=='candidate','artifacts':artifacts,'tests':tests,'unmet_acceptance':unmet})
+add(1,'observing','继承dead351已上线Markdown安全修复；本轮仅纠正旧候选文档状态，不重复旧专项验收',['docs/KT01-MARKDOWN-CANDIDATE.md','baseline.json'],['最终全量测试包含既有回归'],'没有新生产验收或发布；按用户要求不重复完整安全验收')
+add(2,'candidate','60篇全文逐篇审读并记录路径/hash/问题/保留理由；补国保完整4区分算例、任务关联推荐、六曜来源边界；复用出生年/水分/六星及星座犬龄15城现状',['content-audit.json','make-content-audit.py','src/content/blog/kokuho-ryoukin-keisan-hoho.md','src/lib/related-posts.js','src/pages/rokuyo/'],['related-posts.test.js','overnight-regressions.test.js','browser-results.json'],'不是60篇全部外部事实重新认证；用户所指独立24篇审计文件未定位，未伪称复用；日本旧历全期及天文全都市误差仍未验')
+add(3,'candidate','118项年度/法规敏感资产，含47工资、税社保、日历、下载依赖；区分本轮核验/旧核验/unknown；未发现可确证2027误套2026的生产入口，未擅改税逻辑',['annual-assets.json','make-annual-assets.py','public-source-checks.json'],['最终既有税社保/工资/节假日边界回归','日出JST跨年/闰日Chromium'],'给付官方原始金额资料、所有地方税差异、云端年度重建调度、全部Excel/PDF兼容性未验；2027未知制度不得默认沿用')
+add(4,'candidate','真实Chromium手机390/桌面1440，20组检查；覆盖六星/住民税/营业日/年末调整/勤续/日出hub及相关内容/水分/原型；实际CSV保存与分享接收恢复',['browser-check.mjs','browser-results.json','browser-built.log','*.png'],['20/20 built artifact checks','browser-optional-tracking.mjs/green-embed-browser.log'],'仅Chromium本地抽样，不含全站/全键盘/屏幕阅读器/原生手机/生产；无真实社交发送；无GA报表。首轮Clipboard异步等待不足已修正测试脚本并重跑，保留失败记录')
+for n in [5,6]:add(n,'skip','本轮消息未给出该编号的具体定义或验收，仓库未定位编号映射；不编造实施',[],[],'需明确任务定义；不影响本轮已定义项')
+add(7,'candidate','审查slug、首次有效结果/下载动作/分享意图/接收恢复/返回口径；修公共结果与返回事件、ResultShare及营业日嵌入复制的统计失败耦合',['measurement-review.md','measurement-call-sites.txt','src/layouts/ToolLayout.astro','src/components/ResultShare.astro','src/pages/eigyoubi/index.astro'],['red-share→green-share','red-return→green-return','真实Chromium red-embed-browser→green-embed-browser','payload仅slug/result_type'],'未访问/更改GA账号、维度、真实DebugView/报表；无配对完成率分母；其余页面直接gtag调用未全面隔离，详列文档')
+add(8,'skip','本轮消息未给出该编号的具体定义或验收，未编造实施',[],[],'需明确任务定义')
+add(9,'candidate','真实试用nissu→营业日公司休日→解释/复制/CSV；仅补既有任务分流，不重复银行/公司假日/CSV工具',['date-workflow.md','src/pages/nissu/index.astro','eigyoubi-1440.csv','eigyoubi-390.csv'],['9暦日/6营业日','9/18后1营业日=9/24','2026/9加公司假日=18','无效日期撤结果禁下载'],'企业个别休假、法律期限、全日期组合不能由默认规则保证；跨浏览器未验')
+add(10,'skip','本轮消息未给出该编号的具体定义或验收，未编造实施',[],[],'需明确任务定义')
+add(11,'candidate','完成不接Astro路由的独立本地原型；容量+每次量比较单次现金/整包现金支出/实验用完日数，积分分离，无商品库',['docs/prototypes/unit-cost/','tests/unit-cost-prototype.test.js'],['RED模块缺失→GREEN','微小正需求RED→GREEN','手机桌面真实操作：独立剂量、单位、0价/0频次、跨量纲拒绝、清空'],'没有真人/目标用户测试、访谈或需求证实；期限仅实验；没有正式开发/生产URL/上线批准')
+add(12,'skip','食谱保持既定暂缓，未自动恢复',['distribution-and-gates.md'],[],'继续暂缓')
+add(13,'candidate','核DISTRIBUTION-KIT现有材料、承接页和12下载文件；明确4渠道资格不足，不外联',['distribution-and-gates.md','distribution-assets.json','docs/DISTRIBUTION-KIT-2026-09-30.md'],['12本地HTTP200/格式签名或ZIP检查','营业日CSV实际浏览器下载'],'投稿规则未重新外查确认；Manegy士业身份不满足，bizocean为支持入口；无对外身份与发送授权，未联系/刊登')
+add(14,'blocked','已形成内容/隐私/抓取/发布/审批就绪检查，仅清单，不称AdSense通过',['distribution-and-gates.md'],['本地build/postbuild可验证结构'],'真实联系/CMP/账号配置与实际Google抓取未验；候选未上线；未复审/未广告启用')
+add(15,'skip','本轮消息未给出该编号的具体定义或验收，未编造实施',[],[],'需明确任务定义')
+add(16,'blocked','依指令等待获批与授权，不执行',[],[],'等待用户另行批准与授权')
+add(17,'candidate','修正PROJECT/GROWTH/ONBOARDING/HANDOFF/README与KT01当前事实优先级；历史保留标旧；纠正统一floor约定',['PROJECT.md','GROWTH.md','ONBOARDING.md','HANDOFF.md','README.md','CLAUDE.md','docs/KT01-MARKDOWN-CANDIDATE.md'],['内容人工复核','git diff --check'],'本轮候选未上线；历史章节不是当前生产状态，不把候选或旧测试数写当前事实')
+rows.sort(key=lambda r:r['task'])
+(root/'results.json').write_text(json.dumps({'date':'2026-11-08','base':'dead3514689640200556647c58a26add3c667927','branch':'candidate/overnight-20261108','code_freeze_sha':'873b2b6663c3812bee82f933ac2f1a00f2c47356','delivery_final_sha':'see final-state.json generated after evidence commit to avoid self-reference','deployment':'NOT DEPLOYED; no push or external writes','tasks':rows},ensure_ascii=False,indent=2)+'\n')
