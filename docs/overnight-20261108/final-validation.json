@@ -15,5 +15,14 @@
       "seconds": 26.24,
       "log": "final-build.log"
     }
-  ]
+  ],
+  "kt06_followup": {
+    "code_freeze_sha": "9a3c221d03442224394500eff72f75c604578bb4",
+    "test": "kt06-final-test.log: 120 files / 2006 passed",
+    "build": "kt06-final-build.log: success; postbuild 565 HTML / 477 sitemap URLs / 24106 internal links / 534 anchors",
+    "browser": "kt06-browser-results.json: 9 passed on final dist",
+    "lint_typecheck": "not independently configured",
+    "previous_validation": "Previous fields describe 873b2b6; not rerun unchanged 20 browser groups",
+    "code_or_public_diff_after_validation": ""
+  }
 }

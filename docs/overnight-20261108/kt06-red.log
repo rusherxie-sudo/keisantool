@@ -1,0 +1,62 @@
+
+ RUN  v4.1.8 /home/ubuntu/website/keisantool-overnight-20261108
+
+ ❯ tests/analytics-privacy.test.js (10 tests | 8 failed) 292ms
+   × Baidu eligibility /blog/example/?qa=KT06_SENTINEL referrer  27ms
+   × Baidu eligibility /blog/example/#KT06_SENTINEL referrer  14ms
+   × Baidu eligibility /blog/example/ referrer https://example.test/bmi/?qa=KT06_SENTINEL#secret 15ms
+   × Baidu eligibility /bmi/ referrer  12ms
+   × Baidu eligibility /juminzei/ referrer  12ms
+   × Baidu eligibility /tanjobi-aisho/ referrer  12ms
+   × Baidu eligibility /result/eigyoubi/#v=1 referrer  29ms
+   × related destinations omit query/hash and throwing transport does not escape 21ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/analytics-privacy.test.js > Baidu eligibility /blog/example/?qa=KT06_SENTINEL referrer 
+ FAIL  tests/analytics-privacy.test.js > Baidu eligibility /blog/example/#KT06_SENTINEL referrer 
+ FAIL  tests/analytics-privacy.test.js > Baidu eligibility /blog/example/ referrer https://example.test/bmi/?qa=KT06_SENTINEL#secret
+ FAIL  tests/analytics-privacy.test.js > Baidu eligibility /bmi/ referrer 
+ FAIL  tests/analytics-privacy.test.js > Baidu eligibility /juminzei/ referrer 
+ FAIL  tests/analytics-privacy.test.js > Baidu eligibility /tanjobi-aisho/ referrer 
+ FAIL  tests/analytics-privacy.test.js > Baidu eligibility /result/eigyoubi/#v=1 referrer 
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/analytics-privacy.test.js:17:77
+     15|  const dom=new JSDOM('<head><script></script></head>',{url:'https://ex…
+     16|  runInNewContext(baidu(),{window:dom.window,document:dom.window.docume…
+     17|  expect(!!dom.window.document.querySelector('script[src*="hm.baidu.com…
+       |                                                                             ^
+     18| });
+     19| it('related destinations omit query/hash and throwing transport does n…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/analytics-privacy.test.js > related destinations omit query/hash and throwing transport does not escape
+AssertionError: expected '/juminzei/?salary=KT06_SENTINEL#secret' to be '/juminzei/' // Object.is equality
+
+Expected: "/juminzei/"
+Received: "/juminzei/?salary=KT06_SENTINEL#secret"
+
+ ❯ tests/analytics-privacy.test.js:27:44
+     25|  const event={target:dom.window.document.querySelector('a')};
+     26|  handlers.forEach(fn=>fn(event));
+     27|  expect(gtag.mock.calls[0][2].destination).toBe('/juminzei/');
+       |                                            ^
+     28|  dom.window.gtag=()=>{throw Error('optional');};
+     29|  expect(()=>handlers.forEach(fn=>fn(event))).not.toThrow();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 2 passed (10)
+   Start at  01:47:21
+   Duration  1.18s (transform 28ms, setup 0ms, import 710ms, tests 292ms, environment 0ms)
+

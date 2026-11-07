@@ -13,8 +13,10 @@
 |输入隐私|结果事件仅tool_slug/result_type；分享事件仅tool_slug/method；生日、收入、体重不加到事件|浏览器住民税payload断言无3600000；VM覆盖helper和分享失败；没有全站所有出站负载的审计结论|
 |可选测量失败|公共结果helper、ResultShare、eigyoubi嵌入复制三处可明确影响流程|已先RED再GREEN。其他直接gtag调用未全部改造，widgets/保险金额复制等同类catch耦合是后续范围，不能称全站异常隔离完成|
 
-下一次度量设计（仅方案）：先为指定工具定义输入可用→有效结果→CSV动作→分享意图→接收还原→返回再算的状态；给同一工具页面/模式配对分母，排除默认结果与测试流量，去重以合规、可得的页面/会话标识为限。新增低基数tool_id/page_variant、result_type候选映射表应先评审。不得记录原值、结果金额或哈希生日。当前无可靠配对分母、无GA DebugView/报表权限验证，因此不产出完成率数字。
+下一次度量设计（仅方案）：先为指定工具定义输入可用→有效结果→CSV动作→分享意图→接收还原→返回再算的状态；给同一工具页面/模式配对分母，排除默认结果与测试流量，去重以合规、可得的页面/会话标识为限。新增低基数tool_id/page_variant、result_type候选映射表应先评审。不得记录原值、结果金额或哈希生日。当前无可靠配对分母、未验GA DebugView，因此不产出完成率数字。父进程本轮已官方只读查得GA数据，以下补证优先于前文历史未访问记录。
 
 复现：`rg -n 'gtag|trackCalculatorResult' src/pages src/components src/layouts src/scripts`；完整匹配列表见 measurement-call-sites.txt。Node22定向测试日志green-share/green-return；真实浏览器browser-results.json、red/green-embed-browser.log。
 
 隐私现状：当前ToolLayout仍含百度统计且privacy页如实披露；10/10“移除”只代表当时记录，不能当当前配置。本轮不更改采集供应商或账号，广告就绪仍需负责人核实CMP与实际地域合规。
+
+本次补证：GA 13业务请求全200，property541868330/stream15081689041/Asia-Tokyo；tool_slug未注册且Metadata不可查；增强测量stream/pageChanges/outbound/fileDownloads均true。10-11至11-07结果事件14748次、9940事件参与会话，不报完成率。BMI源码缺首次结果入口，本次按既有口径补bmi；住民税保留resident-tax，均已本地触发验证，未改变后台。百度保守加载与相关点击去参见kt06-followup.md，旧配置描述仅为上一冻结点事实。

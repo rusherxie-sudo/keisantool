@@ -75,6 +75,10 @@
     },
     {
       "change": "A",
+      "path": "docs/overnight-20261108/changed-files.json"
+    },
+    {
+      "change": "A",
       "path": "docs/overnight-20261108/content-audit.json"
     },
     {
@@ -143,6 +147,42 @@
     },
     {
       "change": "A",
+      "path": "docs/overnight-20261108/kt06-browser-results.json"
+    },
+    {
+      "change": "A",
+      "path": "docs/overnight-20261108/kt06-browser.log"
+    },
+    {
+      "change": "A",
+      "path": "docs/overnight-20261108/kt06-browser.mjs"
+    },
+    {
+      "change": "A",
+      "path": "docs/overnight-20261108/kt06-final-build.log"
+    },
+    {
+      "change": "A",
+      "path": "docs/overnight-20261108/kt06-final-test.log"
+    },
+    {
+      "change": "A",
+      "path": "docs/overnight-20261108/kt06-followup.md"
+    },
+    {
+      "change": "A",
+      "path": "docs/overnight-20261108/kt06-green.log"
+    },
+    {
+      "change": "A",
+      "path": "docs/overnight-20261108/kt06-official-hm.js"
+    },
+    {
+      "change": "A",
+      "path": "docs/overnight-20261108/kt06-red.log"
+    },
+    {
+      "change": "A",
       "path": "docs/overnight-20261108/lastmod.log"
     },
     {
@@ -164,6 +204,10 @@
     {
       "change": "A",
       "path": "docs/overnight-20261108/measurement-review.md"
+    },
+    {
+      "change": "A",
+      "path": "docs/overnight-20261108/npm-audit.json"
     },
     {
       "change": "A",
@@ -267,11 +311,19 @@
     },
     {
       "change": "M",
+      "path": "src/pages/bmi/index.astro"
+    },
+    {
+      "change": "M",
       "path": "src/pages/eigyoubi/index.astro"
     },
     {
       "change": "M",
       "path": "src/pages/hinodeiri/index.astro"
+    },
+    {
+      "change": "M",
+      "path": "src/pages/juminzei/index.astro"
     },
     {
       "change": "M",
@@ -287,6 +339,10 @@
     },
     {
       "change": "A",
+      "path": "tests/analytics-privacy.test.js"
+    },
+    {
+      "change": "A",
       "path": "tests/overnight-regressions.test.js"
     },
     {
@@ -296,18 +352,8 @@
     {
       "change": "A",
       "path": "tests/unit-cost-prototype.test.js"
-    },
-    {
-      "change": "A",
-      "path": "docs/overnight-20261108/changed-files.json"
-    },
-    {
-      "change": "untracked final receipt generated after evidence commit",
-      "path": "docs/overnight-20261108/final-state.json"
-    },
-    {
-      "change": "A",
-      "path": "docs/overnight-20261108/npm-audit.json"
     }
-  ]
+  ],
+  "code_freeze_sha": "9a3c221",
+  "note": "Cumulative tracked/staged candidate diff; final-state.json intentionally untracked"
 }

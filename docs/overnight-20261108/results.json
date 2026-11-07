@@ -2,7 +2,7 @@
   "date": "2026-11-08",
   "base": "dead3514689640200556647c58a26add3c667927",
   "branch": "candidate/overnight-20261108",
-  "code_freeze_sha": "873b2b6663c3812bee82f933ac2f1a00f2c47356",
+  "code_freeze_sha": "9a3c221",
   "delivery_final_sha": "see final-state.json generated after evidence commit to avoid self-reference",
   "deployment": "NOT DEPLOYED; no push or external writes",
   "tasks": [
@@ -74,26 +74,36 @@
     },
     {
       "task": "KT-05",
-      "status": "skip",
-      "done_scope": "本轮消息未给出该编号的具体定义或验收，仓库未定位编号映射；不编造实施",
+      "status": "completed_in_parent_scope",
+      "done_scope": "父进程已定义并完成可执行范围；非需求缺失，本补修不重做",
       "candidate": false,
       "artifacts": [],
       "tests": [],
-      "unmet_acceptance": "需明确任务定义；不影响本轮已定义项"
+      "unmet_acceptance": "管理产物在父本地，由父归档；本工作区不补远程副本或重做研究"
     },
     {
       "task": "KT-06",
-      "status": "skip",
-      "done_scope": "本轮消息未给出该编号的具体定义或验收，仓库未定位编号映射；不编造实施",
-      "candidate": false,
-      "artifacts": [],
-      "tests": [],
-      "unmet_acceptance": "需明确任务定义；不影响本轮已定义项"
+      "status": "candidate",
+      "done_scope": "保守限制百度仅干净静态内容页；工具/参数/hash/敏感参照页不加载；related点击去参及可选统计异常隔离",
+      "candidate": true,
+      "artifacts": [
+        "kt06-followup.md",
+        "kt06-official-hm.js",
+        "kt06-browser.mjs",
+        "kt06-browser-results.json",
+        "tests/analytics-privacy.test.js"
+      ],
+      "tests": [
+        "RED 8 failed → GREEN 20 passed",
+        "真实官方百度脚本本地原文回放，报告出口全拦截",
+        "最终完整2006测试/build通过"
+      ],
+      "unmet_acceptance": "允许的静态页加载百度后被任意history/hash改址安全未验；无真实生产收报/GA DebugView验证；不宣称全链闭环"
     },
     {
       "task": "KT-07",
       "status": "candidate",
-      "done_scope": "审查slug、首次有效结果/下载动作/分享意图/接收恢复/返回口径；修公共结果与返回事件、ResultShare及营业日嵌入复制的统计失败耦合",
+      "done_scope": "审查slug、首次有效结果/下载动作/分享意图/接收恢复/返回口径；修公共结果与返回事件、ResultShare及营业日嵌入复制的统计失败耦合；BMI补既有首次有效结果口径，住民税保留resident-tax，两页分享外发提示",
       "candidate": true,
       "artifacts": [
         "measurement-review.md",
@@ -108,16 +118,16 @@
         "真实Chromium red-embed-browser→green-embed-browser",
         "payload仅slug/result_type"
       ],
-      "unmet_acceptance": "未访问/更改GA账号、维度、真实DebugView/报表；无配对完成率分母；其余页面直接gtag调用未全面隔离，详列文档"
+      "unmet_acceptance": "父进程本轮只读GA 13请求全200：property541868330/stream15081689041/Asia-Tokyo；tool_slug未注册且Metadata不可查；enhancedMeasurement stream/pageChanges/outbound/fileDownloads均true。10-11至11-07 calculator_result_view 14748次、9940事件参与会话；无配对完成率分母、不报完成率、未验DebugView、未改账号。"
     },
     {
       "task": "KT-08",
-      "status": "skip",
-      "done_scope": "本轮消息未给出该编号的具体定义或验收，未编造实施",
+      "status": "completed_in_parent_scope",
+      "done_scope": "父进程已冻结31页/37词历史基线，等待成熟数据",
       "candidate": false,
       "artifacts": [],
       "tests": [],
-      "unmet_acceptance": "需明确任务定义"
+      "unmet_acceptance": "管理产物在父本地，由父归档；本工作区不补远程副本或重做研究"
     },
     {
       "task": "KT-09",
@@ -140,12 +150,12 @@
     },
     {
       "task": "KT-10",
-      "status": "skip",
-      "done_scope": "本轮消息未给出该编号的具体定义或验收，未编造实施",
+      "status": "completed_in_parent_scope",
+      "done_scope": "此前已完成，非需求缺失；不重做",
       "candidate": false,
       "artifacts": [],
       "tests": [],
-      "unmet_acceptance": "需明确任务定义"
+      "unmet_acceptance": "管理产物在父本地，由父归档；本工作区不补远程副本或重做研究"
     },
     {
       "task": "KT-11",
@@ -201,16 +211,16 @@
       "tests": [
         "本地build/postbuild可验证结构"
       ],
-      "unmet_acceptance": "真实联系/CMP/账号配置与实际Google抓取未验；候选未上线；未复审/未广告启用"
+      "unmet_acceptance": "父进程已登录AdSense pub-1382715204285550，网站列表搜keisantool.com无结果，四状态筛选均未选；不能称审核中。新增/验证/申请/复审均未执行；候选未部署；CMP等门禁仍未通过。"
     },
     {
       "task": "KT-15",
-      "status": "skip",
-      "done_scope": "本轮消息未给出该编号的具体定义或验收，未编造实施",
+      "status": "completed_in_parent_scope",
+      "done_scope": "父进程台账19条，项目README已接既有周五入口；不改cron",
       "candidate": false,
       "artifacts": [],
       "tests": [],
-      "unmet_acceptance": "需明确任务定义"
+      "unmet_acceptance": "管理产物在父本地，由父归档；本工作区不补远程副本或重做研究"
     },
     {
       "task": "KT-16",
@@ -250,6 +260,21 @@
     "low": 1,
     "total": 13,
     "baseline_dependency_files_unchanged": true,
-    "exposure": "not independently established; no dependency upgrade in this scoped candidate"
+    "exposure": "只读分级5行见kt06-followup.md；critical保留，静态生产无Node图像服务入口证据，构建/客户端具体触发条件部分未知；待另行批准，不升级"
+  },
+  "prior_code_freeze_sha": "873b2b6663c3812bee82f933ac2f1a00f2c47356",
+  "followup": "kt06-followup.md",
+  "followup_validation": {
+    "tests": "120 files / 2006 passed",
+    "build": "passed; 565 HTML, 477 sitemap URLs, 24106 links, 534 fragment links",
+    "browser": "kt06-browser-results.json; 9 cases passed",
+    "prior_20_browser_groups": "873b2b6 evidence retained, not rerun"
+  },
+  "parent_readonly_facts": {
+    "source": "负责人本轮提供，按指示同步，未重跑远程研究",
+    "GA4": "13请求200；property541868330 stream15081689041 Asia/Tokyo；tool_slug未注册 Metadata不可查；增强测量stream/pageChanges/outbound/fileDownloads=true；10-11至11-07结果事件14748、事件参与会话9940；不报完成率",
+    "index": "Google URLInspection 首页/rokusei/juminzei/eigyoubi均PASS已索引、允许抓取、canonical一致（已知索引版本非候选）；sitemap errors/warnings0，lastDownloaded11-07T12:55:38Z；477 submitted不是收录量；Bing逐页未知",
+    "public": "www NXDOMAIN；robots/sitemap本轮200，477URL不等于收录，不改DNS",
+    "AdSense": "pub-1382715204285550登录；搜索keisantool.com无结果，四状态筛选均未选；无申请/验证/新增，不称审核中"
   }
 }

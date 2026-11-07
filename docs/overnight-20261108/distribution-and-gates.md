@@ -10,8 +10,10 @@ DISTRIBUTION-KIT-2026-09-30.md已具备日文介绍、逐站首段、资料链�
 
 - 内容：60篇已全文审读、明确缺陷定向改候选；六曜日本旧历全期、医疗/给付原始来源、全部城市天文误差未独立认证。没有任何字数/篇数等于通过结论。
 - 隐私：当前GA及百度披露存在；真实联系与CMP/同意配置、账号地区和广告供应商设置未访问/未验证。
-- 抓取：本轮本地build/postbuild校验可验证结构与本地链接；不等于Google可抓取、实际收录或AdSense crawler无阻塞，真实后台未知。
+- 抓取：本轮本地build/postbuild校验可验证结构与本地链接；不等于Google可抓取、实际收录或AdSense crawler无阻塞，父进程本轮Google官方URLInspection四页首页/rokusei/juminzei/eigyoubi均PASS已索引、抓取允许、canonical一致（非候选版本）；sitemap errors/warnings0，lastDownloaded11-07T12:55:38Z，477submitted不等于收录量；Bing逐页未知。
 - 发布：本轮候选未部署，生产仍用户指定dead351；不能拿本地修复宣称线上整改通过。
 - 审批：未提交复审，未启用广告；任何后续提交仍需用户另行授权。
 
 KT-12食谱保持既定暂缓；KT-16继续等获批与授权，不借本轮自动恢复。
+
+本次父进程只读补证：已登录AdSense pub-1382715204285550，网站列表搜索keisantool.com无结果，四状态筛选均未选，不能称审核中；新增/验证/申请/复审均未执行。www仍NXDOMAIN；robots/sitemap本轮200，477URL不等于收录，不改DNS。CMP、真实联系、广告抓取门禁仍未通过；不操作后台。
