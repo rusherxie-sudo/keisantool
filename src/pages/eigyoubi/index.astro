@@ -35,7 +35,7 @@ import { businessMonth, downloadCsv } from '../../lib/office-tools.js';
 import { japanDateParts } from '../../lib/japanDate.js';
 import { sharedResultUrl } from '../../lib/shared-results.js';
 const year = document.querySelector('#business-year'), month = document.querySelector('#business-month'), extra = document.querySelector('#company-holidays');
-document.querySelector('#copy-embed').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.querySelector('#embed-code').value);document.querySelector('#embed-feedback').textContent='コピーしました。';window.gtag?.('event','business_embed_copy',{tool_slug:'eigyoubi'});}catch{document.querySelector('#embed-code').select();document.querySelector('#embed-feedback').textContent='コードを選択しました。手動でコピーしてください。';}});
+document.querySelector('#copy-embed').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.querySelector('#embed-code').value);document.querySelector('#embed-feedback').textContent='コピーしました。';try { window.gtag?.('event','business_embed_copy',{tool_slug:'eigyoubi'}); } catch {}}catch{document.querySelector('#embed-code').select();document.querySelector('#embed-feedback').textContent='コードを選択しました。手動でコピーしてください。';}});
 document.querySelectorAll('[data-business-pdf]').forEach(a=>a.addEventListener('click',()=>window.gtag?.('event','business_calendar_pdf_download',{tool_slug:'eigyoubi',year:a.dataset.businessPdf})));
 const today = japanDateParts(); if ([2026,2027].includes(today.year)) {year.value=String(today.year);month.value=String(today.month);}
 const preset=new URLSearchParams(location.search);

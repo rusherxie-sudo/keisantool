@@ -1,0 +1,205 @@
+{
+  "mode": "real Chromium, local dev server, all non-loopback requests aborted; no GA/social requests",
+  "checks": [
+    {
+      "name": "1440: nissu inclusive, copy, shift, clear",
+      "status": "passed",
+      "detail": {
+        "calendarDays": 9,
+        "businessDays": 6,
+        "shifted": "2026年9月24日（木）",
+        "clipboard": "summary copied locally",
+        "cleared": true
+      }
+    },
+    {
+      "name": "1440: eigyoubi company holiday CSV share receive invalid",
+      "status": "passed",
+      "detail": {
+        "businessDays": 18,
+        "csvRows": 31,
+        "share": "independent result page restored 18, no social send",
+        "invalidClears": true
+      }
+    },
+    {
+      "name": "1440: rokusei keyboard and clear",
+      "status": "passed",
+      "detail": {
+        "value": "土星人プラス",
+        "keyboard": "Tab accepted",
+        "cleared": true
+      }
+    },
+    {
+      "name": "1440: juminzei example and clear",
+      "status": "passed",
+      "detail": {
+        "value": "¥149,500",
+        "cleared": true
+      }
+    },
+    {
+      "name": "1440: nematsu example and clear",
+      "status": "passed",
+      "detail": {
+        "value": "+¥95,400",
+        "cleared": true
+      }
+    },
+    {
+      "name": "1440: kinzoku leap date share and clear",
+      "status": "passed",
+      "detail": {
+        "value": "6年 0ヶ月 0日",
+        "clear": true
+      }
+    },
+    {
+      "name": "1440: sunrise JST leap clear",
+      "status": "passed",
+      "detail": {
+        "jstDate": "2027-01-01",
+        "leap": "06:12 〜 17:19",
+        "cleared": true
+      }
+    },
+    {
+      "name": "1440: content render related roku sources water",
+      "status": "passed",
+      "detail": {
+        "kokuho": "full example rendered",
+        "relatedLinkCount": 3,
+        "rokuyoSource": true,
+        "water": "page rendered; numeric nonfinite handled in unit regression"
+      }
+    },
+    {
+      "name": "1440: prototype quantity dose units zeros invalid reset",
+      "status": "failed",
+      "error": "Expected values to be strictly equal:\n\ntrue !== false\n"
+    },
+    {
+      "name": "1440: client measurement allowlist",
+      "status": "passed",
+      "detail": {
+        "events": [
+          [
+            "event",
+            "calculator_result_view",
+            {
+              "tool_slug": "juminzei",
+              "result_type": "resident-tax"
+            }
+          ]
+        ],
+        "gaDebugView": "not available/not checked"
+      }
+    },
+    {
+      "name": "390: nissu inclusive, copy, shift, clear",
+      "status": "passed",
+      "detail": {
+        "calendarDays": 9,
+        "businessDays": 6,
+        "shifted": "2026年9月24日（木）",
+        "clipboard": "summary copied locally",
+        "cleared": true
+      }
+    },
+    {
+      "name": "390: eigyoubi company holiday CSV share receive invalid",
+      "status": "passed",
+      "detail": {
+        "businessDays": 18,
+        "csvRows": 31,
+        "share": "independent result page restored 18, no social send",
+        "invalidClears": true
+      }
+    },
+    {
+      "name": "390: rokusei keyboard and clear",
+      "status": "passed",
+      "detail": {
+        "value": "土星人プラス",
+        "keyboard": "Tab accepted",
+        "cleared": true
+      }
+    },
+    {
+      "name": "390: juminzei example and clear",
+      "status": "passed",
+      "detail": {
+        "value": "¥149,500",
+        "cleared": true
+      }
+    },
+    {
+      "name": "390: nematsu example and clear",
+      "status": "passed",
+      "detail": {
+        "value": "+¥95,400",
+        "cleared": true
+      }
+    },
+    {
+      "name": "390: kinzoku leap date share and clear",
+      "status": "passed",
+      "detail": {
+        "value": "6年 0ヶ月 0日",
+        "clear": true
+      }
+    },
+    {
+      "name": "390: sunrise JST leap clear",
+      "status": "passed",
+      "detail": {
+        "jstDate": "2027-01-01",
+        "leap": "06:12 〜 17:19",
+        "cleared": true
+      }
+    },
+    {
+      "name": "390: content render related roku sources water",
+      "status": "passed",
+      "detail": {
+        "kokuho": "full example rendered",
+        "relatedLinkCount": 3,
+        "rokuyoSource": true,
+        "water": "page rendered; numeric nonfinite handled in unit regression"
+      }
+    },
+    {
+      "name": "390: prototype quantity dose units zeros invalid reset",
+      "status": "failed",
+      "error": "Expected values to be strictly equal:\n\ntrue !== false\n"
+    },
+    {
+      "name": "390: client measurement allowlist",
+      "status": "passed",
+      "detail": {
+        "events": [
+          [
+            "event",
+            "calculator_result_view",
+            {
+              "tool_slug": "juminzei",
+              "result_type": "resident-tax"
+            }
+          ]
+        ],
+        "gaDebugView": "not available/not checked"
+      }
+    }
+  ],
+  "errors": [],
+  "blocked": [
+    "https://www.googletagmanager.com",
+    "https://fonts.googleapis.com",
+    "https://hm.baidu.com"
+  ],
+  "summary": {
+    "passed": 18,
+    "failed": 2
+  }
+}

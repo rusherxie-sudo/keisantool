@@ -1,0 +1,91 @@
+{
+  "scope": "local files and HTTP only, no outreach, no office-app execution",
+  "assets": [
+    {
+      "path": "public/downloads/eigyoubi-2026.pdf",
+      "bytes": 249889,
+      "sha256": "ca8d5135aadcb6a393879d4b794edddecce6384e7e353ca8ed17278a05751928",
+      "local_http_status": 200,
+      "signature_ok": true
+    },
+    {
+      "path": "public/downloads/eigyoubi-2027.pdf",
+      "bytes": 250060,
+      "sha256": "5975c085a34e5a30177bfb673c95a8dc049ffdd73e280a6d4fa363ecd5c2dcb2",
+      "local_http_status": 200,
+      "signature_ok": true
+    },
+    {
+      "path": "public/downloads/holidays-2026.ics",
+      "bytes": 4355,
+      "sha256": "2ac6d6ca32eae9dafba60a1747aac7f8af0b5fd7ff578e910b57a5fa7c256385",
+      "local_http_status": 200,
+      "signature_ok": true
+    },
+    {
+      "path": "public/downloads/holidays-2027.ics",
+      "bytes": 4120,
+      "sha256": "8d20e44c8bf0cbd40adcaf4e1c89d7f339a33ab66083943509c81b3d74ea52af",
+      "local_http_status": 200,
+      "signature_ok": true
+    },
+    {
+      "path": "public/downloads/kinmu-template-2026.xlsx",
+      "bytes": 63111,
+      "sha256": "6ef321dbe76e82f3f2d3d0518e2d6e977bf32a6dc04b648dc5cc79e818ac8697",
+      "local_http_status": 200,
+      "signature_ok": true,
+      "sheets": 13
+    },
+    {
+      "path": "public/downloads/kinmu-template-2027.xlsx",
+      "bytes": 63120,
+      "sha256": "a391acf5993e6e1adff0fe33200efb6926248e60cf9a34d75f288593fb3e3b97",
+      "local_http_status": 200,
+      "signature_ok": true,
+      "sheets": 13
+    },
+    {
+      "path": "public/downloads/nenrei-hayami-2026.pdf",
+      "bytes": 266843,
+      "sha256": "966d06a674d2113f518927ee662602bb53dbe7b287ed10e5318d8a04228eeec5",
+      "local_http_status": 200,
+      "signature_ok": true
+    },
+    {
+      "path": "public/downloads/nenrei-hayami-2027.pdf",
+      "bytes": 264815,
+      "sha256": "9ca3042caaa1cc93983a44bb72764f76e20718fbd33eb581d1ab09076e3cd578",
+      "local_http_status": 200,
+      "signature_ok": true
+    },
+    {
+      "path": "public/downloads/work-calendar-2026.csv",
+      "bytes": 12690,
+      "sha256": "ae610d3c6356b5cb129fcd386518b6cb40e20a718bed590e43ebd04739b15739",
+      "local_http_status": 200,
+      "signature_ok": true
+    },
+    {
+      "path": "public/downloads/work-calendar-2026.json",
+      "bytes": 41809,
+      "sha256": "4cb5e62f1654e2f7048e8bab30546604a839546c01f7a4820387d4916e64c9c1",
+      "local_http_status": 200,
+      "signature_ok": true
+    },
+    {
+      "path": "public/downloads/work-calendar-2027.csv",
+      "bytes": 12678,
+      "sha256": "e7d0234fab3d33bc591b0401d530d5c85ce6bb82cd4fb056f9cb06346a0aec69",
+      "local_http_status": 200,
+      "signature_ok": true
+    },
+    {
+      "path": "public/downloads/work-calendar-2027.json",
+      "bytes": 41793,
+      "sha256": "e504095e8fa4132d0aed9e6502737b8939aa72c54f4819482e42171d4a57374b",
+      "local_http_status": 200,
+      "signature_ok": true
+    }
+  ]
+}

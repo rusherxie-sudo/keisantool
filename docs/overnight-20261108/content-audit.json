@@ -1,0 +1,931 @@
+{
+  "count": 60,
+  "method": "本轮逐篇全文阅读并记录差异；复用10/10与11/7整改文档，星座/犬龄/15城市既有实现不重复改造。用户所指单独24篇审计文件在给定仓库中未找到，未伪称已复用该逐篇记录。",
+  "cross_page_findings": [
+    "RelatedPosts原先仅按分类和集合顺序，本轮按同分类共享工具任务排序。",
+    "出生年100岁以上家族史与历史年龄任务已经上线，保留。",
+    "六曜补文化资料与中国农历实现边界，不声称全期日本旧历已验。",
+    "六星五篇分别入口/计算排查/年运/霊合/相性，不扩页。"
+  ],
+  "articles": [
+    {
+      "path": "src/content/blog/bmi-kiso-chishiki.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "83331dff782474a96dd1df5ad96a176aabc65482935a0306e356add442897dfd",
+      "finding": "成人式・18.5/25判定、BMI22表、推定体脂肪の限界を分離。",
+      "retain_reason": "年齢別目標BMIと分類は別。今回外部医学資料再核验なし。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://kennet.mhlw.go.jp/information/information/food/e-02-001.html",
+        "https://www.jasso.or.jp/contents/wod/index.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/fukuri-kouka-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "0ef3e50b9a6ee238b9ff3a9a93760ea90a1c6defd2454fcec1a48f01fe9902a0",
+      "finding": "一括265.3万円と月末積立1233.1万円を別モデルで提示。",
+      "retain_reason": "固定利回り・税費用なしの仮定、NISA枠は収益保証でない。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.fsa.go.jp/policy/nisa2/know/index.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/furusato-kakutei-shinkoku-yarikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "14888cd80afcaab96eb16cd2ad88aecaf84d80a9e1da52e0b71b8791934eeb68",
+      "finding": "5自治体・全寄付再申告・翌年住民税という手続き任务。",
+      "retain_reason": "上限判定ツールがないことを明示。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1155.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1490.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/gasoline-dai-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "04df4687d24f645c98b144c975476d50deabe7fc3a001b7b9c7e72523497d102",
+      "finding": "月500kmと遠回り113円/差額7円の具体比较。",
+      "retain_reason": "170円は仮価格であり現行相場ではない。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://ondankataisaku.env.go.jp/decokatsu/ecodriver/point/"
+      ]
+    },
+    {
+      "path": "src/content/blog/hairitsu-keisan-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "eb9b7696c39ad411bfdaefa3abe9452e7f74c2e500bd861e50ab771c12736d96",
+      "finding": "28/30/32日周期の暦日例、避妊に使えない限界。",
+      "retain_reason": "14日前は仮定。個人診断をしない。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nhs.uk/contraception/methods-of-contraception/natural-family-planning/",
+        "https://www.sendai.jrc.or.jp/patient/expectantMothers/obstetricsAndGynecologyNews/511/"
+      ]
+    },
+    {
+      "path": "src/content/blog/hensachi-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "f10acc49ae190b94cd4d6d0caf5cd6547485877a37321605af53959239e4d5fb",
+      "finding": "標準偏差0と平均/順位の区別を説明。",
+      "retain_reason": "学校別合否や正規分布未成立の順位を保証しない。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": []
+    },
+    {
+      "path": "src/content/blog/hoikuen-ryokin-keisan-hoho.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "4895a7910543ea392d59fa629702d93b0a6e3b86a4b6beb6fdc7032df5893a54",
+      "finding": "施設・年齢クラス・住民税欄から自治体表へ進む任务。",
+      "retain_reason": "全国共通料金式を作らず自治体改定を要確認。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.cfa.go.jp/policies/kokoseido/mushouka/gaiyou/",
+        "https://www.cfa.go.jp/policies/kokoseido/mushouka/about/faq1"
+      ]
+    },
+    {
+      "path": "src/content/blog/ikukyu-hoken-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "1815b74c6e4c7fbd9bdd9c6f7f34edc5819b084fbe721bc960f67be7c8f8877b",
+      "finding": "180万円÷180、67%201000円と50%150000円を提示。",
+      "retain_reason": "休業権利と雇用保険給付資格、出生後給付を区別。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000158500.html",
+        "https://www.mhlw.go.jp/seisakunitsuite/bunya/koyou_roudou/koyoukintou/ryouritsu/ikuji/childcare/"
+      ]
+    },
+    {
+      "path": "src/content/blog/inu-nenrei-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "4d7c8f0c70e73e9833093a6ebd927daed77b506183b8f052cb9a60f40b5ed242",
+      "finding": "已上线两公式・36/36/40・小数插值・体格边界全文复核。",
+      "retain_reason": "复用batch1，无需重复改算法；AAHA不是公式背书。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.aaha.org/resources/life-stage-canine-2019/canine-life-stage-definitions/",
+        "https://www.aaha.org/resources/2023-aaha-senior-care-guidelines-for-dogs-and-cats/"
+      ]
+    },
+    {
+      "path": "src/content/blog/iryouhi-kojo-ikura-modoru.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "41f09b53ccef306afb18ae8297f57b997422a6a02b166d759fe93aa21697ca7d",
+      "finding": "补填按对应医疗费扣除、200万所得界、15万控除例。",
+      "retain_reason": "税轻减与现金还付分开；未知税率不硬算。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1120.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/jikyu-kara-getsu-kyu-e-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "b3fe026b3b6574aeb2b750db47509a850603ddb558c839fc799e1d4812f48ffb",
+      "finding": "18/20/22天工资、深夜与时间外重叠例。",
+      "retain_reason": "所定/实働与法定休日不同；不承诺法律资格判定。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudouseisaku/chushoukigyou/joken_kankyou_rule.html",
+        "https://www.nenkin.go.jp/service/kounen/tekiyo/jigyosho/tanjikan.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/juminzei-keisan-hoho.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "ee986c7b5473e9eefec749dab3e095d9a1faab835345a42f1b20740c140caeef",
+      "finding": "2026年度用2025所得、年收360万149500円例、4/6税率。",
+      "retain_reason": "110万非课税是地区条件下目安；不能全国一律。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.tax.metro.tokyo.lg.jp/kazei/kojin_ju.html",
+        "https://www.city.yokohama.lg.jp/kurashi/koseki-zei-hoken/zeikin/y-shizei/kojin-shiminzei-kenminzei/kojin-shiminzei-shosai/shotokukoujoR8.html",
+        "https://www.city.yokohama.lg.jp/kurashi/koseki-zei-hoken/zeikin/y-shizei/kojin-shiminzei-kenminzei/kojin-shiminzei-shosai/zeigakukoujoR8.html",
+        "https://www.city.osaka.lg.jp/zaisei/page/0000384084.html",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/juutaku-loan-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "3b92bcd94c54a097fd10247fe076e658f3a0ac963dbc4d1fe74568281af46e75",
+      "finding": "3000万35年1.5%两还款法、利率类型和规则适用边界。",
+      "retain_reason": "示例不是市场报价；5年125%非所有商品。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.flat35.com/loan/lineup/kinto/index.html",
+        "https://www.flat35.com/loan/lineup/flat35/conditions/index.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/kakutei-shinkoku-no-shinsei-hoho.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "7bc38defdef2412eac71676c4fca05a66e2b1d1ed1db71fb780e2a6fd9d52ee5",
+      "finding": "资料→对象年份→送信→受信确认→纳付的操作步骤。",
+      "retain_reason": "10月画面说明保留历史日期；未核验新年度UI。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2020.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2030.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2026.htm",
+        "https://www.keisan.nta.go.jp/kyoutu/ky/sm/top",
+        "https://www.keisan.nta.go.jp/kyoutu/ky/sm/top"
+      ]
+    },
+    {
+      "path": "src/content/blog/kakutei-shinkoku-shinai-to-dou-naru.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "319e268ec0e1201dae37d8de64586cbbcdf8b50b54c07e4c00032a849e79de3b",
+      "finding": "义务/还付、三档无申告加算税、5年还付区分。",
+      "retain_reason": "延滞税不设统一百分比；个案转税务署。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2020.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2024.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2030.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/kakutei-shinkoku-tsuika-nozei-naze.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "69fc6b04e668489e50a2c63088ae2edcda8a24cd86986675031b64ddfb70e701",
+      "finding": "2025历史申告期限3/16、精算式、100円舍入和2026工具隔离。",
+      "retain_reason": "保留2025 applicableYear，不把历史期限改成2027。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/shinkoku/tokushu/",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/shinkoku/tebiki/2025/02/2_04.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/osirase/9206.htm",
+        "https://www.tax.metro.tokyo.lg.jp/kazei/kojin_ju.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/kekkon-zeikin-haikujo-kojo.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "a2f27a84cd2b7cc8a455b1bba5bac456f313acf0fc142c5201ffe244e4f7ecd7",
+      "finding": "2026所得62万/工资136万、150万工资转76万例。",
+      "retain_reason": "12/1施行、月次源泉与住民税不套用。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1191.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1195.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/kekkon-zeikin-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "3d55cb07f7a77867162d4034e8c79b06d2c95f2f550fec967e7ec32cfd1e271e",
+      "finding": "婚前后全年个人所得、婚姻届与税/社保不同。",
+      "retain_reason": "结婚不自动减税，配偶控除链接承担详细表。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1191.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1195.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1120.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/kenko-hozen-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "c28d0ca89deb0cfd0838cddd9fdcc5a3838d199cf0607af53d3407731396b076",
+      "finding": "雇员/国保加入、家属、伤病和出产手当与一时金已分离。",
+      "retain_reason": "复用10/10修订，退职继续给付转保険者。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.kyoukaikenpo.or.jp/g3/sb3040/r139/",
+        "https://www.kyoukaikenpo.or.jp/benefit/childbirth/index.html",
+        "https://www.nenkin.go.jp/service/kounen/tekiyo/jigyosho/tanjikan.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/kojin-hozen-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "ff40371efde79cb6930beb9ecdfa8d4be7f2dcaea4f8e274b2d0245fcfd9dfb6",
+      "finding": "iDeCo流动性、12/1共通额度、个人年金保费控除。",
+      "retain_reason": "未来生效日保留，需12月官方/管理机关更新核验。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.ideco-koushiki.jp/guide/structure.html",
+        "https://www.ideco-koushiki.jp/library/2022kaisei/",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/kojin-kigyou-sha-no-zeikin.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "2d193d32cf95636c0c1a31ac4288c8fa92fb0bdd2d6491e34e928016e9e5e541",
+      "finding": "收入500万/经费180万所得320万，青色55/65万和消费税分开。",
+      "retain_reason": "无适合生产计算器，relatedTools为空有合理理由。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1350.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2072.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1130.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6501.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/kokuho-ryoukin-keisan-hoho.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "0663e8adcd244d33a9c9a9af4b0f26309cfe138b3c34f4d1749ac327a1308545",
+      "finding": "实际问题：原文只有医療分，补齐4区分年额233179円。",
+      "retain_reason": "计算任务与轻减/咨询文分工保留URL；本轮复核练马计算页。",
+      "action": "targeted_fix",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/keisan_hoho.html",
+        "https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/gengaku.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/kokuho-ryoukin-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "4651aff85a36b84d039f38f2c301115b82812c5b6cb39698fcfa76a9bef77417",
+      "finding": "通知与轻减任务，7/5/2割仅均等割等、未参保世带主所得。",
+      "retain_reason": "与计算文互链，不是同答案；减免不可自动资格认定。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/gengaku.html",
+        "https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/keisan_hoho.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/kokumin-nenkin-hokenryo.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "f030464fdcec6d5b81a413886ffe5cf02d9ca33d6c9dcb1e87e212d293e87f70",
+      "finding": "2026年度17920円、215040年额、免除/猶予/学生区别。",
+      "retain_reason": "2027年1-3仍同财政年度，不推定4月后沿用。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nenkin.go.jp/service/kokunen/hokenryo/hensen.html",
+        "https://www.nenkin.go.jp/service/kokunen/menjo/20150428.html",
+        "https://www.nenkin.go.jp/service/kokunen/menjo/20150514.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/kokumin-nenkin-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "eba885bc069e02e64ca659f26b5de95f632b0a1b5aff10eaed1c5cea52b95b16",
+      "finding": "退职/就职/第3号切换、14日案内、记录核对任务。",
+      "retain_reason": "与月保费文/受给见込文分工明确。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nenkin.go.jp/tokusetsu/taishoku_menjo.html",
+        "https://www.nenkin.go.jp/section/faq/kokunen/seido/kanyu/haigusha/20130322.html",
+        "https://www.nenkin.go.jp/n_net/"
+      ]
+    },
+    {
+      "path": "src/content/blog/kosodate-kyojo-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "5ee031243f181a7e50faf389983d1eef9b968279affc1654bc70169547bda954",
+      "finding": "16/19/23年龄界、2026所得62万、20岁130万工资例。",
+      "retain_reason": "特定亲族特别控除非重复扶养控除，住民税另表。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1180.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1177.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/koyou-hozen-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "35dd66b65d0c91ce7ba73ecb596a159f9b6695581cf322f87fb614a3c34fe302",
+      "finding": "离职票、求职、7日待期、工资日额与基本手当分别处理。",
+      "retain_reason": "不在文中复制日额上限，转工具检查适用日。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.hellowork.mhlw.go.jp/insurance/insurance_guide.html",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000135026.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/kyuyo-meisai-no-yomikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "3cb82649cb51db5205784471b7ca2fc29baad2babe654a4eaea9617c70b9ac37",
+      "finding": "295000−61000＝234000是明细算术例，非税额预测。",
+      "retain_reason": "通勤手当课税/社保差异和征收月明确。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.kyoukaikenpo.or.jp/assets/R8_44oita.pdf",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2582.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/neko-nenrei-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "1098a95f295973982c0ae8188cbd3fd78c55f9507b7a69384e3d93290f350579",
+      "finding": "2岁24后+4与AAHA生命阶段表区分。",
+      "retain_reason": "年龄换算非诊断，推测生日不写成接种事实。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC10812130/",
+        "https://www.aaha.org/resources/life-stage-feline/"
+      ]
+    },
+    {
+      "path": "src/content/blog/neko-wakuchin-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "2751cc7d6f00f8e77e339d8cd87b52795e01243f332f6a2add1f0927e7f49e65",
+      "finding": "接种记录/风险与产品条件为主，不给一刀切日程。",
+      "retain_reason": "WSAVA不等于日本每个产品承认条件；真人兽医判定待实际。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://wsava.org/wp-content/uploads/2024/04/WSAVA-Vaccination-guidelines-2024.pdf"
+      ]
+    },
+    {
+      "path": "src/content/blog/nematsu-hoken-kakujo-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "fe7a6dc116272c7205f3d221c6b5ed20f773bdb88adb90073ad79e220819e214",
+      "finding": "6万保费所得控除35000/住民28000分开，返金非控除额。",
+      "retain_reason": "此前已修两税混用；本轮No1140复核令和8年分以后特例。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1145.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1130.htm",
+        "https://www.jili.or.jp/knows_learns/q_a/tax/560.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/nematsu-ikura-modoru.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "b755dd8fd0715bce66e6cb35cf264acd5eeb450df6367358e59ea46b770774ef",
+      "finding": "年税8万与源泉12/8/6万三例明确还付/不足。",
+      "retain_reason": "工具未覆盖扶养等条件，结果仅概算。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2662.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2675.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/nematsu-jishin-hoken-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "6bb2759d5dab8eed5517a187f8b4ecfd7dbf56ba4e4ee093a3c5a040702f97bf",
+      "finding": "证书当年额、5万上限、旧长期同合同择一。",
+      "retain_reason": "住民税另算，工具不支持旧合同选择。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1145.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2662.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/nematsu-kenmin-kyosai-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "b5aad51253a341c6cd3458af8ef58b3ae77fc8eac9dc59efda60b2a4e59e358f",
+      "finding": "割戻不双扣、共济2万+民间3万两税32500/26500。",
+      "retain_reason": "不是商品共通金额，链接现有复制控除功能。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm",
+        "https://www.kyosai-cc.or.jp/mutual/fire/earthquake.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/nematsu-kin-itsu.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "cb576567d98636e1651dbd358a669cecf644e8ee2864d9c7fc44ced2d1947391",
+      "finding": "何时入账任务，明细/单独振込与税务署还付不同。",
+      "retain_reason": "没有全国固定日期，不保证3月必达。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2675.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2030.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/nematsu-shinai-to-dou-naru.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "716d68f523b1ae4362b59cf97a433f7e2bacfaf9fd14572469b2b161fa727ad5",
+      "finding": "未提交/退职/多雇主处理表、少额所得再申告。",
+      "retain_reason": "没有年调不一定追加税/罚款；义务不能工具判断。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2662.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2020.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2030.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/nencho-chosei-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "e4af71e6f0746cd41b2f7417fb93daf47dfce7b817b99cfefb06be0394fb6bbd",
+      "finding": "当年精算与翌年源泉用纸区分、104万及所得/税额控除。",
+      "retain_reason": "12/1生效明确，纸件实际版本需员工确认。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2662.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/nenkin-no-kakehiki.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "2ee91eea198985ea8f14d9888e5dda9391ecac15989e0fd9661d153b8e1878d9",
+      "finding": "记录核对→将来条件→年额/月额，延后0.7%与定年分开。",
+      "retain_reason": "不是独立年金额计算页，保留操作任务。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nenkin.go.jp/n_net/",
+        "https://www.nenkin.go.jp/service/jukyu/seido/roureinenkin/jukyu-yoken/20140421-01.html",
+        "https://www.nenkin.go.jp/service/jukyu/seido/roureinenkin/kuriage-kurisage/20140421-02.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/part-time-shakaihoken-nyuugaku-joken.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "14971a936fa71db3d612204a6635860a1454f53ffc4a97ca8849ced0ed504fd7",
+      "finding": "先3/4再20小时/51人/学生/雇期，记载10月变化。",
+      "retain_reason": "原88k条件不能反复复制；本轮未重新认证政策。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nenkin.go.jp/service/kounen/tekiyo/jigyosho/tanjikan.html",
+        "https://www.mhlw.go.jp/stf/newpage_76324.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/password-anzen-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "44a600415a94cd824fb560362718a885430d39dbac4b58866d7179cdb50b092b",
+      "finding": "NIST15字条件、随机16字、保管/恢复/多要素区别。",
+      "retain_reason": "规范面向验证侧，未声称15字绝对安全。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://pages.nist.gov/800-63-4/sp800-63b.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/rihumu-zeizei-taisaku.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "a34e24c3b060c8e34a0e284f913ada2b8613302bdea761ae2065424122c6c47d",
+      "finding": "0.7%算例7万而非70万、改修资格与税额控除。",
+      "retain_reason": "实际入居年/工事种类/证明另核，不给审批结论。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1211-4.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/rokusei-aisho-kekka-yomikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "9ca029cc0c01bdadf2fecdcf3957aece465272cdc073c0d0df058625cc3871f9",
+      "finding": "双向地运78/88均值83与2026年运分离。",
+      "retain_reason": "保留双人任务，不把独自评分当概率或官方鉴定。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.senjutsu.jp/labo_6sei/aishou",
+        "https://fortune.netoff.co.jp/rokusei/keisan/"
+      ]
+    },
+    {
+      "path": "src/content/blog/rokusei-daisakkai-jidou-keisan.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "aa4207cb5d3392666cebdca66edee88eb791adb45d8a37c21be0f70f4e79c859",
+      "finding": "大杀界入口导航、三步任务、计算例与各专题分流。",
+      "retain_reason": "与四篇细分文分工；旧文无来源字段但正文有11/7来源日期。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://fortune.netoff.co.jp/rokusei/keisan/"
+      ]
+    },
+    {
+      "path": "src/content/blog/rokusei-keisan-machigai.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "96fa55ce678929417ba8a553f7bb5498aae4e8b4cba8db4cfef8e59f7806d252",
+      "finding": "运命数9→23、60/61/78折返、暦年/立春差别。",
+      "retain_reason": "专做计算不一致排查，不扩成性格内容。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://fortune.netoff.co.jp/rokusei/keisan/",
+        "https://www.senjutsu.jp/labo_6sei"
+      ]
+    },
+    {
+      "path": "src/content/blog/rokusei-nenun-yomikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "b874c5c83b141081ee771bfaab4b92534c1f48e3cc14fd6299de014e3f3c9853",
+      "finding": "12周期顺序、2029-31完整三年和2032种子。",
+      "retain_reason": "计划整理示例不预测事件；日/月运不从年运推断。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.senjutsu.jp/labo_6sei",
+        "https://daisakkai.net/nenun"
+      ]
+    },
+    {
+      "path": "src/content/blog/rokusei-reigou-yomikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "cd191303682a0b08e8ecc48758cf7554b28ee508504dae94bb5ef898e17a7128",
+      "finding": "出生年停止、12类型干支、3组主副星、三个生日例。",
+      "retain_reason": "霊合身份与今年年运分开，不虚构综合评分。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://fortune.netoff.co.jp/rokusei/reigousei/",
+        "https://fortune.netoff.co.jp/rokusei/keisan/",
+        "https://www.senjutsu.jp/labo_6sei"
+      ]
+    },
+    {
+      "path": "src/content/blog/saitei-chingin-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "de19d605c1c1a9ecdc5db93ff1346778cfe0b6c9945ca714551800b40e4e833c",
+      "finding": "21万/160＝1312.5与总支给差，适用地区生效日。",
+      "retain_reason": "金额来自47地区工具，本轮复用11/5核验不再逐地外查。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/chingin/newpage_43898.html",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/chingin/newpage_43875.html",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudouseisaku/chushoukigyou/joken_kankyou_rule.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/shakaihoken-keisan-hoho.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "546daabd0fc063843196b3e40f08627dc07b6233e2c0866e7dfcff5c8c5dc3ac",
+      "finding": "标准报酬/实工资、9.15%/支援金、30万44145円例。",
+      "retain_reason": "全国平均非支部率，月份与年龄界另确认。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.kyoukaikenpo.or.jp/lp/2026hokenryou/",
+        "https://www.kyoukaikenpo.or.jp/about/business/insurance_rate/premium_prefectures/",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000108634.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/shohi-kyuho-ryoukin-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "2b3b38a2ef5dd639b5f91d87d48f7d60bd095e23bac8c4f7b3b3f19b3070a79d",
+      "finding": "10万30日1232円日割、还本余额91232、上限三档。",
+      "retain_reason": "日割模型不假装贷款工具完全复现合同。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.fsa.go.jp/policy/kashikin/qajigyousha.pdf",
+        "https://www.fsa.go.jp/receipt/soudansitu/index.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/shokugyou-kenshin-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "07ddb5e941bb4899bfa42a8b15ac8c7b7fd49189db43043cda9615e602ce3c28",
+      "finding": "基本手当/受讲月10万/教育训练三类区分。",
+      "retain_reason": "免费训练非全费用免费，资格不由工具认定。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/kyushokusha_shien/index.html",
+        "https://www.mhlw.go.jp/hellotraining/support/"
+      ]
+    },
+    {
+      "path": "src/content/blog/shotokuzei-keisan-hoho.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "538d74564c3c080bb5d3969e05942d1979a020497dc27f8c844b4f5d539c10f9",
+      "finding": "2026年分104万、工资360万所得244万、税43903例。",
+      "retain_reason": "当年所得税与上年住民税不套用；本轮No1199/1410复核。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/shoubyouteate-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "d766560dca0d5c6e5a9a3b7b0d7f5669eee78e5deb6f2a1872ad643e2d4ed678",
+      "finding": "等待3天、17万先10円四舍五入→3780、工资逐日调整。",
+      "retain_reason": "保留法规舍入，不强制floor；12个月不足另比较。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.kyoukaikenpo.or.jp/benefit/injury_and_sickness_allowance/"
+      ]
+    },
+    {
+      "path": "src/content/blog/shussan-yoteibi-no-keisan.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "e654092c55a8e1c9d9ecaaef3429dbc14285e510d2d2b89aea6b0be6f61810a7",
+      "finding": "280日三个跨年例、0周、266日并非受精确证。",
+      "retain_reason": "医师超声结果优先，非预产日保证。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.sendai.jrc.or.jp/patient/expectantMothers/obstetricsAndGynecologyNews/511/"
+      ]
+    },
+    {
+      "path": "src/content/blog/suisui-ryou-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "0ac5ae82e918932a11182bfb7443153102a70a0626f9b6352c9a746cbcbbe381",
+      "finding": "25/30/40模型与饮水目标/食物水分分开。",
+      "retain_reason": "正文已限定健康边界；只修纯函数Infinity，未改变模型或医学宣称。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000212502.html",
+        "https://www.mhlw.go.jp/seisakunitsuite/bunya/kenkou_iryou/kenkou/nettyuu/nettyuu_taisaku/prevent.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/taishokukin-zeikin-keisan.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "2420f2ce7b784497aa81851345b32085e3c45e51023bb7869c3a1f67a1f3c584",
+      "finding": "勤续端数上取、2分之1例外、2000万手取19594298。",
+      "retain_reason": "不把退职金填給与工具，多次一时金调节未覆盖。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1420.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/tsuma-fuyo-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "c7b8c6a6e0823eb8680238498b289a21928fc7e204121075c41733772a4af13b",
+      "finding": "税/健康保险/公司手当三个任务，150万例与对表链接。",
+      "retain_reason": "不等同税免征线与社保扶养线。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1191.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1195.htm",
+        "https://www.nenkin.go.jp/service/kounen/tekiyo/jigyosho/tanjikan.html"
+      ]
+    },
+    {
+      "path": "src/content/blog/wareki-seireki-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "a75f44b233c8b85efd973f7823a56ee54b2b9574dd97d99fb4bfa6af0970fad1",
+      "finding": "令和/平成/昭和加数和2019/1989月日边界。",
+      "retain_reason": "年换算不等于旧历转换，原样保留。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.e-tax.nta.go.jp/topics/2019/topics_190507.htm"
+      ]
+    },
+    {
+      "path": "src/content/blog/warikan-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "140358731ef35ab82a226a86c046346862abd25b4183fee56ee409c23fa786d0",
+      "finding": "12000七人余2円、饮料另算、三人立替精算。",
+      "retain_reason": "参与人合意与算术区别，非强制平均。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": []
+    },
+    {
+      "path": "src/content/blog/yakudoshi-no-kakikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "60f89300cf8428835aa7e983701366c3f6710e165f0012795b4a5388f4b71ce4",
+      "finding": "1985生于2026数え42而满40/41、出生年逆算。",
+      "retain_reason": "社寺差异与科学界限清楚，不制造新年份页。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.jinjahoncho.or.jp/omairi/yakubarai/"
+      ]
+    },
+    {
+      "path": "src/content/blog/zeizei-kakikae-no-yarikata.md",
+      "read": true,
+      "read_scope": "全文含frontmatter、正文、算例、来源、关联入口；不是全来源重新事实认证",
+      "read_date": "2026-11-08",
+      "sha256": "8f0777e0676eb7546e4f5dc6e0863e40e468aae78517945181056c38c6fc588c",
+      "finding": "10/8%逆算、混合品2392円、发票每税率一次舍入。",
+      "retain_reason": "多处基础式重复但服务手算任务，未为字数重写；固定资产推荐较弱留待需求确认。",
+      "action": "retain",
+      "unverified": "未逐条重新在线核验全部外部事实；引用日期保留原证据，不使用构建日。",
+      "sources_in_file": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6102.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6371.htm",
+        "https://www.mof.go.jp/tax_policy/summary/consumption/a_001.htm"
+      ]
+    }
+  ]
+}

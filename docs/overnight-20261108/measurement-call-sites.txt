@@ -1,0 +1,78 @@
+src/components/ResultShare.astro:55:      const track = () => { try { if(resultUrl) window.gtag?.('event','result_url_share',{tool_slug:document.body.dataset.toolSlug || '',method:act}); } catch {} };
+src/components/AgeTableLookup.astro:29:      if (!tracked && typeof window.gtag === 'function') { window.gtag('event', 'age_table_lookup', { tool_slug: root.dataset.lookupSlug, lookup_mode: byAge ? 'age' : 'birth-year' }); tracked = true; }
+src/scripts/rokusei-form.js:19:    if(!tracked){window.trackCalculatorResult?.(eventType);tracked=true;}
+src/scripts/work-plan-form.js:15: $('plan-result').hidden=false;window.setResultShare?.(r.title,{url:sharedResultUrl(tool,r.input,location.origin)});if(!tracked){window.trackCalculatorResult?.(tool);tracked=true;}
+src/pages/jisa/[city].astro:322:    window.trackCalculatorResult?.('japan-to-city');
+src/pages/running-pace/index.astro:41: if(user&&!tracked){window.trackCalculatorResult?.('running-pace');tracked=true;}
+src/pages/eigyoubi/index.astro:38:document.querySelector('#copy-embed').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.querySelector('#embed-code').value);document.querySelector('#embed-feedback').textContent='コピーしました。';try { window.gtag?.('event','business_embed_copy',{tool_slug:'eigyoubi'}); } catch {}}catch{document.querySelector('#embed-code').select();document.querySelector('#embed-feedback').textContent='コードを選択しました。手動でコピーしてください。';}});
+src/pages/eigyoubi/index.astro:39:document.querySelectorAll('[data-business-pdf]').forEach(a=>a.addEventListener('click',()=>window.gtag?.('event','business_calendar_pdf_download',{tool_slug:'eigyoubi',year:a.dataset.businessPdf})));
+src/pages/eigyoubi/index.astro:58:  if(user&&!tracked){window.trackCalculatorResult?.('business-calendar');tracked=true;}
+src/pages/eigyoubi/index.astro:61:document.querySelector('#business-csv').addEventListener('click',()=>{if(!current){window.hideResultShare?.();return;}downloadCsv(`eigyoubi-${current.year}-${current.month}.csv`,[['日付','曜日','区分','休日名'],...rowsFor(current)]);window.gtag?.('event','business_calendar_download',{tool_slug:'eigyoubi'});});render();
+src/pages/eigyoubi/[year]/index.astro:27:<script>document.querySelectorAll('[data-calendar-download]').forEach(a=>a.addEventListener('click',()=>window.gtag?.('event','calendar_data_download',{tool_slug:'eigyoubi-year',format:a.dataset.calendarDownload})));</script>
+src/pages/eigyoubi/[year]/[month].astro:37:document.querySelector('#month-csv').addEventListener('click',()=>{const c=businessMonth(year,month);downloadCsv(`eigyoubi-${year}-${String(month).padStart(2,'0')}.csv`,[['日付','曜日','区分','祝日名'],...c.days.map(d=>[d.date,'日月火水木金土'[d.weekday],d.working?'営業日':'休日',d.holiday])]);window.gtag?.('event','calendar_data_download',{tool_slug:'eigyoubi-month',format:'csv'});});
+src/pages/eigyoubi/[year]/[month].astro:38:document.querySelector('[data-customize-month]').addEventListener('click',()=>window.gtag?.('event','office_month_customize',{tool_slug:'eigyoubi-month'}));
+src/pages/widgets/index.astro:18:document.querySelector('#embed-copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(html.value);document.querySelector('#embed-feedback').textContent='掲載コードをコピーしました。';window.gtag?.('event','calendar_embed_copy',{tool_slug:'widgets',widget_type:kind.value});}catch{html.focus();html.select();document.querySelector('#embed-feedback').textContent='コードを選択しました。手動でコピーしてください。';}});render();
+src/pages/umaredoshi/[year].astro:345:    window.trackCalculatorResult?.('exact-age');
+src/pages/kinzoku-nensuu/index.astro:279:      window.trackCalculatorResult?.('kinzoku-nensuu');
+src/pages/kinzoku-nensuu/index.astro:308:      window.trackCalculatorResult?.('entry-year-reverse');
+src/pages/kinzoku-nensuu/index.astro:310:      window.gtag?.('event', 'entry_year_reverse_result', { tool_slug: 'kinzoku-nensuu' });
+src/pages/daikei-menseki/index.astro:138:    window.trackCalculatorResult?.(target);
+src/pages/shukushaku/index.astro:145:    if (user && !tracked.has(mode) && typeof window.trackCalculatorResult === 'function') { window.trackCalculatorResult(mode); tracked.add(mode); }
+src/pages/renkyu/2027.astro:25:select.addEventListener('change',()=>{history.replaceState(null,'',`#leave=${select.value}`);render();if(!tracked){window.gtag?.('event','leave_plan_view',{tool_slug:'renkyu-2027'});tracked=true;}});
+src/pages/yukyu-nissu/index.astro:244:      window.trackCalculatorResult?.('yukyu-nissu');
+src/layouts/ToolLayout.astro:96:  <!-- Google tag (gtag.js) — GA4 全站计测。is:inline 必须保留，否则 Astro 会处理脚本导致 GA 失效 -->
+src/layouts/ToolLayout.astro:97:  <script async is:inline src="https://www.googletagmanager.com/gtag/js?id=G-XM8LC5MPHT"></script>
+src/layouts/ToolLayout.astro:100:    function gtag(){dataLayer.push(arguments);}
+src/layouts/ToolLayout.astro:101:    gtag('js', new Date());
+src/layouts/ToolLayout.astro:106:    gtag('config', 'G-XM8LC5MPHT', { page_location: analyticsPage, page_referrer: analyticsReferrer });
+src/layouts/ToolLayout.astro:181:      try { window.gtag?.('event','shared_result_return',{tool_slug:document.body.dataset.toolSlug || 'unknown'}); } catch {}
+src/layouts/ToolLayout.astro:183:    window.trackCalculatorResult = function(resultType) {
+src/layouts/ToolLayout.astro:184:      if (typeof window.gtag !== 'function') return;
+src/layouts/ToolLayout.astro:185:      try { window.gtag('event', 'calculator_result_view', {
+src/layouts/ToolLayout.astro:193:      if (!link || typeof window.gtag !== 'function') return;
+src/layouts/ToolLayout.astro:194:      window.gtag('event', 'related_content_click', {
+src/layouts/ToolLayout.astro:203:      if (!link || link.closest('.related, .related-articles') || typeof window.gtag !== 'function') return;
+src/layouts/ToolLayout.astro:206:      window.gtag('event', 'contextual_link_click', {
+src/pages/nissu/index.astro:243:    window.trackCalculatorResult?.(mode);
+src/pages/nenrei-hayami/index.astro:163:    window.gtag?.('event', 'age_table_pdf_download', { tool_slug: 'nenrei-hayami', year: link.dataset.pdfYear });
+src/pages/nenrei-hayami/2027.astro:15:<script>document.querySelector('#annual-age-pdf').addEventListener('click',()=>window.gtag?.('event','age_table_pdf_download',{tool_slug:'nenrei-hayami/2027',year:2027}));</script>
+src/pages/nihongo-seikei/index.astro:47:  function render(){const input=$('seikei-input').value;const output=normalizeJapaneseText(input,{spaces:$('spaces').checked,trimLines:$('trim-lines').checked,blankLines:$('blank-lines').checked,punctuation:$('punctuation').checked,joinWrapped:$('join-wrapped').checked,unicode:$('unicode').checked?'NFC':false});$('seikei-output').value=output;const before=[...input].length,after=[...output].length;$('before-count').textContent=before.toLocaleString('ja-JP');$('after-count').textContent=after.toLocaleString('ja-JP');$('reduced-count').textContent=Math.max(0,before-after).toLocaleString('ja-JP');if(output&&!tracked){window.trackCalculatorResult?.('text_normalize');tracked=true;}}
+src/pages/rokusei-aisho/index.astro:209:      window.trackCalculatorResult?.('rokusei-aisho');
+src/pages/gakureki/index.astro:50:  function render(){const birth=$('birth-date').value;if(!birth){$('history-result').hidden=true;$('history-error').hidden=true;return;}const result=academicHistory(birth,{higherEducation:$('higher-type').value,entranceDelay:$('entrance-delay').value,graduationDelay:$('graduation-delay').value,graduateSchool:$('graduate-school').checked});if(!result){$('history-error').textContent='正しい生年月日を入力してください。';$('history-error').hidden=false;$('history-result').hidden=true;return;}$('history-error').hidden=true;$('history-rows').replaceChildren();const calendar=$('calendar').value;const lines=[];Object.entries(rowLabels).forEach(([key,label])=>lines.push(addRow(label,result[key],calendar)));if(result.higher)lines.push(addRow(result.higher.label,result.higher,calendar));if(result.graduate)lines.push(addRow(result.graduate.label,result.graduate,calendar));copyText=lines.join('\n');$('cohort-note').textContent=`${result.cohort}年4月2日～${result.cohort+1}年4月1日生まれの学年として計算`;$('history-result').hidden=false;if(!tracked){window.trackCalculatorResult?.('academic_history');tracked=true;}}
+src/pages/taikakusen/index.astro:44: if(user&&!tracked.has(mode)){window.gtag?.('event','diagonal_calculation',{tool_slug:'taikakusen',calculation_mode:mode});tracked.add(mode);}
+src/pages/tsubo-heibei/index.astro:231:    window.trackCalculatorResult?.(mode);
+src/pages/bunsuu/index.astro:306:    window.trackCalculatorResult?.(mode);
+src/pages/seimei-hoken-kojo/index.astro:87:  $('insurance-result').hidden=false;if(!tracked){window.trackCalculatorResult?.('seimei-hoken-kojo');tracked=true;}
+src/pages/seimei-hoken-kojo/index.astro:93:   try { await navigator.clipboard.writeText(String(deduction[kind])); $('insurance-copy-status').textContent = `${kind === 'income' ? '所得税' : '住民税'}の控除額をコピーしました`; window.gtag?.('event','deduction_amount_copy',{tool_slug:'seimei-hoken-kojo',tax_type:kind}); }
+src/pages/denwa-format/index.astro:47:  function render(){const rows=formatPhoneLines($('phone-input').value);const mode=document.querySelector('input[name="mode"]:checked').value;let valid=0,invalid=0;$('phone-output').value=rows.map(row=>{if(!row.original)return '';if(row.valid){valid++;return mode==='international'?row.international:row.formatted;}invalid++;return row.original;}).join('\n');$('phone-summary').textContent=valid||invalid?`変換できた番号：${valid}件 ／ 確認が必要：${invalid}件`:'電話番号を入力してください';if(valid&&!tracked){window.trackCalculatorResult?.('phone_format');tracked=true;}}
+src/pages/kaitensuu/index.astro:110:  function update(user=false){ updates[mode](); if(user && !$(resultIds[mode]).hidden && !tracked.has(mode)){ window.trackCalculatorResult?.(mode); tracked.add(mode); } }
+src/pages/saniku/index.astro:278:      window.trackCalculatorResult?.('leave_schedule');
+src/pages/saniku/index.astro:321:      window.trackCalculatorResult?.('benefit_estimate');
+src/pages/heihoukon/index.astro:234:    window.trackCalculatorResult?.(mode);
+src/pages/warikai/index.astro:322:      window.trackCalculatorResult?.(currentMode);
+src/pages/teikou/index.astro:130:  function publish(mode,text){if(mode!==activeMode)return;window.setResultShare?.(text);if(initialized&&!tracked.has(mode)){window.trackCalculatorResult?.(mode);tracked.add(mode)}}
+src/pages/bonus-tedori/index.astro:91:  if (!tracked) { window.trackCalculatorResult?.('bonus-tedori'); tracked=true; }
+src/pages/noudo/index.astro:135:  function showResult(mode,summary){if(activeMode!==mode)return;window.setResultShare?.(summary);if(initialized&&!tracked.has(mode)){window.trackCalculatorResult?.(mode);tracked.add(mode)}}
+src/pages/gasoline/index.astro:272:      window.trackCalculatorResult?.('fuel_cost');
+src/pages/gasoline/index.astro:307:      window.trackCalculatorResult?.('fuel_economy');
+src/pages/romaji-kana/index.astro:46:  function render(){const value=$('romaji-input').value;const direction=$('direction').value;$('system-group').hidden=direction!=='kana-romaji';let output='';if(direction==='kana-romaji')output=kanaToRomaji(value,$('system').value);else if(direction==='romaji-hira')output=romajiToHiragana(value);else output=romajiToKatakana(value);$('romaji-output').value=output;if(output&&!tracked){window.trackCalculatorResult?.(direction);tracked=true;}}
+src/pages/kinmu-jikan/index.astro:38: if(user&&!bad&&r.workedDays&&!tracked){window.trackCalculatorResult?.('monthly-work');tracked=true;}
+src/pages/kinmu-jikan/index.astro:53:document.querySelector('#work-export').addEventListener('click',()=>{const {r,data}=render();if(r.errors.length||!r.workedDays)return;downloadCsv(`kinmu-${month.value}.csv`,[['日付','出勤','退勤','翌日退勤','休憩分','実働分','実働時間'],...data.map((d,i)=>[dates[i].date,d.start,d.end,d.nextDay?'翌日':'',d.breakMinutes,r.values[i]??'',r.values[i]===null?'':timeText(r.values[i])]),['合計','','','','',r.totalMinutes,timeText(r.totalMinutes)]]);window.gtag?.('event','work_time_download',{tool_slug:'kinmu-jikan'});});makeRows();
+src/pages/kinmu-jikan/template.astro:15:<script>document.querySelectorAll('[data-template-year]').forEach(link=>link.addEventListener('click',()=>window.gtag?.('event','work_template_download',{tool_slug:'kinmu-jikan',year:link.dataset.templateYear})));</script>
+src/pages/enko/index.astro:104:    if (user && !tracked.has(kind) && typeof window.trackCalculatorResult === 'function') { window.trackCalculatorResult(kind); tracked.add(kind); }
+src/pages/csv-mojibake/index.astro:144:    window.trackCalculatorResult?.('csv_download');
+src/pages/sankakkei-menseki/index.astro:254:    window.trackCalculatorResult?.(mode);
+src/pages/juminzei/index.astro:283:    if (!resultTracked && typeof window.trackCalculatorResult === 'function') {
+src/pages/juminzei/index.astro:284:      window.trackCalculatorResult('resident-tax');
+src/pages/ikuji/index.astro:92:    if (!tracked) { window.trackCalculatorResult?.('childcare_benefit'); tracked = true; }
+src/pages/ginkou-eigyoubi/index.astro:46:  function track(kind, user) { if (user && !tracked.has(kind) && typeof window.trackCalculatorResult === 'function') { window.trackCalculatorResult(kind); tracked.add(kind); } }
+src/pages/ginkou-eigyoubi/index.astro:63:  $('bank-csv').addEventListener('click', () => { if (!current) return; downloadCsv(`ginkou-eigyoubi-${current.year}-${current.month}.csv`, [['日付', '曜日', '区分', '休業理由'], ...current.days.map(day => [day.date, '日月火水木金土'[day.weekday], day.working ? '銀行営業日' : '休業日', day.reason])]); window.gtag?.('event', 'bank_calendar_download', { tool_slug: 'ginkou-eigyoubi' }); });
+src/pages/hayasa/index.astro:284:  function trackValidResult(valid){if(valid&&!hasTrackedResult){window.trackCalculatorResult?.('speed');hasTrackedResult=true;}}
+src/pages/hayasa/index.astro:347:  document.querySelectorAll('[data-speed-preset]').forEach(btn=>btn.addEventListener('click',()=>{$('converter-value').value=btn.dataset.speedPreset;$('converter-unit').value='kmh';updateConverter();trackValidResult(true);window.gtag?.('event','speed_conversion_preset',{tool_slug:'hayasa',preset:btn.dataset.speedPreset});}));
+src/pages/nematsu/index.astro:164:    if (!resultTracked && typeof window.trackCalculatorResult === 'function') {
+src/pages/nematsu/index.astro:165:      window.trackCalculatorResult('nematsu');
+src/pages/atsuryoku/index.astro:137:  function publish(mode,text){if(mode!==activeMode)return;window.setResultShare?.(text);if(initialized&&!tracked.has(mode)){window.trackCalculatorResult?.(mode);tracked.add(mode)}}
+src/pages/rokusei/reigou.astro:114:    if (!tracked) { window.trackCalculatorResult?.('reigou'); tracked = true; }
+src/pages/rokusei/index.astro:354:      window.trackCalculatorResult?.('fortune');
+src/pages/rokusei/daisakkai-2027.astro:27:function showAnswer(){const row=[...document.querySelectorAll('[data-type]')].find(r=>r.dataset.type===select.value);answer.hidden=!row;answer.textContent=row?.dataset.answer||'';if(row&&!tracked&&typeof window.gtag==='function'){window.gtag('event','annual_fortune_lookup',{tool_slug:'rokusei/daisakkai-2027',year:2027});tracked=true;}}
+src/pages/rokusei/shukumei-daisakkai.astro:202:      window.trackCalculatorResult?.('fortune');

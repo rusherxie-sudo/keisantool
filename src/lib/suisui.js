@@ -1,7 +1,7 @@
 export function calcSuisui(weight, activity = 'normal') {
   const numWeight = Number(weight);
 
-  if (isNaN(numWeight) || numWeight <= 0) {
+  if (!Number.isFinite(numWeight) || numWeight <= 0) {
     return {
       recommended: 0,
       glasses: 0,

@@ -52,7 +52,7 @@
       const btn = e.target.closest('button.rshare__btn');
       if (!btn) return;
       const act = btn.dataset.act;
-      const track = () => { if(resultUrl) window.gtag?.('event','result_url_share',{tool_slug:document.body.dataset.toolSlug || '',method:act}); };
+      const track = () => { try { if(resultUrl) window.gtag?.('event','result_url_share',{tool_slug:document.body.dataset.toolSlug || '',method:act}); } catch {} };
       if (act === 'line') {
         window.open('https://line.me/R/share?text=' + encodeURIComponent(full()), '_blank', 'noopener');track();
       } else if (act === 'sys') {

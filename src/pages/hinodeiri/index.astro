@@ -62,12 +62,12 @@ const jsonld = {
       日付と都市を選ぶと、その日の日の出・日の入り時刻と昼の長さ（日の出から日の入りまでの時間）がその場で自動計算されます。ボタンを押す必要はありません。北は稚内・札幌から南は那覇まで、全国15都市に対応しています。
     </p>
     <p>
-      計算には、NOAA（米国海洋大気庁）が公開している太陽位置式（低精度版）を使用しています。地球の公転軌道・地軸の傾き・各都市の緯度経度から、太陽が地平線に対して沈む角度（大気差・視半径を考慮した基準）になる時刻を求めています。国立天文台の実測値との突き合わせで、実際の時刻とのずれはおおむね1分以内であることを確認しています。
+      計算には、NOAA（米国海洋大気庁）が公開している太陽位置式（低精度版）を使用しています。地球の公転軌道・地軸の傾き・各都市の緯度経度から、太陽が地平線に対して沈む角度（大気差・視半径を考慮した基準）になる時刻を求めています。登録地点の標高は0mとして計算します。全都市・全日付の誤差を独立に検証したものではありません。日付は日本時間の暦日です。
     </p>
     <p>
       緯度が高い地域ほど、夏は昼が長く冬は昼が短くなる差が大きくなります。たとえば夏至の頃は稚内のほうが那覇より昼が長く、冬至の頃は逆に那覇のほうが昼が長くなります。
     </p>
-    <div class="disclaimer">※ 計算結果はあくまで参考値です（実際の時刻と1分程度の差が生じる場合があります）。標高や地形による見え方の違いは考慮していません。正式な時刻は国立天文台の発表をご確認ください。</div>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。標高や地形による見え方の違いは考慮していません。薄明や山・建物の遮蔽は含みません。安全判断には使わず、<a href="https://eco.mtk.nao.ac.jp/koyomi/">国立天文台の暦計算室</a>で地点・条件を確認してください。</div>
   </section>
 
   <nav class="howto city-pages" aria-label="都市別の日の出・日の入り時刻">
@@ -81,7 +81,7 @@ const jsonld = {
   <RelatedTools current={slug} />
 
   <Faq items={[
-    { q: '日の出・日の入り時刻はどうやって計算していますか？', a: 'NOAA（米国海洋大気庁）が公開している太陽位置の計算式をもとに、各都市の緯度・経度と日付から算出しています。国立天文台の実測値との誤差はおおむね1分以内です。' },
+    { q: '日の出・日の入り時刻はどうやって計算していますか？', a: 'NOAA（米国海洋大気庁）が公開している太陽位置の計算式をもとに、各都市の緯度・経度と日付から算出しています。標高0mの近似計算であり、全都市・全日付の誤差は未検証です。' },
     { q: 'どの都市に対応していますか？', a: '稚内・札幌・仙台・新潟・金沢・東京・横浜・名古屋・京都・大阪・神戸・広島・福岡・鹿児島・那覇の全国15都市に対応しています。' },
     { q: '昼の長さとは何ですか？', a: '日の出から日の入りまでの時間です。緯度が高い都市ほど、夏至と冬至での昼の長さの差が大きくなります。' },
   ]} />
@@ -91,23 +91,30 @@ const jsonld = {
 
 <script>
   import { hinodeIri } from '../../lib/hinodeiri.js';
+  import { japanDateParts } from '../../lib/japanDate.js';
 
   const $ = (id) => document.getElementById(id);
 
   function todayISO() {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const { year, month, day } = japanDateParts();
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  }
+
+  function clearResult() {
+    for (const id of ['hd-main','hd-sunrise','hd-sunset','hd-length']) $(id).textContent = '―';
+    $('hd-result').classList.remove('visible');
+    window.hideResultShare?.();
   }
 
   function render() {
     const dateVal = $('hd-date').value;
     const cityId = $('hd-city').value;
-    if (!dateVal) return;
+    if (!dateVal) { clearResult(); return; }
     const [y, m, d] = dateVal.split('-').map(Number);
     const r = hinodeIri(y, m, d, cityId);
-    if (!r) return;
+    if (!r) { clearResult(); return; }
 
-    $('hd-city-label').textContent = `${r.city}の日の出・日の入り`;
+    $('hd-city-label').textContent = `${dateVal} ${r.city}の日の出・日の入り`;
     $('hd-main').textContent = `${r.sunrise} 〜 ${r.sunset}`;
     $('hd-sunrise').textContent = r.sunrise;
     $('hd-sunset').textContent = r.sunset;

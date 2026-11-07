@@ -1,13 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
 import BlogCard from './BlogCard.astro';
+import { relatedPosts } from '../lib/related-posts.js';
 
 const { current, category, count = 3 } = Astro.props;
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const catPosts = allPosts.filter((p) => p.id !== current && p.data.category === category);
-const others = allPosts.filter((p) => p.id !== current && p.data.category !== category);
-const related = [...catPosts, ...others].slice(0, count);
+const related = relatedPosts(allPosts, current, category, count);
 ---
 {related.length > 0 && (
   <section class="related-posts">

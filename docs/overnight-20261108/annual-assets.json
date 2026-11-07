@@ -1,0 +1,3231 @@
+{
+  "scope": "仓库年度敏感资产：制度逻辑/包装器、47工资、法规文章、日期与下载依赖。官方URL为现有来源或本轮读取，verification_scope区分未知。",
+  "assets": [
+    {
+      "id": "japan-tax-2026",
+      "path": "src/lib/japan-tax-2026.js",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm"
+      ],
+      "applicable_year": "2025/2026所得年；2027+未获生产支持，不能默认为2026",
+      "effective_date": "2026-12-01（2026年末精算）；2025另表",
+      "last_verified": "2026-11-08",
+      "verification_scope": "本轮在线复核No1199/1410，其余继承10/10；未发现生产2027所得税复用入口",
+      "affected_tools_pages": [
+        "src/pages/juminzei/index.astro",
+        "src/pages/kokuho/index.astro",
+        "src/pages/kyuyo/index.astro",
+        "src/pages/nematsu/index.astro",
+        "src/pages/shotokuzei/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/shakaihoken-keisan-hoho.md",
+        "src/content/blog/tsuma-fuyo-no-kakikata.md",
+        "src/content/blog/hoikuen-ryokin-keisan-hoho.md",
+        "src/content/blog/kakutei-shinkoku-shinai-to-dou-naru.md",
+        "src/content/blog/kakutei-shinkoku-tsuika-nozei-naze.md",
+        "src/content/blog/part-time-shakaihoken-nyuugaku-joken.md",
+        "src/content/blog/nematsu-kenmin-kyosai-kakikata.md",
+        "src/content/blog/kosodate-kyojo-no-kakikata.md",
+        "src/content/blog/kakutei-shinkoku-no-shinsei-hoho.md",
+        "src/content/blog/kenko-hozen-no-kakikata.md",
+        "src/content/blog/nematsu-ikura-modoru.md",
+        "src/content/blog/nematsu-kin-itsu.md",
+        "src/content/blog/shoubyouteate-no-kakikata.md",
+        "src/content/blog/nencho-chosei-no-kakikata.md",
+        "src/content/blog/kyuyo-meisai-no-yomikata.md",
+        "src/content/blog/kokuho-ryoukin-keisan-hoho.md",
+        "src/content/blog/furusato-kakutei-shinkoku-yarikata.md",
+        "src/content/blog/saitei-chingin-no-kakikata.md",
+        "src/content/blog/nematsu-shinai-to-dou-naru.md",
+        "src/content/blog/kekkon-zeikin-haikujo-kojo.md",
+        "src/content/blog/jikyu-kara-getsu-kyu-e-no-kakikata.md",
+        "src/content/blog/nematsu-hoken-kakujo-kakikata.md",
+        "src/content/blog/kekkon-zeikin-no-kakikata.md",
+        "src/content/blog/shotokuzei-keisan-hoho.md",
+        "src/content/blog/nematsu-jishin-hoken-kakikata.md",
+        "src/content/blog/iryouhi-kojo-ikura-modoru.md",
+        "src/content/blog/kokuho-ryoukin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "japan-social-2026",
+      "path": "src/lib/japan-social-2026.js",
+      "official_source_urls": [
+        "https://www.kyoukaikenpo.or.jp/lp/2026hokenryou/",
+        "https://www.kyoukaikenpo.or.jp/assets/R8_44oita.pdf"
+      ],
+      "applicable_year": "2026年度，全国平均概算",
+      "effective_date": "健康介护3月；支援金4月；雇保4月（须按项目核对）",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承既有证据，未重新认证47支部保费",
+      "affected_tools_pages": [
+        "src/pages/kyuyo/index.astro",
+        "src/pages/shakaihoken/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/shakaihoken-keisan-hoho.md",
+        "src/content/blog/tsuma-fuyo-no-kakikata.md",
+        "src/content/blog/part-time-shakaihoken-nyuugaku-joken.md",
+        "src/content/blog/koyou-hozen-no-kakikata.md",
+        "src/content/blog/kenko-hozen-no-kakikata.md",
+        "src/content/blog/nematsu-ikura-modoru.md",
+        "src/content/blog/shoubyouteate-no-kakikata.md",
+        "src/content/blog/kyuyo-meisai-no-yomikata.md",
+        "src/content/blog/kokuho-ryoukin-keisan-hoho.md",
+        "src/content/blog/saitei-chingin-no-kakikata.md",
+        "src/content/blog/jikyu-kara-getsu-kyu-e-no-kakikata.md",
+        "src/content/blog/kokumin-nenkin-hokenryo.md",
+        "src/content/blog/kokuho-ryoukin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "kokuho",
+      "path": "src/lib/kokuho.js",
+      "official_source_urls": [
+        "https://www.city.osaka.lg.jp/fukushima/page/0000624311.html"
+      ],
+      "applicable_year": "2026年度，2025年所得，练马/大阪",
+      "effective_date": "2026-04-01",
+      "last_verified": "2026-11-08",
+      "verification_scope": "本轮仅重新读取练马4区分；大阪继承10/10",
+      "affected_tools_pages": [
+        "src/pages/kokuho/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/part-time-shakaihoken-nyuugaku-joken.md",
+        "src/content/blog/kenko-hozen-no-kakikata.md",
+        "src/content/blog/shoubyouteate-no-kakikata.md",
+        "src/content/blog/kokuho-ryoukin-keisan-hoho.md",
+        "src/content/blog/kekkon-zeikin-no-kakikata.md",
+        "src/content/blog/kokuho-ryoukin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": [
+        "https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/keisan_hoho.html"
+      ]
+    },
+    {
+      "id": "juminzei",
+      "path": "src/lib/juminzei.js",
+      "official_source_urls": [
+        "https://www.tax.metro.tokyo.lg.jp/kazei/kojin_ju.html",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm"
+      ],
+      "applicable_year": "2026年度＝2025所得",
+      "effective_date": "2026-04-01；特别征收6月起",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承旧核验；非课税与超额税率地方差异未全验",
+      "affected_tools_pages": [
+        "src/pages/juminzei/index.astro",
+        "src/pages/kokuho/index.astro",
+        "src/pages/kyuyo/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/tsuma-fuyo-no-kakikata.md",
+        "src/content/blog/hoikuen-ryokin-keisan-hoho.md",
+        "src/content/blog/kakutei-shinkoku-shinai-to-dou-naru.md",
+        "src/content/blog/kakutei-shinkoku-tsuika-nozei-naze.md",
+        "src/content/blog/part-time-shakaihoken-nyuugaku-joken.md",
+        "src/content/blog/kakutei-shinkoku-no-shinsei-hoho.md",
+        "src/content/blog/kenko-hozen-no-kakikata.md",
+        "src/content/blog/shoubyouteate-no-kakikata.md",
+        "src/content/blog/kyuyo-meisai-no-yomikata.md",
+        "src/content/blog/kokuho-ryoukin-keisan-hoho.md",
+        "src/content/blog/furusato-kakutei-shinkoku-yarikata.md",
+        "src/content/blog/saitei-chingin-no-kakikata.md",
+        "src/content/blog/nematsu-shinai-to-dou-naru.md",
+        "src/content/blog/kekkon-zeikin-haikujo-kojo.md",
+        "src/content/blog/jikyu-kara-getsu-kyu-e-no-kakikata.md",
+        "src/content/blog/kekkon-zeikin-no-kakikata.md",
+        "src/content/blog/shotokuzei-keisan-hoho.md",
+        "src/content/blog/kokuho-ryoukin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "seimei-hoken-kojo",
+      "path": "src/lib/seimei-hoken-kojo.js",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm"
+      ],
+      "applicable_year": "2026/2027所得年及次年度住民税",
+      "effective_date": "来源明文令和8年分以后；23岁未满条件需每年判定",
+      "last_verified": "2026-11-08",
+      "verification_scope": "本轮No1140确认令和8年分以后，不以2026沿用推断2027",
+      "affected_tools_pages": [
+        "src/pages/seimei-hoken-kojo/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/nematsu-kenmin-kyosai-kakikata.md",
+        "src/content/blog/kojin-hozen-no-kakikata.md",
+        "src/content/blog/nematsu-hoken-kakujo-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "bonus-tedori",
+      "path": "src/lib/bonus-tedori.js",
+      "official_source_urls": [
+        "https://www.nta.go.jp/publication/pamph/gensen/zeigakuhyo2026/02.htm"
+      ],
+      "applicable_year": "2026源泉甲乙普通计算，不含特殊分支",
+      "effective_date": "2026-01-01",
+      "last_verified": "2026-09-18",
+      "verification_scope": "继承奖金规格及上线记录，2027未核验",
+      "affected_tools_pages": [
+        "src/pages/bonus-tedori/index.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "shukujitsu",
+      "path": "src/lib/shukujitsu.js",
+      "official_source_urls": [
+        "https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html"
+      ],
+      "applicable_year": "路由2025—2029；官方已公布至2027，2028/2029春秋分预测",
+      "effective_date": "各法定祝日；2028表预定2027年2月公布",
+      "last_verified": "2026-11-08",
+      "verification_scope": "本轮重新读取2026/2027官方表；自动公布年上限是推定不是未来外部证据",
+      "affected_tools_pages": [
+        "src/pages/2027/index.astro",
+        "src/pages/eigyoubi/[year]/[month].astro",
+        "src/pages/eigyoubi/[year]/index.astro",
+        "src/pages/eigyoubi/index.astro",
+        "src/pages/embed/eigyoubi.astro",
+        "src/pages/embed/work-calendar.astro",
+        "src/pages/ginkou-eigyoubi/index.astro",
+        "src/pages/hayasa/index.astro",
+        "src/pages/kinmu-jikan/index.astro",
+        "src/pages/kinzoku-nensuu/index.astro",
+        "src/pages/nenmatsu-nenshi/index.astro",
+        "src/pages/nissu/index.astro",
+        "src/pages/renkyu/2027.astro",
+        "src/pages/result/[tool].astro",
+        "src/pages/running-pace/index.astro",
+        "src/pages/shukujitsu/[year].astro",
+        "src/pages/shukujitsu/index.astro",
+        "src/pages/taishoku-yukyu/index.astro",
+        "src/pages/yukyu-nissu/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/kokumin-nenkin-no-kakikata.md",
+        "src/content/blog/koyou-hozen-no-kakikata.md",
+        "src/content/blog/taishokukin-zeikin-keisan.md"
+      ],
+      "affected_downloads": [
+        "public/downloads/holidays-2026.ics",
+        "public/downloads/holidays-2027.ics",
+        "public/downloads/work-calendar-2027.json",
+        "public/downloads/work-calendar-2026.csv",
+        "public/downloads/work-calendar-2027.csv",
+        "public/downloads/eigyoubi-2027.pdf",
+        "public/downloads/kinmu-template-2026.xlsx",
+        "public/downloads/work-calendar-2026.json",
+        "public/downloads/eigyoubi-2026.pdf",
+        "public/downloads/kinmu-template-2027.xlsx"
+      ],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "office-calendar",
+      "path": "src/lib/office-calendar.js",
+      "official_source_urls": [
+        "https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html"
+      ],
+      "applicable_year": "2026/2027，仅15个月明细路由",
+      "effective_date": "各月1日；无自动公司假日",
+      "last_verified": "2026-11-08",
+      "verification_scope": "复用完整official-holiday-reference fixture，下载与网页同源",
+      "affected_tools_pages": [
+        "src/pages/2027/index.astro",
+        "src/pages/eigyoubi/[year]/[month].astro",
+        "src/pages/eigyoubi/[year]/index.astro",
+        "src/pages/eigyoubi/index.astro",
+        "src/pages/embed/work-calendar.astro",
+        "src/pages/renkyu/2027.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [
+        "public/downloads/holidays-2026.ics",
+        "public/downloads/holidays-2027.ics",
+        "public/downloads/work-calendar-2027.json",
+        "public/downloads/work-calendar-2026.csv",
+        "public/downloads/work-calendar-2027.csv",
+        "public/downloads/eigyoubi-2027.pdf",
+        "public/downloads/kinmu-template-2026.xlsx",
+        "public/downloads/work-calendar-2026.json",
+        "public/downloads/eigyoubi-2026.pdf",
+        "public/downloads/kinmu-template-2027.xlsx"
+      ],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "bank-calendar",
+      "path": "src/lib/bank-calendar.js",
+      "official_source_urls": [
+        "https://laws.e-gov.go.jp/law/356AC0000000059#Mp-At_15",
+        "https://laws.e-gov.go.jp/law/357CO0000000040#Mp-At_5"
+      ],
+      "applicable_year": "2026/2027，银行12/31—1/3独立假期",
+      "effective_date": "各日期；网银/ATM非统一保证",
+      "last_verified": "2026-11-01",
+      "verification_scope": "继承银行法规核验，不重复造工具",
+      "affected_tools_pages": [
+        "src/pages/ginkou-eigyoubi/index.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [
+        "public/downloads/holidays-2026.ics",
+        "public/downloads/holidays-2027.ics",
+        "public/downloads/work-calendar-2027.json",
+        "public/downloads/work-calendar-2026.csv",
+        "public/downloads/work-calendar-2027.csv",
+        "public/downloads/eigyoubi-2027.pdf",
+        "public/downloads/kinmu-template-2026.xlsx",
+        "public/downloads/work-calendar-2026.json",
+        "public/downloads/eigyoubi-2026.pdf",
+        "public/downloads/kinmu-template-2027.xlsx"
+      ],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "rokuyo",
+      "path": "src/lib/rokuyo.js",
+      "official_source_urls": [
+        "https://www.ndl.go.jp/koyomi/chapter3/s3.html"
+      ],
+      "applicable_year": "固定2025—2028；hub构建当月",
+      "effective_date": "旧历换月；中国农历/日本旧历边界不同",
+      "last_verified": "2026-11-08",
+      "verification_scope": "仅文化/起点资料本轮核验；全日期日本旧历独立核验未完成",
+      "affected_tools_pages": [
+        "src/pages/rokuyo/[month].astro",
+        "src/pages/rokuyo/index.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "hinodeiri",
+      "path": "src/lib/hinodeiri.js",
+      "official_source_urls": [
+        "https://gml.noaa.gov/grad/solcalc/"
+      ],
+      "applicable_year": "hub交互日期；15城市静态构建基准年",
+      "effective_date": "每日；年表每年重建",
+      "last_verified": "2026-11-07",
+      "verification_scope": "继承15城整改；仅东京少量fixture，不能声称全期±1分钟",
+      "affected_tools_pages": [
+        "src/pages/hinodeiri/[city].astro",
+        "src/pages/hinodeiri/index.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": [
+        "https://eco.mtk.nao.ac.jp/koyomi/"
+      ]
+    },
+    {
+      "id": "shussan",
+      "path": "src/lib/shussan.js",
+      "official_source_urls": [],
+      "applicable_year": "日期推算，非年度金额",
+      "effective_date": "无固定生效日",
+      "last_verified": "2026-10-10",
+      "verification_scope": "280日与跨年日期需要边界回归；非医疗预言",
+      "affected_tools_pages": [
+        "src/pages/shussan/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/shussan-yoteibi-no-keisan.md",
+        "src/content/blog/hairitsu-keisan-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": [
+        "https://www.sendai.jrc.or.jp/patient/expectantMothers/obstetricsAndGynecologyNews/511/"
+      ],
+      "official_source_gap": "unknown；现有来源并非官方原始资料，待补"
+    },
+    {
+      "id": "saniku",
+      "path": "src/lib/saniku.js",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000158500.html"
+      ],
+      "applicable_year": "2026育休上限及产休日期",
+      "effective_date": "上限通常每年8月1日",
+      "last_verified": "2026-10-10",
+      "verification_scope": "历史8月来源主要转载，官方原始金额证据待补；不称再次通过",
+      "affected_tools_pages": [
+        "src/pages/saniku/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/ikukyu-hoken-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "ikuji",
+      "path": "src/lib/ikuji.js",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000158500.html"
+      ],
+      "applicable_year": "2026育児休业给付",
+      "effective_date": "上限每年8月1日",
+      "last_verified": "2026-10-10",
+      "verification_scope": "需核实与saniku同上限和出生后支援给付条件",
+      "affected_tools_pages": [
+        "src/pages/ikuji/index.astro",
+        "src/pages/saniku/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/shussan-yoteibi-no-keisan.md",
+        "src/content/blog/hairitsu-keisan-no-kakikata.md",
+        "src/content/blog/ikukyu-hoken-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "shitsugyou-teate",
+      "path": "src/lib/shitsugyou-teate.js",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000135026.html"
+      ],
+      "applicable_year": "当前页面标注适用期，2027未核验",
+      "effective_date": "日额上下限每年8月1日",
+      "last_verified": "2026-10-10",
+      "verification_scope": "未重新读官方具体日额表，列作高优先更新门禁",
+      "affected_tools_pages": [
+        "src/pages/shitsugyou-teate/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/shokugyou-kenshin-no-kakikata.md",
+        "src/content/blog/koyou-hozen-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "shoubyou",
+      "path": "src/lib/shoubyou.js",
+      "official_source_urls": [
+        "https://www.kyoukaikenpo.or.jp/benefit/injury_and_sickness_allowance/"
+      ],
+      "applicable_year": "伤病手当，标准报酬平均期/12月不足条件",
+      "effective_date": "标准平均比较额每年复核",
+      "last_verified": "2026-10-10",
+      "verification_scope": "先10円四舍五入再1円四舍五入，不机械floor",
+      "affected_tools_pages": [
+        "src/pages/shoubyou/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/shoubyouteate-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "nenrei",
+      "path": "src/lib/nenrei.js",
+      "official_source_urls": [
+        "https://laws.e-gov.go.jp/law/135AC1000000050"
+      ],
+      "applicable_year": "日期年龄；静态出生年与年龄表随构建年",
+      "effective_date": "JST元日，生日/闰日",
+      "last_verified": "2026-11-07",
+      "verification_scope": "复用生年任务改进；年表PDF须离线重生成",
+      "affected_tools_pages": [
+        "src/pages/gakunen-hayami/2027.astro",
+        "src/pages/gakunen-hayami/index.astro",
+        "src/pages/nenrei-hayami/2027.astro",
+        "src/pages/nenrei-hayami/index.astro",
+        "src/pages/nenrei/index.astro",
+        "src/pages/umaredoshi/[year].astro",
+        "src/pages/wareki/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/hoikuen-ryokin-keisan-hoho.md",
+        "src/content/blog/nenkin-no-kakehiki.md",
+        "src/content/blog/wareki-seireki-no-kakikata.md",
+        "src/content/blog/yakudoshi-no-kakikata.md"
+      ],
+      "affected_downloads": [
+        "public/downloads/nenrei-hayami-2027.pdf",
+        "public/downloads/nenrei-hayami-2026.pdf"
+      ],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "hayami",
+      "path": "src/lib/hayami.js",
+      "official_source_urls": [
+        "https://www.mext.go.jp/a_menu/shotou/shugaku/detail/1422233.htm"
+      ],
+      "applicable_year": "2026/2027学年和年龄表",
+      "effective_date": "学年4/1，出生界4/2",
+      "last_verified": "2026-09-30",
+      "verification_scope": "继承学年期末年龄修复，未来年不自动扩路由",
+      "affected_tools_pages": [
+        "src/pages/gakunen-hayami/2027.astro",
+        "src/pages/gakunen-hayami/index.astro",
+        "src/pages/nenrei-hayami/2027.astro",
+        "src/pages/nenrei-hayami/index.astro",
+        "src/pages/umaredoshi/[year].astro",
+        "src/pages/wareki/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/hoikuen-ryokin-keisan-hoho.md",
+        "src/content/blog/wareki-seireki-no-kakikata.md"
+      ],
+      "affected_downloads": [
+        "public/downloads/nenrei-hayami-2027.pdf",
+        "public/downloads/nenrei-hayami-2026.pdf"
+      ],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "jisa",
+      "path": "src/lib/jisa.js",
+      "official_source_urls": [
+        "https://www.iana.org/time-zones"
+      ],
+      "applicable_year": "IANA时区/DST，城市年度说明",
+      "effective_date": "各地区夏令时变动日",
+      "last_verified": "unknown",
+      "verification_scope": "运行环境Intl tzdata与构建文本需法规变更触发核验，未查当前tzdata版本",
+      "affected_tools_pages": [
+        "src/pages/jisa/[city].astro",
+        "src/pages/jisa/index.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "shotokuzei",
+      "path": "src/lib/shotokuzei.js",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm"
+      ],
+      "applicable_year": "2025/2026所得年；2027+未获生产支持，不能默认为2026",
+      "effective_date": "2026-12-01（2026年末精算）；2025另表",
+      "last_verified": "2026-11-08",
+      "verification_scope": "本轮在线复核No1199/1410，其余继承10/10；未发现生产2027所得税复用入口",
+      "affected_tools_pages": [
+        "src/pages/shotokuzei/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/shakaihoken-keisan-hoho.md",
+        "src/content/blog/kakutei-shinkoku-shinai-to-dou-naru.md",
+        "src/content/blog/kakutei-shinkoku-tsuika-nozei-naze.md",
+        "src/content/blog/kosodate-kyojo-no-kakikata.md",
+        "src/content/blog/kakutei-shinkoku-no-shinsei-hoho.md",
+        "src/content/blog/nematsu-ikura-modoru.md",
+        "src/content/blog/nencho-chosei-no-kakikata.md",
+        "src/content/blog/kyuyo-meisai-no-yomikata.md",
+        "src/content/blog/nematsu-shinai-to-dou-naru.md",
+        "src/content/blog/kekkon-zeikin-haikujo-kojo.md",
+        "src/content/blog/kekkon-zeikin-no-kakikata.md",
+        "src/content/blog/shotokuzei-keisan-hoho.md",
+        "src/content/blog/iryouhi-kojo-ikura-modoru.md",
+        "src/content/blog/kokuho-ryoukin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "nematsu",
+      "path": "src/lib/nematsu.js",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm"
+      ],
+      "applicable_year": "2025/2026所得年；2027+未获生产支持，不能默认为2026",
+      "effective_date": "2026-12-01（2026年末精算）；2025另表",
+      "last_verified": "2026-11-08",
+      "verification_scope": "本轮在线复核No1199/1410，其余继承10/10；未发现生产2027所得税复用入口",
+      "affected_tools_pages": [
+        "src/pages/nematsu/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/shakaihoken-keisan-hoho.md",
+        "src/content/blog/kakutei-shinkoku-shinai-to-dou-naru.md",
+        "src/content/blog/kakutei-shinkoku-tsuika-nozei-naze.md",
+        "src/content/blog/nematsu-kenmin-kyosai-kakikata.md",
+        "src/content/blog/nematsu-ikura-modoru.md",
+        "src/content/blog/nematsu-kin-itsu.md",
+        "src/content/blog/nencho-chosei-no-kakikata.md",
+        "src/content/blog/nematsu-shinai-to-dou-naru.md",
+        "src/content/blog/kekkon-zeikin-haikujo-kojo.md",
+        "src/content/blog/nematsu-hoken-kakujo-kakikata.md",
+        "src/content/blog/shotokuzei-keisan-hoho.md",
+        "src/content/blog/nematsu-jishin-hoken-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "kyuyo",
+      "path": "src/lib/kyuyo.js",
+      "official_source_urls": [
+        "https://www.kyoukaikenpo.or.jp/lp/2026hokenryou/",
+        "https://www.kyoukaikenpo.or.jp/assets/R8_44oita.pdf"
+      ],
+      "applicable_year": "2026年度，全国平均概算",
+      "effective_date": "健康介护3月；支援金4月；雇保4月（须按项目核对）",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承既有证据，未重新认证47支部保费",
+      "affected_tools_pages": [
+        "src/pages/kyuyo/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/tsuma-fuyo-no-kakikata.md",
+        "src/content/blog/part-time-shakaihoken-nyuugaku-joken.md",
+        "src/content/blog/kyuyo-meisai-no-yomikata.md",
+        "src/content/blog/saitei-chingin-no-kakikata.md",
+        "src/content/blog/jikyu-kara-getsu-kyu-e-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "shakaihoken",
+      "path": "src/lib/shakaihoken.js",
+      "official_source_urls": [
+        "https://www.kyoukaikenpo.or.jp/lp/2026hokenryou/",
+        "https://www.kyoukaikenpo.or.jp/assets/R8_44oita.pdf"
+      ],
+      "applicable_year": "2026年度，全国平均概算",
+      "effective_date": "健康介护3月；支援金4月；雇保4月（须按项目核对）",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承既有证据，未重新认证47支部保费",
+      "affected_tools_pages": [
+        "src/pages/shakaihoken/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/shakaihoken-keisan-hoho.md",
+        "src/content/blog/tsuma-fuyo-no-kakikata.md",
+        "src/content/blog/part-time-shakaihoken-nyuugaku-joken.md",
+        "src/content/blog/koyou-hozen-no-kakikata.md",
+        "src/content/blog/kenko-hozen-no-kakikata.md",
+        "src/content/blog/nematsu-ikura-modoru.md",
+        "src/content/blog/shoubyouteate-no-kakikata.md",
+        "src/content/blog/kyuyo-meisai-no-yomikata.md",
+        "src/content/blog/kokuho-ryoukin-keisan-hoho.md",
+        "src/content/blog/jikyu-kara-getsu-kyu-e-no-kakikata.md",
+        "src/content/blog/kokumin-nenkin-hokenryo.md",
+        "src/content/blog/kokuho-ryoukin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "office-tools",
+      "path": "src/lib/office-tools.js",
+      "official_source_urls": [
+        "https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html"
+      ],
+      "applicable_year": "2026/2027，仅15个月明细路由",
+      "effective_date": "各月1日；无自动公司假日",
+      "last_verified": "2026-11-08",
+      "verification_scope": "复用完整official-holiday-reference fixture，下载与网页同源",
+      "affected_tools_pages": [
+        "src/pages/2027/index.astro",
+        "src/pages/eigyoubi/[year]/[month].astro",
+        "src/pages/eigyoubi/[year]/index.astro",
+        "src/pages/eigyoubi/index.astro",
+        "src/pages/embed/eigyoubi.astro",
+        "src/pages/embed/work-calendar.astro",
+        "src/pages/ginkou-eigyoubi/index.astro",
+        "src/pages/hayasa/index.astro",
+        "src/pages/kinmu-jikan/index.astro",
+        "src/pages/kinzoku-nensuu/index.astro",
+        "src/pages/nenmatsu-nenshi/index.astro",
+        "src/pages/renkyu/2027.astro",
+        "src/pages/result/[tool].astro",
+        "src/pages/running-pace/index.astro",
+        "src/pages/taishoku-yukyu/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/kokumin-nenkin-no-kakikata.md",
+        "src/content/blog/koyou-hozen-no-kakikata.md",
+        "src/content/blog/taishokukin-zeikin-keisan.md"
+      ],
+      "affected_downloads": [
+        "public/downloads/holidays-2026.ics",
+        "public/downloads/holidays-2027.ics",
+        "public/downloads/work-calendar-2027.json",
+        "public/downloads/work-calendar-2026.csv",
+        "public/downloads/work-calendar-2027.csv",
+        "public/downloads/eigyoubi-2027.pdf",
+        "public/downloads/kinmu-template-2026.xlsx",
+        "public/downloads/work-calendar-2026.json",
+        "public/downloads/eigyoubi-2026.pdf",
+        "public/downloads/kinmu-template-2027.xlsx"
+      ],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "nissu",
+      "path": "src/lib/nissu.js",
+      "official_source_urls": [
+        "https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html"
+      ],
+      "applicable_year": "路由2025—2029；官方已公布至2027，2028/2029春秋分预测",
+      "effective_date": "各法定祝日；2028表预定2027年2月公布",
+      "last_verified": "2026-11-08",
+      "verification_scope": "本轮重新读取2026/2027官方表；自动公布年上限是推定不是未来外部证据",
+      "affected_tools_pages": [
+        "src/pages/eigyoubi/index.astro",
+        "src/pages/hayasa/index.astro",
+        "src/pages/kinzoku-nensuu/index.astro",
+        "src/pages/nenmatsu-nenshi/index.astro",
+        "src/pages/nissu/index.astro",
+        "src/pages/result/[tool].astro",
+        "src/pages/taishoku-yukyu/index.astro",
+        "src/pages/yukyu-nissu/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/kokumin-nenkin-no-kakikata.md",
+        "src/content/blog/koyou-hozen-no-kakikata.md",
+        "src/content/blog/taishokukin-zeikin-keisan.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "work-plans",
+      "path": "src/lib/work-plans.js",
+      "official_source_urls": [
+        "https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html"
+      ],
+      "applicable_year": "2026/2027，仅15个月明细路由",
+      "effective_date": "各月1日；无自动公司假日",
+      "last_verified": "2026-11-08",
+      "verification_scope": "复用完整official-holiday-reference fixture，下载与网页同源",
+      "affected_tools_pages": [
+        "src/pages/eigyoubi/index.astro",
+        "src/pages/hayasa/index.astro",
+        "src/pages/kinzoku-nensuu/index.astro",
+        "src/pages/nenmatsu-nenshi/index.astro",
+        "src/pages/result/[tool].astro",
+        "src/pages/taishoku-yukyu/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/kokumin-nenkin-no-kakikata.md",
+        "src/content/blog/koyou-hozen-no-kakikata.md",
+        "src/content/blog/taishokukin-zeikin-keisan.md"
+      ],
+      "affected_downloads": [
+        "public/downloads/holidays-2026.ics",
+        "public/downloads/holidays-2027.ics",
+        "public/downloads/work-calendar-2027.json",
+        "public/downloads/work-calendar-2026.csv",
+        "public/downloads/work-calendar-2027.csv",
+        "public/downloads/eigyoubi-2027.pdf",
+        "public/downloads/kinmu-template-2026.xlsx",
+        "public/downloads/work-calendar-2026.json",
+        "public/downloads/eigyoubi-2026.pdf",
+        "public/downloads/kinmu-template-2027.xlsx"
+      ],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "publishedRoutes",
+      "path": "src/lib/publishedRoutes.js",
+      "official_source_urls": [
+        "https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html"
+      ],
+      "applicable_year": "路由2025—2029；官方已公布至2027，2028/2029春秋分预测",
+      "effective_date": "各法定祝日；2028表预定2027年2月公布",
+      "last_verified": "2026-11-08",
+      "verification_scope": "本轮重新读取2026/2027官方表；自动公布年上限是推定不是未来外部证据",
+      "affected_tools_pages": [
+        "src/pages/rokuyo/[month].astro",
+        "src/pages/rokuyo/index.astro",
+        "src/pages/shukujitsu/[year].astro",
+        "src/pages/shukujitsu/index.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "yukyu-nissu",
+      "path": "src/lib/yukyu-nissu.js",
+      "official_source_urls": [
+        "https://laws.e-gov.go.jp/law/135AC1000000050"
+      ],
+      "applicable_year": "日期年龄；静态出生年与年龄表随构建年",
+      "effective_date": "JST元日，生日/闰日",
+      "last_verified": "2026-11-07",
+      "verification_scope": "复用生年任务改进；年表PDF须离线重生成",
+      "affected_tools_pages": [
+        "src/pages/yukyu-nissu/index.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "kinzoku-nensuu",
+      "path": "src/lib/kinzoku-nensuu.js",
+      "official_source_urls": [
+        "https://laws.e-gov.go.jp/law/135AC1000000050"
+      ],
+      "applicable_year": "日期年龄；静态出生年与年龄表随构建年",
+      "effective_date": "JST元日，生日/闰日",
+      "last_verified": "2026-11-07",
+      "verification_scope": "复用生年任务改进；年表PDF须离线重生成",
+      "affected_tools_pages": [
+        "src/pages/eigyoubi/index.astro",
+        "src/pages/hayasa/index.astro",
+        "src/pages/kinzoku-nensuu/index.astro",
+        "src/pages/nenmatsu-nenshi/index.astro",
+        "src/pages/result/[tool].astro",
+        "src/pages/taishoku-yukyu/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/kokumin-nenkin-no-kakikata.md",
+        "src/content/blog/koyou-hozen-no-kakikata.md",
+        "src/content/blog/taishokukin-zeikin-keisan.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "gakureki",
+      "path": "src/lib/gakureki.js",
+      "official_source_urls": [
+        "https://www.mext.go.jp/a_menu/shotou/shugaku/detail/1422233.htm"
+      ],
+      "applicable_year": "2026/2027学年和年龄表",
+      "effective_date": "学年4/1，出生界4/2",
+      "last_verified": "2026-09-30",
+      "verification_scope": "继承学年期末年龄修复，未来年不自动扩路由",
+      "affected_tools_pages": [
+        "src/pages/gakureki/index.astro"
+      ],
+      "affected_articles": [],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "yakudoshi",
+      "path": "src/lib/yakudoshi.js",
+      "official_source_urls": [
+        "https://laws.e-gov.go.jp/law/135AC1000000050"
+      ],
+      "applicable_year": "日期年龄；静态出生年与年龄表随构建年",
+      "effective_date": "JST元日，生日/闰日",
+      "last_verified": "2026-11-07",
+      "verification_scope": "复用生年任务改进；年表PDF须离线重生成",
+      "affected_tools_pages": [
+        "src/pages/gakunen-hayami/2027.astro",
+        "src/pages/gakunen-hayami/index.astro",
+        "src/pages/nenrei-hayami/2027.astro",
+        "src/pages/nenrei-hayami/index.astro",
+        "src/pages/umaredoshi/[year].astro",
+        "src/pages/wareki/index.astro",
+        "src/pages/yakudoshi/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/hoikuen-ryokin-keisan-hoho.md",
+        "src/content/blog/wareki-seireki-no-kakikata.md",
+        "src/content/blog/yakudoshi-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "rokusei",
+      "path": "src/lib/rokusei.js",
+      "official_source_urls": [
+        "https://laws.e-gov.go.jp/law/135AC1000000050"
+      ],
+      "applicable_year": "日期年龄；静态出生年与年龄表随构建年",
+      "effective_date": "JST元日，生日/闰日",
+      "last_verified": "2026-11-07",
+      "verification_scope": "复用生年任务改进；年表PDF须离线重生成",
+      "affected_tools_pages": [
+        "src/pages/gakunen-hayami/2027.astro",
+        "src/pages/gakunen-hayami/index.astro",
+        "src/pages/nenrei-hayami/2027.astro",
+        "src/pages/nenrei-hayami/index.astro",
+        "src/pages/rokusei-aisho/hayamihyou.astro",
+        "src/pages/rokusei-aisho/index.astro",
+        "src/pages/rokusei/[type].astro",
+        "src/pages/rokusei/daisakkai-2026.astro",
+        "src/pages/rokusei/daisakkai-2027.astro",
+        "src/pages/rokusei/daisakkai.astro",
+        "src/pages/rokusei/doseijin.astro",
+        "src/pages/rokusei/hayamihyou.astro",
+        "src/pages/rokusei/index.astro",
+        "src/pages/rokusei/kaseijin.astro",
+        "src/pages/rokusei/keisan-hyou.astro",
+        "src/pages/rokusei/kinseijin.astro",
+        "src/pages/rokusei/mokuseijin.astro",
+        "src/pages/rokusei/reigou.astro",
+        "src/pages/rokusei/shukumei-daisakkai.astro",
+        "src/pages/rokusei/suiseijin.astro",
+        "src/pages/rokusei/tenouseijin.astro",
+        "src/pages/tanjobi-aisho/index.astro",
+        "src/pages/umaredoshi/[year].astro",
+        "src/pages/wareki/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/hoikuen-ryokin-keisan-hoho.md",
+        "src/content/blog/wareki-seireki-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "年度改正/官方发表/生效日；每年1月/2月/3-4月/8月/工资公布后分项检查；不把触发日当核验完成",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "未明确列2027的制度金额不得沿用2026；未知保留unknown",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-hokkaido",
+      "path": "src/data/minimum-wage-2026.json#hokkaido",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1131,
+      "previous_wage": 1075,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/hokkaido/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-aomori",
+      "path": "src/data/minimum-wage-2026.json#aomori",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-29",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1090,
+      "previous_wage": 1029,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/aomori/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-iwate",
+      "path": "src/data/minimum-wage-2026.json#iwate",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-12-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1090,
+      "previous_wage": 1031,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/iwate/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-miyagi",
+      "path": "src/data/minimum-wage-2026.json#miyagi",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1098,
+      "previous_wage": 1038,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/miyagi/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-akita",
+      "path": "src/data/minimum-wage-2026.json#akita",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-14",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1090,
+      "previous_wage": 1031,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/akita/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-yamagata",
+      "path": "src/data/minimum-wage-2026.json#yamagata",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-30",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1092,
+      "previous_wage": 1032,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/yamagata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-fukushima",
+      "path": "src/data/minimum-wage-2026.json#fukushima",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-16",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1094,
+      "previous_wage": 1033,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/fukushima/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-ibaraki",
+      "path": "src/data/minimum-wage-2026.json#ibaraki",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-18",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1136,
+      "previous_wage": 1074,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/ibaraki/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-tochigi",
+      "path": "src/data/minimum-wage-2026.json#tochigi",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1125,
+      "previous_wage": 1068,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/tochigi/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-gunma",
+      "path": "src/data/minimum-wage-2026.json#gunma",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-03",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1120,
+      "previous_wage": 1063,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/gunma/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-saitama",
+      "path": "src/data/minimum-wage-2026.json#saitama",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1196,
+      "previous_wage": 1141,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/saitama/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-chiba",
+      "path": "src/data/minimum-wage-2026.json#chiba",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1195,
+      "previous_wage": 1140,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/chiba/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-tokyo",
+      "path": "src/data/minimum-wage-2026.json#tokyo",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1280,
+      "previous_wage": 1226,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/tokyo/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-kanagawa",
+      "path": "src/data/minimum-wage-2026.json#kanagawa",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1279,
+      "previous_wage": 1225,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/kanagawa/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-niigata",
+      "path": "src/data/minimum-wage-2026.json#niigata",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1108,
+      "previous_wage": 1050,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/niigata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-toyama",
+      "path": "src/data/minimum-wage-2026.json#toyama",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1119,
+      "previous_wage": 1062,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/toyama/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-ishikawa",
+      "path": "src/data/minimum-wage-2026.json#ishikawa",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-03",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1113,
+      "previous_wage": 1054,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/ishikawa/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-fukui",
+      "path": "src/data/minimum-wage-2026.json#fukui",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-04",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1112,
+      "previous_wage": 1053,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/fukui/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-yamanashi",
+      "path": "src/data/minimum-wage-2026.json#yamanashi",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-11-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1113,
+      "previous_wage": 1052,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/yamanashi/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-nagano",
+      "path": "src/data/minimum-wage-2026.json#nagano",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-02",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1117,
+      "previous_wage": 1061,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/nagano/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-gifu",
+      "path": "src/data/minimum-wage-2026.json#gifu",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1121,
+      "previous_wage": 1065,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/gifu/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-shizuoka",
+      "path": "src/data/minimum-wage-2026.json#shizuoka",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-15",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1154,
+      "previous_wage": 1097,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/shizuoka/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-aichi",
+      "path": "src/data/minimum-wage-2026.json#aichi",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1195,
+      "previous_wage": 1140,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/aichi/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-mie",
+      "path": "src/data/minimum-wage-2026.json#mie",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1143,
+      "previous_wage": 1087,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/mie/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-shiga",
+      "path": "src/data/minimum-wage-2026.json#shiga",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-03",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1136,
+      "previous_wage": 1080,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/shiga/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-kyoto",
+      "path": "src/data/minimum-wage-2026.json#kyoto",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-11-16",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1180,
+      "previous_wage": 1122,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/kyoto/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-osaka",
+      "path": "src/data/minimum-wage-2026.json#osaka",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1231,
+      "previous_wage": 1177,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/osaka/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-hyogo",
+      "path": "src/data/minimum-wage-2026.json#hyogo",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1172,
+      "previous_wage": 1116,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/hyogo/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-nara",
+      "path": "src/data/minimum-wage-2026.json#nara",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-04",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1107,
+      "previous_wage": 1051,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/nara/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-wakayama",
+      "path": "src/data/minimum-wage-2026.json#wakayama",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-03",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1101,
+      "previous_wage": 1045,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/wakayama/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-tottori",
+      "path": "src/data/minimum-wage-2026.json#tottori",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-03",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1090,
+      "previous_wage": 1030,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/tottori/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-shimane",
+      "path": "src/data/minimum-wage-2026.json#shimane",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-10",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1092,
+      "previous_wage": 1033,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/shimane/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-okayama",
+      "path": "src/data/minimum-wage-2026.json#okayama",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-02",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1104,
+      "previous_wage": 1047,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/okayama/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-hiroshima",
+      "path": "src/data/minimum-wage-2026.json#hiroshima",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-11",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1141,
+      "previous_wage": 1085,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/hiroshima/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-yamaguchi",
+      "path": "src/data/minimum-wage-2026.json#yamaguchi",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-08",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1101,
+      "previous_wage": 1043,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/yamaguchi/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-tokushima",
+      "path": "src/data/minimum-wage-2026.json#tokushima",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-11-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1103,
+      "previous_wage": 1046,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/tokushima/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-kagawa",
+      "path": "src/data/minimum-wage-2026.json#kagawa",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1092,
+      "previous_wage": 1036,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/kagawa/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-ehime",
+      "path": "src/data/minimum-wage-2026.json#ehime",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-11-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1093,
+      "previous_wage": 1033,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/ehime/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-kochi",
+      "path": "src/data/minimum-wage-2026.json#kochi",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-29",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1086,
+      "previous_wage": 1023,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/kochi/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-fukuoka",
+      "path": "src/data/minimum-wage-2026.json#fukuoka",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-04",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1114,
+      "previous_wage": 1057,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/fukuoka/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-saga",
+      "path": "src/data/minimum-wage-2026.json#saga",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-11-15",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1095,
+      "previous_wage": 1030,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/saga/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-nagasaki",
+      "path": "src/data/minimum-wage-2026.json#nagasaki",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-11-02",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1087,
+      "previous_wage": 1031,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/nagasaki/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-kumamoto",
+      "path": "src/data/minimum-wage-2026.json#kumamoto",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-12-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1092,
+      "previous_wage": 1034,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/kumamoto/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-oita",
+      "path": "src/data/minimum-wage-2026.json#oita",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-11-01",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1096,
+      "previous_wage": 1035,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/oita/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-miyazaki",
+      "path": "src/data/minimum-wage-2026.json#miyazaki",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-24",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1085,
+      "previous_wage": 1023,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/miyazaki/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-kagoshima",
+      "path": "src/data/minimum-wage-2026.json#kagoshima",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-10-25",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1090,
+      "previous_wage": 1026,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/kagoshima/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "minimum-wage-okinawa",
+      "path": "src/data/minimum-wage-2026.json#okinawa",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11200000/001753404.pdf",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/index.html"
+      ],
+      "applicable_year": 2026,
+      "effective_date": "2026-12-02",
+      "last_verified": "2026-11-05",
+      "verification_scope": "复用11/5全国官方最终表47地区核验，本轮未重复外查",
+      "wage": 1086,
+      "previous_wage": 1023,
+      "affected_tools_pages": [
+        "/saitei/",
+        "/saitei/okinawa/"
+      ],
+      "affected_articles": [
+        "src/content/blog/saitei-chingin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "改定决定/公示/发效日；2027官方公告后另核",
+      "rebuild_required": true,
+      "rebuild_scope": "静态地区表和全国现行额需生效前后重建；客户端依生效日切换",
+      "2027_policy": "unknown，不预测",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-shakaihoken-keisan-hoho",
+      "path": "src/content/blog/shakaihoken-keisan-hoho.md",
+      "official_source_urls": [
+        "https://www.kyoukaikenpo.or.jp/about/business/insurance_rate/premium_prefectures/",
+        "https://www.kyoukaikenpo.or.jp/lp/2026hokenryou/",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000108634.html"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/shakaihoken-keisan-hoho/"
+      ],
+      "affected_articles": [
+        "src/content/blog/shakaihoken-keisan-hoho.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-juminzei-keisan-hoho",
+      "path": "src/content/blog/juminzei-keisan-hoho.md",
+      "official_source_urls": [
+        "https://www.city.osaka.lg.jp/zaisei/page/0000384084.html",
+        "https://www.city.yokohama.lg.jp/kurashi/koseki-zei-hoken/zeikin/y-shizei/kojin-shiminzei-kenminzei/kojin-shiminzei-shosai/shotokukoujoR8.html",
+        "https://www.city.yokohama.lg.jp/kurashi/koseki-zei-hoken/zeikin/y-shizei/kojin-shiminzei-kenminzei/kojin-shiminzei-shosai/zeigakukoujoR8.html",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm",
+        "https://www.tax.metro.tokyo.lg.jp/kazei/kojin_ju.html"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-07-31",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/juminzei-keisan-hoho/"
+      ],
+      "affected_articles": [
+        "src/content/blog/juminzei-keisan-hoho.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-fukuri-kouka-no-kakikata",
+      "path": "src/content/blog/fukuri-kouka-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.fsa.go.jp/policy/nisa2/know/index.html"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/fukuri-kouka-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/fukuri-kouka-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-tsuma-fuyo-no-kakikata",
+      "path": "src/content/blog/tsuma-fuyo-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.nenkin.go.jp/service/kounen/tekiyo/jigyosho/tanjikan.html",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1191.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1195.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/tsuma-fuyo-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/tsuma-fuyo-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-hoikuen-ryokin-keisan-hoho",
+      "path": "src/content/blog/hoikuen-ryokin-keisan-hoho.md",
+      "official_source_urls": [
+        "https://www.cfa.go.jp/policies/kokoseido/mushouka/about/faq1",
+        "https://www.cfa.go.jp/policies/kokoseido/mushouka/gaiyou/"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/hoikuen-ryokin-keisan-hoho/"
+      ],
+      "affected_articles": [
+        "src/content/blog/hoikuen-ryokin-keisan-hoho.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kakutei-shinkoku-shinai-to-dou-naru",
+      "path": "src/content/blog/kakutei-shinkoku-shinai-to-dou-naru.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2020.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2024.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2030.htm"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kakutei-shinkoku-shinai-to-dou-naru/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kakutei-shinkoku-shinai-to-dou-naru.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kakutei-shinkoku-tsuika-nozei-naze",
+      "path": "src/content/blog/kakutei-shinkoku-tsuika-nozei-naze.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/shinkoku/tebiki/2025/02/2_04.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/shinkoku/tokushu/",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/osirase/9206.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm",
+        "https://www.tax.metro.tokyo.lg.jp/kazei/kojin_ju.html"
+      ],
+      "applicable_year": "2025",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-07-31",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kakutei-shinkoku-tsuika-nozei-naze/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kakutei-shinkoku-tsuika-nozei-naze.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kokumin-nenkin-no-kakikata",
+      "path": "src/content/blog/kokumin-nenkin-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.nenkin.go.jp/n_net/",
+        "https://www.nenkin.go.jp/section/faq/kokunen/seido/kanyu/haigusha/20130322.html",
+        "https://www.nenkin.go.jp/tokusetsu/taishoku_menjo.html"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kokumin-nenkin-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kokumin-nenkin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-part-time-shakaihoken-nyuugaku-joken",
+      "path": "src/content/blog/part-time-shakaihoken-nyuugaku-joken.md",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/stf/newpage_76324.html",
+        "https://www.nenkin.go.jp/service/kounen/tekiyo/jigyosho/tanjikan.html"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/part-time-shakaihoken-nyuugaku-joken/"
+      ],
+      "affected_articles": [
+        "src/content/blog/part-time-shakaihoken-nyuugaku-joken.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-shokugyou-kenshin-no-kakikata",
+      "path": "src/content/blog/shokugyou-kenshin-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/hellotraining/support/",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/kyushokusha_shien/index.html"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/shokugyou-kenshin-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/shokugyou-kenshin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-nematsu-kenmin-kyosai-kakikata",
+      "path": "src/content/blog/nematsu-kenmin-kyosai-kakikata.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/nematsu-kenmin-kyosai-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/nematsu-kenmin-kyosai-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": [
+        "https://www.kyosai-cc.or.jp/mutual/fire/earthquake.html"
+      ]
+    },
+    {
+      "id": "article-kosodate-kyojo-no-kakikata",
+      "path": "src/content/blog/kosodate-kyojo-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1177.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1180.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kosodate-kyojo-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kosodate-kyojo-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kakutei-shinkoku-no-shinsei-hoho",
+      "path": "src/content/blog/kakutei-shinkoku-no-shinsei-hoho.md",
+      "official_source_urls": [
+        "https://www.keisan.nta.go.jp/kyoutu/ky/sm/top",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2020.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2026.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2030.htm"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kakutei-shinkoku-no-shinsei-hoho/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kakutei-shinkoku-no-shinsei-hoho.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kenko-hozen-no-kakikata",
+      "path": "src/content/blog/kenko-hozen-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.kyoukaikenpo.or.jp/benefit/childbirth/index.html",
+        "https://www.kyoukaikenpo.or.jp/g3/sb3040/r139/",
+        "https://www.nenkin.go.jp/service/kounen/tekiyo/jigyosho/tanjikan.html"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kenko-hozen-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kenko-hozen-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-nematsu-ikura-modoru",
+      "path": "src/content/blog/nematsu-ikura-modoru.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2662.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2675.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/nematsu-ikura-modoru/"
+      ],
+      "affected_articles": [
+        "src/content/blog/nematsu-ikura-modoru.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-nematsu-kin-itsu",
+      "path": "src/content/blog/nematsu-kin-itsu.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2675.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2030.htm"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/nematsu-kin-itsu/"
+      ],
+      "affected_articles": [
+        "src/content/blog/nematsu-kin-itsu.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kojin-kigyou-sha-no-zeikin",
+      "path": "src/content/blog/kojin-kigyou-sha-no-zeikin.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6501.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1130.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1350.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2072.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kojin-kigyou-sha-no-zeikin/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kojin-kigyou-sha-no-zeikin.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-nencho-chosei-no-kakikata",
+      "path": "src/content/blog/nencho-chosei-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2662.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/nencho-chosei-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/nencho-chosei-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-rihumu-zeizei-taisaku",
+      "path": "src/content/blog/rihumu-zeizei-taisaku.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1211-4.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/rihumu-zeizei-taisaku/"
+      ],
+      "affected_articles": [
+        "src/content/blog/rihumu-zeizei-taisaku.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-ikukyu-hoken-no-kakikata",
+      "path": "src/content/blog/ikukyu-hoken-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/seisakunitsuite/bunya/koyou_roudou/koyoukintou/ryouritsu/ikuji/childcare/",
+        "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000158500.html"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/ikukyu-hoken-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/ikukyu-hoken-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-taishokukin-zeikin-keisan",
+      "path": "src/content/blog/taishokukin-zeikin-keisan.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1420.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/taishokukin-zeikin-keisan/"
+      ],
+      "affected_articles": [
+        "src/content/blog/taishokukin-zeikin-keisan.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-nenkin-no-kakehiki",
+      "path": "src/content/blog/nenkin-no-kakehiki.md",
+      "official_source_urls": [
+        "https://www.nenkin.go.jp/n_net/",
+        "https://www.nenkin.go.jp/service/jukyu/seido/roureinenkin/jukyu-yoken/20140421-01.html",
+        "https://www.nenkin.go.jp/service/jukyu/seido/roureinenkin/kuriage-kurisage/20140421-02.html"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/nenkin-no-kakehiki/"
+      ],
+      "affected_articles": [
+        "src/content/blog/nenkin-no-kakehiki.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kokuho-ryoukin-keisan-hoho",
+      "path": "src/content/blog/kokuho-ryoukin-keisan-hoho.md",
+      "official_source_urls": [],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kokuho-ryoukin-keisan-hoho/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kokuho-ryoukin-keisan-hoho.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": [
+        "https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/gengaku.html",
+        "https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/keisan_hoho.html"
+      ],
+      "official_source_gap": "unknown；现有来源并非官方原始资料，待补"
+    },
+    {
+      "id": "article-furusato-kakutei-shinkoku-yarikata",
+      "path": "src/content/blog/furusato-kakutei-shinkoku-yarikata.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1155.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1490.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/furusato-kakutei-shinkoku-yarikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/furusato-kakutei-shinkoku-yarikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kojin-hozen-no-kakikata",
+      "path": "src/content/blog/kojin-hozen-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kojin-hozen-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kojin-hozen-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": [
+        "https://www.ideco-koushiki.jp/guide/structure.html",
+        "https://www.ideco-koushiki.jp/library/2022kaisei/"
+      ]
+    },
+    {
+      "id": "article-nematsu-shinai-to-dou-naru",
+      "path": "src/content/blog/nematsu-shinai-to-dou-naru.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2662.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2020.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2030.htm"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/nematsu-shinai-to-dou-naru/"
+      ],
+      "affected_articles": [
+        "src/content/blog/nematsu-shinai-to-dou-naru.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kekkon-zeikin-haikujo-kojo",
+      "path": "src/content/blog/kekkon-zeikin-haikujo-kojo.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1191.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1195.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kekkon-zeikin-haikujo-kojo/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kekkon-zeikin-haikujo-kojo.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kokumin-nenkin-hokenryo",
+      "path": "src/content/blog/kokumin-nenkin-hokenryo.md",
+      "official_source_urls": [
+        "https://www.nenkin.go.jp/service/kokunen/hokenryo/hensen.html",
+        "https://www.nenkin.go.jp/service/kokunen/menjo/20150428.html",
+        "https://www.nenkin.go.jp/service/kokunen/menjo/20150514.html"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kokumin-nenkin-hokenryo/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kokumin-nenkin-hokenryo.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-nematsu-hoken-kakujo-kakikata",
+      "path": "src/content/blog/nematsu-hoken-kakujo-kakikata.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1130.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1140.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1145.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/nematsu-hoken-kakujo-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/nematsu-hoken-kakujo-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": [
+        "https://www.jili.or.jp/knows_learns/q_a/tax/560.html"
+      ]
+    },
+    {
+      "id": "article-kekkon-zeikin-no-kakikata",
+      "path": "src/content/blog/kekkon-zeikin-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1120.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1191.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1195.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kekkon-zeikin-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kekkon-zeikin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-zeizei-kakikae-no-yarikata",
+      "path": "src/content/blog/zeizei-kakikae-no-yarikata.md",
+      "official_source_urls": [
+        "https://www.mof.go.jp/tax_policy/summary/consumption/a_001.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6102.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shohi/6371.htm"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-08-01",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/zeizei-kakikae-no-yarikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/zeizei-kakikae-no-yarikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-shotokuzei-keisan-hoho",
+      "path": "src/content/blog/shotokuzei-keisan-hoho.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/shotokuzei-keisan-hoho/"
+      ],
+      "affected_articles": [
+        "src/content/blog/shotokuzei-keisan-hoho.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-nematsu-jishin-hoken-kakikata",
+      "path": "src/content/blog/nematsu-jishin-hoken-kakikata.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/gensen/2662.htm",
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1145.htm"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/nematsu-jishin-hoken-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/nematsu-jishin-hoken-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-shohi-kyuho-ryoukin-no-kakikata",
+      "path": "src/content/blog/shohi-kyuho-ryoukin-no-kakikata.md",
+      "official_source_urls": [
+        "https://www.fsa.go.jp/policy/kashikin/qajigyousha.pdf",
+        "https://www.fsa.go.jp/receipt/soudansitu/index.html"
+      ],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/shohi-kyuho-ryoukin-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/shohi-kyuho-ryoukin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-iryouhi-kojo-ikura-modoru",
+      "path": "src/content/blog/iryouhi-kojo-ikura-modoru.md",
+      "official_source_urls": [
+        "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1120.htm"
+      ],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/iryouhi-kojo-ikura-modoru/"
+      ],
+      "affected_articles": [
+        "src/content/blog/iryouhi-kojo-ikura-modoru.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": []
+    },
+    {
+      "id": "article-kokuho-ryoukin-no-kakikata",
+      "path": "src/content/blog/kokuho-ryoukin-no-kakikata.md",
+      "official_source_urls": [],
+      "applicable_year": "2026",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/kokuho-ryoukin-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/kokuho-ryoukin-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": [
+        "https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/gengaku.html",
+        "https://www.city.nerima.tokyo.jp/kurashi/nenkinhoken/kokuminkenkohoken/hoken_hokenryo/keisan_hoho.html"
+      ],
+      "official_source_gap": "unknown；现有来源并非官方原始资料，待补"
+    },
+    {
+      "id": "article-juutaku-loan-no-kakikata",
+      "path": "src/content/blog/juutaku-loan-no-kakikata.md",
+      "official_source_urls": [],
+      "applicable_year": "unknown",
+      "effective_date": "见正文具体制度；未标者unknown",
+      "last_verified": "2026-10-10",
+      "verification_scope": "继承文章注明核验；本轮全文审读≠逐来源再核验",
+      "affected_tools_pages": [
+        "/blog/juutaku-loan-no-kakikata/"
+      ],
+      "affected_articles": [
+        "src/content/blog/juutaku-loan-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "正文涉及制度变化、申告期限、扶养/保费条件改正；不能全局替换年份",
+      "rebuild_required": true,
+      "rebuild_scope": "文章和关联导航、manifest、sitemap",
+      "2027_policy": "按正文范围，未核验不得改为2027版",
+      "other_reference_urls": [
+        "https://www.flat35.com/loan/lineup/flat35/conditions/index.html",
+        "https://www.flat35.com/loan/lineup/kinto/index.html"
+      ],
+      "official_source_gap": "unknown；现有来源并非官方原始资料，待补"
+    }
+  ],
+  "count": 116,
+  "known_gaps": [
+    "部分历史给付来源仅有二手转述；官方原始金额资料待补",
+    "未审计云端定时任务，不能保证跨年自动构建",
+    "所有现有下载列入维护范围；本轮不重新认证Excel/所有PDF兼容性",
+    "basicDeduction/salaryIncome默认年度不能用于无准入的新年份功能；生产2027入口未发现套用2026所得税"
+  ],
+  "cross_year_findings": "未发现本轮可确证的生产2027误用2026制度金额；现有2027保险控除有No1140令和8年分以后明文支持；住民税2026按2025所得正确。"
+}

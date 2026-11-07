@@ -1,0 +1,15 @@
+{
+  "base": "dead3514689640200556647c58a26add3c667927",
+  "original_head": "2e90cc69802633585bea257e27622a8904b6875b",
+  "original_status": "?? docs/ADSENSE-REMEDIATION-BATCH1-RELEASE-2026-11-07.md",
+  "protected_sha256": "a28aa1fe819e8bff09c800220ed1f2a5f0831ce979977a7477ffa95ad4c8dee1",
+  "remote_main_start": "dead3514689640200556647c58a26add3c667927",
+  "prohibited_actions": [
+    "push",
+    "deploy",
+    "adsense",
+    "outreach",
+    "index writes",
+    "analytics backend changes"
+  ]
+}
