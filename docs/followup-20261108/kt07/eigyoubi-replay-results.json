@@ -1,0 +1,108 @@
+{
+  "base": "http://127.0.0.1:4412",
+  "officialClient": "unmodified Google response, SHA256 in official-client.json",
+  "transport": "all collect requests intercepted and aborted; no production receipt/DebugView claim",
+  "cases": [
+    {
+      "tool": "eigyoubi",
+      "status": "pass",
+      "actions": {
+        "csvSaved": true,
+        "copySucceeded": true,
+        "receivedIndependentPage": 18,
+        "platformReceipt": false
+      },
+      "initialRequests": 2,
+      "deduplication": "Primary www.google-analytics.com counted once; google.com failover induced by abort is retained as a transport attempt, not a second business event",
+      "phases": [
+        "first valid:1",
+        "invalid:unchanged",
+        "again valid:unchanged",
+        "clear:unchanged"
+      ],
+      "events": [
+        {
+          "transportHost": "www.google-analytics.com",
+          "eventSequence": "1",
+          "event": "page_view",
+          "fields": {},
+          "page_location": "http://127.0.0.1:4412/eigyoubi/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google.com",
+          "eventSequence": "1",
+          "event": "page_view",
+          "fields": {},
+          "page_location": "http://127.0.0.1:4412/eigyoubi/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google-analytics.com",
+          "eventSequence": "2",
+          "event": "calculator_result_view",
+          "fields": {
+            "ep.tool_slug": "eigyoubi",
+            "ep.result_type": "business-calendar"
+          },
+          "page_location": "http://127.0.0.1:4412/eigyoubi/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google.com",
+          "eventSequence": "2",
+          "event": "calculator_result_view",
+          "fields": {
+            "ep.tool_slug": "eigyoubi",
+            "ep.result_type": "business-calendar"
+          },
+          "page_location": "http://127.0.0.1:4412/eigyoubi/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google-analytics.com",
+          "eventSequence": "3",
+          "event": "business_calendar_download",
+          "fields": {
+            "ep.tool_slug": "eigyoubi"
+          },
+          "page_location": "http://127.0.0.1:4412/eigyoubi/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google-analytics.com",
+          "eventSequence": "3",
+          "event": "result_url_share",
+          "fields": {
+            "ep.tool_slug": "eigyoubi",
+            "ep.method": "copy"
+          },
+          "page_location": "http://127.0.0.1:4412/eigyoubi/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google.com",
+          "eventSequence": "3",
+          "event": "business_calendar_download",
+          "fields": {
+            "ep.tool_slug": "eigyoubi"
+          },
+          "page_location": "http://127.0.0.1:4412/eigyoubi/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google.com",
+          "eventSequence": "3",
+          "event": "result_url_share",
+          "fields": {
+            "ep.tool_slug": "eigyoubi",
+            "ep.method": "copy"
+          },
+          "page_location": "http://127.0.0.1:4412/eigyoubi/",
+          "page_referrer": ""
+        }
+      ]
+    }
+  ],
+  "failures": []
+}

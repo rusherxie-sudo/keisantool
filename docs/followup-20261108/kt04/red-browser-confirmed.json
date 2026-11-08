@@ -1,0 +1,227 @@
+{
+  "base": "http://127.0.0.1:4411",
+  "cases": [
+    {
+      "name": "1440 keyboard rokusei",
+      "status": "pass",
+      "detail": {
+        "tabs": 14,
+        "focus": {
+          "tag": "INPUT",
+          "id": "rk-date",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "1440 keyboard juminzei",
+      "status": "pass",
+      "detail": {
+        "tabs": 14,
+        "focus": {
+          "tag": "INPUT",
+          "id": "social-insurance",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "1440 keyboard eigyoubi",
+      "status": "pass",
+      "detail": {
+        "tabs": 22,
+        "focus": {
+          "tag": "BUTTON",
+          "id": "business-csv",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "1440 keyboard nematsu",
+      "status": "pass",
+      "detail": {
+        "tabs": 20,
+        "focus": {
+          "tag": "INPUT",
+          "id": "withheld-tax",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "1440 keyboard kinzoku-nensuu",
+      "status": "pass",
+      "detail": {
+        "tabs": 22,
+        "focus": {
+          "tag": "INPUT",
+          "id": "join-date",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "1440 keyboard hinodeiri",
+      "status": "pass",
+      "detail": {
+        "tabs": 14,
+        "focus": {
+          "tag": "INPUT",
+          "id": "hd-date",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "1440 noJS rokusei",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "1440 noJS juminzei",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "1440 noJS eigyoubi",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "1440 noJS nematsu",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "1440 noJS kinzoku-nensuu",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "1440 noJS hinodeiri",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 keyboard rokusei",
+      "status": "pass",
+      "detail": {
+        "tabs": 5,
+        "focus": {
+          "tag": "INPUT",
+          "id": "rk-date",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "390 keyboard juminzei",
+      "status": "pass",
+      "detail": {
+        "tabs": 5,
+        "focus": {
+          "tag": "INPUT",
+          "id": "social-insurance",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "390 keyboard eigyoubi",
+      "status": "pass",
+      "detail": {
+        "tabs": 13,
+        "focus": {
+          "tag": "BUTTON",
+          "id": "business-csv",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "390 keyboard nematsu",
+      "status": "pass",
+      "detail": {
+        "tabs": 11,
+        "focus": {
+          "tag": "INPUT",
+          "id": "withheld-tax",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "390 keyboard kinzoku-nensuu",
+      "status": "pass",
+      "detail": {
+        "tabs": 13,
+        "focus": {
+          "tag": "INPUT",
+          "id": "join-date",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "390 keyboard hinodeiri",
+      "status": "pass",
+      "detail": {
+        "tabs": 5,
+        "focus": {
+          "tag": "INPUT",
+          "id": "hd-date",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "390 noJS rokusei",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 noJS juminzei",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 noJS eigyoubi",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 noJS nematsu",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 noJS kinzoku-nensuu",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 noJS hinodeiri",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    }
+  ],
+  "errors": [],
+  "scope": "native Chromium keyboard; viewport emulation, not physical mobile; external requests aborted",
+  "summary": {
+    "passed": 12,
+    "failed": 12
+  }
+}

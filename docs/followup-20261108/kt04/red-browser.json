@@ -1,0 +1,155 @@
+{
+  "base": "http://127.0.0.1:4411",
+  "cases": [
+    {
+      "name": "1440 keyboard rokusei",
+      "status": "pass",
+      "detail": {
+        "tabs": 14,
+        "focus": {
+          "tag": "INPUT",
+          "id": "rk-date",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "1440 keyboard juminzei",
+      "status": "fail",
+      "error": "page.goto: Navigation to \"http://127.0.0.1:4411/juminzei/\" is interrupted by another navigation to \"http://127.0.0.1:4411/\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4411/juminzei/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "name": "1440 keyboard eigyoubi",
+      "status": "fail",
+      "error": "page.goto: Navigation to \"http://127.0.0.1:4411/eigyoubi/\" is interrupted by another navigation to \"http://127.0.0.1:4411/juminzei/\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4411/eigyoubi/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "name": "1440 keyboard nematsu",
+      "status": "fail",
+      "error": "page.goto: Navigation to \"http://127.0.0.1:4411/nematsu/\" is interrupted by another navigation to \"http://127.0.0.1:4411/eigyoubi/\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4411/nematsu/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "name": "1440 keyboard kinzoku-nensuu",
+      "status": "fail",
+      "error": "page.goto: Navigation to \"http://127.0.0.1:4411/kinzoku-nensuu/\" is interrupted by another navigation to \"http://127.0.0.1:4411/nematsu/\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4411/kinzoku-nensuu/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "name": "1440 keyboard hinodeiri",
+      "status": "fail",
+      "error": "page.goto: Navigation to \"http://127.0.0.1:4411/hinodeiri/\" is interrupted by another navigation to \"http://127.0.0.1:4411/kinzoku-nensuu/\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4411/hinodeiri/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "name": "1440 noJS rokusei",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "1440 noJS juminzei",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "1440 noJS eigyoubi",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "1440 noJS nematsu",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "1440 noJS kinzoku-nensuu",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "1440 noJS hinodeiri",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 keyboard rokusei",
+      "status": "pass",
+      "detail": {
+        "tabs": 5,
+        "focus": {
+          "tag": "INPUT",
+          "id": "rk-date",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "390 keyboard juminzei",
+      "status": "pass",
+      "detail": {
+        "tabs": 5,
+        "focus": {
+          "tag": "INPUT",
+          "id": "social-insurance",
+          "visible": true
+        },
+        "enter": "native activation; auto-calculators update on input, no submit button"
+      }
+    },
+    {
+      "name": "390 keyboard eigyoubi",
+      "status": "fail",
+      "error": "page.goto: Navigation to \"http://127.0.0.1:4411/eigyoubi/\" is interrupted by another navigation to \"http://127.0.0.1:4411/\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4411/eigyoubi/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "name": "390 keyboard nematsu",
+      "status": "fail",
+      "error": "page.goto: Navigation to \"http://127.0.0.1:4411/nematsu/\" is interrupted by another navigation to \"http://127.0.0.1:4411/eigyoubi/\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4411/nematsu/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "name": "390 keyboard kinzoku-nensuu",
+      "status": "fail",
+      "error": "page.goto: Navigation to \"http://127.0.0.1:4411/kinzoku-nensuu/\" is interrupted by another navigation to \"http://127.0.0.1:4411/nematsu/\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4411/kinzoku-nensuu/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "name": "390 keyboard hinodeiri",
+      "status": "fail",
+      "error": "page.goto: Navigation to \"http://127.0.0.1:4411/hinodeiri/\" is interrupted by another navigation to \"http://127.0.0.1:4411/kinzoku-nensuu/\"\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4411/hinodeiri/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "name": "390 noJS rokusei",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 noJS juminzei",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 noJS eigyoubi",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 noJS nematsu",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 noJS kinzoku-nensuu",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    },
+    {
+      "name": "390 noJS hinodeiri",
+      "status": "fail",
+      "error": "explicit JS-required fallback notice"
+    }
+  ],
+  "errors": [],
+  "scope": "native Chromium keyboard; viewport emulation, not physical mobile; external requests aborted",
+  "summary": {
+    "passed": 3,
+    "failed": 21
+  }
+}

@@ -1,0 +1,5 @@
+import {aggregate} from './report.mjs';import assert from 'node:assert/strict';import {writeFileSync} from 'node:fs';
+const rows=[['a','page_view'],['a','calculator_result_view'],['a','calculator_result_view'],['b','page_view']].map(([session_key,name],i)=>({session_key,name,tool:'bmi',timestamp:`2026-11-01T00:00:0${i}Z`}));
+const actual=aggregate(rows);assert.equal(actual.tools.bmi.enteredSessions,2);assert.equal(actual.tools.bmi.validResultSessions,1);assert.equal(actual.tools.bmi.eventCounts.calculator_result_view,2);assert.equal(actual.tools.bmi.startedSessions,null);assert.equal(actual.tools.bmi.startToResultRate,null);
+assert.throws(()=>aggregate([{session_key:'c',tool:'bmi',name:'calculator_result_view',timestamp:'2026-11-01T00:00:00Z'}]),/Missing same-tool/);
+writeFileSync(new URL('report-contract.json',import.meta.url),JSON.stringify({syntheticOnly:true,notGAReceiptEvidence:true,cases:['refresh/event dedup by session and tool','no start signal -> null start metrics','missing entry rejects global denominator substitution'],actual},null,2)+'\n');console.log('3 aggregation contract checks passed; synthetic only');

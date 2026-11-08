@@ -1,0 +1,170 @@
+{
+  "base": "http://127.0.0.1:4412",
+  "officialClient": "unmodified Google response, SHA256 in official-client.json",
+  "transport": "all collect requests intercepted and aborted; no production receipt/DebugView claim",
+  "cases": [
+    {
+      "tool": "rokusei",
+      "status": "pass",
+      "initialRequests": 2,
+      "deduplication": "Primary www.google-analytics.com counted once; google.com failover induced by abort is retained as a transport attempt, not a second business event",
+      "phases": [
+        "first valid:1",
+        "invalid:unchanged",
+        "again valid:unchanged",
+        "clear:unchanged"
+      ],
+      "events": [
+        {
+          "transportHost": "www.google-analytics.com",
+          "eventSequence": "1",
+          "event": "page_view",
+          "fields": {},
+          "page_location": "http://127.0.0.1:4412/rokusei/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google.com",
+          "eventSequence": "1",
+          "event": "page_view",
+          "fields": {},
+          "page_location": "http://127.0.0.1:4412/rokusei/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google-analytics.com",
+          "eventSequence": "2",
+          "event": "calculator_result_view",
+          "fields": {
+            "ep.tool_slug": "rokusei",
+            "ep.result_type": "fortune"
+          },
+          "page_location": "http://127.0.0.1:4412/rokusei/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google.com",
+          "eventSequence": "2",
+          "event": "calculator_result_view",
+          "fields": {
+            "ep.tool_slug": "rokusei",
+            "ep.result_type": "fortune"
+          },
+          "page_location": "http://127.0.0.1:4412/rokusei/",
+          "page_referrer": ""
+        }
+      ]
+    },
+    {
+      "tool": "juminzei",
+      "status": "pass",
+      "initialRequests": 2,
+      "deduplication": "Primary www.google-analytics.com counted once; google.com failover induced by abort is retained as a transport attempt, not a second business event",
+      "phases": [
+        "first valid:1",
+        "invalid:unchanged",
+        "again valid:unchanged",
+        "clear:unchanged"
+      ],
+      "events": [
+        {
+          "transportHost": "www.google-analytics.com",
+          "eventSequence": "1",
+          "event": "page_view",
+          "fields": {},
+          "page_location": "http://127.0.0.1:4412/juminzei/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google.com",
+          "eventSequence": "1",
+          "event": "page_view",
+          "fields": {},
+          "page_location": "http://127.0.0.1:4412/juminzei/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google-analytics.com",
+          "eventSequence": "2",
+          "event": "calculator_result_view",
+          "fields": {
+            "ep.tool_slug": "juminzei",
+            "ep.result_type": "resident-tax"
+          },
+          "page_location": "http://127.0.0.1:4412/juminzei/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google.com",
+          "eventSequence": "2",
+          "event": "calculator_result_view",
+          "fields": {
+            "ep.tool_slug": "juminzei",
+            "ep.result_type": "resident-tax"
+          },
+          "page_location": "http://127.0.0.1:4412/juminzei/",
+          "page_referrer": ""
+        }
+      ]
+    },
+    {
+      "tool": "bmi",
+      "status": "pass",
+      "initialRequests": 2,
+      "deduplication": "Primary www.google-analytics.com counted once; google.com failover induced by abort is retained as a transport attempt, not a second business event",
+      "phases": [
+        "first valid:1",
+        "invalid:unchanged",
+        "again valid:unchanged",
+        "clear:unchanged"
+      ],
+      "events": [
+        {
+          "transportHost": "www.google-analytics.com",
+          "eventSequence": "1",
+          "event": "page_view",
+          "fields": {},
+          "page_location": "http://127.0.0.1:4412/bmi/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google.com",
+          "eventSequence": "1",
+          "event": "page_view",
+          "fields": {},
+          "page_location": "http://127.0.0.1:4412/bmi/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google-analytics.com",
+          "eventSequence": "2",
+          "event": "calculator_result_view",
+          "fields": {
+            "ep.tool_slug": "bmi",
+            "ep.result_type": "bmi"
+          },
+          "page_location": "http://127.0.0.1:4412/bmi/",
+          "page_referrer": ""
+        },
+        {
+          "transportHost": "www.google.com",
+          "eventSequence": "2",
+          "event": "calculator_result_view",
+          "fields": {
+            "ep.tool_slug": "bmi",
+            "ep.result_type": "bmi"
+          },
+          "page_location": "http://127.0.0.1:4412/bmi/",
+          "page_referrer": ""
+        }
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "tool": "eigyoubi",
+      "phase": "clear",
+      "error": "The input did not match the regular expression /18日/. Input:\n\n'対象月\\n2026年11月\\n営業日数\\n19日\\n暦日数\\n30日\\n通常の勤務曜日\\n月・火・水・木・金\\n会社独自の休日\\n2026-09-01'\n"
+    }
+  ]
+}

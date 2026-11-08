@@ -1,0 +1,27 @@
+{
+  "syntheticOnly": true,
+  "notGAReceiptEvidence": true,
+  "cases": [
+    "refresh/event dedup by session and tool",
+    "no start signal -> null start metrics",
+    "missing entry rejects global denominator substitution"
+  ],
+  "actual": {
+    "scope": "Same tool and authorized window, distinct session_key per tool; event counts separate from sessions",
+    "startInstrumented": false,
+    "tools": {
+      "bmi": {
+        "eventCounts": {
+          "page_view": 2,
+          "calculator_result_view": 2
+        },
+        "enteredSessions": 2,
+        "validResultSessions": 1,
+        "startedSessions": null,
+        "startedThenResultSessions": null,
+        "entryToResultRate": 0.5,
+        "startToResultRate": null
+      }
+    }
+  }
+}

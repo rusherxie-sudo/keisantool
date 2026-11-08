@@ -1,0 +1,114 @@
+{
+  "cases": [
+    {
+      "name": "Tokyo effective-date eve",
+      "actual": 1226,
+      "expected": 1226,
+      "basis": "Inherited already verified national official wage table; no new 47-prefecture certification",
+      "pass": true
+    },
+    {
+      "name": "Tokyo effective-date day",
+      "actual": 1280,
+      "expected": 1280,
+      "basis": "Inherited already verified national official wage table; dates are explicit test inputs",
+      "pass": true
+    },
+    {
+      "name": "Bank year rollover",
+      "actual": "2027-01-04",
+      "expected": "2027-01-04",
+      "basis": "12/31–1/3 statutory bank closure; 2027-01-04 Monday, hand-derived independently",
+      "pass": true
+    },
+    {
+      "name": "Benefit official 30-day lower limit",
+      "actual": {
+        "daily": 3203,
+        "at67": 64380,
+        "at50": 48045
+      },
+      "expected": {
+        "daily": 3203,
+        "at67": 64380,
+        "at50": 48045
+      },
+      "basis": "MHLW 2026-08-01 PDF physical page18/printed p16; 3203×30×67% floor=64380, ×50%=48045",
+      "pass": true
+    },
+    {
+      "name": "Benefit official 30-day upper limit",
+      "actual": {
+        "daily": 16540,
+        "at67": 332454,
+        "at50": 248100
+      },
+      "expected": {
+        "daily": 16540,
+        "at67": 332454,
+        "at50": 248100
+      },
+      "basis": "MHLW same official table, not inferred from implementation constant",
+      "pass": true
+    },
+    {
+      "name": "Benefit applicability 2026-07-31",
+      "applicable": false,
+      "automation": "No historical/date-switching API; pages explicitly restrict range",
+      "outsideRangeAmount": "unknown / must not use fixed calculator",
+      "basis": "MHLW cover revision date and p16 validity until R9-07-31",
+      "kind": "manual applicability record, not execution of date-switching API"
+    },
+    {
+      "name": "Benefit applicability 2026-08-01",
+      "applicable": true,
+      "automation": "No historical/date-switching API; pages explicitly restrict range",
+      "outsideRangeAmount": "unknown / must not use fixed calculator",
+      "basis": "MHLW cover revision date and p16 validity until R9-07-31",
+      "kind": "manual applicability record, not execution of date-switching API"
+    },
+    {
+      "name": "Benefit applicability 2026-12-31",
+      "applicable": true,
+      "automation": "No historical/date-switching API; pages explicitly restrict range",
+      "outsideRangeAmount": "unknown / must not use fixed calculator",
+      "basis": "MHLW cover revision date and p16 validity until R9-07-31",
+      "kind": "manual applicability record, not execution of date-switching API"
+    },
+    {
+      "name": "Benefit applicability 2027-01-01",
+      "applicable": true,
+      "automation": "No historical/date-switching API; pages explicitly restrict range",
+      "outsideRangeAmount": "unknown / must not use fixed calculator",
+      "basis": "MHLW cover revision date and p16 validity until R9-07-31",
+      "kind": "manual applicability record, not execution of date-switching API"
+    },
+    {
+      "name": "Benefit applicability 2027-07-31",
+      "applicable": true,
+      "automation": "No historical/date-switching API; pages explicitly restrict range",
+      "outsideRangeAmount": "unknown / must not use fixed calculator",
+      "basis": "MHLW cover revision date and p16 validity until R9-07-31",
+      "kind": "manual applicability record, not execution of date-switching API"
+    },
+    {
+      "name": "Benefit applicability 2027-08-01",
+      "applicable": false,
+      "automation": "No historical/date-switching API; pages explicitly restrict range",
+      "outsideRangeAmount": "unknown / must not use fixed calculator",
+      "basis": "MHLW cover revision date and p16 validity until R9-07-31",
+      "kind": "manual applicability record, not execution of date-switching API"
+    },
+    {
+      "name": "Insurance explicit future year guard",
+      "actual": null,
+      "expected": null,
+      "basis": "Supported years remain 2026/2027; future unknown not defaulted to 2026",
+      "pass": true
+    }
+  ],
+  "summary": {
+    "executed_assertions": 6,
+    "manual_applicability_records": 6
+  }
+}

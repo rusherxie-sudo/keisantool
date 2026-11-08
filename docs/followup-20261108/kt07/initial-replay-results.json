@@ -1,0 +1,28 @@
+{
+  "base": "http://127.0.0.1:4411",
+  "officialClient": "unmodified Google response, SHA256 in official-client.json",
+  "transport": "all collect requests intercepted and aborted; no production receipt/DebugView claim",
+  "cases": [],
+  "failures": [
+    {
+      "tool": "rokusei",
+      "phase": "first-valid",
+      "error": "one first valid collect\n\n0 !== 1\n"
+    },
+    {
+      "tool": "juminzei",
+      "phase": "first-valid",
+      "error": "one first valid collect\n\n0 !== 1\n"
+    },
+    {
+      "tool": "eigyoubi",
+      "phase": "first-valid",
+      "error": "one first valid collect\n\n0 !== 1\n"
+    },
+    {
+      "tool": "bmi",
+      "phase": "first-valid",
+      "error": "one first valid collect\n\n0 !== 1\n"
+    }
+  ]
+}

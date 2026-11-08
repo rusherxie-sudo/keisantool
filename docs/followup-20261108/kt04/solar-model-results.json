@@ -1,0 +1,1388 @@
+{
+  "source": "model-source.json",
+  "coordinateScope": "Fixed configured points, not observatory coordinates or surveyed city centers",
+  "toleranceMinutes": 5,
+  "scope": "60 representative model comparisons; no universal precision guarantee; different NOAA approximations share standard solar geometry",
+  "cases": [
+    {
+      "id": "wakkanai",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 45.4153,
+        "lon": 141.6733
+      },
+      "actual": {
+        "sunrise": "07:13",
+        "sunset": "16:01",
+        "dayLengthMinutes": 528,
+        "city": "稚内"
+      },
+      "independentMinutesJST": {
+        "sunrise": 432.87709839458546,
+        "sunset": 959.5448395254145
+      },
+      "deltaMinutes": {
+        "sunrise": 0.12290160541454043,
+        "sunset": 1.4551604745854547
+      },
+      "pass": true
+    },
+    {
+      "id": "wakkanai",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 45.4153,
+        "lon": 141.6733
+      },
+      "actual": {
+        "sunrise": "03:49",
+        "sunset": "19:25",
+        "dayLengthMinutes": 936,
+        "city": "稚内"
+      },
+      "independentMinutesJST": {
+        "sunrise": 228.01752048262432,
+        "sunset": 1165.5207344888945
+      },
+      "deltaMinutes": {
+        "sunrise": 0.9824795173756797,
+        "sunset": 0.5207344888945045
+      },
+      "pass": true
+    },
+    {
+      "id": "wakkanai",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 45.4153,
+        "lon": 141.6733
+      },
+      "actual": {
+        "sunrise": "07:13",
+        "sunset": "16:00",
+        "dayLengthMinutes": 527,
+        "city": "稚内"
+      },
+      "independentMinutesJST": {
+        "sunrise": 432.87709839458546,
+        "sunset": 959.5448395254145
+      },
+      "deltaMinutes": {
+        "sunrise": 0.12290160541454043,
+        "sunset": 0.4551604745854547
+      },
+      "pass": true
+    },
+    {
+      "id": "wakkanai",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 45.4153,
+        "lon": 141.6733
+      },
+      "actual": {
+        "sunrise": "06:12",
+        "sunset": "17:19",
+        "dayLengthMinutes": 667,
+        "city": "稚内"
+      },
+      "independentMinutesJST": {
+        "sunrise": 373.9459482396828,
+        "sunset": 1038.528815600613
+      },
+      "deltaMinutes": {
+        "sunrise": 1.9459482396828207,
+        "sunset": 0.47118439938708434
+      },
+      "pass": true
+    },
+    {
+      "id": "sapporo",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 43.0642,
+        "lon": 141.3469
+      },
+      "actual": {
+        "sunrise": "07:06",
+        "sunset": "16:10",
+        "dayLengthMinutes": 544,
+        "city": "札幌"
+      },
+      "independentMinutesJST": {
+        "sunrise": 425.9158775840418,
+        "sunset": 969.1172603359581
+      },
+      "deltaMinutes": {
+        "sunrise": 0.08412241595817704,
+        "sunset": 0.8827396640418783
+      },
+      "pass": true
+    },
+    {
+      "id": "sapporo",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 43.0642,
+        "lon": 141.3469
+      },
+      "actual": {
+        "sunrise": "03:59",
+        "sunset": "19:18",
+        "dayLengthMinutes": 919,
+        "city": "札幌"
+      },
+      "independentMinutesJST": {
+        "sunrise": 238.28639705541372,
+        "sunset": 1157.8630579161052
+      },
+      "deltaMinutes": {
+        "sunrise": 0.7136029445862846,
+        "sunset": 0.1369420838948372
+      },
+      "pass": true
+    },
+    {
+      "id": "sapporo",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 43.0642,
+        "lon": 141.3469
+      },
+      "actual": {
+        "sunrise": "07:06",
+        "sunset": "16:10",
+        "dayLengthMinutes": 544,
+        "city": "札幌"
+      },
+      "independentMinutesJST": {
+        "sunrise": 425.9158775840418,
+        "sunset": 969.1172603359581
+      },
+      "deltaMinutes": {
+        "sunrise": 0.08412241595817704,
+        "sunset": 0.8827396640418783
+      },
+      "pass": true
+    },
+    {
+      "id": "sapporo",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 43.0642,
+        "lon": 141.3469
+      },
+      "actual": {
+        "sunrise": "06:11",
+        "sunset": "17:23",
+        "dayLengthMinutes": 672,
+        "city": "札幌"
+      },
+      "independentMinutesJST": {
+        "sunrise": 372.86632758102746,
+        "sunset": 1042.2196362592683
+      },
+      "deltaMinutes": {
+        "sunrise": 1.8663275810274627,
+        "sunset": 0.7803637407316728
+      },
+      "pass": true
+    },
+    {
+      "id": "sendai",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 38.2682,
+        "lon": 140.8694
+      },
+      "actual": {
+        "sunrise": "06:53",
+        "sunset": "16:27",
+        "dayLengthMinutes": 573,
+        "city": "仙台"
+      },
+      "independentMinutesJST": {
+        "sunrise": 413.0330367695277,
+        "sunset": 985.8201011504723
+      },
+      "deltaMinutes": {
+        "sunrise": 0.03303676952771184,
+        "sunset": 1.1798988495277172
+      },
+      "pass": true
+    },
+    {
+      "id": "sendai",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 38.2682,
+        "lon": 140.8694
+      },
+      "actual": {
+        "sunrise": "04:17",
+        "sunset": "19:04",
+        "dayLengthMinutes": 887,
+        "city": "仙台"
+      },
+      "independentMinutesJST": {
+        "sunrise": 256.1061650659121,
+        "sunset": 1143.8632899056067
+      },
+      "deltaMinutes": {
+        "sunrise": 0.8938349340879199,
+        "sunset": 0.13671009439326554
+      },
+      "pass": true
+    },
+    {
+      "id": "sendai",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 38.2682,
+        "lon": 140.8694
+      },
+      "actual": {
+        "sunrise": "06:53",
+        "sunset": "16:27",
+        "dayLengthMinutes": 573,
+        "city": "仙台"
+      },
+      "independentMinutesJST": {
+        "sunrise": 413.0330367695277,
+        "sunset": 985.8201011504723
+      },
+      "deltaMinutes": {
+        "sunrise": 0.03303676952771184,
+        "sunset": 1.1798988495277172
+      },
+      "pass": true
+    },
+    {
+      "id": "sendai",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 38.2682,
+        "lon": 140.8694
+      },
+      "actual": {
+        "sunrise": "06:09",
+        "sunset": "17:29",
+        "dayLengthMinutes": 680,
+        "city": "仙台"
+      },
+      "independentMinutesJST": {
+        "sunrise": 370.41437076232444,
+        "sunset": 1048.4915930779712
+      },
+      "deltaMinutes": {
+        "sunrise": 1.4143707623244381,
+        "sunset": 0.5084069220288256
+      },
+      "pass": true
+    },
+    {
+      "id": "niigata",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 37.9161,
+        "lon": 139.0364
+      },
+      "actual": {
+        "sunrise": "07:00",
+        "sunset": "16:35",
+        "dayLengthMinutes": 575,
+        "city": "新潟"
+      },
+      "independentMinutesJST": {
+        "sunrise": 419.3690199982617,
+        "sunset": 994.1481179217383
+      },
+      "deltaMinutes": {
+        "sunrise": 0.630980001738294,
+        "sunset": 0.851882078261724
+      },
+      "pass": true
+    },
+    {
+      "id": "niigata",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 37.9161,
+        "lon": 139.0364
+      },
+      "actual": {
+        "sunrise": "04:25",
+        "sunset": "19:10",
+        "dayLengthMinutes": 885,
+        "city": "新潟"
+      },
+      "independentMinutesJST": {
+        "sunrise": 264.5035205760377,
+        "sunset": 1150.1299343954813
+      },
+      "deltaMinutes": {
+        "sunrise": 0.4964794239622847,
+        "sunset": 0.1299343954813139
+      },
+      "pass": true
+    },
+    {
+      "id": "niigata",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 37.9161,
+        "lon": 139.0364
+      },
+      "actual": {
+        "sunrise": "07:00",
+        "sunset": "16:35",
+        "dayLengthMinutes": 575,
+        "city": "新潟"
+      },
+      "independentMinutesJST": {
+        "sunrise": 419.3690199982617,
+        "sunset": 994.1481179217383
+      },
+      "deltaMinutes": {
+        "sunrise": 0.630980001738294,
+        "sunset": 0.851882078261724
+      },
+      "pass": true
+    },
+    {
+      "id": "niigata",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 37.9161,
+        "lon": 139.0364
+      },
+      "actual": {
+        "sunrise": "06:16",
+        "sunset": "17:36",
+        "dayLengthMinutes": 680,
+        "city": "新潟"
+      },
+      "independentMinutesJST": {
+        "sunrise": 377.44857750573715,
+        "sunset": 1056.1213863345588
+      },
+      "deltaMinutes": {
+        "sunrise": 1.4485775057371484,
+        "sunset": 0.12138633455879244
+      },
+      "pass": true
+    },
+    {
+      "id": "kanazawa",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 36.5613,
+        "lon": 136.6562
+      },
+      "actual": {
+        "sunrise": "07:06",
+        "sunset": "16:48",
+        "dayLengthMinutes": 583,
+        "city": "金沢"
+      },
+      "independentMinutesJST": {
+        "sunrise": 425.1548839679858,
+        "sunset": 1007.4038539520141
+      },
+      "deltaMinutes": {
+        "sunrise": 0.8451160320141753,
+        "sunset": 0.5961460479859397
+      },
+      "pass": true
+    },
+    {
+      "id": "kanazawa",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 36.5613,
+        "lon": 136.6562
+      },
+      "actual": {
+        "sunrise": "04:39",
+        "sunset": "19:16",
+        "dayLengthMinutes": 877,
+        "city": "金沢"
+      },
+      "independentMinutesJST": {
+        "sunrise": 278.0126965956568,
+        "sunset": 1155.662358375862
+      },
+      "deltaMinutes": {
+        "sunrise": 0.9873034043432085,
+        "sunset": 0.3376416241380866
+      },
+      "pass": true
+    },
+    {
+      "id": "kanazawa",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 36.5613,
+        "lon": 136.6562
+      },
+      "actual": {
+        "sunrise": "07:05",
+        "sunset": "16:48",
+        "dayLengthMinutes": 583,
+        "city": "金沢"
+      },
+      "independentMinutesJST": {
+        "sunrise": 425.1548839679858,
+        "sunset": 1007.4038539520141
+      },
+      "deltaMinutes": {
+        "sunrise": 0.1548839679858247,
+        "sunset": 0.5961460479859397
+      },
+      "pass": true
+    },
+    {
+      "id": "kanazawa",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 36.5613,
+        "lon": 136.6562
+      },
+      "actual": {
+        "sunrise": "06:24",
+        "sunset": "17:47",
+        "dayLengthMinutes": 683,
+        "city": "金沢"
+      },
+      "independentMinutesJST": {
+        "sunrise": 385.8482834893441,
+        "sunset": 1066.7632803509516
+      },
+      "deltaMinutes": {
+        "sunrise": 1.8482834893441122,
+        "sunset": 0.23671964904838205
+      },
+      "pass": true
+    },
+    {
+      "id": "tokyo",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 35.6762,
+        "lon": 139.6503
+      },
+      "actual": {
+        "sunrise": "06:51",
+        "sunset": "16:39",
+        "dayLengthMinutes": 588,
+        "city": "東京"
+      },
+      "independentMinutesJST": {
+        "sunrise": 410.8170391090615,
+        "sunset": 997.7888988109387
+      },
+      "deltaMinutes": {
+        "sunrise": 0.18296089093848877,
+        "sunset": 1.21110118906131
+      },
+      "pass": true
+    },
+    {
+      "id": "tokyo",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 35.6762,
+        "lon": 139.6503
+      },
+      "actual": {
+        "sunrise": "04:29",
+        "sunset": "19:01",
+        "dayLengthMinutes": 872,
+        "city": "東京"
+      },
+      "independentMinutesJST": {
+        "sunrise": 268.5526174245546,
+        "sunset": 1141.1696375469644
+      },
+      "deltaMinutes": {
+        "sunrise": 0.4473825754453742,
+        "sunset": 0.16963754696439537
+      },
+      "pass": true
+    },
+    {
+      "id": "tokyo",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 35.6762,
+        "lon": 139.6503
+      },
+      "actual": {
+        "sunrise": "06:51",
+        "sunset": "16:39",
+        "dayLengthMinutes": 587,
+        "city": "東京"
+      },
+      "independentMinutesJST": {
+        "sunrise": 410.8170391090615,
+        "sunset": 997.7888988109387
+      },
+      "deltaMinutes": {
+        "sunrise": 0.18296089093848877,
+        "sunset": 1.21110118906131
+      },
+      "pass": true
+    },
+    {
+      "id": "tokyo",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 35.6762,
+        "lon": 139.6503
+      },
+      "actual": {
+        "sunrise": "06:12",
+        "sunset": "17:36",
+        "dayLengthMinutes": 684,
+        "city": "東京"
+      },
+      "independentMinutesJST": {
+        "sunrise": 373.1595283232059,
+        "sunset": 1055.49923551709
+      },
+      "deltaMinutes": {
+        "sunrise": 1.1595283232059046,
+        "sunset": 0.5007644829099718
+      },
+      "pass": true
+    },
+    {
+      "id": "yokohama",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 35.4437,
+        "lon": 139.638
+      },
+      "actual": {
+        "sunrise": "06:51",
+        "sunset": "16:39",
+        "dayLengthMinutes": 589,
+        "city": "横浜"
+      },
+      "independentMinutesJST": {
+        "sunrise": 410.25564753419314,
+        "sunset": 998.4486903858067
+      },
+      "deltaMinutes": {
+        "sunrise": 0.7443524658068554,
+        "sunset": 0.5513096141933147
+      },
+      "pass": true
+    },
+    {
+      "id": "yokohama",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 35.4437,
+        "lon": 139.638
+      },
+      "actual": {
+        "sunrise": "04:30",
+        "sunset": "19:01",
+        "dayLengthMinutes": 871,
+        "city": "横浜"
+      },
+      "independentMinutesJST": {
+        "sunrise": 269.2517769678638,
+        "sunset": 1140.568878003655
+      },
+      "deltaMinutes": {
+        "sunrise": 0.7482230321361953,
+        "sunset": 0.43112199634492754
+      },
+      "pass": true
+    },
+    {
+      "id": "yokohama",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 35.4437,
+        "lon": 139.638
+      },
+      "actual": {
+        "sunrise": "06:51",
+        "sunset": "16:39",
+        "dayLengthMinutes": 589,
+        "city": "横浜"
+      },
+      "independentMinutesJST": {
+        "sunrise": 410.25564753419314,
+        "sunset": 998.4486903858067
+      },
+      "deltaMinutes": {
+        "sunrise": 0.7443524658068554,
+        "sunset": 0.5513096141933147
+      },
+      "pass": true
+    },
+    {
+      "id": "yokohama",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 35.4437,
+        "lon": 139.638
+      },
+      "actual": {
+        "sunrise": "06:12",
+        "sunset": "17:36",
+        "dayLengthMinutes": 684,
+        "city": "横浜"
+      },
+      "independentMinutesJST": {
+        "sunrise": 373.02409804695424,
+        "sunset": 1055.7330657933417
+      },
+      "deltaMinutes": {
+        "sunrise": 1.0240980469542365,
+        "sunset": 0.266934206658334
+      },
+      "pass": true
+    },
+    {
+      "id": "nagoya",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 35.1815,
+        "lon": 136.9066
+      },
+      "actual": {
+        "sunrise": "07:01",
+        "sunset": "16:51",
+        "dayLengthMinutes": 590,
+        "city": "名古屋"
+      },
+      "independentMinutesJST": {
+        "sunrise": 420.49735499447695,
+        "sunset": 1010.0581829255232
+      },
+      "deltaMinutes": {
+        "sunrise": 0.5026450055230498,
+        "sunset": 0.9418170744768304
+      },
+      "pass": true
+    },
+    {
+      "id": "nagoya",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 35.1815,
+        "lon": 136.9066
+      },
+      "actual": {
+        "sunrise": "04:42",
+        "sunset": "19:11",
+        "dayLengthMinutes": 869,
+        "city": "名古屋"
+      },
+      "independentMinutesJST": {
+        "sunrise": 280.90503227843004,
+        "sunset": 1150.766822693089
+      },
+      "deltaMinutes": {
+        "sunrise": 1.094967721569958,
+        "sunset": 0.23317730691110228
+      },
+      "pass": true
+    },
+    {
+      "id": "nagoya",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 35.1815,
+        "lon": 136.9066
+      },
+      "actual": {
+        "sunrise": "07:01",
+        "sunset": "16:51",
+        "dayLengthMinutes": 590,
+        "city": "名古屋"
+      },
+      "independentMinutesJST": {
+        "sunrise": 420.49735499447695,
+        "sunset": 1010.0581829255232
+      },
+      "deltaMinutes": {
+        "sunrise": 0.5026450055230498,
+        "sunset": 0.9418170744768304
+      },
+      "pass": true
+    },
+    {
+      "id": "nagoya",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 35.1815,
+        "lon": 136.9066
+      },
+      "actual": {
+        "sunrise": "06:22",
+        "sunset": "17:47",
+        "dayLengthMinutes": 685,
+        "city": "名古屋"
+      },
+      "independentMinutesJST": {
+        "sunrise": 383.74269078111513,
+        "sunset": 1066.8656730591806
+      },
+      "deltaMinutes": {
+        "sunrise": 1.7426907811151295,
+        "sunset": 0.1343269408193919
+      },
+      "pass": true
+    },
+    {
+      "id": "kyoto",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 35.0116,
+        "lon": 135.7681
+      },
+      "actual": {
+        "sunrise": "07:05",
+        "sunset": "16:56",
+        "dayLengthMinutes": 591,
+        "city": "京都"
+      },
+      "independentMinutesJST": {
+        "sunrise": 424.61082514416967,
+        "sunset": 1015.0527127758303
+      },
+      "deltaMinutes": {
+        "sunrise": 0.3891748558303334,
+        "sunset": 0.9472872241697132
+      },
+      "pass": true
+    },
+    {
+      "id": "kyoto",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 35.0116,
+        "lon": 135.7681
+      },
+      "actual": {
+        "sunrise": "04:47",
+        "sunset": "19:15",
+        "dayLengthMinutes": 868,
+        "city": "京都"
+      },
+      "independentMinutesJST": {
+        "sunrise": 285.92756640171615,
+        "sunset": 1154.8522885698028
+      },
+      "deltaMinutes": {
+        "sunrise": 1.072433598283851,
+        "sunset": 0.14771143019720512
+      },
+      "pass": true
+    },
+    {
+      "id": "kyoto",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 35.0116,
+        "lon": 135.7681
+      },
+      "actual": {
+        "sunrise": "07:05",
+        "sunset": "16:56",
+        "dayLengthMinutes": 591,
+        "city": "京都"
+      },
+      "independentMinutesJST": {
+        "sunrise": 424.61082514416967,
+        "sunset": 1015.0527127758303
+      },
+      "deltaMinutes": {
+        "sunrise": 0.3891748558303334,
+        "sunset": 0.9472872241697132
+      },
+      "pass": true
+    },
+    {
+      "id": "kyoto",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 35.0116,
+        "lon": 135.7681
+      },
+      "actual": {
+        "sunrise": "06:27",
+        "sunset": "17:52",
+        "dayLengthMinutes": 685,
+        "city": "京都"
+      },
+      "independentMinutesJST": {
+        "sunrise": 388.16322859096806,
+        "sunset": 1071.5531352493276
+      },
+      "deltaMinutes": {
+        "sunrise": 1.1632285909680604,
+        "sunset": 0.4468647506723755
+      },
+      "pass": true
+    },
+    {
+      "id": "osaka",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 34.6937,
+        "lon": 135.5023
+      },
+      "actual": {
+        "sunrise": "07:05",
+        "sunset": "16:58",
+        "dayLengthMinutes": 593,
+        "city": "大阪"
+      },
+      "independentMinutesJST": {
+        "sunrise": 424.85518437486064,
+        "sunset": 1016.9347535451393
+      },
+      "deltaMinutes": {
+        "sunrise": 0.14481562513935842,
+        "sunset": 1.0652464548606986
+      },
+      "pass": true
+    },
+    {
+      "id": "osaka",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 34.6937,
+        "lon": 135.5023
+      },
+      "actual": {
+        "sunrise": "04:49",
+        "sunset": "19:15",
+        "dayLengthMinutes": 867,
+        "city": "大阪"
+      },
+      "independentMinutesJST": {
+        "sunrise": 287.8612737556032,
+        "sunset": 1155.0449812159159
+      },
+      "deltaMinutes": {
+        "sunrise": 1.1387262443968211,
+        "sunset": 0.04498121591586823
+      },
+      "pass": true
+    },
+    {
+      "id": "osaka",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 34.6937,
+        "lon": 135.5023
+      },
+      "actual": {
+        "sunrise": "07:05",
+        "sunset": "16:58",
+        "dayLengthMinutes": 593,
+        "city": "大阪"
+      },
+      "independentMinutesJST": {
+        "sunrise": 424.85518437486064,
+        "sunset": 1016.9347535451393
+      },
+      "deltaMinutes": {
+        "sunrise": 0.14481562513935842,
+        "sunset": 1.0652464548606986
+      },
+      "pass": true
+    },
+    {
+      "id": "osaka",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 34.6937,
+        "lon": 135.5023
+      },
+      "actual": {
+        "sunrise": "06:28",
+        "sunset": "17:53",
+        "dayLengthMinutes": 685,
+        "city": "大阪"
+      },
+      "independentMinutesJST": {
+        "sunrise": 388.9781087189169,
+        "sunset": 1072.864655121379
+      },
+      "deltaMinutes": {
+        "sunrise": 0.9781087189169284,
+        "sunset": 0.1353448786210265
+      },
+      "pass": true
+    },
+    {
+      "id": "kobe",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 34.6901,
+        "lon": 135.1955
+      },
+      "actual": {
+        "sunrise": "07:06",
+        "sunset": "16:59",
+        "dayLengthMinutes": 593,
+        "city": "神戸"
+      },
+      "independentMinutesJST": {
+        "sunrise": 426.07315167083505,
+        "sunset": 1018.171186249165
+      },
+      "deltaMinutes": {
+        "sunrise": 0.07315167083504548,
+        "sunset": 0.8288137508350246
+      },
+      "pass": true
+    },
+    {
+      "id": "kobe",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 34.6901,
+        "lon": 135.1955
+      },
+      "actual": {
+        "sunrise": "04:50",
+        "sunset": "19:16",
+        "dayLengthMinutes": 867,
+        "city": "神戸"
+      },
+      "independentMinutesJST": {
+        "sunrise": 289.0982861481748,
+        "sunset": 1156.262368823344
+      },
+      "deltaMinutes": {
+        "sunrise": 0.9017138518252068,
+        "sunset": 0.2623688233441044
+      },
+      "pass": true
+    },
+    {
+      "id": "kobe",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 34.6901,
+        "lon": 135.1955
+      },
+      "actual": {
+        "sunrise": "07:06",
+        "sunset": "16:59",
+        "dayLengthMinutes": 593,
+        "city": "神戸"
+      },
+      "independentMinutesJST": {
+        "sunrise": 426.07315167083505,
+        "sunset": 1018.171186249165
+      },
+      "deltaMinutes": {
+        "sunrise": 0.07315167083504548,
+        "sunset": 0.8288137508350246
+      },
+      "pass": true
+    },
+    {
+      "id": "kobe",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 34.6901,
+        "lon": 135.1955
+      },
+      "actual": {
+        "sunrise": "06:29",
+        "sunset": "17:54",
+        "dayLengthMinutes": 685,
+        "city": "神戸"
+      },
+      "independentMinutesJST": {
+        "sunrise": 390.20250701624354,
+        "sunset": 1074.0946568240522
+      },
+      "deltaMinutes": {
+        "sunrise": 1.202507016243544,
+        "sunset": 0.09465682405220832
+      },
+      "pass": true
+    },
+    {
+      "id": "hiroshima",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 34.3853,
+        "lon": 132.4553
+      },
+      "actual": {
+        "sunrise": "07:17",
+        "sunset": "17:11",
+        "dayLengthMinutes": 594,
+        "city": "広島"
+      },
+      "independentMinutesJST": {
+        "sunrise": 436.25546026310815,
+        "sunset": 1029.910477656892
+      },
+      "deltaMinutes": {
+        "sunrise": 0.744539736891852,
+        "sunset": 1.0895223431080012
+      },
+      "pass": true
+    },
+    {
+      "id": "hiroshima",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 34.3853,
+        "lon": 132.4553
+      },
+      "actual": {
+        "sunrise": "05:02",
+        "sunset": "19:27",
+        "dayLengthMinutes": 865,
+        "city": "広島"
+      },
+      "independentMinutesJST": {
+        "sunrise": 300.88622584330346,
+        "sunset": 1166.3960291282156
+      },
+      "deltaMinutes": {
+        "sunrise": 1.113774156696536,
+        "sunset": 0.6039708717844405
+      },
+      "pass": true
+    },
+    {
+      "id": "hiroshima",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 34.3853,
+        "lon": 132.4553
+      },
+      "actual": {
+        "sunrise": "07:17",
+        "sunset": "17:11",
+        "dayLengthMinutes": 594,
+        "city": "広島"
+      },
+      "independentMinutesJST": {
+        "sunrise": 436.25546026310815,
+        "sunset": 1029.910477656892
+      },
+      "deltaMinutes": {
+        "sunrise": 0.744539736891852,
+        "sunset": 1.0895223431080012
+      },
+      "pass": true
+    },
+    {
+      "id": "hiroshima",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 34.3853,
+        "lon": 132.4553
+      },
+      "actual": {
+        "sunrise": "06:40",
+        "sunset": "18:06",
+        "dayLengthMinutes": 686,
+        "city": "広島"
+      },
+      "independentMinutesJST": {
+        "sunrise": 400.9269256559105,
+        "sunset": 1085.2918381843854
+      },
+      "deltaMinutes": {
+        "sunrise": 0.9269256559105088,
+        "sunset": 0.7081618156146305
+      },
+      "pass": true
+    },
+    {
+      "id": "fukuoka",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 33.5904,
+        "lon": 130.4017
+      },
+      "actual": {
+        "sunrise": "07:23",
+        "sunset": "17:21",
+        "dayLengthMinutes": 598,
+        "city": "福岡"
+      },
+      "independentMinutesJST": {
+        "sunrise": 442.468720091848,
+        "sunset": 1040.126017828152
+      },
+      "deltaMinutes": {
+        "sunrise": 0.531279908151987,
+        "sunset": 0.8739821718479561
+      },
+      "pass": true
+    },
+    {
+      "id": "fukuoka",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 33.5904,
+        "lon": 130.4017
+      },
+      "actual": {
+        "sunrise": "05:12",
+        "sunset": "19:33",
+        "dayLengthMinutes": 861,
+        "city": "福岡"
+      },
+      "independentMinutesJST": {
+        "sunrise": 311.2247240222324,
+        "sunset": 1172.4863309492866
+      },
+      "deltaMinutes": {
+        "sunrise": 0.7752759777675919,
+        "sunset": 0.5136690507133608
+      },
+      "pass": true
+    },
+    {
+      "id": "fukuoka",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 33.5904,
+        "lon": 130.4017
+      },
+      "actual": {
+        "sunrise": "07:23",
+        "sunset": "17:21",
+        "dayLengthMinutes": 598,
+        "city": "福岡"
+      },
+      "independentMinutesJST": {
+        "sunrise": 442.468720091848,
+        "sunset": 1040.126017828152
+      },
+      "deltaMinutes": {
+        "sunrise": 0.531279908151987,
+        "sunset": 0.8739821718479561
+      },
+      "pass": true
+    },
+    {
+      "id": "fukuoka",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 33.5904,
+        "lon": 130.4017
+      },
+      "actual": {
+        "sunrise": "06:47",
+        "sunset": "18:14",
+        "dayLengthMinutes": 687,
+        "city": "福岡"
+      },
+      "independentMinutesJST": {
+        "sunrise": 408.532392977045,
+        "sunset": 1094.1151708632508
+      },
+      "deltaMinutes": {
+        "sunrise": 1.5323929770449922,
+        "sunset": 0.11517086325079617
+      },
+      "pass": true
+    },
+    {
+      "id": "kagoshima",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 31.5966,
+        "lon": 130.5571
+      },
+      "actual": {
+        "sunrise": "07:17",
+        "sunset": "17:25",
+        "dayLengthMinutes": 608,
+        "city": "鹿児島"
+      },
+      "independentMinutesJST": {
+        "sunrise": 437.00055042725,
+        "sunset": 1044.35098749275
+      },
+      "deltaMinutes": {
+        "sunrise": 0.0005504272500047591,
+        "sunset": 0.6490125072500632
+      },
+      "pass": true
+    },
+    {
+      "id": "kagoshima",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 31.5966,
+        "lon": 130.5571
+      },
+      "actual": {
+        "sunrise": "05:16",
+        "sunset": "19:27",
+        "dayLengthMinutes": 850,
+        "city": "鹿児島"
+      },
+      "independentMinutesJST": {
+        "sunrise": 315.7349125743875,
+        "sunset": 1166.7329423971314
+      },
+      "deltaMinutes": {
+        "sunrise": 0.265087425612478,
+        "sunset": 0.26705760286859004
+      },
+      "pass": true
+    },
+    {
+      "id": "kagoshima",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 31.5966,
+        "lon": 130.5571
+      },
+      "actual": {
+        "sunrise": "07:17",
+        "sunset": "17:25",
+        "dayLengthMinutes": 608,
+        "city": "鹿児島"
+      },
+      "independentMinutesJST": {
+        "sunrise": 437.00055042725,
+        "sunset": 1044.35098749275
+      },
+      "deltaMinutes": {
+        "sunrise": 0.0005504272500047591,
+        "sunset": 0.6490125072500632
+      },
+      "pass": true
+    },
+    {
+      "id": "kagoshima",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 31.5966,
+        "lon": 130.5571
+      },
+      "actual": {
+        "sunrise": "06:45",
+        "sunset": "18:15",
+        "dayLengthMinutes": 690,
+        "city": "鹿児島"
+      },
+      "independentMinutesJST": {
+        "sunrise": 406.4283593582279,
+        "sunset": 1094.976004482068
+      },
+      "deltaMinutes": {
+        "sunrise": 1.4283593582279082,
+        "sunset": 0.023995517932007715
+      },
+      "pass": true
+    },
+    {
+      "id": "naha",
+      "iso": "2026-01-01",
+      "coordinates": {
+        "lat": 26.2124,
+        "lon": 127.6809
+      },
+      "actual": {
+        "sunrise": "07:17",
+        "sunset": "17:49",
+        "dayLengthMinutes": 632,
+        "city": "那覇"
+      },
+      "independentMinutesJST": {
+        "sunrise": 436.45046005907216,
+        "sunset": 1067.910677860928
+      },
+      "deltaMinutes": {
+        "sunrise": 0.5495399409278434,
+        "sunset": 1.08932213907201
+      },
+      "pass": true
+    },
+    {
+      "id": "naha",
+      "iso": "2026-07-01",
+      "coordinates": {
+        "lat": 26.2124,
+        "lon": 127.6809
+      },
+      "actual": {
+        "sunrise": "05:41",
+        "sunset": "19:26",
+        "dayLengthMinutes": 825,
+        "city": "那覇"
+      },
+      "independentMinutesJST": {
+        "sunrise": 339.92527438807497,
+        "sunset": 1165.552180583444
+      },
+      "deltaMinutes": {
+        "sunrise": 1.0747256119250324,
+        "sunset": 0.44781941655605806
+      },
+      "pass": true
+    },
+    {
+      "id": "naha",
+      "iso": "2027-01-01",
+      "coordinates": {
+        "lat": 26.2124,
+        "lon": 127.6809
+      },
+      "actual": {
+        "sunrise": "07:17",
+        "sunset": "17:49",
+        "dayLengthMinutes": 632,
+        "city": "那覇"
+      },
+      "independentMinutesJST": {
+        "sunrise": 436.45046005907216,
+        "sunset": 1067.910677860928
+      },
+      "deltaMinutes": {
+        "sunrise": 0.5495399409278434,
+        "sunset": 1.08932213907201
+      },
+      "pass": true
+    },
+    {
+      "id": "naha",
+      "iso": "2028-02-29",
+      "coordinates": {
+        "lat": 26.2124,
+        "lon": 127.6809
+      },
+      "actual": {
+        "sunrise": "06:53",
+        "sunset": "18:30",
+        "dayLengthMinutes": 697,
+        "city": "那覇"
+      },
+      "independentMinutesJST": {
+        "sunrise": 414.2009043661493,
+        "sunset": 1110.2130594741466
+      },
+      "deltaMinutes": {
+        "sunrise": 1.2009043661493024,
+        "sunset": 0.21305947414657567
+      },
+      "pass": true
+    }
+  ]
+}

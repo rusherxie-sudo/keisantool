@@ -1,0 +1,45 @@
+{
+  "baseline": "b283759ff2fcfeb47d39cf9469bb8eb0dca0a88a",
+  "source_freeze": "d780d37aa5c23a54acac8bfba19c153665401bb0",
+  "content_commit": "888a48d0a7dbbd974f2cc3ee5c189f4a8bb0a30d",
+  "source_trees": {
+    "src": "ea8f61e0d220fc863e5e34ee0b9035d9c0eed233",
+    "public": "681117c472c354b3d90693488ec931735f6bb3b7",
+    "scripts": "42530eb8511ca465ca14e00f684319e20ec25140",
+    "tests": "10e74b777f46613e91c388a24248b1e4f003e189"
+  },
+  "baseline_trees": {
+    "src": "be4642b165ba9f67dd5a9024c3eb3886e162df9c",
+    "public": "681117c472c354b3d90693488ec931735f6bb3b7",
+    "scripts": "42530eb8511ca465ca14e00f684319e20ec25140",
+    "tests": "b62a54fb0a3d63e7971035c4bb4761ffc305488d"
+  },
+  "test": {
+    "code_snapshot": "888a48d",
+    "command": "Node22 npm test -- tests/ikuji.test.js tests/saniku.test.js",
+    "files": 2,
+    "passed": 43,
+    "log": "kt03/green.log",
+    "note": "Run before content commit on byte-identical tracked calculation source; manifest-only change does not change calculation/test files"
+  },
+  "build": {
+    "head": "d780d37aa5c23a54acac8bfba19c153665401bb0",
+    "command": "Node22 npm run build",
+    "passes": 1,
+    "html": 565,
+    "sitemap": 477,
+    "internal_links": 24106,
+    "fragment_links": 534,
+    "dist_files": 723,
+    "dist_file_hash_manifest_sha256": "804f8ee53a94d012122095a49d9bc0d8d698a26d6358c154dc8cda8b059a69e6",
+    "log": "build.log"
+  },
+  "inherited_full_suite": {
+    "source_freeze": "9a3c221",
+    "test_files": 120,
+    "passed": 2006,
+    "rerun": false
+  },
+  "lint_typecheck": "No independent configured script; build and diff --check used",
+  "dependency_change": null
+}

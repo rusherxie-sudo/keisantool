@@ -1,0 +1,57 @@
+{
+  "inherited_inventory": "docs/overnight-20261108/annual-assets.json",
+  "inherited_sha256": "f52ff07ce4fd77fc3e8efa37918e804c0397803685d6bc5e3815375faf4b57cf",
+  "inherited_count": 118,
+  "assets": [
+    {
+      "id": "saniku",
+      "path": "src/lib/saniku.js",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11600000/001461102.pdf"
+      ],
+      "applicable_year": "2026-08-01 through 2027-07-31 benefit limits; not all calendar 2027",
+      "effective_date": "2026-08-01",
+      "last_verified": "2026-11-08",
+      "verification_scope": "Official original PDF physical page18/printed p16 and page7: cap16540 floor3203; floor corrected from3061. Eligibility not individually certified.",
+      "affected_tools_pages": [
+        "src/pages/saniku/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/ikukyu-hoken-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "Official correction or next August benefit-limit revision; verify before using outside stated period.",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "2027-01-01 through07-31 explicitly supported by official validity; 2027-08-01 onward unknown/not supported",
+      "other_reference_urls": []
+    },
+    {
+      "id": "ikuji",
+      "path": "src/lib/ikuji.js",
+      "official_source_urls": [
+        "https://www.mhlw.go.jp/content/11600000/001461102.pdf"
+      ],
+      "applicable_year": "2026-08-01 through 2027-07-31 benefit limits; not all calendar 2027",
+      "effective_date": "2026-08-01",
+      "last_verified": "2026-11-08",
+      "verification_scope": "Official original PDF physical page18/printed p16 and page7: cap16540 floor3203; floor corrected from3061. Eligibility not individually certified.",
+      "affected_tools_pages": [
+        "src/pages/ikuji/index.astro",
+        "src/pages/saniku/index.astro"
+      ],
+      "affected_articles": [
+        "src/content/blog/shussan-yoteibi-no-keisan.md",
+        "src/content/blog/hairitsu-keisan-no-kakikata.md",
+        "src/content/blog/ikukyu-hoken-no-kakikata.md"
+      ],
+      "affected_downloads": [],
+      "maintenance_trigger": "Official correction or next August benefit-limit revision; verify before using outside stated period.",
+      "rebuild_required": true,
+      "rebuild_scope": "数据/内容提交→lastmod独立提交→npm test/build；下载需专用生成器复核",
+      "2027_policy": "2027-01-01 through07-31 explicitly supported by official validity; 2027-08-01 onward unknown/not supported",
+      "other_reference_urls": []
+    }
+  ],
+  "unaffected_downloads": true
+}

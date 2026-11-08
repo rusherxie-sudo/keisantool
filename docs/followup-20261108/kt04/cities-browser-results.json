@@ -1,0 +1,601 @@
+{
+  "cases": [
+    {
+      "width": 1440,
+      "kind": "hub",
+      "jstRollover": true,
+      "options": 15,
+      "links": 15,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "wakkanai",
+      "coordinates": {
+        "lat": 45.4153,
+        "lon": 141.6733
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:13",
+            "sunset": "16:00"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 432.87709839458546,
+            "sunset": 959.5448395254145
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "sapporo",
+      "coordinates": {
+        "lat": 43.0642,
+        "lon": 141.3469
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:06",
+            "sunset": "16:10"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 425.9158775840418,
+            "sunset": 969.1172603359581
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "sendai",
+      "coordinates": {
+        "lat": 38.2682,
+        "lon": 140.8694
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "06:53",
+            "sunset": "16:27"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 413.0330367695277,
+            "sunset": 985.8201011504723
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "niigata",
+      "coordinates": {
+        "lat": 37.9161,
+        "lon": 139.0364
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:00",
+            "sunset": "16:35"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 419.3690199982617,
+            "sunset": 994.1481179217383
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "kanazawa",
+      "coordinates": {
+        "lat": 36.5613,
+        "lon": 136.6562
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:05",
+            "sunset": "16:48"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 425.1548839679858,
+            "sunset": 1007.4038539520141
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "tokyo",
+      "coordinates": {
+        "lat": 35.6762,
+        "lon": 139.6503
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "06:51",
+            "sunset": "16:39"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 410.8170391090615,
+            "sunset": 997.7888988109387
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "yokohama",
+      "coordinates": {
+        "lat": 35.4437,
+        "lon": 139.638
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "06:51",
+            "sunset": "16:39"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 410.25564753419314,
+            "sunset": 998.4486903858067
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "nagoya",
+      "coordinates": {
+        "lat": 35.1815,
+        "lon": 136.9066
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:01",
+            "sunset": "16:51"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 420.49735499447695,
+            "sunset": 1010.0581829255232
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "kyoto",
+      "coordinates": {
+        "lat": 35.0116,
+        "lon": 135.7681
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:05",
+            "sunset": "16:56"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 424.61082514416967,
+            "sunset": 1015.0527127758303
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "osaka",
+      "coordinates": {
+        "lat": 34.6937,
+        "lon": 135.5023
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:05",
+            "sunset": "16:58"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 424.85518437486064,
+            "sunset": 1016.9347535451393
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "kobe",
+      "coordinates": {
+        "lat": 34.6901,
+        "lon": 135.1955
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:06",
+            "sunset": "16:59"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 426.07315167083505,
+            "sunset": 1018.171186249165
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "hiroshima",
+      "coordinates": {
+        "lat": 34.3853,
+        "lon": 132.4553
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:17",
+            "sunset": "17:11"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 436.25546026310815,
+            "sunset": 1029.910477656892
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "fukuoka",
+      "coordinates": {
+        "lat": 33.5904,
+        "lon": 130.4017
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:23",
+            "sunset": "17:21"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 442.468720091848,
+            "sunset": 1040.126017828152
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "kagoshima",
+      "coordinates": {
+        "lat": 31.5966,
+        "lon": 130.5571
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:17",
+            "sunset": "17:25"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 437.00055042725,
+            "sunset": 1044.35098749275
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "id": "naha",
+      "coordinates": {
+        "lat": 26.2124,
+        "lon": 127.6809
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2027-01-01",
+          "actual": {
+            "sunrise": "07:17",
+            "sunset": "17:49"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 436.45046005907216,
+            "sunset": 1067.910677860928
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "kind": "hub",
+      "jstRollover": true,
+      "options": 15,
+      "links": 15,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "id": "wakkanai",
+      "coordinates": {
+        "lat": 45.4153,
+        "lon": 141.6733
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2026-07-01",
+          "actual": {
+            "sunrise": "03:49",
+            "sunset": "19:25"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 228.01752048262432,
+            "sunset": 1165.5207344888945
+          }
+        },
+        {
+          "iso": "2028-02-29",
+          "actual": {
+            "sunrise": "06:12",
+            "sunset": "17:19"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 373.9459482396828,
+            "sunset": 1038.528815600613
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "id": "tokyo",
+      "coordinates": {
+        "lat": 35.6762,
+        "lon": 139.6503
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2026-07-01",
+          "actual": {
+            "sunrise": "04:29",
+            "sunset": "19:01"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 268.5526174245546,
+            "sunset": 1141.1696375469644
+          }
+        },
+        {
+          "iso": "2028-02-29",
+          "actual": {
+            "sunrise": "06:12",
+            "sunset": "17:36"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 373.1595283232059,
+            "sunset": 1055.49923551709
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "width": 390,
+      "id": "naha",
+      "coordinates": {
+        "lat": 26.2124,
+        "lon": 127.6809
+      },
+      "staticRows": 24,
+      "checks": [
+        {
+          "iso": "2026-07-01",
+          "actual": {
+            "sunrise": "05:41",
+            "sunset": "19:26"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 339.92527438807497,
+            "sunset": 1165.552180583444
+          }
+        },
+        {
+          "iso": "2028-02-29",
+          "actual": {
+            "sunrise": "06:53",
+            "sunset": "18:30"
+          },
+          "oracleMinutesJST": {
+            "sunrise": 414.2009043661493,
+            "sunset": 1110.2130594741466
+          }
+        }
+      ],
+      "clear": true,
+      "precisionWording": true,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "wakkanai",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "sapporo",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "sendai",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "niigata",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "kanazawa",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "tokyo",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "yokohama",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "nagoya",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "kyoto",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "osaka",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "kobe",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "hiroshima",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "fukuoka",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "kagoshima",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "noJS city",
+      "id": "naha",
+      "staticRows": 24,
+      "pass": true
+    },
+    {
+      "kind": "benefit floor actual UI",
+      "at67": 64380,
+      "at50": 48045,
+      "scopeNotice": true,
+      "pass": true
+    }
+  ],
+  "errors": []
+}

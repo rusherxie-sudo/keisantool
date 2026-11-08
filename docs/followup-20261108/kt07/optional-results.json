@@ -1,0 +1,69 @@
+{
+  "scope": "Fault injection only, separate from official-client proof",
+  "cases": [
+    {
+      "tool": "rokusei",
+      "fault": "throw",
+      "calculated": true,
+      "shareVisible": true,
+      "nativeCopySucceeded": true,
+      "pass": true
+    },
+    {
+      "tool": "juminzei",
+      "fault": "throw",
+      "calculated": true,
+      "shareVisible": true,
+      "nativeCopySucceeded": true,
+      "pass": true
+    },
+    {
+      "tool": "eigyoubi",
+      "fault": "throw",
+      "calculated": true,
+      "shareVisible": true,
+      "nativeCopySucceeded": true,
+      "pass": true
+    },
+    {
+      "tool": "bmi",
+      "fault": "throw",
+      "calculated": true,
+      "shareVisible": true,
+      "nativeCopySucceeded": true,
+      "pass": true
+    },
+    {
+      "tool": "rokusei",
+      "fault": "pending",
+      "calculated": true,
+      "shareVisible": true,
+      "nativeCopySucceeded": true,
+      "pass": true
+    },
+    {
+      "tool": "juminzei",
+      "fault": "pending",
+      "calculated": true,
+      "shareVisible": true,
+      "nativeCopySucceeded": true,
+      "pass": true
+    },
+    {
+      "tool": "eigyoubi",
+      "fault": "pending",
+      "calculated": true,
+      "shareVisible": true,
+      "nativeCopySucceeded": true,
+      "pass": true
+    },
+    {
+      "tool": "bmi",
+      "fault": "pending",
+      "calculated": true,
+      "shareVisible": true,
+      "nativeCopySucceeded": true,
+      "pass": true
+    }
+  ]
+}
