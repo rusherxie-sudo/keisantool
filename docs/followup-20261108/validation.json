@@ -19,7 +19,7 @@
     "command": "Node22 npm test -- tests/ikuji.test.js tests/saniku.test.js",
     "files": 2,
     "passed": 43,
-    "log": "kt03/green.log",
+    "log": "kt03/green.log.gz",
     "note": "Run before content commit on byte-identical tracked calculation source; manifest-only change does not change calculation/test files"
   },
   "build": {
@@ -32,7 +32,7 @@
     "fragment_links": 534,
     "dist_files": 723,
     "dist_file_hash_manifest_sha256": "804f8ee53a94d012122095a49d9bc0d8d698a26d6358c154dc8cda8b059a69e6",
-    "log": "build.log"
+    "log": "build.log.gz"
   },
   "inherited_full_suite": {
     "source_freeze": "9a3c221",

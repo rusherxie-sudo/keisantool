@@ -1,6 +1,6 @@
 import {chromium} from '/home/ubuntu/np01-audit-20261107/browser-runner/node_modules/playwright/index.mjs';
-import {readFileSync,writeFileSync} from 'node:fs';
-import assert from 'node:assert/strict';import {gunzipSync} from 'node:zlib';
+import {readFileSync,writeFileSync,unlinkSync} from 'node:fs';
+import assert from 'node:assert/strict';import {gunzipSync,gzipSync} from 'node:zlib';
 const base=process.env.BROWSER_BASE||'http://127.0.0.1:4411';
 const official=gunzipSync(readFileSync(new URL('official-gtag.js.gz',import.meta.url)));
 const b=await chromium.launch({executablePath:'/home/ubuntu/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome',args:['--no-sandbox']});
@@ -21,7 +21,7 @@ for(const tool of (process.env.TOOL_FILTER?[process.env.TOOL_FILTER]:['rokusei',
  phase='clear';await input.fill('');await p.waitForTimeout(1200);assert.equal(records.filter(x=>x.en==='calculator_result_view'&&x.host==='www.google-analytics.com').length,1);
  let actions;
  if(tool==='eigyoubi'){
- await valid();const dp=p.waitForEvent('download');await p.locator('#business-csv').click();const download=await dp;await download.saveAs(new URL('replay-business.csv',import.meta.url).pathname);
+ await valid();const dp=p.waitForEvent('download');await p.locator('#business-csv').click();const download=await dp;const csvPath=new URL('replay-business.csv',import.meta.url);await download.saveAs(csvPath.pathname);writeFileSync(new URL('replay-business.csv.gz',import.meta.url),gzipSync(readFileSync(csvPath)));unlinkSync(csvPath);
  await p.locator('[data-act=copy]').click();const copied=await p.evaluate(()=>navigator.clipboard.readText());assert.match(copied,/result\/eigyoubi/);
  const received=await c.newPage();await received.goto(copied);await received.waitForLoadState('networkidle');assert.match(await received.locator('#shared-facts').innerText(),/18日/);await received.close();
  for(let i=0;i<24&&!records.some(x=>x.en==='result_url_share');i++)await p.waitForTimeout(500);

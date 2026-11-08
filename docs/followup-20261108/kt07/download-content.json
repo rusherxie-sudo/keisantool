@@ -1,8 +1,9 @@
 {
-  "file": "replay-business.csv",
+  "file": "replay-business.csv.gz",
   "sha256": "62265420652783744e84a5f6e49e9cd281cdf9906ff42ebd6a90413a77b8cd59",
   "rowsIncludingHeader": 31,
   "companyHoliday": "2026-09-01",
   "businessDays": 18,
-  "assertionsPassed": true
+  "assertionsPassed": true,
+  "sha256_scope": "uncompressed original downloaded bytes, BOM and CRLF preserved"
 }
