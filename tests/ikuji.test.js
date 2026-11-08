@@ -9,8 +9,8 @@ describe('育児休業給付・30日分の比較（2026-08-01基準）', () => {
   it('公表されている30日上限額に一致', () => {
     expect(calcIkuji({ sixMonthWages: 6000000 })).toMatchObject({ dailyWage: 16540, amount67: 332454, amount50: 248100 });
   });
-  it('賃金日額の下限3061円を適用', () => {
-    expect(calcIkuji({ sixMonthWages: 180000 })).toMatchObject({ dailyWage: 3061, amount67: 61526, amount50: 45915 });
+  it('賃金日額の下限3203円（公式p16、2026-08-01〜2027-07-31）を適用', () => {
+    expect(calcIkuji({ sixMonthWages: 180000 })).toMatchObject({ dailyWage: 3203, amount67: 64380, amount50: 48045 });
   });
   it('休業対象賃金6万円なら67%は18万円、50%は15万円', () => {
     expect(calcIkuji({ sixMonthWages: 1800000, leaveWages: 60000 })).toMatchObject({ amount67: 180000, amount50: 150000 });

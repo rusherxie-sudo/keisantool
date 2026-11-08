@@ -98,9 +98,9 @@ describe('calcIkukyuKyuufu(dailyWage, totalDays) — 育児休業給付金', () 
     expect(r.firstDays).toBe(100);
     expect(r.restDays).toBe(0);
   });
-  it('端数切り捨て: 下限未満の日額は3061円に補正', () => {
+  it('端数切り捨て: 下限未満の日額は3203円に補正', () => {
     const r = calcIkukyuKyuufu(1500, 1);
-    expect(r.total).toBe(2050);
+    expect(r.total).toBe(2146);
   });
   it('dailyWage=0 → null', () => {
     expect(calcIkukyuKyuufu(0, 300)).toBeNull();

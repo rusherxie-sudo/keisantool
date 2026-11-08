@@ -13,6 +13,8 @@ const annual = BUSINESS_YEARS.map(year => ({year, months:Array.from({length:12},
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={{ '@context': 'https://schema.org', '@type': 'WebApplication', name: title, description, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Web', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } }}>
   <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ 営業日数</div><h1>営業日数カレンダー・月別早見表</h1><p>土日と日本の祝日を除く営業日数を確認。勤務曜日と会社独自の休日を変えて、実際の予定表も作れます。</p></div>
+  <noscript><p>会社休日を指定した計算・CSV作成にはJavaScriptが必要です。この下の2026年・2027年の月別営業日数一覧と年間PDFはそのまま利用できます。</p></noscript>
+
   <div class="calc-card office-tool">
     <div class="office-fields"><div><label for="business-year">年</label><select id="business-year">{BUSINESS_YEARS.map(y=><option>{y}</option>)}</select></div><div><label for="business-month">月</label><select id="business-month">{Array.from({length:12},(_,i)=><option value={i+1}>{i+1}月</option>)}</select></div></div>
     <fieldset class="weekdays"><legend>通常の勤務曜日</legend>{['日','月','火','水','木','金','土'].map((d,i)=><label><input type="checkbox" name="working-weekday" value={i} checked={i>0&&i<6}/>{d}</label>)}</fieldset>

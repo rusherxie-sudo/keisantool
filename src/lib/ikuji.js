@@ -2,7 +2,7 @@
 // 厚労省「育児休業等給付の内容と支給申請手続」令和8年8月版 p16。
 // https://www.mhlw.go.jp/content/11600000/001461102.pdf
 export const IKUKYU_DAILY_CAP = 16540;
-export const IKUKYU_DAILY_FLOOR = 3061;
+export const IKUKYU_DAILY_FLOOR = 3203;
 export const clampIkujiDaily = (daily) => Math.min(IKUKYU_DAILY_CAP, Math.max(IKUKYU_DAILY_FLOOR, daily));
 
 export function calcIkuji({ sixMonthWages, leaveWages = 0 } = {}) {
