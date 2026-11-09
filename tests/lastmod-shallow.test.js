@@ -31,19 +31,19 @@ describe('committed lastmod manifest in a real shallow clone', () => {
       run(process.execPath, [join(process.cwd(), 'scripts/update-lastmod.mjs')]);
       const manifestPath = join(source, 'src/data/lastmod.json');
       const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-      for (const file of dependencies) expect(manifest[`src/data/${file}`]).toBe(oldDate);
+      for (const file of dependencies) expect(Date.parse(manifest[`src/data/${file}`])).toBe(Date.parse(oldDate));
       run('git', ['add', 'src/data/lastmod.json']);
       commit('manifest release', newerDate);
       run('git', ['clone', '-q', '--depth=1', pathToFileURL(source).href, shallow]);
       expect(run('git', ['rev-parse', '--is-shallow-repository'], shallow)).toBe('true');
-      expect(run('git', ['log', '-1', '--format=%cI', '--', `src/data/${dependencies[0]}`], shallow)).toBe(newerDate);
+      expect(Date.parse(run('git', ['log', '-1', '--format=%cI', '--', `src/data/${dependencies[0]}`], shallow))).toBe(Date.parse(newerDate));
       const query = `import {lastModifiedISO} from './src/lib/lastmod.js'; console.log(JSON.stringify(${JSON.stringify(dependencies)}.map(file => lastModifiedISO('src/data/'+file))));`;
-      const dates = () => JSON.parse(run(process.execPath, ['--input-type=module', '-e', query], shallow));
-      expect(dates()).toEqual(dependencies.map(() => oldDate));
+      const dates = () => JSON.parse(run(process.execPath, ['--input-type=module', '-e', query], shallow)).map(Date.parse);
+      expect(dates()).toEqual(dependencies.map(() => Date.parse(oldDate)));
       // manifest が欠けると shallow 履歴の新しい日付が使われる再現用対照。
       delete manifest[`src/data/${dependencies[0]}`];
       writeFileSync(join(shallow, 'src/data/lastmod.json'), JSON.stringify(manifest));
-      expect(dates()).toEqual([newerDate, oldDate, oldDate]);
+      expect(dates()).toEqual([newerDate, oldDate, oldDate].map(Date.parse));
     } finally {
       rmSync(temp, { recursive: true, force: true });
     }
