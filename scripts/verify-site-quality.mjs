@@ -1,6 +1,8 @@
 // Verify the built site, including actual heading IDs (not source-text guesses).
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join, resolve, extname, relative } from 'node:path';
+import { sourceFilesForUrl } from '../src/lib/lastmod.js';
+const manifest = JSON.parse(readFileSync('src/data/lastmod.json', 'utf8'));
 const root = resolve('dist');
 const walk = dir => readdirSync(dir, { withFileTypes:true }).flatMap(entry => entry.isDirectory() ? walk(join(dir,entry.name)) : [join(dir,entry.name)]);
 const decode = text => text.replaceAll('&amp;','&').replaceAll('&quot;','"').replaceAll('&#39;',"'");
@@ -40,6 +42,11 @@ for (const file of walk(root).filter(f=>/sitemap-\d+\.xml$/.test(f))) {
   for (const match of readFileSync(file,'utf8').matchAll(/<loc>(.*?)<\/loc>/g)) {
     const url=decode(match[1]);const doc=documents.get(fileForPath(new URL(url).pathname));sitemapCount++;
     if (!doc || doc.noindex || doc.canonical!==url) errors.push(`sitemap: missing, noindex or noncanonical ${url}`);
+    // shallow clone でも日時がデプロイ日に化けないよう、実在する依存をすべて確認する。
+    for (const dependency of sourceFilesForUrl(resolve('src/pages'), new URL(url).pathname)) {
+      const key = relative(process.cwd(), dependency);
+      if (existsSync(dependency) && !manifest[key]) errors.push(`sitemap: lastmod manifest missing ${key} (${url})`);
+    }
   }
 }
 // Consolidated result routes must remain direct 301s to real retained pages.
