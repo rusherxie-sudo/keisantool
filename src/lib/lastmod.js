@@ -134,6 +134,11 @@ export function sourceFilesForUrl(pagesDir, urlPath) {
   } else if (/^umaredoshi\/\d{4}$/.test(path)) {
     files = [
       join(pagesDir, 'umaredoshi/[year].astro'),
+      // 表の生成元と、実際に使う和暦・厄年の参照元も更新日に反映する。
+      // seizaRanges はこのページでは使わないため seiza.js は含めない。
+      join(root, 'src/lib/hayami.js'),
+      join(root, 'src/lib/wareki.js'),
+      join(root, 'src/lib/yakudoshi.js'),
       join(root, 'src/lib/nenrei.js'),
       join(root, 'src/lib/rokusei.js'),
     ];
