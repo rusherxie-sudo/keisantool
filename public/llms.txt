@@ -1,6 +1,6 @@
 # 計算ツール（keisantool.com）
 
-> 日本語の計算・変換ツール集。登録不要・ブラウザ内完結・無料で提供しています。入力内容はサーバーに送信されません。計算結果はすべて参考値です。
+> 日本語の計算・変換ツール集です。計算はブラウザ内で行います。結果共有リンクを使う場合は、リンクに含まれる入力条件を共有先も閲覧できます。計算結果は参考値です。
 
 このサイトは Astro により静的生成され、JavaScript を実行しなくても本文を取得できます。
 
@@ -98,7 +98,7 @@
 - [誕生日相性診断（数秘術・六星占術）](https://keisantool.com/tanjobi-aisho/): ふたりの生年月日から相性を計算
 - [星座相性診断（12星座の相性表）](https://keisantool.com/seiza-aisho/): 12星座×12星座の相性を判定
 - [血液型相性診断（A・B・O・AB）](https://keisantool.com/ketsueki-aisho/): 血液型の組み合わせで相性を判定
-- [数秘術計算器](https://keisantool.com/suumijutsu/): 生年月日から誕生数と性格を判定
+- [数秘術計算器](https://keisantool.com/suumijutsu/): 生年月日から誕生数と占いの解釈を確認
 
 ## 文字ツール
 
@@ -123,7 +123,7 @@
 - [URL エンコード / デコード](https://keisantool.com/urlencode/): URL文字列の変換
 - [正規表現テストツール](https://keisantool.com/regex/): パターンのマッチ確認
 - [Markdown → HTML 変換](https://keisantool.com/markdown/): MarkdownをHTMLに変換
-- [パスワード生成ツール](https://keisantool.com/password/): 安全なパスワードをその場で生成
+- [パスワード生成ツール](https://keisantool.com/password/): 長さと文字種を選んでランダム生成
 
 ## ペット・動物
 

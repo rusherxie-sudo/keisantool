@@ -80,7 +80,7 @@ const jsonld = {
     <p>エンコードには2つの方式があり、用途に応じて使い分けます。本ツールでは「値だけ」「URL全体」のラジオボタンで切り替えられます。</p>
     <ul>
       <li><strong>値だけ（encodeURIComponent）</strong>：<code>: / ? # &amp; = +</code> といった URL の構造を表す記号もすべてエスケープします。クエリのパラメータの<strong>値（value）</strong>や1つの部品をエンコードするときに使います。例：<code>a/b?c#d&amp;e=f</code> → <code>a%2Fb%3Fc%23d%26e%3Df</code></li>
-      <li><strong>URL全体（encodeURI）</strong>：<code>: / ? # &amp;</code> などの構造文字は<strong>そのまま残し</strong>、日本語やスペースだけをエスケープします。URL 全体をまとめて安全な形にしたいときに使います。例：<code>https://example.com/パス?q=値</code> → <code>https://example.com/%E3%83%91%E3%82%B9?q=%E3%81%82</code></li>
+      <li><strong>URL全体（encodeURI）</strong>：<code>: / ? # &amp;</code> などの構造文字は<strong>そのまま残し</strong>、日本語やスペースだけをエスケープします。URL全体の日本語などをパーセント表記にしたいときに使います。例：<code>https://example.com/パス?q=値</code> → <code>https://example.com/%E3%83%91%E3%82%B9?q=%E5%80%A4</code></li>
     </ul>
     <p>クエリに「<code>&amp;</code>」や「<code>=</code>」を文字として含めたい値（検索ワードなど）をエンコードするときは、必ず「値だけ（encodeURIComponent）」を選んでください。URL 全体方式ではこれらが区切り文字とみなされ、正しく扱われません。</p>
 

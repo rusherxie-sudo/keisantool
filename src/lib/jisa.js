@@ -31,7 +31,7 @@ export const TIMEZONES = [
 export const JAPAN_TIME_PAIRS = [
   {
     slug: 'new-york', city: 'ニューヨーク', country: 'アメリカ', tzId: 'America/New_York', dstPattern: 'north',
-    summary: '出張・オンライン会議・米国市場の開始時刻を、日本時間から迷わず確認できます。',
+    summary: '出張・オンライン会議・米国市場の開始時刻を、日本時間に換算して確認できます。',
   },
   {
     slug: 'los-angeles', city: 'ロサンゼルス', country: 'アメリカ', tzId: 'America/Los_Angeles', dstPattern: 'north',
@@ -51,7 +51,7 @@ export const JAPAN_TIME_PAIRS = [
   },
   {
     slug: 'sydney', city: 'シドニー', country: 'オーストラリア', tzId: 'Australia/Sydney', dstPattern: 'south',
-    summary: '南半球の夏時間も含め、日本時間とシドニー時間を正確に変換できます。',
+    summary: '南半球の夏時間も含め、日本時間とシドニー時間を換算できます。',
   },
   {
     slug: 'seoul', city: 'ソウル', country: '韓国', tzId: 'Asia/Seoul', dstPattern: 'none',
@@ -75,7 +75,7 @@ export const JAPAN_TIME_PAIRS = [
   },
   {
     slug: 'india', city: 'インド（デリー・ムンバイ）', country: 'インド', tzId: 'Asia/Kolkata', dstPattern: 'none',
-    summary: '30分単位のずれがある日本時間とインド標準時を、分まで正確に変換できます。',
+    summary: '30分単位のずれがある日本時間とインド標準時を、分単位で換算できます。',
   },
 ];
 
