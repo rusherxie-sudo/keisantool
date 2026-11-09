@@ -1,0 +1,93 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Faq from '../../components/Faq.astro';
+import '../../styles/office-tools.css';
+
+const slug = 'kinmu-jikan/excel';
+const title = 'Excelの時間計算｜合計・24時間以上の表示・勤務時間の引き算';
+const description = 'Excelで時間を合計するSUMと[h]:mmの設定方法を解説。同日の引き算、休憩の控除、翌日・複数日にまたがる時間差、小数時間への変換、文字列や####の直し方を具体例で確認できます。';
+---
+<ToolLayout title={title} description={description} slug={slug} current="kinmu-jikan" jsonld={{ '@context': 'https://schema.org', '@type': 'WebPage', name: title, description }}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/kinmu-jikan/">勤務時間計算</a> ／ Excelの時間計算</div>
+    <h1>Excelの時間計算：合計・24時間以上の表示・引き算</h1>
+    <p>時間の合計は<code>=SUM(B2:B4)</code>で計算し、結果セルの表示形式を<code>[h]:mm</code>にします。24時間を超える勤務時間の累計も、そのまま表示できます。</p>
+  </div>
+
+  <section class="calc-card office-tool">
+    <h2>まずはSUMと[h]:mmで時間を合計</h2>
+    <ol>
+      <li>B2に<code>12:45</code>、B3に<code>15:30</code>、B4に<code>1:45</code>を入力します。</li>
+      <li>B5に<code>=SUM(B2:B4)</code>を入力します。</li>
+      <li>B5を選び、「セルの書式設定」→「表示形式」→「ユーザー定義」の「種類」に<code>[h]:mm</code>を指定します。</li>
+    </ol>
+    <p class="office-summary">12:45 ＋ 15:30 ＋ 1:45 ＝ 30:00（30時間）</p>
+    <p>通常の<code>h:mm</code>では24時間ごとに時の表示が戻るため、同じ合計が<code>6:00</code>と表示されます。合計が消えたわけではありません。角括弧付きの<code>[h]</code>で累計時間を表示してください。Microsoftの公式例では<code>[h]:mm;@</code>が使われています。</p>
+  </section>
+
+  <section class="howto">
+    <h2>24時間以上の合計とExcelの内部値</h2>
+    <p>Excelは日付・時刻を「1日＝1」の数値として扱います。30時間は1.25日なので、B5の表示形式を「標準」にすると<code>1.25</code>になります。<code>=B5*24</code>を「標準」または「数値」で表示すると、1.25×24＝<code>30</code>時間です。表示形式を変えても、元の計算結果は変わりません。</p>
+    <p>次の各例は独立した表として扱ってください。時刻や経過時間の結果セルには<code>[h]:mm</code>、小数時間の結果セルには「標準」または「数値」を設定します。</p>
+
+    <h2>同日の引き算と休憩時間の控除</h2>
+    <p>B2を出勤<code>09:00</code>、C2を退勤<code>18:00</code>とすると、<code>=C2-B2</code>は<code>9:00</code>です。D2に休憩を分単位で<code>60</code>と入力した場合は、分を1日分の分数1,440で割って差し引きます。</p>
+    <div class="office-scroll">
+      <table class="office-table">
+        <thead><tr><th scope="col">求める値</th><th scope="col">数式</th><th scope="col">結果</th></tr></thead>
+        <tbody>
+          <tr><td>休憩なしの時間差</td><td><code>=C2-B2</code></td><td>9:00</td></tr>
+          <tr><td>休憩60分を除く実働</td><td><code>=C2-B2-D2/1440</code></td><td>8:00（8時間）</td></tr>
+          <tr><td>実働を小数時間で表示</td><td><code>=(C2-B2-D2/1440)*24</code></td><td>8</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>D2に<code>1:00</code>のような時間値を入れる設計なら<code>=C2-B2-D2</code>です。「60分」という数値と「1:00」という時間値は単位が違います。混在させず、休憩が出勤から退勤までの時間を超えていないかも確認してください。</p>
+
+    <h2>翌日までの勤務：22:00から翌06:00は8時間</h2>
+    <p>B2が<code>22:00</code>、C2が<code>06:00</code>で、退勤が翌日だと確認できている場合は<code>=C2+1-B2</code>で<code>8:00</code>になります。<code>+1</code>は1日を加える指定です。同日退勤には加えないでください。休憩が分単位のD2に入っているなら<code>=C2+1-B2-D2/1440</code>です。</p>
+    <p><code>=MOD(C2-B2,1)</code>もこの例では8:00になりますが、使えるのは<strong>日付をまたぐことが確認でき、経過時間が24時間未満と分かっている1回の勤務</strong>に限ります。MODは整数日分を取り除くため、24時間は0:00、32時間は8:00になります。同日勤務の出退勤逆転も正の値に変わり、入力ミスを隠すおそれがあります。</p>
+    <p>退勤日の指定漏れや入力ミスをMODで補わず、先に日付と時刻を確認してください。休憩控除後の結果全体をMODで囲むと、休憩が長すぎる負の値も正に変わるため避けます。</p>
+
+    <h2>24時間以上・複数日なら日付と時刻を入力</h2>
+    <p>経過時間が24時間以上になる可能性がある場合は、出勤・退勤の両方に日付を含めます。B2に<code>2026/11/9 22:00</code>、C2に<code>2026/11/11 06:00</code>を入力し、<code>=C2-B2</code>を<code>[h]:mm</code>で表示すると<code>32:00</code>です。日付を含むため、翌日分を足したりMODを使ったりする必要はありません。</p>
+    <p>休憩合計がD2に分単位で入っていれば<code>=C2-B2-D2/1440</code>で差し引けます。これは日時の差を求める式であり、給与・割増賃金や法定休憩を判定する式ではありません。</p>
+
+    <h2>7:30を7.5時間に変換する</h2>
+    <p>B2に時間値<code>7:30</code>がある場合、<code>=B2*24</code>を「標準」または「数値」で表示すると<code>7.5</code>になります。30分÷60＝0.5時間なので、7時間30分は<strong>7.5時間</strong>です。7.30時間は7時間18分を表すため、同じ値にはなりません。</p>
+    <p>逆に、B2の小数時間<code>7.5</code>を時間表示へ戻すなら<code>=B2/24</code>を<code>[h]:mm</code>に設定すると7:30になります。計算結果が意図しない時刻に見えるときは、数式だけでなく表示形式も確認してください。</p>
+    <p><a href="/jikan/">時間計算ツール</a>の「時間の足し引き」「時間⇔小数」で合計や換算を、<a href="/kinmu-jikan/">勤務時間計算ツール</a>で出退勤・翌日指定・休憩の計算を確認できます。</p>
+
+    <h2>SUMで合計されない・####になるときの確認手順</h2>
+    <div class="office-scroll">
+      <table class="office-table">
+        <thead><tr><th scope="col">症状</th><th scope="col">主な原因</th><th scope="col">確認・修正</th></tr></thead>
+        <tbody>
+          <tr><td>30時間が6:00になる</td><td>表示形式がh:mm</td><td>合計セルを[h]:mmに変更</td></tr>
+          <tr><td>SUMが0・一部だけ合計される</td><td>参照範囲の時刻が文字列</td><td>ISNUMBERで調べ、数値の時間値として再入力</td></tr>
+          <tr><td>####と表示される</td><td>列幅不足、または負の日時</td><td>列幅を広げ、出退勤日・休憩・引く順序を確認</td></tr>
+          <tr><td>小数時間が時刻になる</td><td>×24の結果が時刻形式</td><td>結果セルを「標準」か「数値」に変更</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>セル参照範囲の文字列はSUMでは無視されます。先頭のアポストロフィ、コピー時の空白、文字列形式のセルなどが原因です。<code>=ISNUMBER(B2)</code>がFALSEなら、元データを確認し、入力セルを「標準」に戻して<code>7:30</code>のように再入力します。表示形式だけを変更しても、既存の文字列が数値に変わるとは限りません。</p>
+    <p><code>####</code>はまず列幅を広げて確認します。それでも直らない場合、一般的な1900日付システムでは負の日時を表示できないことが原因になり得ます。同日の終了時刻が開始より早くないか、翌日の指定を忘れていないか、休憩が長すぎないかを確認してください。日付システムの切り替えや、IFERRORで空欄・0に置き換える方法で入力ミスを隠さず、原因のセルを修正します。</p>
+
+    <h2>既存の勤怠Excelテンプレートを使う</h2>
+    <p>自分で表を作らずに月ごとに管理したい場合は、公開済みの2026年・2027年版を利用できます。<strong>1回の勤務は翌日指定を含め24時間以内</strong>が対象で、月の累計は24時間を超えて表示できます。複数日にまたがる24時間超の1回の勤務には対応していません。</p>
+    <div class="office-actions">
+      <a href="/downloads/kinmu-template-2026.xlsx" download>2026年版の勤怠Excelをダウンロード</a>
+      <a href="/downloads/kinmu-template-2027.xlsx" download>2027年版の勤怠Excelをダウンロード</a>
+    </div>
+    <p><a href="/kinmu-jikan/template/">テンプレートの入力方法・集計ルール</a>を確認してからご利用ください。数式は表計算ソフトで開くと再計算されます。印刷の改ページや表示は、使用するソフトで確認してください。</p>
+
+    <h2>参考資料</h2>
+    <p><a href="https://support.microsoft.com/ja-jp/excel/add-or-subtract-time-in-excel" rel="noopener">Microsoftサポート「Excelで時間を加算または減算する」</a>：SUMによる合計、24時間を超える表示形式、日付・時刻の差から時間数を求める方法を参照しています。</p>
+  </section>
+
+  <Faq items={[
+    { q: 'Excelで24時間を超える合計を表示するには？', a: 'SUMで合計し、結果セルのユーザー定義の表示形式を[h]:mmにします。12:45、15:30、1:45の合計は30:00です。通常のh:mmでは6:00と表示されます。' },
+    { q: '翌日までの時間差はMODで計算できますか？', a: '日付をまたぐことが確認でき、経過時間が24時間未満と分かっている1回の勤務に限ります。MODは24時間分を取り除き、入力の逆転も隠すことがあります。複数日の場合は日付と時刻を入力して引き算してください。' },
+    { q: '7:30を7.30時間として入力してもよいですか？', a: '7時間30分は7.5時間です。Excelの時間値を小数時間にするには24を掛け、表示形式を「標準」または「数値」にします。' },
+  ]} />
+</ToolLayout>

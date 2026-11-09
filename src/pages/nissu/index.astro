@@ -246,9 +246,12 @@ const example = dateRangeBreakdown('2026-08-03', '2026-08-11', { includeBoth: tr
 
   function updateShare() {
     if (currentMode === 'range' && !$('rangeResult').hidden) {
-      window.setResultShare?.(`日数計算\n${$('rangeDates').textContent}\n${$('days').textContent}（営業日 ${$('businessDays').textContent}）`);
+      const endpointSummary = $('includeBoth').checked
+        ? '両端を含める'
+        : '両端を含める：いいえ（早い日を含めず、遅い日を含める。同日は0日）';
+      window.setResultShare?.(`日数計算\n${$('rangeDates').textContent}\n${endpointSummary}\n${$('days').textContent}（営業日 ${$('businessDays').textContent}）`);
     } else if (currentMode === 'shift' && !$('shiftResult').hidden) {
-      window.setResultShare?.(`日付計算\n${$('shiftSummary').textContent}\n${$('resultDate').textContent}`);
+      window.setResultShare?.(`日付計算\n基準日：${formatJa($('base').value)}\n${$('shiftSummary').textContent}\n${$('resultDate').textContent}`);
     } else window.hideResultShare?.();
   }
 
