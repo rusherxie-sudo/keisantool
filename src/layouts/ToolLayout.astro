@@ -93,17 +93,46 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Google tag (gtag.js) — GA4 全站计测。is:inline 必须保留，否则 Astro 会处理脚本导致 GA 失效 -->
-  <script async is:inline src="https://www.googletagmanager.com/gtag/js?id=G-XM8LC5MPHT"></script>
+  <meta name="referrer" content="origin" />
   <script is:inline>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    // 共有URLの入力値を解析イベントのURLに含めない。
-    const analyticsPage = window.location.origin + window.location.pathname;
-    let analyticsReferrer = '';
-    try { const ref = new URL(document.referrer); analyticsReferrer = ref.origin + ref.pathname; } catch {}
-    gtag('config', 'G-XM8LC5MPHT', { page_location: analyticsPage, page_referrer: analyticsReferrer });
+    (function () {
+      // 入力条件を含むURLでは外部の解析スクリプト自体を読み込まない。
+      function allowed() {
+        try {
+          var page = new URL(location.href);
+          if (page.search || page.hash) return false;
+          if (document.referrer) {
+            var ref = new URL(document.referrer);
+            if (ref.search || ref.hash) return false;
+          }
+          return true;
+        } catch { return false; }
+      }
+      if (!allowed() || window.__keisantoolAnalytics) return;
+      window.__keisantoolAnalytics = true;
+      window.dataLayer = window.dataLayer || [];
+      var ready = false;
+      // 読み込み待ちやURL変更後のイベントはキューへ保存しない。
+      window.gtag = function () {
+        if (ready && allowed()) window.dataLayer.push(arguments);
+      };
+      var tag = document.createElement('script');
+      tag.async = true;
+      tag.referrerPolicy = 'origin';
+      tag.onload = function () {
+        if (!allowed() || ready) return;
+        ready = true;
+        window.gtag('js', new Date());
+        window.gtag('config', 'G-XM8LC5MPHT', {
+          page_location: location.origin + location.pathname,
+          page_referrer: document.referrer ? new URL(document.referrer).origin : '',
+          allow_google_signals: false,
+          allow_ad_personalization_signals: false,
+        });
+      };
+      tag.src = 'https://www.googletagmanager.com/gtag/js?id=G-XM8LC5MPHT';
+      document.head.appendChild(tag);
+    })();
   </script>
   <title>{title}</title>
   <meta name="description" content={description} />
@@ -153,8 +182,8 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   <script is:inline>
     var _hmt = _hmt || [];
     (function() {
-      // No verified URL/referrer override contract: fail closed on tools and URL state.
-      // Static informational routes only. Do not alter location or shared-result hashes.
+      // URL・参照元の上書き仕様を確認できないため、入力のない静的な情報ページだけを対象にする。
+      // 計算ページや共有URLの状態は変更しない。
       try {
         var page = new URL(location.href);
         if (page.search || page.hash || !/^\/(?:blog\/[^/]+\/|category\/[^/]+\/|about\/|privacy\/|editorial-policy\/)$/.test(page.pathname)) return;
@@ -164,6 +193,7 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
         }
       } catch { return; }
       var hm = document.createElement("script");
+      hm.referrerPolicy = "origin";
       hm.src = "https://hm.baidu.com/hm.js?d84361ca34153f1c434c38b9cb0e0bb5";
       var s = document.getElementsByTagName("script")[0];
       s.parentNode.insertBefore(hm, s);

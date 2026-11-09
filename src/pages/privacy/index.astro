@@ -20,19 +20,21 @@ const description =
     <p>メールでお問い合わせいただいた場合、送信元メールアドレス、本文、添付資料などを受け取り、回答・不具合調査のために利用します。必要以上の個人情報を送らないでください。お問い合わせ情報の確認・削除のご希望は、<a href="/contact/">お問い合わせ窓口</a>へご連絡ください。法令に基づく場合などを除き、目的外に第三者へ提供しません。</p>
 
     <h2>アクセス解析</h2>
-    <p>Google アナリティクス 4（GA4）を利用し、閲覧ページ、端末・ブラウザ情報、参照元、計算機能の利用回数などを集計します。Cookie等の識別子が使われます。計算結果の利用イベントには入力した金額・日付・結果そのものを含めず、解析に渡すページURLからクエリ文字列とフラグメントを除きます。</p>
-    <p>百度統計（Baidu Tongji）もアクセス状況の把握に利用します。ページのURL、参照元、端末・ブラウザ情報などが百度に送信され、Cookie等が利用される場合があります。URLに含まれる情報も解析対象になり得るため、個人情報や機密情報をURLに含めないでください。詳細は<a href="https://privacy.baidu.com/policy" target="_blank" rel="noopener noreferrer">百度のプライバシーポリシー</a>をご確認ください。</p>
+    <p>Google アナリティクス 4（GA4）を利用し、閲覧ページ、端末・ブラウザ情報、参照元、計算機能の利用回数などを集計します。Cookie等の識別子が使われます。ページURLまたは参照元にクエリ文字列やフラグメントがある場合は、GA4のスクリプトを読み込みません。読み込み待ちやURLに条件が追加された後の当サイトの計測イベントも送信しません。</p>
+    <p>計算の利用イベントには入力した氏名・金額・日付・結果そのものを含めません。GA4に設定するページURLはドメインとパスだけとし、参照元はドメインだけにします。Googleシグナルと広告のパーソナライズ用シグナルは無効にしています。これらはアクセス解析そのものを停止する設定ではありません。</p>
+    <p>百度統計（Baidu Tongji）は、ブログ記事、カテゴリ、このサイトについて、プライバシーポリシー、制作・検証方針の各ページに限定して利用します。計算ツールや共有結果ページでは読み込みません。対象ページでも、URLまたは参照元にクエリ文字列やフラグメントがある場合は読み込みません。利用時はページのURL、参照元、端末・ブラウザ情報などが百度に送信され、Cookie等が使われる場合があります。詳細は<a href="https://privacy.baidu.com/policy" target="_blank" rel="noopener noreferrer">百度のプライバシーポリシー</a>をご確認ください。</p>
+    <p>外部サイトへの通信では参照元をドメイン単位に制限します。ただし、利用者が共有操作で送った結果URLや本文は共有先に渡ります。URLに個人情報や機密情報を含めないでください。</p>
     <p>Cookieはブラウザ設定から管理できます。Google アナリティクスの収集停止には<a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">オプトアウト アドオン</a>も利用できます。詳しくは<a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Googleによるデータの使用</a>をご覧ください。</p>
 
     <h2>配信・セキュリティ</h2>
     <p>サイトの配信と保護にCloudflareを利用しています。アクセス時にはIPアドレス、リクエスト先、端末情報などの接続情報が配信基盤で処理され、セキュリティ対策や表示性能の把握に使われる場合があります。外部フォントの取得でも配信元への通信が発生します。詳細は<a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare</a>および<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Googleのプライバシーポリシー</a>をご確認ください。</p>
 
     <h2>広告配信</h2>
-    <p>当サイトではGoogle AdSenseを利用する場合があります。広告配信時には、Googleなどの第三者がCookie、ウェブビーコン、IPアドレス等を使い、当サイトや他のサイト・アプリの利用に関する情報を収集・利用することがあります。</p>
+    <p>現在、当サイトではGoogle AdSenseの広告を配信していません。今後導入する場合は、必要な同意取得と設定を確認してから配信します。広告配信時には、Googleなどの第三者がCookie、ウェブビーコン、IPアドレス等を使い、当サイトや他のサイト・アプリの利用に関する情報を収集・利用することがあります。</p>
     <p>Googleのパーソナライズ広告は<a href="https://myadcenter.google.com/" target="_blank" rel="noopener noreferrer">マイ アド センター</a>で管理できます。他の事業者の選択肢は<a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer">広告Cookieのオプトアウト案内</a>をご覧ください。広告配信やアクセス解析の無効化方法・適用範囲は各サービスで異なります。</p>
 
     <h2>方針の変更と窓口</h2>
     <p>利用するサービスや情報の取り扱いを変更した場合は、このページを更新します。お問い合わせは<a href="mailto:contact@keisantool.com">contact@keisantool.com</a>へお願いします。</p>
-    <p class="updated">制定日：2026年6月14日／最終改定日：2026年11月7日</p>
+    <p class="updated">制定日：2026年6月14日／最終改定日：2026年11月10日</p>
   </div>
 </ToolLayout>
