@@ -1,0 +1,84 @@
+---
+import { workTimeExamples } from '../data/work-time-examples.js';
+---
+<section class="howto work-check" id="work-check" aria-labelledby="work-check-title">
+  <h2 id="work-check-title">夜勤・休憩の入力と結果を確かめる</h2>
+  <p>勤怠表の数字が合わないときは、出退勤の前後関係と休憩の単位を確認してください。下の例を選ぶと、月の勤怠表とは別の欄で試算できます。自分の時刻へ書き換えて使うこともできます。</p>
+  <div class="work-check-fields">
+    <label>出勤<input id="check-start" type="time" value="22:00" /></label>
+    <label>退勤<input id="check-end" type="time" value="06:00" /></label>
+    <label>休憩（分）<input id="check-break" type="number" min="0" max="1440" step="1" value="45" /></label>
+    <label class="work-check-next"><input id="check-next" type="checkbox" checked />翌日退勤</label>
+  </div>
+  <p id="check-expected">例「夜勤・休憩45分」の期待する結果：7時間15分（435分）。</p>
+  <output id="check-result" for="check-start check-end check-break check-next" aria-live="polite">実働7時間15分（435分）／小数7.25時間</output>
+  <p class="office-note">休憩が2回なら合計の分数を入力します。日をまたぐ場合も翌日退勤を自分で選択してください。同じ時刻は当日なら0時間、翌日なら24時間の拘束です。</p>
+  <h3>入力・出力の確認表：14例</h3>
+  <p>実働0分は計算できた結果、入力エラーは修正が必要な状態です。上限の例は入力の境界を確認するためのもので、勤務を勧めるものではありません。</p>
+  <p><a href="/downloads/kinmu-jikan-check.csv" download="kinmu-jikan-check.csv">14例の入力・期待結果・確認ポイントをCSVで保存</a>（UTF-8・無料・登録不要）</p>
+  <div class="office-scroll" tabindex="0" role="region" aria-label="勤務時間の入力・出力確認表。横にスクロールできます">
+    <table class="office-table work-check-table">
+      <caption>月表と同じ計算条件。翌日「あり」は翌日退勤を選択します。</caption>
+      <thead><tr><th scope="col">場面</th><th scope="col">出勤→退勤</th><th scope="col">翌日</th><th scope="col">休憩</th><th scope="col">期待する結果</th><th scope="col">確認のポイント</th><th scope="col">試算</th></tr></thead>
+      <tbody>{workTimeExamples.map(x => <tr>
+        <th scope="row">{x.label}</th><td>{x.start} → {x.end || '空欄'}</td><td>{x.nextDay ? 'あり' : 'なし'}</td><td>{x.breakMinutes}分</td>
+        <td>{x.expectedText}{x.expectedMinutes !== null && <><br />（{x.expectedMinutes}分）</>}</td><td>{x.explanation}</td>
+        <td><button type="button" data-work-check={x.id} aria-label={x.label + 'を試算欄に入力'}>この例を試す</button></td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <h3>3回の夜勤を合計すると24時間を超える例</h3>
+  <p>上の「夜勤・休憩45分」「夜勤・休憩を2回」「同じ時刻・翌日」を別々の日に入力すると、435＋630＋1,380＝2,445分、合計40時間45分（40.75時間）です。1回の拘束時間は24時間以内ですが、月合計は24時間を超えてもそのまま表示します。</p>
+  <p>11月30日23:00〜12月1日7:00・休憩60分なら実働420分です。月表では11月30日の行に入力し、7時間すべてを11月分として扱います。暦日ごとに11月と12月へ分ける集計はしません。</p>
+  <p class="office-note">計算結果はあくまで参考値です。実働の単純な差し引きと集計に使います。休憩を取る時刻、深夜割増、給与、法定休憩の判定は含みません。CSVは確認用の架空データで、上の勤怠表へ取り込むファイルではありません。</p>
+</section>
+<style>
+  .work-check { scroll-margin-top: 1rem; }
+  .work-check-fields { display:flex; flex-wrap:wrap; align-items:end; gap:1rem; }
+  .work-check-fields label { display:flex; flex-direction:column; gap:.35rem; }
+  .work-check-fields input { max-width:150px; min-height:44px; }
+  .work-check-fields .work-check-next { flex-direction:row; align-items:center; min-height:44px; }
+  .work-check-next input { width:20px; }
+  #check-result { display:block; padding:1rem; border:1px solid var(--primary, #196b62); border-radius:8px; font-weight:700; }
+  .work-check-table { min-width:900px; }
+  .work-check-table td, .work-check-table th { white-space:normal; }
+  .work-check-table td:nth-child(2) { min-width:135px; }
+  .work-check-table td:nth-child(3), .work-check-table td:nth-child(4) { min-width:54px; white-space:nowrap; }
+  .work-check-table td:nth-child(6) { min-width:240px; }
+  .work-check-table button { min-width:105px; min-height:44px; cursor:pointer; }
+  .work-check-table caption { text-align:left; padding:.75rem 0; }
+</style>
+<script>
+import { workTimeExamples } from '../data/work-time-examples.js';
+import { workMinutes } from '../lib/office-tools.js';
+const section = document.querySelector('#work-check');
+const start = section.querySelector('#check-start');
+const end = section.querySelector('#check-end');
+const pause = section.querySelector('#check-break');
+const next = section.querySelector('#check-next');
+const result = section.querySelector('#check-result');
+const expected = section.querySelector('#check-expected');
+function renderCheck() {
+  const minutes = workMinutes(start.value, end.value, pause.value, next.checked);
+  if (minutes === null) {
+    result.textContent = '入力エラー：出退勤を両方入力し、翌日指定と休憩を確認してください。休憩は拘束時間以内の0以上の整数、1回の拘束は24時間以内です。';
+    return;
+  }
+  result.textContent = `実働${Math.floor(minutes / 60)}時間${minutes % 60}分（${minutes}分）／小数${(minutes / 60).toFixed(2)}時間`;
+}
+section.querySelectorAll('[data-work-check]').forEach(button => button.addEventListener('click', () => {
+  const example = workTimeExamples.find(x => x.id === button.dataset.workCheck);
+  start.value = example.start;
+  end.value = example.end;
+  pause.value = String(example.breakMinutes);
+  next.checked = example.nextDay;
+  expected.textContent = `例「${example.label}」の期待する結果：${example.expectedText}${example.expectedMinutes === null ? '' : '（' + example.expectedMinutes + '分）'}。`;
+  renderCheck();
+  result.scrollIntoView({ block:'center', behavior:'instant' });
+}));
+[start, end, pause, next].forEach(input => input.addEventListener('input', () => {
+  expected.textContent = '自分の入力で試算中です。入力例に戻すには表の「この例を試す」を選んでください。';
+  renderCheck();
+}));
+renderCheck();
+</script>
