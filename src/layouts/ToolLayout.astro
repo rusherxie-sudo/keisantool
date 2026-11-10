@@ -178,27 +178,6 @@ const themeStyle = `--cat-color:${theme.accent};--cat-tint:${theme.tint}`;
   {jsonldFinal && <script type="application/ld+json" set:html={JSON.stringify(jsonldFinal)} />}
   <script type="application/ld+json" set:html={JSON.stringify(webPageJsonld)} />
   {breadcrumbJsonld && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonld)} />}
-  <!-- 百度统计代码 -->
-  <script is:inline>
-    var _hmt = _hmt || [];
-    (function() {
-      // URL・参照元の上書き仕様を確認できないため、入力のない静的な情報ページだけを対象にする。
-      // 計算ページや共有URLの状態は変更しない。
-      try {
-        var page = new URL(location.href);
-        if (page.search || page.hash || !/^\/(?:blog\/[^/]+\/|category\/[^/]+\/|about\/|privacy\/|editorial-policy\/)$/.test(page.pathname)) return;
-        if (document.referrer) {
-          var ref = new URL(document.referrer);
-          if (ref.search || ref.hash) return;
-        }
-      } catch { return; }
-      var hm = document.createElement("script");
-      hm.referrerPolicy = "origin";
-      hm.src = "https://hm.baidu.com/hm.js?d84361ca34153f1c434c38b9cb0e0bb5";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
 </head>
 <body data-tool-slug={slug ?? current ?? ''}>
   <SiteHeader current={current} />

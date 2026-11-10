@@ -3,18 +3,22 @@ import {readFileSync} from 'node:fs';
 import {JSDOM} from 'jsdom';
 import {runInNewContext} from 'node:vm';
 const source=()=>readFileSync('src/layouts/ToolLayout.astro','utf8');
-const baidu=()=>[...source().matchAll(/<script is:inline>([\s\S]*?)<\/script>/g)].find(x=>x[1].includes('hm.baidu.com'))[1];
 it.each([
- ['/blog/kokuho-ryoukin-keisan-hoho/','',true],
- ['/category/health/','',true],
- ['/blog/example/?qa=KT06_SENTINEL','',false],
- ['/blog/example/#KT06_SENTINEL','',false],
- ['/blog/example/','https://example.test/bmi/?qa=KT06_SENTINEL#secret',false],
- ['/bmi/','',false],['/juminzei/','',false],['/tanjobi-aisho/','',false],['/result/eigyoubi/#v=1','',false],
-])('Baidu eligibility %s referrer %s', (path,ref,allowed)=>{
- const dom=new JSDOM('<head><script></script></head>',{url:'https://example.test'+path,...(ref?{referrer:ref}:{})});
- runInNewContext(baidu(),{window:dom.window,document:dom.window.document,location:dom.window.location,URL});
- expect(!!dom.window.document.querySelector('script[src*="hm.baidu.com"]')).toBe(allowed);
+ ['/blog/kokuho-ryoukin-keisan-hoho/',''],
+ ['/category/health/',''],
+ ['/blog/example/?qa=KT06_SENTINEL',''],
+ ['/blog/example/#KT06_SENTINEL',''],
+ ['/blog/example/','https://example.test/bmi/?qa=KT06_SENTINEL#secret'],
+ ['/bmi/',''],['/juminzei/',''],['/tanjobi-aisho/',''],['/result/eigyoubi/#v=1',''],
+])('has no Baidu loader or queue on %s referrer %s', (path,ref)=>{
+ const layout=source();
+ expect(layout).not.toMatch(/baidu|百度|_hmt/i);
+ const dom=new JSDOM('<head></head><body></body>',{url:'https://example.test'+path,...(ref?{referrer:ref}:{})});
+ for (const match of layout.matchAll(/<script is:inline>([\s\S]*?)<\/script>/g)) {
+  runInNewContext(match[1],{window:dom.window,document:dom.window.document,location:dom.window.location,URL,URLSearchParams});
+ }
+ expect(dom.window._hmt).toBeUndefined();
+ expect(dom.window.document.querySelector('script[src*="baidu"]')).toBeNull();
 });
 it('related destinations omit query/hash and throwing transport does not escape',()=>{
  const dom=new JSDOM('<body data-tool-slug="bmi"><a class="related-link" href="/juminzei/?salary=KT06_SENTINEL#secret">link</a></body>',{url:'https://example.test/bmi/'});
