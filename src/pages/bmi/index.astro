@@ -24,6 +24,7 @@ const jsonld = {
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/kenko/">健康・身体</a> ／ BMI計算</div>
     <h1>BMI計算ツール（女性・男性）</h1>
     <p>身長・体重からBMI、肥満度、標準体重を自動計算。年齢別の目標BMI・目標体重範囲と、女性・男性別の推定体脂肪率も確認できます。</p>
+    <p>判定・標準体重・目標体重は成人向けの目安です。18歳未満、妊娠中や治療中の方の体重管理には使わず、医師などにご相談ください。年齢未入力の場合も成人の判定が表示されます。</p>
   </div>
 
   <div class="calc-card">
@@ -110,7 +111,7 @@ const jsonld = {
       体脂肪率は成人向けのDeurenberg式による概算値です。<strong>体脂肪率＝1.2×BMI＋0.23×年齢−5.4−10.8×性別係数（男性=1・女性=0）</strong>で求めます。原論文では推定誤差が示されており、肥満者では高めに推定される傾向もあるため、体組成計の実測値とは差が出ます。
     </p>
     <p class="sources">
-      出典：<a href="https://kennet.mhlw.go.jp/information/information/dictionary/metabolic/ym-002" target="_blank" rel="noopener noreferrer">厚生労働省 e-ヘルスネット「BMI」</a>、
+      出典：<a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/eiyou/syokuji_kijyun.html" target="_blank" rel="noopener noreferrer">厚生労働省「日本人の食事摂取基準（2025年版）」</a>、<a href="https://kennet.mhlw.go.jp/information/information/dictionary/metabolic/ym-002" target="_blank" rel="noopener noreferrer">厚生労働省 e-ヘルスネット「BMI」</a>、
       <a href="https://kennet.mhlw.go.jp/information/information/food/e-02-009.html" target="_blank" rel="noopener noreferrer">厚生労働省「適正体重を維持しよう」</a>、
       <a href="https://pubmed.ncbi.nlm.nih.gov/2043597/" target="_blank" rel="noopener noreferrer">Deurenberg et al. (1991)</a>
     </p>
@@ -210,7 +211,7 @@ const jsonld = {
     const isChild = Number.isFinite(age) && age < 18;
     $('bmi-category').textContent = isChild ? '成人基準の対象外' : (bmiCategory(bmi) ?? '−');
 
-    const std = standardWeight($('bmi-height').value);
+    const std = isChild ? null : standardWeight($('bmi-height').value);
     $('bmi-standard').textContent = std === null ? '−' : std.toFixed(1) + ' kg';
 
     const fat = bodyFatPercent(bmi, ageValue, gender());
@@ -237,7 +238,10 @@ const jsonld = {
     }
 
     const diff = weightDiff($('bmi-weight').value, std);
-    if (diff === null) {
+    if (isChild) {
+      diffEl.textContent = '成人基準の対象外';
+      diffEl.className = 'target-diff';
+    } else if (diff === null) {
       diffEl.textContent = '標準体重まであと − kg';
       diffEl.className = 'target-diff';
     } else if (diff > 0) {

@@ -32,13 +32,13 @@ function base64ToBytes(b64) {
   const clean = b64.replace(/\s/g, '');
   if (clean === '') return new Uint8Array(0);
 
-  // 許可されるのは Base64 文字 + パディング(=) のみ
-  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(clean)) {
+  // 4文字単位と末尾パディング、未使用ビットを検証する。
+  if (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(clean)) {
     throw new Error('invalid base64');
   }
-  // 長さは 4 の倍数でなければならない
-  if (clean.length % 4 !== 0) {
-    throw new Error('invalid base64 length');
+  if ((clean.endsWith('==') && (B64_CHARS.indexOf(clean[clean.length - 3]) & 15) !== 0) ||
+      (clean.endsWith('=') && !clean.endsWith('==') && (B64_CHARS.indexOf(clean[clean.length - 2]) & 3) !== 0)) {
+    throw new Error('invalid base64 padding bits');
   }
 
   const body = clean.replace(/=+$/, '');

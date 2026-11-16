@@ -37,6 +37,11 @@ describe('base64Decode（Base64 → 原文 UTF-8）', () => {
 
   it('不正な Base64 は null を返す（例外を投げない）', () => {
     expect(base64Decode('!!!非法')).toBe(null);
+    expect(base64Decode('AAA=AAAA')).toBe(null);
+    expect(base64Decode('A=')).toBe(null);
+    expect(base64Decode('====')).toBe(null);
+    expect(base64Decode('AAB=')).toBe(null);
+    expect(base64Decode('AB==')).toBe(null);
   });
 
   it('文字列でない入力は null を返す', () => {
