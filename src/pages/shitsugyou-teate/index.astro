@@ -30,7 +30,7 @@ const jsonld = {
     <div class="form-group">
       <label for="st-salary">離職前6か月の平均月給（円）</label>
       <input type="number" id="st-salary" inputmode="numeric" min="1" placeholder="例：300000" />
-      <small>賞与を除き、毎月決まって支払われた賃金の平均を入力</small>
+      <small>原則として離職前6か月の賃金合計を6で割った額面を入力。残業代や通勤手当も含み、臨時の賃金や3か月を超える期間ごとの賞与は除きます。</small>
     </div>
     <div class="field-grid">
       <div class="form-group">
@@ -38,7 +38,7 @@ const jsonld = {
         <input type="number" id="st-age" inputmode="numeric" min="18" max="64" placeholder="例：35" />
       </div>
       <div class="form-group">
-        <label for="st-years">雇用保険の加入年数</label>
+        <label for="st-years">給付日数の算定基礎期間（年）</label>
         <input type="number" id="st-years" inputmode="decimal" min="0" step="0.5" placeholder="例：8" />
       </div>
     </div>
@@ -48,6 +48,7 @@ const jsonld = {
         <option value="ordinary">自己都合・定年など（一般離職者）</option>
         <option value="company">会社都合等（特定受給資格者・一部の特定理由離職者）</option>
       </select>
+      <small>会社都合等の区分は、特定受給資格者と、同じ給付日数表が適用される一部の特定理由離職者に限ります。離職理由と適用区分はハローワークに確認してください。</small>
     </div>
 
     <div class="result-box" id="st-result" aria-live="polite">
@@ -68,7 +69,7 @@ const jsonld = {
 
   <section class="howto">
     <h2>失業手当はいくらもらえる？計算方法</h2>
-    <p>雇用保険の基本手当は、原則として離職前6か月に毎月決まって支払われた賃金の合計を180で割り、「賃金日額」を求めるところから計算します。</p>
+    <p>雇用保険の基本手当は、原則として離職前6か月の賃金の合計を180で割り、「賃金日額」を求めるところから計算します。</p>
     <ol>
       <li><strong>賃金日額</strong>＝離職前6か月の賃金合計 ÷ 180</li>
       <li><strong>基本手当日額</strong>＝賃金日額 × 約45〜80％（年齢と賃金日額で変動）</li>
@@ -91,7 +92,7 @@ const jsonld = {
 
     <h2>自己都合と会社都合で給付日数はどう違う？</h2>
     <p>一般離職者の所定給付日数は、被保険者期間10年未満が90日、10年以上20年未満が120日、20年以上が150日です。会社都合等に該当する場合は、年齢と加入期間により90〜330日となります。</p>
-    <p>一般離職者は原則として離職前2年間に被保険者期間が通算12か月以上、特定受給資格者・特定理由離職者は原則として離職前1年間に通算6か月以上が受給資格の目安です。離職理由の最終判定はハローワークが行います。</p>
+    <p>一般離職者は原則として離職前2年間に被保険者期間が通算12か月以上、特定受給資格者・特定理由離職者は原則として離職前1年間に通算6か月以上が受給資格の目安です。給付日数の算定基礎期間と受給資格を判定する被保険者期間は同一ではありません。一般離職者の表が適用される特定理由離職者で算定基礎期間が1年未満の場合、このツールでは日数を判定できません。離職理由と受給資格の最終判定はハローワークが行います。</p>
 
     <h2>計算に含まれないもの</h2>
     <ul>
@@ -103,7 +104,8 @@ const jsonld = {
 
     <h2>公式資料</h2>
     <ul>
-      <li><a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000160564_00050.html" target="_blank" rel="noopener">厚生労働省「令和8年8月1日からの基本手当日額等の適用について」</a></li>
+      <li><a href="https://www.mhlw.go.jp/stf/newpage_74837.html" target="_blank" rel="noopener">厚生労働省「雇用保険の基本手当日額の変更」</a></li>
+      <li><a href="https://jsite.mhlw.go.jp/miyagi-roudoukyoku/content/contents/002390325.pdf" target="_blank" rel="noopener">宮城労働局「失業等給付」（賃金日額の算定基礎）</a></li>
       <li><a href="https://www.hellowork.mhlw.go.jp/insurance/insurance_benefitdays.html" target="_blank" rel="noopener">ハローワーク「基本手当の所定給付日数」</a></li>
     </ul>
     <div class="disclaimer">※ 計算結果はあくまで参考値です。実際の受給資格、離職理由、賃金日額、給付日数と支給額は、離職票を持参のうえ管轄のハローワークでご確認ください。</div>
@@ -112,7 +114,7 @@ const jsonld = {
   <RelatedTools current={slug} />
   <Faq items={[
     { q: '失業手当は月給30万円ならいくらですか？', a: '年齢により異なります。例えば月給30万円なら賃金日額は約1万円で、基本手当日額は30〜59歳で約6,307円、60〜64歳で約5,348円です。実際の額は離職票の賃金とハローワークの認定で決まります。' },
-    { q: '失業手当の計算にボーナスは含まれますか？', a: '原則として、臨時に支払われる賃金や3か月を超える期間ごとに支払われる賞与は含めず、離職前6か月に毎月決まって支払われた賃金を使います。' },
+    { q: '失業手当の計算にボーナスは含まれますか？', a: '原則として、臨時に支払われる賃金や3か月を超える期間ごとに支払われる賞与は含めず、離職前6か月の賃金を使います。残業代や通勤手当も算定の基礎に含まれます。' },
     { q: '自己都合退職でも失業手当はもらえますか？', a: '受給要件を満たせば対象になります。ただし7日間の待期に加え、給付制限がかかる場合があります。個別の認定はハローワークで行われます。' },
   ]} />
   <div class="ad-slot"></div>
@@ -137,15 +139,15 @@ const jsonld = {
       return;
     }
     box.classList.add('visible');
-    $('st-total').textContent = yen(result.totalBenefit);
+    $('st-total').textContent = result.prescribedDays ? yen(result.totalBenefit) : '判定できません';
     $('st-wage-daily').textContent = yen(result.wageDaily);
     $('st-daily').textContent = yen(result.benefitDaily);
     $('st-28days').textContent = yen(result.benefit28Days);
-    $('st-days').textContent = `${result.prescribedDays}日`;
+    $('st-days').textContent = result.prescribedDays ? `${result.prescribedDays}日` : '判定できません';
     $('st-note').textContent = result.prescribedDays === 0
-      ? '加入期間が1年未満の一般離職者は、この入力条件では所定給付日数を判定できません。受給資格をハローワークでご確認ください。'
+      ? '加入期間が1年未満の一般離職者の表が適用される方は、この入力条件では所定給付日数を判定できません。0円は受給不可を意味しません。受給資格と日数をハローワークでご確認ください。'
       : '待期・給付制限や実際の認定日数は総支給額に反映していません。';
-    window.setResultShare?.(`失業手当計算シミュレーション\n基本手当日額：${yen(result.benefitDaily)}\n28日分：${yen(result.benefit28Days)}\n所定給付日数：${result.prescribedDays}日\n総支給額（概算）：${yen(result.totalBenefit)}`);
+    window.setResultShare?.(`失業手当計算シミュレーション\n基本手当日額：${yen(result.benefitDaily)}\n28日分：${yen(result.benefit28Days)}\n所定給付日数：${result.prescribedDays ? `${result.prescribedDays}日` : '判定できません'}\n総支給額（概算）：${result.prescribedDays ? yen(result.totalBenefit) : '判定できません'}`);
   }
 
   ['st-salary', 'st-age', 'st-years', 'st-reason'].forEach((id) => $(id).addEventListener('input', render));
