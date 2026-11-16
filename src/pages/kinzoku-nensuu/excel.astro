@@ -1,0 +1,13 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import '../../styles/office-tools.css';
+const slug = 'kinzoku-nensuu/excel';
+const title = 'Excelで勤続年数を計算｜DATEDIFの年数・年月と何年目';
+const description = 'ExcelのDATEDIFで入社日から基準日までの満年数と年月を求める方法。入力例、何年目との違い、日付のエラーを解説します。';
+---
+<ToolLayout title={title} description={description} slug={slug} current="kinzoku-nensuu">
+  <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/kinzoku-nensuu/">勤続年数計算</a> ／ Excel</div><h1>Excelで勤続年数を計算する方法</h1><p>入社日と基準日から、DATEDIFで完了した年数や残りの月数を求めます。</p></div>
+  <section class="calc-card office-tool"><h2>入社日から満年数を求める</h2><ol><li>A2に入社日 <code>2020/4/1</code>、B2に基準日 <code>2026/4/1</code> を日付として入力します。表示形式は「日付」を選びます。</li><li>C2に次の式をコピーして入力します。</li></ol><p><code>=DATEDIF(A2,B2,"Y")</code></p><p>結果は <strong>6</strong>（満6年）です。結果セルは「標準」または「数値」で表示してください。複数行はC2の式を下方向にコピーします。</p><p>入社日を1年目とする数え方では満6年の時点は<strong>7年目</strong>です。式の結果は完了した年数であり、年目ではありません。</p></section>
+  <section class="howto"><h2>年と残りの月を表示する</h2><p>同じA2・B2を使い、結果セルに次を入力します。</p><p><code>=DATEDIF(A2,B2,"Y")&amp;"年"&amp;DATEDIF(A2,B2,"YM")&amp;"か月"</code></p><p>上の例は <strong>6年0か月</strong>。Yは完了した年、YMはその年数を除いた月です。日数は含みません。MicrosoftはMD単位に既知の制限があると案内しているため、ここでは日数にMDを使いません。月末やうるう日を含む場合は利用するExcelのバージョンで結果と用途を確認してください。</p>
+  <h2>エラー・想定外の結果を確認</h2><ul><li>基準日が入社日より前だとエラーになります。日付の順序を確認してください。</li><li>空欄や文字列は正しい日付として扱われないことがあります。両方を入力し、<code>=ISNUMBER(A2)</code> と <code>=ISNUMBER(B2)</code> がTRUEか確認してください。FALSEなら日付として再入力します。</li><li>表示形式の変更だけでは文字列は日付に変換されないことがあります。列幅や入力内容も確認してください。</li></ul><p>退職所得の勤続年数や有給休暇にはそれぞれ別の規則があります。この式だけで税務や付与日数を判断せず、勤務先や専門家に確認してください。</p><p><a href="/kinzoku-nensuu/">勤続年数・何年目の計算</a>で日付を確認できます。<a href="/yukyu-nissu/">有給休暇日数</a>、<a href="/nissu/">日数計算</a>も利用できます。</p><p>参考：<a href="https://support.microsoft.com/en-us/office/datedif-function-25dba1a4-2812-480b-84dd-8b32a451b35c">Microsoft DATEDIF関数</a></p><div class="disclaimer">※ 計算結果はあくまで参考値です。用途に応じて公式資料や勤務先の規定を確認してください。</div></section>
+</ToolLayout>

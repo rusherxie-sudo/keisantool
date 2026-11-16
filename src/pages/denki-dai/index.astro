@@ -38,14 +38,16 @@ const jsonld = {
       <section class="electricity-mode" data-panel="cost">
         <h2>消費電力から電気代を計算</h2>
         <p class="mode-lead">本体や取扱説明書にある消費電力（W）と、実際に使う時間を入力してください。</p>
+        <div class="form-group"><label for="appliance-example">家電の入力例（編集できます）</label><select id="appliance-example"><option value="">選択してください</option><option value="600,3">暖房器具の例：600W・1日3時間</option><option value="100,8">テレビの例：100W・1日8時間</option><option value="1200,0.25">ドライヤーの例：1200W・1日15分</option></select><p class="mode-lead">仮の数値であり実測値ではありません。製品の消費電力と実際の使用時間・日数・契約単価に変更してください。</p></div>
         <div class="input-grid">
           <div class="form-group"><label for="watts">消費電力（W）</label><input id="watts" type="number" min="0" step="any" value="600" inputmode="decimal" /></div>
           <div class="form-group"><label for="hours">1日の使用時間（時間）</label><input id="hours" type="number" min="0" step="any" value="3" inputmode="decimal" /></div>
           <div class="form-group"><label for="days">使用日数（日）</label><input id="days" type="number" min="0.1" step="any" value="30" inputmode="decimal" /></div>
           <div class="form-group"><label for="unit-price">電力量料金単価（円/kWh）</label><input id="unit-price" type="number" min="0.1" step="any" value="31" inputmode="decimal" /></div>
         </div>
-        <div class="preset-row" aria-label="よく使う期間"><span>期間の目安</span><button type="button" data-days="1">1日</button><button type="button" data-days="7">1週間</button><button type="button" data-days="30">30日</button><button type="button" data-days="31">31日</button></div>
+        <div class="preset-row" aria-label="よく使う期間"><span>期間の目安</span><button type="button" data-days="1">1日</button><button type="button" data-days="7">1週間</button><button type="button" data-days="30">30日</button><button type="button" data-days="31">31日</button><button type="button" data-days="365">365日</button></div>
         <p class="form-error" id="cost-error" role="alert" hidden></p>
+        <p class="form-error" id="hours-warning" role="status" hidden></p>
         <div class="cost-result" id="cost-result" aria-live="polite">
           <div class="result-main"><span>電気代の目安</span><strong id="cost-yen">1,674円</strong><small id="cost-period">30日間</small></div>
           <div class="result-grid"><div><span>使用電力量</span><strong id="cost-kwh">54kWh</strong></div><div><span>1日あたり</span><strong id="cost-daily">55円</strong></div><div><span>計算式</span><strong id="cost-formula">0.6kW × 3時間 × 30日 × 31円</strong></div></div>
@@ -70,13 +72,14 @@ const jsonld = {
 
   <section class="howto">
     <h2>電気代の計算式</h2>
-    <div class="formula-cards"><div><span>使用電力量</span><strong>W ÷ 1,000 × 時間 × 日数</strong><small>単位はkWh</small></div><div><span>電気代</span><strong>使用電力量 × 円/kWh</strong><small>基本料金は別途</small></div><div><span>消費電力</span><strong>電圧V × 電流A</strong><small>交流では概算</small></div></div>
+    <div class="formula-cards"><div><span>使用電力量</span><strong>W ÷ 1,000 × 時間 × 日数</strong><small>単位はkWh</small></div><div><span>電気代</span><strong>使用電力量 × 円/kWh</strong><small>入力単価の範囲による</small></div><div><span>消費電力</span><strong>電圧V × 電流A</strong><small>交流では概算</small></div></div>
     <p>消費電力600Wの家電を毎日3時間、30日間使い、単価を31円/kWhとする場合、600÷1,000×3×30＝{example.kwh}kWhです。電気代は{example.kwh}×31＝<strong>{example.cost.toLocaleString('ja-JP')}円</strong>となります。W・時間から熱量を換算したり、水などの温度変化に必要な熱量を求めたりする場合は<a href="/netsuryou/">熱量・比熱計算ツール</a>を利用できます。</p>
   </section>
 
   <section class="howto">
     <h2>「1kWhあたりの単価」はどこで確認する？</h2>
     <p>電気料金の明細では、電力量料金の単価がkWhあたりで記載されます。ただし実際の請求額には基本料金、燃料費調整額、再生可能エネルギー発電促進賦課金、各種割引などが含まれる場合があります。このツールには、ご自身の契約・明細に合う単価を入力してください。</p>
+    <p>基本料金、燃料費調整額、再エネ賦課金を含むかは入力単価の内訳によります。時間帯別・段階別の単価も自動反映しません。</p>
     <p>料金プランが段階制の場合は、使用量に応じて単価が変わります。家電1台の追加使用量を概算するときは、該当する段階の単価を使うと目安をつかめます。世帯全体の正確な請求額を再現するものではありません。</p>
   </section>
 
@@ -87,6 +90,8 @@ const jsonld = {
   </section>
 
   <section class="howto">
+    <h2>日・月・年の電気代の目安</h2>
+    <p>1日の目安は使用日数を1日、月の目安は実際に使用する日数、年の目安は年間の使用日数に設定します。毎日使う場合の例は30日または365日ですが、月の日数や使わない日を確認してください。合計額は全期間を計算してから1円未満を切り捨て、1日あたりはその合計額を日数で割り、再び1円未満を切り捨てます。</p>
     <h2>節電の比較に使うときの注意</h2>
     <ul><li>同じ家電でも設定温度、室温、扉の開閉、運転モードで使用電力量は変わります。</li><li>「1日あたり」は合計額を日数で割った目安です。実際には毎日の使い方で変動します。</li><li>家電を買い替える比較では、カタログの年間消費電力量（kWh/年）を使うと条件をそろえやすくなります。</li><li>電気工事やコンセント容量の判断には使わず、資格を持つ電気工事士または販売店にご相談ください。</li></ul>
     <p>割合で節電率を比較する場合は<a href="/wariai/">割合・パーセント計算</a>、時間の合計・換算は<a href="/jikan/">時間計算ツール</a>、床面積の換算は<a href="/tsubo-heibei/">坪・平米換算ツール</a>も利用できます。</p>
@@ -103,7 +108,7 @@ const jsonld = {
     { q: '電気代はどう計算しますか？', a: '消費電力をkWへ換算し、使用時間と日数を掛けてkWhを求め、電力量料金単価を掛けます。600Wを3時間ずつ30日使うと、0.6×3×30＝54kWhです。' },
     { q: '1kWhあたりの単価は何円ですか？', a: '契約プラン、地域、使用量の段階、燃料費調整額などで変わります。電気料金の明細または電力会社の料金表で確認し、その値を入力してください。' },
     { q: 'WとkWhの違いは何ですか？', a: 'Wはその時点の消費電力、kWhは一定時間に使った電力量です。たとえば100Wを10時間使うと1kWhです。' },
-    { q: '電気代に基本料金は含まれますか？', a: '含まれません。このツールは入力した消費電力による電力量料金の目安です。基本料金や各種調整額は別にかかる場合があります。' },
+    { q: '電気代に基本料金は含まれますか？', a: '基本料金を別途加算する機能はありません。入力単価に基本料金や各種調整額が含まれているかをご確認ください。実際の請求額とは異なります。' },
     { q: '100VとAからWを計算できますか？', a: '概算では電圧V×電流Aで求められます。ただし交流機器は力率の影響を受けるため、仕様書にW表示があるときはその値を優先してください。' },
     { q: 'エアコンの電気代にも使えますか？', a: '目安として使えますが、エアコンは室温、設定温度、断熱性、運転モードで消費電力が大きく変わります。定格値だけでは実際の月額と一致しない場合があります。' },
   ]} />
@@ -120,6 +125,7 @@ const jsonld = {
   function updateCost() {
     const result = calculateElectricityCost({ watts: numberValue('watts'), hoursPerDay: numberValue('hours'), days: numberValue('days'), unitPrice: numberValue('unit-price') });
     showError('cost-error', result ? '' : '消費電力と使用時間は0以上、日数と単価は0より大きい数値を入力してください。');
+    showError('hours-warning', numberValue('hours') > 24 ? '1日の使用時間が24時間を超えています。入力内容を確認してください。' : '');
     $('cost-result').hidden = !result;
     if (!result) return;
     $('cost-yen').textContent = `${result.cost.toLocaleString('ja-JP')}円`;
@@ -145,6 +151,11 @@ const jsonld = {
     document.querySelectorAll('.electricity-tab').forEach((tab) => { const active = tab === button; tab.classList.toggle('is-active', active); tab.setAttribute('aria-selected', String(active)); });
     document.querySelectorAll('.electricity-mode').forEach((panel) => { panel.hidden = panel.dataset.panel !== mode; });
   }));
+  $('appliance-example').addEventListener('change', (event) => {
+    if (!event.target.value) return;
+    const [watts, hours] = event.target.value.split(',');
+    $('watts').value = watts; $('hours').value = hours; updateCost();
+  });
   ['watts', 'hours', 'days', 'unit-price'].forEach((id) => $(id).addEventListener('input', updateCost));
   ['voltage', 'current'].forEach((id) => $(id).addEventListener('input', updatePower));
   document.querySelectorAll('[data-days]').forEach((button) => button.addEventListener('click', () => { $('days').value = button.dataset.days; updateCost(); }));

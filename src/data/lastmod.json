@@ -1,4 +1,8 @@
 {
+  "src/pages/kinzoku-nensuu/excel.astro": "2026-11-16T13:18:58+08:00",
+  "src/pages/nenrei/excel.astro": "2026-11-16T13:18:58+08:00",
+  "src/pages/zaiko-kaiten/index.astro": "2026-11-16T13:18:58+08:00",
+  "src/pages/taishoku-shotoku-kojo/index.astro": "2026-11-16T13:18:58+08:00",
   "astro.config.mjs": "2026-10-10T16:54:22+08:00",
   "package.json": "2026-11-07T23:45:49+08:00",
   "src/components/AgeTableLookup.astro": "2026-11-06T00:02:34+08:00",

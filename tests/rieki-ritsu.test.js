@@ -6,6 +6,10 @@ import {
 } from '../src/lib/rieki-ritsu.js';
 
 describe('calculateGrossMargin', () => {
+  it('原価600円、売価1000円は原価率60%、粗利率40%', () => {
+    expect(calculateGrossMargin(600, 1000)).toMatchObject({ costRate: 60, grossProfit: 400, grossMarginRate: 40 });
+    expect(calculateGrossMargin(600, 1000, 100, 10)).toMatchObject({ costRate: 70, feeAmount: 100, grossProfit: 200 });
+  });
   it('原价700円、售价1000円得到粗利300円和粗利率30%', () => {
     expect(calculateGrossMargin(700, 1000)).toEqual({
       salePrice: 1000,

@@ -24,7 +24,7 @@ const jsonld = {
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 利益率</div>
     <h1>利益率・粗利率計算ツール</h1>
-    <p>原価・売価・手数料から利益率を計算し、目標粗利率を確保する売価も逆算できます。</p>
+    <p>原価・売価・手数料から利益率を計算し、目標粗利率から売価の目安も逆算できます。</p>
     <div class="feature-chips" aria-label="対応する計算">
       <span>粗利率</span><span>原価率</span><span>目標売価</span><span>営業利益率</span>
     </div>
@@ -62,7 +62,7 @@ const jsonld = {
         <div class="result-main" id="margin-rate">30%</div>
         <div class="result-grid">
           <div><span>粗利額</span><strong id="margin-profit">300円</strong></div>
-          <div><span>原価率</span><strong id="margin-cost-rate">70%</strong></div>
+          <div><span>原価率（追加コスト込み）</span><strong id="margin-cost-rate">70%</strong></div>
           <div><span>販売手数料</span><strong id="margin-fee-amount">0円</strong></div>
           <div><span>原価に対する加算率</span><strong id="margin-markup">42.86%</strong></div>
           <div><span>総コスト</span><strong id="margin-total-cost">700円</strong></div>
@@ -154,7 +154,7 @@ const jsonld = {
         <tbody>
           <tr><td>粗利額</td><td>売価 − 原価 − 追加コスト − 手数料</td><td>300円</td></tr>
           <tr><td>利益率（粗利率）</td><td>粗利額 ÷ 売価 × 100</td><td>30%</td></tr>
-          <tr><td>原価率</td><td>総コスト ÷ 売価 × 100</td><td>70%</td></tr>
+          <tr><td>原価率（追加コスト込み）</td><td>（原価＋追加コスト） ÷ 売価 × 100</td><td>70%</td></tr>
           <tr><td>原価に対する加算率</td><td>粗利額 ÷ 総コスト × 100</td><td>約42.86%</td></tr>
         </tbody>
       </table>
@@ -163,6 +163,9 @@ const jsonld = {
       中小企業庁の統計でも、売上高総利益率は「売上総利益÷売上高×100」で算出されます。本ツールの「利益率（粗利率）」も売価を分母にします。原価を分母にする加算率とは同じ数字になりません。
     </p>
 
+    <h2>原価率の計算例</h2>
+    <p>税抜の仕入原価600円、売価1,000円、追加コスト・手数料なしの場合、原価率は600÷1,000×100＝60%、粗利は400円、粗利率は40%です。売価0円では割合を計算できません。</p>
+    <p>このツールの原価率は追加コスト込みです。たとえば原価600円に追加コスト100円なら、売価1,000円に対して70%です。商品原価だけの原価率は60%で、販売手数料は原価率に含めず利益から別途差し引きます。手数料などの費用控除後の率は、会計上の売上総利益率とは費用範囲が異なる場合があります。</p>
     <h2>粗利率と原価に対する加算率の違い</h2>
     <div class="compare-grid">
       <div><h3>粗利率（マージン）</h3><strong>利益 ÷ 売価</strong><p>売上のうち何％が粗利として残るか。700円の商品を1000円で売ると30%。</p></div>
@@ -211,6 +214,7 @@ const jsonld = {
     { q: '利益率（粗利率）はどう計算しますか？', a: '売価から原価、追加コスト、販売手数料を引いて粗利額を求め、粗利額を売価で割って100を掛けます。' },
     { q: '原価700円を1000円で売ると利益率は何％ですか？', a: '粗利は300円、利益率（粗利率）は300÷1000×100＝30%、原価率は70%です。原価に対する加算率は300÷700×100で約42.86%です。' },
     { q: '利益率30%にする売価はいくらですか？', a: '手数料がなければ「総コスト÷0.70」で求めます。原価700円なら1000円です。1円未満は切り捨てるため、実際率も確認してください。' },
+    { q: '原価率の計算式は？', a: '商品原価だけなら原価÷売価×100です。このツールは追加コストを加えた額÷売価×100を表示し、販売手数料は別に扱います。' },
     { q: '粗利率と原価率の関係は？', a: '販売手数料などを別に引かない単純な原価と売価だけなら、粗利率と原価率の合計は100%です。手数料を別入力した場合は、その率も売価の内訳に加わります。' },
     { q: '赤字でも計算できますか？', a: 'はい。総コストが売価を上回る場合は、粗利額と利益率をマイナスで表示します。営業利益率なども利益額にマイナスを入力できます。' },
     { q: '税込と税抜のどちらを入力しますか？', a: 'どちらでも計算できますが、原価と売価を同じ基準にそろえてください。会計上の消費税処理は事業者の状況によるため、重要な判断は税理士等に確認してください。' },
@@ -227,7 +231,7 @@ const jsonld = {
   } from '../../lib/rieki-ritsu.js';
 
   const $ = (id) => document.getElementById(id);
-  const value = (id) => Number($(id).value);
+  const value = (id) => $(id).value.trim() === '' ? NaN : Number($(id).value);
   const yen = (amount) => `${Math.abs(amount).toLocaleString('ja-JP')}${amount < 0 ? '円の赤字' : '円'}`;
   const signedYen = (amount) => amount < 0 ? `−${Math.abs(amount).toLocaleString('ja-JP')}円` : `${amount.toLocaleString('ja-JP')}円`;
   const rate = (number) => `${Number(number.toFixed(2))}%`;

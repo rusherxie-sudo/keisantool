@@ -28,6 +28,8 @@ export const categoryColors = {
 };
 
 export const tools = [
+  { slug: 'zaiko-kaiten', nav: '在庫回転率', name: '在庫回転率・回転期間計算', icon: '📦', category: '税金・お金', short: '売上原価と平均在庫から回転率・日数を計算', live: true },
+  { slug: 'taishoku-shotoku-kojo', nav: '退職所得控除', name: '退職所得控除の基礎額計算', icon: '📋', category: '税金・お金', short: '勤続年数から調整前の基礎額を計算', live: true },
   { slug: 'rokusei/keisan-hyou', nav: '運命数表', name: '六星占術 計算表・運命数表', icon: '🔮', category: '占い・文化', short: '出生年の表と星数の計算過程', live: true },
   { slug: 'rokusei/daisakkai', nav: '大殺界の期間', name: '大殺界の過去・未来検索', icon: '🔮', category: '占い・文化', short: '開始年・終了年を区間で確認', live: true },
   { slug: 'rokusei-aisho/hayamihyou', nav: '相性早見表', name: '六星占術 地運相性表', icon: '🔮', category: '占い・文化', short: '運命星と相手の干支で確認', live: true },

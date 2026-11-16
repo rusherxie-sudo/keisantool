@@ -1,0 +1,13 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import '../../styles/office-tools.css';
+const slug = 'nenrei/excel';
+const title = 'Excelで年齢を計算｜DATEDIFとTODAYの使い方';
+const description = 'Excelで生年月日と基準日から満年齢を求めるDATEDIFの使い方。今日を基準にする式、日付の入力とエラー、うるう日の注意点を解説します。';
+---
+<ToolLayout title={title} description={description} slug={slug} current="nenrei">
+  <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/nenrei/">年齢計算</a> ／ Excel</div><h1>Excelで年齢を計算する方法</h1><p>生年月日と基準日からDATEDIFで満年齢を求めます。</p></div>
+  <section class="calc-card office-tool"><h2>指定した日の満年齢</h2><ol><li>A2に生年月日 <code>1990/4/1</code>、B2に基準日 <code>2026/4/1</code> を日付として入力し、表示形式を「日付」にします。</li><li>C2に次の式をコピーして入力します。</li></ol><p><code>=DATEDIF(A2,B2,"Y")</code></p><p>結果は <strong>36</strong>（満36歳）です。結果セルは「標準」または「数値」にし、複数人分は下方向へコピーします。2026/3/31は35歳、2026/4/2は36歳です。</p><h2>今日を基準にする</h2><p>B2を使わず、C2に次の式を入力します。TODAYは再計算時の今日の日付を返します。</p><p><code>=DATEDIF(A2,TODAY(),"Y")</code></p></section>
+  <section class="howto"><h2>空欄・無効な日付・未来の生年月日</h2><p>式を入れる前に生年月日と基準日を両方入力し、存在する日付か確認してください。空欄は日付として解釈される場合があり、正しい年齢になりません。基準日より未来の生年月日はDATEDIFでエラーになります。TODAYの式でも未来日は同様です。</p><p>日付に見えても文字列の場合があります。<code>=ISNUMBER(A2)</code>、基準日を使う場合は <code>=ISNUMBER(B2)</code> がTRUEか確認し、FALSEなら日付として再入力してください。表示形式を変えるだけで文字列が日付に変わるとは限りません。不正な日付や列幅も確認してください。</p>
+  <h2>誕生日と2月29日生まれ</h2><p>このサイトの<a href="/nenrei/">年齢計算器</a>は、通常は誕生日当日から、2月29日生まれは平年の3月1日から1歳を加えます。参議院法制局は、2月29日生まれの人が平年の2月28日24時（3月1日0時）に満1歳になると説明しています。通常の誕生日も前日24時に年齢が加わります。個別の法律で日単位の取扱いが異なる場合は、その規定を確認してください。</p><p>MicrosoftのDATEDIF説明にはうるう日生まれの具体例がないため、2月28日・3月1日の結果は、お使いのExcelのバージョンで必ず確認してください。ここでは互換性を保証しません。</p><p><a href="/nenrei/">年齢計算器</a>で生年月日から確認でき、<a href="/nenrei-hayami/">年齢早見表</a>や<a href="/gakunen-hayami/">学年早見表</a>も利用できます。</p><p>参考：<a href="https://support.microsoft.com/en-us/office/datedif-function-25dba1a4-2812-480b-84dd-8b32a451b35c">Microsoft DATEDIF関数</a> ／ <a href="https://houseikyoku.sangiin.go.jp/column/column077.htm">参議院法制局：年齢計算</a></p><div class="disclaimer">※ 計算結果はあくまで参考値です。正式な取扱いは各機関の規定を確認してください。</div></section>
+</ToolLayout>

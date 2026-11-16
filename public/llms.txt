@@ -6,6 +6,8 @@
 
 ## 税金・お金
 
+- [在庫回転率・回転期間計算](https://keisantool.com/zaiko-kaiten/): 売上原価と平均在庫から回転率・日数を計算
+- [退職所得控除の基礎額計算](https://keisantool.com/taishoku-shotoku-kojo/): 勤続年数から調整前の基礎額を計算
 - [賞与・ボーナス手取り計算](https://keisantool.com/bonus-tedori/): 2026年の賞与税率・所得税・手取り
 - [生命保険料控除計算](https://keisantool.com/seimei-hoken-kojo/): 新旧契約・所得税と住民税の控除額
 - [消費税計算ツール](https://keisantool.com/zeizei/): 税込・税抜・10％・8％・割引

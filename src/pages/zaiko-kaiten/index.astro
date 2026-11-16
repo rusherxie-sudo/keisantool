@@ -1,0 +1,26 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+const slug = 'zaiko-kaiten';
+const title = '在庫回転率・回転期間計算｜売上原価と平均在庫から';
+const description = '売上原価、期首・期末在庫と期間日数から在庫回転率と回転期間を計算します。';
+const jsonld = { '@context':'https://schema.org', '@type':'WebApplication', name:'在庫回転率・回転期間計算', description, applicationCategory:'BusinessApplication', operatingSystem:'Web', offers:{'@type':'Offer',price:'0',priceCurrency:'JPY'} };
+---
+<ToolLayout {title} {description} {slug} current={slug} {jsonld}>
+ <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ 在庫回転率</div><h1>在庫回転率・回転期間計算</h1><p>売上原価と期首・期末の在庫から、期間中の回転率と回転日数を計算します。</p></div>
+ <section class="calc-card"><form id="inventory-form" novalidate>
+  <div class="form-group"><label for="cost">期間の売上原価（円）</label><input id="cost" type="number" min="0" step="any" value="1200000" inputmode="decimal" /></div>
+  <div class="form-group"><label for="opening">期首在庫（円）</label><input id="opening" type="number" min="0" step="any" value="200000" inputmode="decimal" /></div>
+  <div class="form-group"><label for="closing">期末在庫（円）</label><input id="closing" type="number" min="0" step="any" value="400000" inputmode="decimal" /></div>
+  <div class="form-group"><label for="days">期間（日）</label><input id="days" type="number" min="0" step="any" value="365" inputmode="decimal" /></div>
+  <p>金額はすべて同じ通貨・税区分、売上原価と在庫は同じ期間の値を入力してください。</p><button type="submit">計算する</button>
+ </form><p id="error" role="alert" hidden></p><div id="result" aria-live="polite" hidden><h2>計算結果</h2><p>平均在庫：<strong id="average"></strong></p><p>在庫回転率：<strong id="turnover"></strong></p><p>在庫回転期間：<strong id="turnover-days"></strong></p></div></section>
+ <section class="howto"><h2>売上原価基準の計算式</h2><p>平均在庫＝（期首在庫＋期末在庫）÷2、在庫回転率＝期間の売上原価÷平均在庫、回転期間＝期間日数÷回転率。売上高を用いる別の口径とは直接比較できません。期首・期末の平均は季節変動を十分に表さない場合があります。</p><p>売上原価1,200,000円、期首200,000円、期末400,000円、365日なら平均300,000円、4回／期間、91.25日です。売上原価が0の場合は回転率0、回転期間は算出不可です。平均在庫が0の場合は計算できません。</p><p>金額は小数第2位、回転率と日数は小数第2位まで四捨五入して表示します。内部計算では途中の丸めを行いません。</p><p>計算結果はあくまで参考値です。入力はブラウザ内で処理します。</p><p>関連：<a href="/rieki-ritsu/">利益率・原価率</a>、<a href="/wariai/">割合計算</a>、<a href="/zeizei/">消費税計算</a></p></section>
+</ToolLayout>
+<script>
+ import { calculateInventoryTurnover } from '../../lib/zaiko-kaiten.js';
+ const $ = id => document.getElementById(id);
+ const number = id => $(id).value.trim() === '' ? NaN : Number($(id).value);
+ const format = n => n.toLocaleString('ja-JP', {maximumFractionDigits:2});
+ $('inventory-form').addEventListener('input',()=>{ $('result').hidden=true; $('error').hidden=true; });
+ $('inventory-form').addEventListener('submit', event => { event.preventDefault(); const r = calculateInventoryTurnover({cost:number('cost'),opening:number('opening'),closing:number('closing'),days:number('days')}); $('result').hidden=!r; $('error').hidden=!!r; if (!r) { $('error').textContent='金額は0以上、期間は0より大きい数値を入力し、平均在庫を0より大きくしてください。'; return; } $('average').textContent=format(r.average)+'円'; $('turnover').textContent=format(r.turnover)+'回／期間'; $('turnover-days').textContent=r.turnoverDays === null ? '算出不可' : format(r.turnoverDays)+'日'; });
+</script>
