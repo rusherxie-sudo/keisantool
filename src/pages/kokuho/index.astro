@@ -5,14 +5,14 @@ import RelatedArticles from '../../components/RelatedArticles.astro';
 import ResultShare from '../../components/ResultShare.astro';
 const slug = 'kokuho';
 const title = '国民健康保険料計算器【2026年度】練馬区・大阪市の世帯別試算 | 計算ツール';
-const description = '2026年度の国保料を加入者ごとの前年所得・年齢区分から概算。医療・後期支援・介護・子育支援金、均等割・平等割・子どもの軽減を確認できます。';
+const description = '2026年度の練馬区・大阪市の国保料を、加入者ごとの2025年所得・年齢区分から概算。通年加入を前提に、医療・後期支援・介護・子育支援金の内訳を確認できます。';
 const jsonld = { '@context':'https://schema.org', '@type':'WebApplication', name:'国民健康保険料計算器', description, applicationCategory:'FinanceApplication', operatingSystem:'Web', offers:{'@type':'Offer',price:'0',priceCurrency:'JPY'} };
 ---
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 国民健康保険料</div>
     <h1>国民健康保険料計算器</h1>
-    <p>2026年度（2026年4月〜2027年3月）の通年加入を想定。国保に入る方だけを1人ずつ入力し、4区分の保険料を確認できます。</p>
+    <p>練馬区・大阪市の2026年度（2026年4月〜2027年3月）の通年加入を想定。国保に入る方だけを1人ずつ入力し、4区分の保険料を確認できます。両市区以外の料率には対応していません。</p>
   </div>
   <div class="calc-card">
     <div class="form-group"><label for="k-city">自治体</label><select id="k-city"><option value="tokyo23">東京都練馬区</option><option value="osaka">大阪市</option></select></div>

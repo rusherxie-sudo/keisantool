@@ -1,6 +1,5 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
-import RelatedTools from '../../components/RelatedTools.astro';
 import RelatedArticles from '../../components/RelatedArticles.astro';
 import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
@@ -72,7 +71,15 @@ const jsonld = {
     <div class="disclaimer">※ 計算結果はあくまで参考値です。正式な年齢・学年の取り扱いについては、各機関の規定にしたがってください。</div>
   </section>
 
-  <RelatedTools current={slug} />
+  <section class="related" aria-labelledby="age-related-title">
+    <h3 id="age-related-title">年齢・学年に関連するツール</h3>
+    <div class="related-grid">
+      <a class="related-link" href="/nenrei-hayami/">生まれ年から年齢を一覧で確認</a>
+      <a class="related-link" href="/gakunen-hayami/">生年月日から学年を早見表で確認</a>
+      <a class="related-link" href="/gakureki/">入学・卒業年度を計算</a>
+      <a class="related-link" href="/yakudoshi/">数え年から厄年を確認</a>
+    </div>
+  </section>
 
   <RelatedArticles toolSlug={slug} />
 

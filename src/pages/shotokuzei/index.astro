@@ -6,9 +6,9 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'shotokuzei';
-const title = '所得税計算器 - 年収から所得税を概算 | 計算ツール';
+const title = '所得税計算器【2026年分】給与年収から年税額を概算 | 計算ツール';
 const description =
-  '年収から所得税の目安を計算。給与所得控除・基礎控除・復興特別所得税を反映し、月額換算まで確認できる無料ツールです。';
+  '2026年分の給与年収と所得控除から所得税・復興特別所得税の年額を概算。給与所得控除と基礎控除を自動計算し、年額の12分割も確認できます。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -23,7 +23,7 @@ const jsonld = {
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ 所得税</div>
     <h1>所得税計算器</h1>
-    <p>年収から所得税の目安を計算します。給与所得控除・基礎控除・復興特別所得税を反映します。</p>
+    <p>2026年分の給与収入から所得税と復興特別所得税の年額を概算します。給与所得控除・基礎控除を自動計算し、その他の所得控除は入力します。</p>
   </div>
 
   <div class="calc-card">
@@ -66,7 +66,7 @@ const jsonld = {
 
   <RelatedArticles toolSlug={slug} />
 
-  <Faq items={[{ q: '基礎控除も入力しますか？', a: '給与所得控除と基礎控除は自動計算するため入力しません。それ以外の所得控除の合計だけを入力します。' }, { q: '住民税も含まれますか？', a: '含みません。住民税は前年の所得と異なる控除額を使うため、住民税計算器をご利用ください。' }]} />
+  <Faq items={[{ q: '基礎控除も入力しますか？', a: '給与所得控除と基礎控除は自動計算するため入力しません。それ以外の所得控除の合計だけを入力します。' }, { q: '住民税も含まれますか？', a: '含みません。住民税は前年の所得と異なる控除額を使います。住民税計算器を使う際は、対象となる所得の年を確認してください。' }]} />
 
   <div class="ad-slot"></div>
 </ToolLayout>

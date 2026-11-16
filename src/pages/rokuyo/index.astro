@@ -67,6 +67,7 @@ const jsonld = {
             : <a href={item.href}>{item.month}月</a>
         ))}
       </div>
+      {PUBLISHED_ROKUYO_YEARS.includes(YEAR + 1) && <p class="rk-next-year"><a href={`/rokuyo/${YEAR + 1}-01/`}>{YEAR + 1}年の六曜カレンダー（月別） →</a></p>}
     </nav>
   </div>
 
