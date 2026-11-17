@@ -149,6 +149,15 @@ export const tools = [
     live: true,
   },
   {
+    slug: 'furusato-nazei',
+    nav: 'ふるさと納税',
+    name: 'ふるさと納税 上限額計算シミュレーター',
+    icon: '🎁',
+    category: '税金・お金',
+    short: '2026年分・上限額と控除内訳を概算',
+    live: true,
+  },
+  {
     slug: 'shitsugyou-teate',
     nav: '失業手当',
     name: '失業手当計算シミュレーション',
@@ -362,6 +371,15 @@ export const tools = [
     icon: '💜',
     category: '占い・文化',
     short: 'ふたりの生年月日から地運相性を計算',
+    live: true,
+  },
+  {
+    slug: 'aisho',
+    nav: '相性占い一覧',
+    name: '占い相性（無料診断の入口）',
+    icon: '💞',
+    category: '占い・文化',
+    short: '各手法の相性診断を比較・移動',
     live: true,
   },
   {

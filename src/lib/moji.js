@@ -136,6 +136,13 @@ export function countChars(str) {
   return { chars, charsNoSpace, lines, bytes: byteLength(s) };
 }
 
+// 英語の単語数。英数字のみで構成され、内部にアポストロフを持つ語も1語として数える。
+// 日本語・記号・空白は語に含めない。文字列以外の入力は0を返す。
+export function countEnglishWords(str) {
+  if (typeof str !== 'string') return 0;
+  return (str.match(/[A-Za-z0-9]+(?:'[A-Za-z0-9]+)*/g) || []).length;
+}
+
 // 原稿用紙（400字詰め）の枚数。
 // 改行は文字数に含めず、空白は含める。サロゲートペアは1文字。0文字は0枚。
 export function countManuscriptSheets(str) {

@@ -21,6 +21,7 @@
 - [年末調整計算器](https://keisantool.com/nematsu/): 源泉徴収差額調整
 - [社会保険料計算器](https://keisantool.com/shakaihoken/): 健康保険・厚生年金・雇用保険
 - [住民税計算シミュレーション](https://keisantool.com/juminzei/): 令和8年度・年収から年額と月額を概算
+- [ふるさと納税 上限額計算シミュレーター](https://keisantool.com/furusato-nazei/): 2026年分・上限額と控除内訳を概算
 - [失業手当計算シミュレーション](https://keisantool.com/shitsugyou-teate/): 基本手当日額・28日分・総支給額を概算
 
 ## 健康・身体
@@ -96,6 +97,7 @@
 - [霊合星人の判定・年表](https://keisantool.com/rokusei/reigou/): 生年月日から判定・主星と副星の年運
 - [六星占術・大殺界計算器](https://keisantool.com/rokusei/): 星・大殺界の自動計算
 - [六星占術 相性診断](https://keisantool.com/rokusei-aisho/): ふたりの生年月日から地運相性を計算
+- [占い相性（無料診断の入口）](https://keisantool.com/aisho/): 各手法の相性診断を比較・移動
 - [星座調べ（誕生日から星座）](https://keisantool.com/seiza/): 誕生日から12星座を判定
 - [誕生日相性診断（数秘術・六星占術）](https://keisantool.com/tanjobi-aisho/): ふたりの生年月日から相性を計算
 - [星座相性診断（12星座の相性表）](https://keisantool.com/seiza-aisho/): 12星座×12星座の相性を判定

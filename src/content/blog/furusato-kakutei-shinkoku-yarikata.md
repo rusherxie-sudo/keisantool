@@ -10,14 +10,15 @@ tags:
 - 還付金
 author: 計算ツール編集部
 relatedTools:
+- furusato-nazei
 - juminzei
-updatedDate: 2026-10-10
+updatedDate: 2026-11-17
 sources:
 - name: 国税庁 No.1155 ふるさと納税（寄附金控除）
   url: https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1155.htm
 - name: 国税庁 No.1490 一時所得
   url: https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1490.htm
-reviewedDate: 2026-10-10
+reviewedDate: 2026-11-17
 reviewScope: 本文に記載した条件・計算例と下記資料の照合。個別の申告・受給資格の判断は対象外。
 applicableYear: 2026
 ---
@@ -58,4 +59,4 @@ applicableYear: 2026
 
 返礼品の経済的利益は一時所得に該当します。他の一時所得と合わせて特別控除などを判定するため、一律に非課税とはいえません。
 
-[確定申告の準備手順](/blog/kakutei-shinkoku-no-shinsei-hoho/)で提出までの流れを確認できます。当サイトの給与用所得税計算器は、ふるさと納税の上限判定には対応していません。
+上限額の目安は[ふるさと納税 上限額計算シミュレーター](/furusato-nazei/)で確認できます。上限超過分や住宅ローン控除などを正確に判定するには、源泉徴収票と申告書の記載を照合してください。

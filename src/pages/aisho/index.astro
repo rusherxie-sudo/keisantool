@@ -1,0 +1,92 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+
+const slug = 'aisho';
+const title = '占い相性｜無料で診断できる相性占いの種類と選び方';
+const description =
+  '占い相性・相性占いを無料で楽しめる入口ページです。星座相性、六星占術相性、誕生日相性、血液型相性の各手法を比較しながら、恋愛相性をはじめとする相性診断の選び方をご案内します。占いに科学的根拠はなく、結果は娯楽としてお楽しみください。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: '占い相性（無料診断の入口）',
+  description,
+  applicationCategory: 'EntertainmentApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+};
+---
+
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/uranai/">占い・文化</a> ／ 占い相性</div>
+    <h1>占い相性｜無料で診断できる相性占いの種類と選び方</h1>
+    <p>
+      「占い 相性」「占い相性」「無料 相性 占い」「恋愛 相性」など、相性占いに関心がある方向けの入口ページです。星座・六星占術・誕生日・血液型など、それぞれの診断手法の特徴と内部ページへの導線をまとめています。登録不要・無料でお試しいただけます。
+    </p>
+  </div>
+
+  <section class="intro" aria-labelledby="intro-h">
+    <h2 id="intro-h">相性占いとは</h2>
+    <p>
+      相性占いとは、ふたりの生年月日・星座・血液型などの情報を手がかりに、関係の相性を読み解く占いの総称です。恋愛相性を中心に、友人関係や職場の人間関係の話題でも楽しまれています。ただし、ここで紹介する判定は伝統的な分類や文化的な慣習に基づくものであり、<strong>科学的な根拠のある診断ではありません</strong>。結果はあくまで娯楽として、現実の判断や人間関係の決断の代わりに使わないでください。
+    </p>
+  </section>
+
+  <section class="methods" aria-labelledby="methods-h">
+    <h2 id="methods-h">主な相性診断の手法</h2>
+
+    <article class="method">
+      <h3><a href="/seiza-aisho/">星座相性（12星座の相性）</a></h3>
+      <p>おひつじ座からうお座までの12星座を組み合わせ、エレメント（火・地・風・水）と角度の関係から相性を読みます。全144通りの組み合わせに対応した<a href="/seiza-aisho/">星座相性診断</a>では、自分の星座と相手の星座を選ぶだけで結果を確認できます。</p>
+    </article>
+
+    <article class="method">
+      <h3><a href="/rokusei-aisho/">六星占術相性</a></h3>
+      <p>生年月日から運命星を割り出し、ふたりの地運相性を確認する手法です。<a href="/rokusei-aisho/">六星占術 相性診断</a>のほか、<a href="/rokusei-aisho/hayamihyou/">地運相性の早見表</a>も用意しています。詳細な計算の過程は<a href="/rokusei/keisan-hyou/">運命数表</a>で確認できます。</p>
+    </article>
+
+    <article class="method">
+      <h3><a href="/tanjobi-aisho/">誕生日相性</a></h3>
+      <p>ふたりの生年月日をもとに、数秘術や六星占術の考え方で相性を計算します。<a href="/tanjobi-aisho/">誕生日相性診断</a>では日付を入力するだけで結果がわかるため、星座がわからない相手とも手軽に試せます。</p>
+    </article>
+
+    <article class="method">
+      <h3><a href="/ketsueki-aisho/">血液型相性</a></h3>
+      <p>A・B・O・AB型の組み合わせから相性度を判定する手法です。<a href="/ketsueki-aisho/">血液型相性診断</a>では全16通りの早見表と、組み合わせごとの特徴・付き合い方のヒントを確認できます。</p>
+    </article>
+  </section>
+
+  <section class="howto" aria-labelledby="howto-h">
+    <h2 id="howto-h">相性占いの選び方</h2>
+    <ul>
+      <li><strong>恋愛相性を手軽に試したい</strong>：星座相性や血液型相性は入力が少なく、短時間で結果を確認できます。</li>
+      <li><strong>生年月日を重視したい</strong>：六星占術相性や誕生日相性は、日付情報を元に詳しく読み解きます。</li>
+      <li><strong>早見表で全体像を見たい</strong>：星座の全144通り、血液型の全16通りの相性表から、気になる組み合わせを探せます。</li>
+    </ul>
+    <p>気になる手法から入口ページへ進み、必要に応じて詳細な診断ツールをお試しください。どの手法を選んでも、結果は参考情報のひとつとして楽しむ範囲に留めてください。</p>
+  </section>
+
+  <section class="disclaimer" aria-labelledby="disclaimer-h">
+    <h2 id="disclaimer-h">ご利用にあたって</h2>
+    <p>
+      占いには科学的な裏付けがなく、このサイトの相性判定もふたりの関係や未来を予言するものではありません。恋愛・結婚・人間関係に関する重要な決定は、ご自身の考えと相手との対話をもとに行ってください。当サイトの結果によって生じたいかなる損害についても、運営者は責任を負いません。
+    </p>
+  </section>
+
+  <div class="ad-slot"></div>
+
+  <RelatedTools current={slug} />
+
+  <style>
+    .page-hero p { line-height: 1.8; }
+    .intro, .methods, .howto, .disclaimer { margin: 2rem 0; }
+    .intro p, .method p, .howto p, .howto li, .disclaimer p { line-height: 1.9; }
+    .method { border-left: 3px solid var(--cat-color, #8b5cf6); padding-left: 1rem; margin: 1.5rem 0; }
+    .method h3 { margin-bottom: .4rem; }
+    .howto ul { padding-left: 1.4rem; }
+    .howto li { margin: .6rem 0; }
+    .disclaimer { background: var(--cat-tint, #f2edff); padding: 1rem 1.2rem; border-radius: 10px; }
+    a { color: var(--cat-color, #8b5cf6); }
+  </style>
+</ToolLayout>

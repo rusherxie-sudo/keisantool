@@ -7,6 +7,7 @@ import {
   hiraToKata,
   kataToHira,
   countChars,
+  countEnglishWords,
   byteLength,
   countManuscriptSheets,
   xCount,
@@ -219,6 +220,47 @@ describe('countChars(文字数カウント)', () => {
 
   it('空文字列の bytes は0', () => {
     expect(countChars('')).toEqual({ chars: 0, charsNoSpace: 0, lines: 0, bytes: 0 });
+  });
+});
+
+describe('countEnglishWords(英語単語数カウント)', () => {
+  it('半角スペース区切りの英文をカウント', () => {
+    expect(countEnglishWords('Hello world')).toBe(2);
+  });
+
+  it('句読点・カンマ・感嘆符で区切られた語をカウント', () => {
+    expect(countEnglishWords('Hello, world!')).toBe(2);
+  });
+
+  it('改行とタブで区切られた語をカウント', () => {
+    expect(countEnglishWords('Hello\nworld\tagain')).toBe(3);
+  });
+
+  it('内部アポストロフを含む語は1語としてカウント', () => {
+    expect(countEnglishWords("don't")).toBe(1);
+    expect(countEnglishWords("I don't know")).toBe(3);
+  });
+
+  it('数字だけのトークンもカウント', () => {
+    expect(countEnglishWords('123')).toBe(1);
+    expect(countEnglishWords('abc 123 def')).toBe(3);
+  });
+
+  it('空文字列・空白のみは0を返す', () => {
+    expect(countEnglishWords('')).toBe(0);
+    expect(countEnglishWords('   \n\t ')).toBe(0);
+  });
+
+  it('日本語文字は英語単語としてカウントしない', () => {
+    expect(countEnglishWords('日本語')).toBe(0);
+    expect(countEnglishWords('こんにちは世界')).toBe(0);
+    expect(countEnglishWords('Hello 世界 world')).toBe(2);
+  });
+
+  it('文字列以外の入力でも例外を投げず0を返す', () => {
+    expect(countEnglishWords(null)).toBe(0);
+    expect(countEnglishWords(undefined)).toBe(0);
+    expect(countEnglishWords(123)).toBe(0);
   });
 });
 

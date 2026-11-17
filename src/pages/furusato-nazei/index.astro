@@ -1,0 +1,286 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import RelatedArticles from '../../components/RelatedArticles.astro';
+import Faq from '../../components/Faq.astro';
+import ResultShare from '../../components/ResultShare.astro';
+
+const slug = 'furusato-nazei';
+const title = 'ふるさと納税 上限額計算シミュレーター【2026年・令和8年分】 | 計算ツール';
+const description =
+  '2026年（令和8年分）のふるさと納税の控除上限額を年収・家族構成・社会保険料から概算。所得税・住民税基本分・住民税特例分の内訳と自己負担額も確認できます。';
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'ふるさと納税 上限額計算シミュレーター',
+  description,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
+  featureList: [
+    '2026年分の寄附上限額を概算',
+    '所得税・住民税基本分・住民税特例分の控除内訳を表示',
+    '指定寄附額での控除額と自己負担額を計算',
+  ],
+};
+---
+<ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld} wide>
+  <div class="page-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/zeikin/">税金・お金</a> ／ ふるさと納税</div>
+    <h1>ふるさと納税の上限額計算シミュレーター【2026年分】</h1>
+    <p>年収・家族構成・社会保険料などから、自己負担2,000円で受けられる寄附額の目安を計算します。寄附額を入力すると控除内訳も確認できます。</p>
+    <div class="rule-chips" aria-label="計算条件">
+      <span>2026年分の寄附</span>
+      <span>令和8年度住民税</span>
+      <span>復興特別所得税込み</span>
+    </div>
+  </div>
+
+  <noscript><p>上限額の計算にはJavaScriptが必要です。計算の考え方と留意点はこの下の説明をご覧ください。</p></noscript>
+
+  <div class="calc-card">
+    <div class="calc-panel active">
+      <div class="input-section">
+        <div class="input-section__head">
+          <span class="step-mark">1</span>
+          <div>
+            <h2>年収と控除条件を入力</h2>
+            <p>源泉徴収票の「支払金額」「社会保険料等の金額」があれば正確な概算に使えます。</p>
+          </div>
+        </div>
+        <div class="input-grid">
+          <div class="form-group">
+            <label for="yearly-salary">年間給与収入（額面・円）</label>
+            <input type="number" id="yearly-salary" inputmode="numeric" min="0" step="1000" placeholder="例：5000000" />
+          </div>
+          <div class="form-group">
+            <label for="social-insurance">年間社会保険料（円・任意）</label>
+            <input type="number" id="social-insurance" inputmode="numeric" min="0" step="1000" placeholder="空欄なら年収の15%で概算" />
+          </div>
+          <div class="form-group">
+            <label for="other-deductions">その他の所得控除（円・任意）</label>
+            <input type="number" id="other-deductions" inputmode="numeric" min="0" step="1000" placeholder="例：120000" />
+            <span class="field-note">住宅ローン控除や医療費など、重複しない控除額を入力してください。</span>
+          </div>
+          <div class="form-group">
+            <label for="donation">寄附額（円・任意）</label>
+            <input type="number" id="donation" inputmode="numeric" min="0" step="1000" placeholder="例：50000" />
+            <span class="field-note">上限まで寄附した場合の内訳も別途表示します。</span>
+          </div>
+        </div>
+
+        <details class="advanced-options">
+          <summary>配偶者・扶養家族を設定する</summary>
+          <div class="advanced-options__body">
+            <label class="checkbox-row" for="has-spouse">
+              <input type="checkbox" id="has-spouse" />
+              <span>控除対象となる可能性がある配偶者がいる</span>
+            </label>
+            <div class="form-group spouse-field" id="spouse-field" hidden>
+              <label for="spouse-income">配偶者の年間合計所得（円）</label>
+              <input type="number" id="spouse-income" inputmode="numeric" min="0" step="1000" placeholder="給与収入ではなく所得を入力" />
+            </div>
+            <div class="dependent-grid">
+              <div class="form-group">
+                <label for="general-dependents">一般扶養</label>
+                <input type="number" id="general-dependents" inputmode="numeric" min="0" max="20" value="0" />
+                <span class="field-note">16〜18歳、23〜69歳</span>
+              </div>
+              <div class="form-group">
+                <label for="special-dependents">特定扶養</label>
+                <input type="number" id="special-dependents" inputmode="numeric" min="0" max="20" value="0" />
+                <span class="field-note">19〜22歳</span>
+              </div>
+              <div class="form-group">
+                <label for="elderly-dependents">老人扶養</label>
+                <input type="number" id="elderly-dependents" inputmode="numeric" min="0" max="20" value="0" />
+                <span class="field-note">70歳以上（同居老親等を除く）</span>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="result-box" id="result-box" aria-live="polite">
+        <div class="result-head">
+          <div>
+            <div class="result-label">自己負担2,000円の上限額目安</div>
+            <div class="result-main" id="result-max">¥0</div>
+          </div>
+          <div class="tax-status" id="limit-status">概算</div>
+        </div>
+        <p class="estimate-note" id="binding-note"></p>
+        <div class="result-rows">
+          <div class="result-row"><span class="label">効いている上限</span><span class="value" id="row-binding">—</span></div>
+          <div class="result-row"><span class="label">所得税率（復興特別所得税込み）</span><span class="value" id="row-rate">—</span></div>
+          <div class="result-row"><span class="label">所得税の控除限度（40%）</span><span class="value" id="row-cap-income">¥0</span></div>
+          <div class="result-row"><span class="label">住民税基本分の限度（30%）</span><span class="value" id="row-cap-basic">¥0</span></div>
+          <div class="result-row"><span class="label">住民税特例分の限度（所得割20%）</span><span class="value" id="row-cap-special">¥0</span></div>
+        </div>
+        <div class="sub-result">
+          <h3>上限まで寄附した場合の内訳</h3>
+          <div class="result-rows">
+            <div class="result-row"><span class="label">所得税からの控除</span><span class="value" id="row-limit-income">¥0</span></div>
+            <div class="result-row"><span class="label">住民税基本分</span><span class="value" id="row-limit-basic">¥0</span></div>
+            <div class="result-row"><span class="label">住民税特例分</span><span class="value" id="row-limit-special">¥0</span></div>
+            <div class="result-row result-row--strong"><span class="label">実際の自己負担</span><span class="value" id="row-limit-cost">¥0</span></div>
+          </div>
+        </div>
+        <div class="sub-result" id="donation-box" hidden>
+          <h3>入力した寄附額での控除</h3>
+          <div class="result-rows">
+            <div class="result-row"><span class="label">寄附額</span><span class="value" id="row-donation">¥0</span></div>
+            <div class="result-row"><span class="label">控除額合計</span><span class="value" id="row-donation-total">¥0</span></div>
+            <div class="result-row result-row--strong"><span class="label">自己負担額</span><span class="value" id="row-donation-cost">¥0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="office-note">共有すると、入力した年収・家族条件・上限額・寄附額の計算結果とこのページのURLが相手に送られます。送信前に内容をご確認ください。</p>
+  <ResultShare />
+
+  <section class="howto">
+    <h2>ふるさと納税の上限額はどう決まる？</h2>
+    <p>2,000円を超える寄附額が控除対象です。所得税では総所得金額等の40%が限度で、住民税基本分は10%（総所得金額等の30%限度）、住民税特例分は所得割額の20%が限度です。実際に効く制限は所得や家族構成によって変わります。</p>
+    <div class="formula-box">
+      <strong>控除対象額</strong><span>寄附額 − 2,000円</span>
+      <strong>住民税特例分</strong><span>（寄附額 − 2,000円）×（100% − 10% − 所得税率）</span>
+    </div>
+    <h3>2026年分の計算で使っている条件</h3>
+    <ul>
+      <li>所得税率には令和19年中の寄附まで復興特別所得税2.1%を加算しています。</li>
+      <li>令和8年度の住民税は2025年の所得を基に、所得割10%（都道府県4%＋市区町村6%）で計算しています。</li>
+      <li>住宅ローン控除は所得税側・住民税側の控除額に反映されます。申告漏れがない金額を入力してください。</li>
+      <li>社会保険料を空欄の場合は年収の15%で概算します。</li>
+    </ul>
+    <h3>申告方法</h3>
+    <p>原則は翌年3月15日までの確定申告です。給与所得者などで寄附先が5自治体以内なら、各自治体へのワンストップ特例申請で手続きを簡略化できる場合があります。医療費控除などで確定申告する場合は、ワンストップ申請をした寄附も申告に含め直してください。詳細は<a href="/blog/furusato-kakutei-shinkoku-yarikata/">ふるさと納税の確定申告手順</a>を参照してください。</p>
+    <h3>このシミュレーターに含まれないもの</h3>
+    <p>寄附先の返礼品、自治体ごとの手続き、法人の寄附、分離課税のみの方、障害者・ひとり親・寡婦の特殊控除、海外在住者の税制、自治体独自の超過課税までは判定できません。住民税の仕組みは<a href="/juminzei/">住民税計算シミュレーション</a>、社会保険料は<a href="/shakaihoken/">社会保険料計算</a>で確認できます。</p>
+    <div class="disclaimer">※ 計算結果は参考値です。実際の上限額は源泉徴収票、確定申告書、自治体の控除額を確認して判断してください。</div>
+    <h3>公的資料</h3>
+    <ul>
+      <li><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1155.htm" target="_blank" rel="noopener">国税庁 No.1155 ふるさと納税（寄附金控除）</a></li>
+      <li><a href="https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/mechanism/deduction.html" target="_blank" rel="noopener">総務省 ふるさと納税ポータルサイト 控除額の計算</a></li>
+    </ul>
+  </section>
+
+  <RelatedTools current={slug} />
+  <RelatedArticles toolSlug={slug} />
+
+  <Faq items={[
+    { q: 'ふるさと納税の上限額は年収で決まりますか？', a: '年収だけで一意に決まりません。所得税率、社会保険料、配偶者・扶養控除、住宅ローン控除などで変わります。このツールはそれらの入力から上限額の目安を計算します。' },
+    { q: '自己負担はなぜ2,000円ですか？', a: 'ふるさと納税では、2,000円を超える寄附額が所得税と住民税から控除される仕組みです。上限内の寄附では、実質的な自己負担が2,000円になるように計算されます。' },
+    { q: '上限を超えて寄附するとどうなりますか？', a: '上限を超えた分のうち、所得税の一般的な寄附金控除や住民税の通常分として控除される一部を除き、特例分の控除を受けられない場合があります。寄附前に上限額を確認してください。' },
+    { q: 'ワンストップ特例はいつ使えますか？', a: '確定申告が不要な給与所得者などで、年内の寄附先が5自治体以内の場合に利用できる制度です。確定申告をする年は、申請済みの寄附も申告に含める必要があります。' },
+  ]} />
+
+  <div class="ad-slot"></div>
+</ToolLayout>
+
+<script>
+  import { calcFurusato } from '../../lib/furusato.js';
+
+  const $ = (id) => document.getElementById(id);
+  const yen = (n) => '¥' + Math.floor(n).toLocaleString('ja-JP');
+  const numberValue = (id) => Math.max(0, Number($(id).value) || 0);
+  let resultTracked = false;
+
+  function show(box) { box.classList.add('visible'); }
+  function hide(box) { box.classList.remove('visible'); window.hideResultShare?.(); }
+
+  function toggleSpouse() {
+    $('spouse-field').hidden = !$('has-spouse').checked;
+    render();
+  }
+
+  function render() {
+    const box = $('result-box');
+    const salary = numberValue('yearly-salary');
+    if (salary <= 0) return hide(box);
+
+    const socialRaw = $('social-insurance').value.trim();
+    const donationRaw = $('donation').value.trim();
+    const result = calcFurusato({
+      yearlySalary: salary,
+      socialInsurance: socialRaw === '' ? undefined : numberValue('social-insurance'),
+      otherDeductions: numberValue('other-deductions'),
+      hasSpouse: $('has-spouse').checked,
+      spouseIncome: numberValue('spouse-income'),
+      generalDependents: numberValue('general-dependents'),
+      specialDependents: numberValue('special-dependents'),
+      elderlyDependents: numberValue('elderly-dependents'),
+      donation: donationRaw === '' ? 0 : numberValue('donation'),
+    });
+    if (result.status !== 'ok') return hide(box);
+
+    show(box);
+    $('result-max').textContent = yen(result.limits.max);
+    $('row-binding').textContent = result.limits.bindingLabel;
+    $('row-rate').textContent = (result.incomeTaxRate * 100).toFixed(3) + '%';
+    $('row-cap-income').textContent = yen(result.limits.incomeTax40);
+    $('row-cap-basic').textContent = yen(result.limits.residentBasic30);
+    $('row-cap-special').textContent = yen(result.limits.special20);
+    $('binding-note').textContent = result.socialInsuranceEstimated
+      ? '社会保険料は入力がないため、給与収入の15%で概算しています。'
+      : '入力した社会保険料を使って計算しています。';
+
+    const at = result.atLimit;
+    $('row-limit-income').textContent = yen(at.incomeTaxDeduction);
+    $('row-limit-basic').textContent = yen(at.residentBasic);
+    $('row-limit-special').textContent = yen(at.residentSpecial);
+    $('row-limit-cost').textContent = yen(at.selfCost);
+
+    const donationBox = $('donation-box');
+    if (donationRaw === '') {
+      donationBox.hidden = true;
+    } else {
+      donationBox.hidden = false;
+      $('row-donation').textContent = yen(result.atDonation.donation);
+      $('row-donation-total').textContent = yen(result.atDonation.totalDeduction);
+      $('row-donation-cost').textContent = yen(result.atDonation.selfCost);
+    }
+
+    window.setResultShare?.(
+      'ふるさと納税 上限額シミュレーター\n給与収入：' + yen(result.yearlySalary) +
+      '\n上限額：' + yen(result.limits.max) +
+      '\n効いている上限：' + result.limits.bindingLabel +
+      '\n上限時の自己負担：' + yen(at.selfCost)
+    );
+    if (!resultTracked && typeof window.trackCalculatorResult === 'function') {
+      try { window.trackCalculatorResult('furusato-tax'); } catch { /* Optional measurement. */ }
+      resultTracked = true;
+    }
+  }
+
+  const inputIds = [
+    'yearly-salary', 'social-insurance', 'other-deductions', 'donation', 'spouse-income',
+    'general-dependents', 'special-dependents', 'elderly-dependents',
+  ];
+  inputIds.forEach((id) => $(id).addEventListener('input', render));
+  $('has-spouse').addEventListener('change', toggleSpouse);
+</script>
+
+<style>
+  .rule-chips { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .rule-chips span { padding:6px 11px; border-radius:999px; background:var(--primary-light); color:var(--primary-dark); font-size:.76rem; font-weight:700; }
+  .input-section__head { display:flex; gap:12px; align-items:flex-start; margin-bottom:22px; }
+  .input-section__head h2 { font-size:1.12rem; margin:0 0 4px; }
+  .input-section__head p { color:var(--text-3); font-size:.83rem; margin:0; line-height:1.6; }
+  .step-mark { width:30px; height:30px; flex:none; display:grid; place-items:center; border-radius:50%; background:var(--primary); color:white; font-weight:800; }
+  .input-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+  .field-note { display:block; color:var(--text-muted); font-size:.74rem; line-height:1.5; margin-top:6px; }
+  .advanced-options { margin-top:18px; border:1.5px solid var(--border-2); border-radius:var(--r-xl); overflow:hidden; }
+  .advanced-options summary { cursor:pointer; list-style:none; padding:15px 18px; font-size:.88rem; font-weight:700; color:var(--text); background:var(--bg); }
+  .advanced-options summary::-webkit-details-marker { display:none; }
+  .advanced-options summary::after { content:'＋'; float:right; color:var(--primary); }
+  .advanced-options__body { padding:18px; }
+  .dependent-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:14px; }
+  .sub-result { border-top:1px dashed var(--border-2); margin-top:18px; padding-top:16px; }
+  .sub-result h3 { font-size:.92rem; margin:0 0 12px; }
+  .tax-status[data-type="exempt"] { background:#e8f7ee; color:#1c7a43; }
+  .tax-status[data-type="partial"] { background:#fff5dd; color:#8a5b00; }
+  @media (max-width:700px) { .input-grid, .dependent-grid { grid-template-columns:1fr; } }
+</style>

@@ -6,9 +6,9 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'moji';
-const title = '全角半角変換・文字数カウントツール - コピペで即座に変換 | 計算ツール';
+const title = '全角半角変換・文字数カウントツール - 文字をカウント／英語 単語数 カウントも可能 | 計算ツール';
 const description =
-  '全角半角変換・ひらがなカタカナ変換・文字数カウントを行う無料ツール。文字列を貼り付けると、表記の変換結果や文字数を自動で表示します。';
+  '全角半角変換・ひらがなカタカナ変換・文字数カウントを行う無料ツール。文字列を貼り付けると、表記の変換結果や文字数を自動で表示します。文字をカウントしながら、英語 単語数 カウント（英語単語数カウント）も確認できます。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -23,7 +23,7 @@ const jsonld = {
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/moji-tool/">文字ツール</a> ／ 文字変換</div>
     <h1>全角半角変換・文字数カウントツール</h1>
-    <p>全角半角・ひらがなカタカナの変換、文字数カウントに使えます。文字列を貼り付けると結果を自動で表示します。</p>
+    <p>全角半角・ひらがなカタカナの変換、文字をカウントする文字数カウントに使えます。文字列を貼り付けると結果を自動で表示し、英語 単語数 カウント（英語単語数カウント）も確認できます。</p>
   </div>
 
   <div class="calc-card">
@@ -101,6 +101,7 @@ const jsonld = {
         <div class="result-main" id="count-chars">0</div>
         <div class="result-rows">
           <div class="result-row"><span class="label">空白を除いた文字数</span><span class="value" id="count-nospace">0</span></div>
+          <div class="result-row"><span class="label">英語の単語数</span><span class="value" id="count-words">0</span></div>
           <div class="result-row"><span class="label">行数</span><span class="value" id="count-lines">0</span></div>
           <div class="result-row"><span class="label">バイト数（UTF-8）</span><span class="value" id="count-bytes">0</span></div>
           <div class="result-row"><span class="label">原稿用紙（400字詰め）</span><span class="value" id="count-genko">0 枚</span></div>
@@ -121,9 +122,9 @@ const jsonld = {
       <li><strong>全角半角変換</strong>：英数字や記号、カタカナの全角・半角を相互に変換します。住所やフォーム入力で「半角で入力してください」と求められた時や、表記を統一したい時に便利です。</li>
       <li><strong>ひらがなカタカナ変換</strong>：ひらがなとカタカナを相互に変換します。ふりがなの作成や、データの表記揺れを直す際に役立ちます。</li>
       <li><strong>整形（改行・空白）</strong>：貼り付けた文章から改行や空白（半角・全角スペース、タブ）を一括で取り除きます。PDFやメールからコピーした文章の余分な改行を消したい時に便利です。</li>
-      <li><strong>文字数カウント</strong>：空白を含む文字数・空白を除いた文字数・行数に加え、UTF-8のバイト数、原稿用紙（400字詰め）の枚数、X（旧Twitter）の文字数（全角1文字=2、半角1文字=1で計算、上限280）を表示します。原稿やSNS投稿の文字数チェックに使えます。</li>
+      <li><strong>文字数カウント</strong>：文字をカウントして、空白を含む文字数・空白を除いた文字数・行数、UTF-8のバイト数、原稿用紙（400字詰め）の枚数、X（旧Twitter）の文字数（全角1文字=2、半角1文字=1で計算、上限280）を表示します。英語 単語数 カウント（英語単語数カウント）も同じ面板で確認できます。</li>
     </ul>
-    <p>英語の文章も「文字数カウント」で確認できます。たとえば <code>Hello world</code> は空白を含め11文字、空白を除くと10文字です。これは文字数であり、単語数の集計には対応していません。</p>
+    <p>英語の文章も「文字数カウント」で確認できます。たとえば <code>Hello world</code> は空白を含め11文字、空白を除くと10文字です。英語 単語数 カウント（英語単語数カウント）では <code>Hello world</code> を2語として数え、<code>don&apos;t</code> のような内部アポストロフを含む語も1語として扱います。日本語の文字は英語の単語には含めません。</p>
     <p>
       <strong>文字化けとは</strong>、本来表示されるはずの文字が「□」や記号の羅列など、意味の読み取れない別の文字に化けてしまう現象のことです。文字コード（UTF-8・Shift_JISなど）の読み取り方が合わない場合などに発生します。本ツールは全角半角やカタカナの表記を揃えるもので、文字コードの食い違いで壊れた文字を復元する機能はありません。半角カタカナの濁音（ｶﾞ→ガ）・半濁音（ﾊﾟ→パ）も正しく合成・分解して変換します。
     </p>
@@ -137,7 +138,8 @@ const jsonld = {
   <Faq items={[
     { q: '全角と半角の違いは？', a: '全角は「ＡＢＣ１２３」のように1文字分の幅、半角は「ABC123」のように半分の幅の文字です。本ツールで相互に変換できます。' },
     { q: 'ひらがな⇔カタカナ変換もできますか？', a: 'はい。ひらがな・カタカナの相互変換に対応しています。' },
-    { q: '文字数のカウントに空白は含まれますか？', a: '空白あり・なしの両方を表示できます。原稿用紙換算やSNSの文字数チェックにも使えます。' },
+    { q: '文字数のカウントに空白は含まれますか？', a: '空白あり・なしの両方を表示できます。文字をカウントする際の原稿用紙換算やSNSの文字数チェックにも使えます。' },
+    { q: '英語の単語数もカウントできますか？', a: 'はい。「文字数カウント」タブで英語 単語数 カウント（英語単語数カウント）ができます。英数字で構成された語を数え、don&apos;t のような内部アポストロフを含む語も1語として扱います。' },
   ]} />
 
   <div class="ad-slot"></div>
@@ -230,6 +232,7 @@ const jsonld = {
     hiraToKata,
     kataToHira,
     countChars,
+    countEnglishWords,
     countManuscriptSheets,
     xCount,
     removeNewlines,
@@ -294,6 +297,7 @@ const jsonld = {
     const { chars, charsNoSpace, lines, bytes } = countChars(text);
     $('count-chars').textContent = chars.toLocaleString('ja-JP');
     $('count-nospace').textContent = charsNoSpace.toLocaleString('ja-JP');
+    $('count-words').textContent = countEnglishWords(text).toLocaleString('ja-JP');
     $('count-lines').textContent = lines.toLocaleString('ja-JP');
     $('count-bytes').textContent = bytes.toLocaleString('ja-JP');
     $('count-genko').textContent = countManuscriptSheets(text).toLocaleString('ja-JP') + ' 枚';

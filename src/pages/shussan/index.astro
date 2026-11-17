@@ -6,9 +6,9 @@ import Faq from '../../components/Faq.astro';
 import ResultShare from '../../components/ResultShare.astro';
 
 const slug = 'shussan';
-const title = '出産予定日計算器 - 最終月経日から出産予定日・妊娠週数を自動計算 | 計算ツール';
+const title = '妊娠計算・出産予定日計算器 - 最終月経日から出産予定日・妊娠週数を自動計算 | 計算ツール';
 const description =
-  '最終月経開始日（LMP）を入力するだけで、出産予定日計算と妊娠週数計算を自動で行う無料ツール。ネーゲレ概算（LMP＋280日）で予定日を求め、現在の妊娠週数・日数や妊娠時期（初期・中期・後期）、産休の目安も表示します。';
+  '最終月経開始日（LMP）を入力するだけで、妊娠計算（出産予定日計算・妊娠週数計算）を自動で行う無料ツール。ネーゲレ概算（LMP＋280日）で予定日を求め、現在の妊娠週数・日数や妊娠時期（初期・中期・後期）、産休の目安も表示します。';
 const jsonld = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
@@ -22,7 +22,7 @@ const jsonld = {
 <ToolLayout title={title} description={description} slug={slug} current={slug} jsonld={jsonld}>
   <div class="page-hero">
     <div class="crumb"><a href="/">ホーム</a> ／ <a href="/category/seikatsu/">生活・日常</a> ／ 出産予定日計算</div>
-    <h1>出産予定日計算器</h1>
+    <h1>妊娠計算・出産予定日計算器</h1>
     <p>最終月経開始日（LMP）を入力するだけで、出産予定日・現在の妊娠週数・産休の目安を自動で計算します。</p>
   </div>
 
