@@ -1,0 +1,36 @@
+{
+  "file": "/downloads/kinzoku-nensuu-template.xlsx",
+  "bytes": 29117,
+  "sha256": "bcfb6eff514057eb8790ecd72dec03bf47095ea32717c4afedb884b7a318cae9",
+  "sheet": "記入例3人",
+  "referenceDate": "2026/04/01",
+  "rows": [
+    {
+      "employeeId": "EX-001",
+      "hireDate": "2020/04/01",
+      "referenceDate": "2026/04/01",
+      "fullYears": 6,
+      "yearsMonths": "6年0か月",
+      "serviceYear": 7,
+      "status": "計算済み"
+    },
+    {
+      "employeeId": "EX-002",
+      "hireDate": "2020/04/02",
+      "referenceDate": "2026/04/01",
+      "fullYears": 5,
+      "yearsMonths": "5年11か月",
+      "serviceYear": 6,
+      "status": "計算済み"
+    },
+    {
+      "employeeId": "EX-003",
+      "hireDate": "2026/04/01",
+      "referenceDate": "2026/04/01",
+      "fullYears": 0,
+      "yearsMonths": "0年0か月",
+      "serviceYear": 1,
+      "status": "計算済み"
+    }
+  ]
+}

@@ -43,6 +43,7 @@ const jsonld = {
   <nav class="service-task-links" aria-label="計算したいこと">
     <a href="#service-tool">入社日から何年目か調べる</a>
     <a href="#reverse-tool">今○年目から入社年を逆算する</a>
+    <a href="/kinzoku-nensuu/excel/">100人分をExcelで一括計算</a>
   </nav>
 
   <section class="entry-quick-answer" aria-labelledby="entry-quick-title">
@@ -119,6 +120,12 @@ const jsonld = {
     </div>
   </div>
 
+  <aside class="service-bulk-entry" aria-label="複数人の勤続年数をまとめて確認">
+    <strong>社員の勤続年数をまとめて確認するなら</strong>
+    <p>共通の基準日で満年数・年月・何年目を一覧にできる、100人分の空白テンプレートをご利用ください。記入例付き・氏名不要。通常の在籍期間用で、退職所得の税務計算には使えません。</p>
+    <a href="/kinzoku-nensuu/excel/">勤続年数Excelテンプレートを無料ダウンロード →</a>
+  </aside>
+
   <ResultShare />
 
   <section class="calc-card reverse-tool" id="reverse-tool" aria-labelledby="reverse-title">
@@ -192,7 +199,7 @@ const jsonld = {
     <p>勤務日数別の比例付与、出勤率、有効期限と年5日取得義務まで確認する場合は、<a href="/yukyu-nissu/">有給休暇付与日数計算ツール</a>をご利用ください。</p>
 
     <h2>Excelで勤続年数を計算するには</h2>
-    <p>A2に入社日、B2に基準日を入力すると、<code>=DATEDIF(A2,B2,"Y")</code>で完了した年数を求められます。入力例や年月の式、エラーの確認方法は<a href="/kinzoku-nensuu/excel/">Excelで勤続年数を計算する方法</a>をご覧ください。MicrosoftはMD単位に既知の制限があると案内しています。</p>
+    <p>A2に入社日、B2に基準日を入力すると、<code>=DATEDIF(A2,B2,"Y")</code>で完了した年数を求められます。複数人をまとめる場合は、<a href="/kinzoku-nensuu/excel/">100人分の勤続年数Excelテンプレート</a>を無料でダウンロードできます。入力例や年月の式、エラーの確認方法も掲載しています。MicrosoftはMD単位に既知の制限があると案内しています。</p>
 
     <h2>関連する日付・給与の計算</h2>
     <p>任意の日付間の営業日や「何日後」を調べるなら<a href="/nissu/">日数計算・日付計算ツール</a>、月の出退勤と休憩を集計するなら<a href="/kinmu-jikan/">勤務時間計算・勤怠表</a>、時給・残業代・手取りの概算には<a href="/kyuyo/">給与計算器</a>をご利用ください。</p>
@@ -338,6 +345,10 @@ const jsonld = {
   .entry-quick-grid strong { color: var(--cat-color); }
   .entry-quick-answer .entry-quick-note { font-size: .72rem; }
   #service-tool, #reverse-tool { scroll-margin-top: 90px; }
+  .service-bulk-entry { margin: 16px 0 24px; padding: 18px 20px; border: 1px solid var(--border); border-left: 3px solid var(--cat-color); border-radius: var(--r-md); background: var(--cat-tint); }
+  .service-bulk-entry strong { font-size: .95rem; }
+  .service-bulk-entry p { margin: 8px 0 10px; font-size: .82rem; line-height: 1.75; }
+  .service-bulk-entry a { color: var(--cat-color); font-size: .86rem; font-weight: var(--fw-bold); text-decoration: underline; }
   .reverse-tool { padding: 24px; }
   .reverse-tool h2 { margin: 0 0 10px; font-size: 1.15rem; }
   .reverse-tool > p { font-size: .85rem; line-height: 1.7; }

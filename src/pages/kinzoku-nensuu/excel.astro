@@ -1,13 +1,120 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
+import preview from '../../data/kinzoku-template-preview.json';
 import '../../styles/office-tools.css';
 const slug = 'kinzoku-nensuu/excel';
-const title = 'Excelで勤続年数を計算｜DATEDIFの年数・年月と何年目';
-const description = 'ExcelのDATEDIFで入社日から基準日までの満年数と年月を求める方法。入力例、何年目との違い、日付のエラーを解説します。';
+const title = '勤続年数のExcelテンプレート【100人分・無料】｜DATEDIFの使い方';
+const description = '100人分の勤続年数を一括計算できるExcelテンプレートを無料ダウンロード。空白の入力表と3人分の記入例、使い方付き。満年数・年月・何年目を区別し、DATEDIFの式や月末・うるう日の注意点も解説します。';
 ---
 <ToolLayout title={title} description={description} slug={slug} current="kinzoku-nensuu">
-  <div class="page-hero"><div class="crumb"><a href="/">ホーム</a> ／ <a href="/kinzoku-nensuu/">勤続年数計算</a> ／ Excel</div><h1>Excelで勤続年数を計算する方法</h1><p>入社日と基準日から、DATEDIFで完了した年数や残りの月数を求めます。</p></div>
-  <section class="calc-card office-tool"><h2>入社日から満年数を求める</h2><ol><li>A2に入社日 <code>2020/4/1</code>、B2に基準日 <code>2026/4/1</code> を日付として入力します。表示形式は「日付」を選びます。</li><li>C2に次の式をコピーして入力します。</li></ol><p><code>=DATEDIF(A2,B2,"Y")</code></p><p>結果は <strong>6</strong>（満6年）です。結果セルは「標準」または「数値」で表示してください。複数行はC2の式を下方向にコピーします。</p><p>入社日を1年目とする数え方では満6年の時点は<strong>7年目</strong>です。式の結果は完了した年数であり、年目ではありません。</p></section>
-  <section class="howto"><h2>年と残りの月を表示する</h2><p>同じA2・B2を使い、結果セルに次を入力します。</p><p><code>=DATEDIF(A2,B2,"Y")&amp;"年"&amp;DATEDIF(A2,B2,"YM")&amp;"か月"</code></p><p>上の例は <strong>6年0か月</strong>。Yは完了した年、YMはその年数を除いた月です。日数は含みません。MicrosoftはMD単位に既知の制限があると案内しているため、ここでは日数にMDを使いません。月末やうるう日を含む場合は利用するExcelのバージョンで結果と用途を確認してください。</p>
-  <h2>エラー・想定外の結果を確認</h2><ul><li>基準日が入社日より前だとエラーになります。日付の順序を確認してください。</li><li>空欄や文字列は正しい日付として扱われないことがあります。両方を入力し、<code>=ISNUMBER(A2)</code> と <code>=ISNUMBER(B2)</code> がTRUEか確認してください。FALSEなら日付として再入力します。</li><li>表示形式の変更だけでは文字列は日付に変換されないことがあります。列幅や入力内容も確認してください。</li></ul><p>退職所得の勤続年数や有給休暇にはそれぞれ別の規則があります。この式だけで税務や付与日数を判断せず、勤務先や専門家に確認してください。</p><p><a href="/kinzoku-nensuu/">勤続年数・何年目の計算</a>で日付を確認できます。<a href="/yukyu-nissu/">有給休暇日数</a>、<a href="/nissu/">日数計算</a>も利用できます。</p><p>参考：<a href="https://support.microsoft.com/en-us/office/datedif-function-25dba1a4-2812-480b-84dd-8b32a451b35c">Microsoft DATEDIF関数</a></p><div class="disclaimer">※ 計算結果はあくまで参考値です。用途に応じて公式資料や勤務先の規定を確認してください。</div></section>
+  <div class="page-hero tenure-excel-hero">
+    <div class="crumb"><a href="/">ホーム</a> ／ <a href="/kinzoku-nensuu/">勤続年数計算</a> ／ Excel</div>
+    <h1>勤続年数のExcelテンプレート</h1>
+    <p>入社日と共通の基準日から、100人分の満年数・年月・何年目をまとめて確認できます。</p>
+  </div>
+
+  <section class="calc-card office-tool tenure-download" aria-labelledby="download-title">
+    <h2 id="download-title">100人分の空白テンプレートを無料で使う</h2>
+    <p class="tenure-contents">入力用100人分 ＋ 別シートの記入例3人分 ＋ 日本語の使い方</p>
+    <div class="office-actions tenure-download-actions">
+      <a class="tenure-download-button" href={preview.file} download="kinzoku-nensuu-template.xlsx">Excelテンプレートをダウンロード</a>
+      <span>.xlsx ／ {Math.ceil(preview.bytes / 1024)} KB</span>
+    </div>
+    <p class="office-note tenure-local-note">登録不要・マクロなし。ファイルを端末に保存して使います。氏名の入力やサイトへのアップロードは不要です。</p>
+    <figure class="tenure-preview">
+      <a href="/downloads/kinzoku-nensuu-preview.png" aria-label="記入例3人のプレビュー画像を拡大する">
+        <img src="/downloads/kinzoku-nensuu-preview.png" width="1258" height="534" loading="eager" decoding="async" alt="Excelの記入例。黄色は社員番号と入社日の入力欄、青色は満年数・年月・何年目の計算結果。2020年4月1日入社は満6年、6年0か月、7年目。" />
+      </a>
+      <figcaption>同梱の「{preview.sheet}」シート。基準日は{preview.referenceDate}です。<a href="/downloads/kinzoku-nensuu-preview.png">画像を拡大</a></figcaption>
+    </figure>
+    <details class="tenure-preview-text">
+      <summary>記入例を表で読む</summary>
+      <div class="office-scroll" role="region" aria-label="3人分の記入例" tabindex="0">
+        <table class="office-table">
+          <caption>統一基準日：{preview.referenceDate}</caption>
+          <thead><tr><th scope="col">社員番号</th><th scope="col">入社日</th><th scope="col">満年数</th><th scope="col">年月</th><th scope="col">何年目</th></tr></thead>
+          <tbody>{preview.rows.map((row) => <tr><th scope="row">{row.employeeId}</th><td>{row.hireDate}</td><td>{row.fullYears}年</td><td>{row.yearsMonths}</td><td>{row.serviceYear}年目</td></tr>)}</tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <section class="howto" aria-labelledby="use-title">
+    <h2 id="use-title">テンプレートの使い方</h2>
+    <ol>
+      <li>ファイルを保存し、Excelなどの対応表計算ソフトで開きます。「入力用100人」シートには<strong>100人分の空白入力欄</strong>があります。記入例を削除する必要はありません。</li>
+      <li>黄色の<strong>B3に統一基準日</strong>を入力します。期末や集計日など、全員共通の日付を指定してください。</li>
+      <li><strong>A7〜A106に社員番号（任意）、B7〜B106に入社日</strong>を入力します。日付は1901/01/01〜2099/12/31に対応しています。</li>
+      <li>青色の結果欄で「満年数」「年月」「何年目」を確認します。B3を変更すると全員分が更新されます。「確認」欄に案内が出た場合は入力を修正してください。</li>
+    </ol>
+    <p>数式セルは誤操作を防ぐため保護しています。編集が必要な場合は「校閲」→「シート保護の解除」で解除できます（パスワードなし）。結果が変わらないときは、計算方法を「自動」にして再計算してください。</p>
+    <p class="tenure-scope">このテンプレートは<strong>通常の在籍期間を一覧にするための参考値</strong>です。退職所得の税務計算、有給休暇の付与判定、休職・再入社・通算期間の計算には対応していません。</p>
+
+    <h2>満年数・年月・何年目の違い</h2>
+    <div class="office-scroll" role="region" aria-label="3つの数え方の違い" tabindex="0">
+      <table class="office-table">
+        <thead><tr><th scope="col">表示</th><th scope="col">意味</th><th scope="col">2020/4/1 → 2026/4/1</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">満年数</th><td>完了した年数。端数は切り上げない</td><td>6年</td></tr>
+          <tr><th scope="row">年月</th><td>満年数と残りの月数。日数は表示しない</td><td>6年0か月</td></tr>
+          <tr><th scope="row">何年目</th><td>入社日を1年目として、満年数に1を加える</td><td>7年目</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>ExcelのDATEDIFで勤続年数を計算する方法</h2>
+    <p>自分の表に式を作る場合は、A2に入社日 <code>2020/4/1</code>、B2に基準日 <code>2026/4/1</code> を日付として入力します。以下は説明用のセル位置です。ダウンロード用テンプレートでは入社日がB列、共通の基準日がB3です。</p>
+    <h3>満年数を求める</h3>
+    <pre class="tenure-formula"><code>=DATEDIF(A2,B2,"Y")</code></pre>
+    <p>結果は<strong>6</strong>（満6年）です。結果セルは「標準」または「数値」で表示します。Yは完了した年数であり、「何年目」ではありません。</p>
+    <h3>年と残りの月を表示する</h3>
+    <pre class="tenure-formula"><code>=DATEDIF(A2,B2,"Y")&amp;"年"&amp;DATEDIF(A2,B2,"YM")&amp;"か月"</code></pre>
+    <p>結果は<strong>6年0か月</strong>です。YMは年数を除いた残りの月数です。MicrosoftはMD単位に既知の制限があると案内しているため、日数の算出にMDは使っていません。</p>
+    <h3>何年目を求める</h3>
+    <pre class="tenure-formula"><code>=DATEDIF(A2,B2,"Y")+1</code></pre>
+    <p>結果は<strong>7</strong>（7年目）です。入社した当日は満0年・1年目です。テンプレートはこれらの式に入力チェックを加え、空欄や不正な日付の結果を表示しないようにしています。</p>
+
+    <h2>月末・うるう日の数え方を確認</h2>
+    <p>テンプレートはDATEDIFのY・YMに従います。月末を同じ日とみなす規則とは異なる場合があります。</p>
+    <ul>
+      <li>2025/01/31 → 2025/02/28：<strong>0年0か月</strong>（1年目）。</li>
+      <li>2024/02/29 → 2025/02/28：<strong>0年11か月</strong>（1年目）。</li>
+      <li>2024/02/29 → 2025/03/01：<strong>1年0か月</strong>（2年目）。</li>
+    </ul>
+    <p><a href="/kinzoku-nensuu/">Web版の勤続年数計算</a>では、翌年に2月29日がない場合は2月28日を周年日とするため、このExcelテンプレートと結果が異なります。勤務先で定められた数え方がある場合は、そちらを優先してください。</p>
+
+    <h2>エラー・想定外の結果を確認</h2>
+    <ul>
+      <li><strong>「入社日を入力」「基準日を入力」：</strong>入社日と共通の基準日B3の両方を入力してください。未使用の行は空欄のままにできます。</li>
+      <li><strong>「日付で入力」：</strong>文字列や時刻、対応範囲外の値が入っています。日付として入力し直してください。<code>=ISNUMBER(A2)</code> と <code>=ISNUMBER(B2)</code> がTRUEかどうかも手がかりになります。</li>
+      <li><strong>「日付の順序を確認」：</strong>基準日が入社日より前です。説明用のDATEDIF式では、この状態は <code>#NUM!</code> エラーになります。</li>
+      <li>表示形式の変更だけでは文字列は日付に変換されません。貼り付け後も「確認」欄をチェックしてください。</li>
+    </ul>
+    <p>退職所得の勤続年数や有給休暇にはそれぞれ別の規則があります。この式だけで税務や付与日数を判断せず、勤務先や専門家に確認してください。</p>
+    <div class="office-links"><a href="/kinzoku-nensuu/">1人分をWebで計算</a><a href="/yukyu-nissu/">有給休暇日数</a><a href="/nissu/">日数計算</a><a href="/kinmu-jikan/">勤務時間・勤怠表</a></div>
+    <p>参考：<a href="https://support.microsoft.com/en-us/excel/functions/datedif-function">Microsoft DATEDIF関数</a></p>
+    <div class="disclaimer">※ 計算結果はあくまで参考値です。用途に応じて公式資料や勤務先の規定を確認してください。</div>
+  </section>
 </ToolLayout>
+
+<style>
+  .tenure-excel-hero { margin-bottom: 20px; }
+  .tenure-download h2 { margin: 0 0 8px; font-size: 1.15rem; }
+  .tenure-contents { margin: 0; color: var(--text-muted); font-size: .9rem; }
+  .tenure-download-actions { align-items: center; margin: 14px 0 8px; }
+  .tenure-download-actions .tenure-download-button { background: var(--cat-color); color: #fff; font-weight: 700; text-decoration: none; text-align: center; }
+  .tenure-download-actions span { font-size: .8rem; color: var(--text-muted); }
+  .tenure-download-button:hover { filter: brightness(.92); }
+  .tenure-download-button:focus-visible, .tenure-preview a:focus-visible, .tenure-preview-text summary:focus-visible { outline: 3px solid var(--cat-color); outline-offset: 4px; }
+  .tenure-local-note { margin: 0 0 16px; }
+  .tenure-preview { margin: 0; }
+  .tenure-preview img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px; }
+  .tenure-preview figcaption { margin-top: 8px; font-size: .8rem; line-height: 1.6; color: var(--text-muted); }
+  .tenure-preview figcaption a { margin-left: 8px; text-decoration: underline; }
+  .tenure-preview-text { margin-top: 12px; }
+  .tenure-preview-text summary { cursor: pointer; padding: 6px 0; font-size: .9rem; }
+  .tenure-preview-text caption { text-align: left; padding: 12px 0; font-size: .85rem; }
+  .tenure-scope { padding: 16px; background: var(--cat-tint); border-left: 3px solid var(--cat-color); }
+  .tenure-formula { max-width: 100%; overflow-x: auto; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-sub); font-size: .85rem; line-height: 1.7; }
+  @media (max-width: 600px) { .tenure-download-actions { align-items: stretch; flex-direction: column; gap: 6px; } .tenure-download-actions .tenure-download-button { padding: 12px; font-size: .94rem; } }
+</style>
