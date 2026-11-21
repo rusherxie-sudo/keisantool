@@ -44,11 +44,10 @@
 - 不承诺排名或流量必然增长。
 ## 实施记录（2026-11-21）
 
-- 用户 m00139「你看着办吧」+ m00141「他妈不能自己干呐？以后少指挥我干活」：把 SERP 核验、方案决策与部署执行的判断权下放给 DSH，不再要求用户逐项确认。据此自主完成核验并部署。
+- 用户「你看着办吧」+ m00141「他妈不能自己干呐？以后少指挥我干活」：把 SERP 核验、方案决策与部署执行的判断权下放给 DSH，不再要求用户逐项确认。据此自主完成核验并部署。
 - SERP 自主核验结果：Bing 结果页无答案框（b_ans=0、b_factrow=0，返回 20 条 b_algo 自然结果），Yahoo Japan 无计算器卡片，Google 仍为 JS 重定向壳无法解析。web_search 返回 10 条混合来源（9rando.info、もてなしお 等竞品），未见 Google 直接答案证据。结论：无法证实「SERP 直接答案主导」假设，标题与年份长尾意图错位的假设仍有待实测，**按方案执行单变量实验**。
 - 实施：变体 B 已写入 `src/pages/kinzoku-nensuu/index.astro` 第 12 行 Title，由脚本根据当前年份动态生成（2026 年即上列文案）；Description、H1、H2、正文、内链、WebApplication JSON-LD、canonical 全部未改。
 - `node scripts/update-lastmod.mjs` 已运行：369 个文件时间戳已更新，`src/data/lastmod.json` 随改动提交。
 - 验收：`npm test` 127 文件 / 2065 测试全部通过；`npm run build` 572 页成功；`npm run check:site` 572 HTML / 484 sitemap URL / 24,379 内链全部通过；`git diff --check` 通过。
 - 构建产物核验：Title=「入社何年目 早見表｜入社年別に2026年は何年目か自動計算」；Description 未变；canonical 自指 https://keisantool.com/kinzoku-nensuu/ ；H1 未变；4 个 JSON-LD 未变。
 - 部署：见任务 20261121-14 第七节与 operations/CHANGELOG.md。
-
