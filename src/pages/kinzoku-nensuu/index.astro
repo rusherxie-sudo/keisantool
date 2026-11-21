@@ -9,7 +9,7 @@ import { japanDateParts } from '../../lib/japanDate.js';
 
 const slug = 'kinzoku-nensuu';
 const { year: currentYear, month: currentMonth } = japanDateParts();
-const title = `入社何年目・勤続年数計算｜${currentYear}年対応・無料で自動計算`;
+const title = `入社何年目 早見表｜入社年別に${currentYear}年は何年目か自動計算`;
 const description =
   `入社日と基準日を入力するだけで、${currentYear}年時点の勤続年数（何年何ヶ月何日）と入社何年目を無料で自動計算。退職所得用の勤続年数、有給休暇の付与目安、次の入社周年も確認できます。`;
 const tableYear = currentMonth < 4 ? currentYear - 1 : currentYear;
